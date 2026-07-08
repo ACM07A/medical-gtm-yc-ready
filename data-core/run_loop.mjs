@@ -20,6 +20,7 @@ const steps = [
   ["Research worklist", "research_worklist.mjs", []],
   process.env.DISCOVER === "1" ? ["POC discovery (stealth Google→LinkedIn)", "discover_pocs.mjs", ["6"]] : null,
   ["Email inference", "infer_contacts.mjs", []],
+  ["Repurpose content → social (GLM/failover)", "repurpose_content.mjs", [process.env.REPURPOSE_PAGES || "1"]],
   ["QA reviewer", "qa_content.mjs", []],
   ["Sourcing research (free web)", "sourcing_research.mjs", []],
   ["Publisher (local site)", "publish_site.mjs", []],

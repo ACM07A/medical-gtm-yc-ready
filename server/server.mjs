@@ -5,9 +5,12 @@ import { createServer } from "node:http";
 import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { loadEnv } from "../lib/env.mjs";
+loadEnv();   // so /plugins reflects configured keys
 import { open } from "../data-core/db.mjs";
 import { mdToHtml } from "./md.mjs";
 import { renderHome } from "./landing_home.mjs";
+import { plugins as pluginList } from "../lib/plugins.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..");
@@ -126,6 +129,27 @@ const server = createServer((req, res) => {
         return send(200, "text/html; charset=utf-8",
           docPage("Partner Research Worklist", "HUMAN research worklist · named decision-makers (public, ToS-clean)", mdToHtml(md)));
       } catch { return send(404, "text/html", "not built — run research_worklist.mjs"); }
+    }
+    if (url.pathname === "/plugins") {
+      const ps = pluginList();
+      const rows = ps.map((p) => `| ${p.ready ? "🟢 ready" : "⚪ needs key"} | **${p.name}** | ${p.purpose} | \`${p.envKeys.join("`, `")}\` | ${p.requirements} |`).join("\n");
+      const body = `# Content Plugins — readiness\n\n> Every integration is wired to the correct API shape. **${ps.filter((p) => p.ready).length}/${ps.length} ready**; the rest are one API key away. Delivery is double-gated (needs \`POST_LIVE=1\` **and** per-post approval) — nothing auto-posts.\n\n| Status | Plugin | What it does | Env key(s) | Needs |\n|---|---|---|---|---|\n${rows}\n\nAdd keys to \`integrations/.env\`, restart, and the status flips to 🟢.`;
+      return send(200, "text/html; charset=utf-8", docPage("Content Plugins", "Integration readiness — what's live vs one key away", mdToHtml(body)));
+    }
+    if (url.pathname === "/distribution") {
+      const posts = db.prepare(`SELECT cp.*, c.name cat, mk.name mname FROM channel_post cp
+        JOIN category c ON c.id=cp.category_id JOIN market mk ON mk.code=cp.market_code
+        ORDER BY cp.content_asset_id, cp.channel`).all();
+      const icon = { linkedin: "in", instagram: "IG", reddit: "r/", whatsapp: "WA", x: "X" };
+      let body = `# Content Distribution Queue\n\n> Each published cornerstone page, repurposed into platform-native posts by the Tier-2 model (facts injected, no invention). **Human-gated — nothing auto-posts.** ${posts.length} drafts.\n\n`;
+      let lastAsset = null;
+      for (const p of posts) {
+        if (p.content_asset_id !== lastAsset) { body += `\n---\n## ${p.cat} × ${p.mname}\n`; lastAsset = p.content_asset_id; }
+        body += `\n### ${icon[p.channel] || ""} ${p.channel.toUpperCase()} · _${p.format}_ · \`${p.status}\` · ${p.model || ""}\n\n${p.body}\n`;
+      }
+      if (!posts.length) body += "_No posts yet — run `npm run loop` or `data-core/repurpose_content.mjs`._";
+      return send(200, "text/html; charset=utf-8",
+        docPage("Content Distribution Queue", "REPURPOSED social posts · human-gated (nothing auto-posts)", mdToHtml(body)));
     }
     if (url.pathname.startsWith("/site/") || url.pathname.startsWith("/outputs/screenshots/")) {
       const fp = join(ROOT, url.pathname.replace(/^\//, ""));

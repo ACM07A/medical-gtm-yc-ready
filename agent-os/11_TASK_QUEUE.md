@@ -31,6 +31,15 @@ Each task small, verifiable, safe. Status: TODO · IN_PROGRESS · BLOCKED · PAS
 | T043 | ACTION-USER | Re-enable z-ai/glm-5.2 on build.nvidia.com (key valid, model unserved) | integrations/.env | glm-5.2 returns 200; chain uses it as primary | Low |
 | T044 | ACTION-USER | Schedule run_loop.mjs (Task Scheduler) for unattended factory when Claude is offline | run_loop | a scheduled cycle logs runs without Claude | Med |
 | T045 | IN_PROGRESS | Confirm/verify discovered named POCs (human) + infer/verify emails | /worklist, capture_poc, infer_contacts | ★ accounts human-confirmed, emails verified | Med |
+| T046 | PASS | Scheduled factory loop (GLM carries loop offline, no Claude) | scripts/run_factory.bat, run_loop, lib/env | Task "MedYatra Factory Loop" (6h); full cycle ran headless | High |
+| T047 | PASS | Content distribution: repurpose cornerstone → 5 platforms (human-gated) | repurpose_content, channel_post, /distribution | 5 posts/page incl. IG carousel+briefs; failover | Med |
+| T048 | PASS | Partner credibility narratives for non-mainstream brands | gen_credibility, build-os/05 | accreditation-led profiles, [VERIFY] flags | Med |
+| T049 | PASS | Image generation — FREE (Pollinations turbo) + Gemini/OpenAI/Stability adapters | lib/image, repurpose | real image generated from a brief; /plugins 🟢 | Med |
+| T051 | PASS | Content-plugin layer: image + 5 posting adapters + readiness registry | lib/image,publishers,plugins, /plugins | 2/10 ready, rest one-key-away; delivery double-gated | Med |
+| T052 | PASS | Gemini text backup in failover chain (free tier) | glm_generate | proven catching failover; carries proposals | Low |
+| T053 | PASS | Account-specific partnership proposals (was T005) | gen_proposals | 3 tailored proposals → review; named-POC addressed | Med |
+| T005 | PASS | Proposal generator (superseded by T053) | gen_proposals | done | Med |
+| T050 | TODO | Platform posting APIs (Meta Graph/LinkedIn) behind keys, human-approved | repurpose, new adapter | a post published to a test account | Med |
 | T021 | PASS(local) | Publish: 16 EN pages built to /site (local preview). Deploy to public host = human/deploy gate | data-core/publish_site | site index 200 | Med |
 | T002 | TODO | Category Intelligence: score + rank portfolio | 03, 08 | ranked top-6, all inputs cited | Med |
 | T003 | TODO | Partner Sourcing: cardiac hospitals + POCs | 04, 08 | ≥5 hospitals, public POC each | Med |

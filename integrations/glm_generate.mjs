@@ -8,6 +8,9 @@
 //   node integrations/glm_generate.mjs "Draft a 120-word intro about ..."
 //   echo "prompt" | node integrations/glm_generate.mjs
 
+import { loadEnv } from "../lib/env.mjs";
+loadEnv();   // pull NVIDIA_API_KEY from gitignored .env so generation works when run outside Claude (scheduled loop)
+
 const ENDPOINT = process.env.NVIDIA_BASE_URL
   ? `${process.env.NVIDIA_BASE_URL.replace(/\/$/, "")}/chat/completions`
   : "https://integrate.api.nvidia.com/v1/chat/completions";
@@ -21,14 +24,25 @@ const ENDPOINT = process.env.NVIDIA_BASE_URL
 const PRIMARY = process.env.GLM_MODEL || process.env.NVIDIA_MODEL || "z-ai/glm-5.2";
 const FALLBACKS = (process.env.GLM_FALLBACKS || "meta/llama-3.3-70b-instruct,meta/llama-3.1-8b-instruct")
   .split(",").map((s) => s.trim()).filter(Boolean);
-export const MODEL_CHAIN = [PRIMARY, ...FALLBACKS.filter((m) => m !== PRIMARY)];
+// Gemini as the LAST-RESORT backup (different API — routed via a "gemini:" prefix). Added only when keyed.
+const GEMINI_BACKUP = process.env.GEMINI_API_KEY ? [`gemini:${process.env.GEMINI_TEXT_MODEL || "gemini-2.5-flash"}`] : [];
+export const MODEL_CHAIN = [PRIMARY, ...FALLBACKS.filter((m) => m !== PRIMARY), ...GEMINI_BACKUP];
 const PER_MODEL_MS = Number(process.env.TIER2_TIMEOUT) || 40000;
 
-async function callModel(model, key, body, ms) {
-  const res = await fetch(ENDPOINT, {
+// Route a model to the right endpoint/key. "gemini:<model>" → Google's OpenAI-compatible endpoint;
+// everything else → NVIDIA NIM. This lets one failover chain span two providers.
+async function callModel(model, _key, body, ms) {
+  let endpoint = ENDPOINT, key = process.env.NVIDIA_API_KEY, realModel = model;
+  if (model.startsWith("gemini:")) {
+    endpoint = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
+    key = process.env.GEMINI_API_KEY;
+    realModel = model.slice(7);
+  }
+  if (!key) throw new Error(`${model} missing API key`);
+  const res = await fetch(endpoint, {
     method: "POST", signal: AbortSignal.timeout(ms),
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ ...body, model }),
+    body: JSON.stringify({ ...body, model: realModel }),
   });
   if (!res.ok) throw new Error(`${model} HTTP ${res.status}: ${(await res.text()).slice(0, 120)}`);
   const data = await res.json();
@@ -50,13 +64,12 @@ export async function generateWithModel(prompt, {
   timeoutMs = PER_MODEL_MS,
   onFailover = null,
 } = {}) {
-  const key = process.env.NVIDIA_API_KEY;
-  if (!key) throw new Error("NVIDIA_API_KEY not set (see integrations/.env.example)");
+  if (!process.env.NVIDIA_API_KEY && !process.env.GEMINI_API_KEY) throw new Error("no LLM key set (NVIDIA_API_KEY or GEMINI_API_KEY — see integrations/.env.example)");
   const body = { messages: [{ role: "system", content: system }, { role: "user", content: prompt }], max_tokens: maxTokens, temperature, top_p: 1, stream: false };
   const errors = [];
   for (const model of models) {
     try {
-      const text = await callModel(model, key, body, timeoutMs);
+      const text = await callModel(model, null, body, timeoutMs);   // callModel derives its own endpoint+key
       return { text, model, failedOver: model !== models[0], tried: errors.length + 1 };
     } catch (e) {
       errors.push(`${model}: ${e.name === "TimeoutError" ? "timeout" : (e.message || e)}`);

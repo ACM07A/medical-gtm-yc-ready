@@ -138,6 +138,22 @@ CREATE TABLE IF NOT EXISTS content_asset (
   citations_ok INTEGER DEFAULT 0
 );
 
+-- Channel posts (/build-os/05 distribution). Each cornerstone page is REPURPOSED into platform-native
+-- posts (LinkedIn / Instagram carousel / Reddit / WhatsApp / X). Facts are injected from the source page
+-- (no invention). Human-gated: nothing auto-posts — status flows draft -> review -> approved -> posted.
+CREATE TABLE IF NOT EXISTS channel_post (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  created TEXT DEFAULT (datetime('now')),
+  content_asset_id INTEGER REFERENCES content_asset(id),
+  category_id TEXT, market_code TEXT,
+  channel TEXT,                       -- linkedin | instagram | reddit | whatsapp | x
+  format TEXT,                        -- post | carousel | thread | broadcast
+  body TEXT,                          -- the ready-to-post copy (+ image briefs for visual platforms)
+  model TEXT,                         -- which tier-2 model generated it
+  file_ref TEXT,
+  status TEXT DEFAULT 'draft'         -- draft | review | approved | posted
+);
+
 -- Run / activity log — every loop iteration writes here so it's tangibly visible in the console.
 CREATE TABLE IF NOT EXISTS run (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

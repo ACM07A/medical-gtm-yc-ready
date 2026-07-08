@@ -12,6 +12,12 @@ npm-debug.log*
 data-core/*.db
 data-core/*.db-*
 
+# Runtime logs (scheduled factory loop)
+outputs/loop.log
+
+# Generated drafts that can contain DISCOVERED individual names/emails (privacy — keep local only)
+outputs/proposals/
+
 # OS / editor
 .DS_Store
 Thumbs.db

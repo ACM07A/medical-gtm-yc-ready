@@ -32,6 +32,38 @@ The Content Engine Agent runs an always-on editorial calendar. Weekly output tar
 - **Destination/logistics guides:** visa, flights, stay, "what to expect" — reduces the #1 fear (the unknown).
 - **Short social:** myth-busting, "5 questions to ask", before/after (consent + platform policy compliant).
 
+## Partner credibility for NON-MAINSTREAM brands (the margin play's content problem)
+
+The margin strategy ([[04_PARTNER_ACQUISITION_STRATEGY]]) brings on high-quality hospitals that patients
+abroad haven't heard of (Sir Ganga Ram, Cytecare, Frontier Lifeline). Customer-facing content must *build
+their credibility*, not assume it. Levers that work **without** brand fame (in priority order):
+
+1. **Accreditation as the great equalizer.** JCI/NABH is the same global standard whether the hospital is
+   famous or not — lead with the credential, not the logo.
+2. **Reframe "lesser-known" as "focused specialist centre."** A dedicated cancer or cardiac hospital does
+   *only* that — higher procedure volume in the specialty → better outcomes. Focus is a feature.
+3. **Named-clinician credentials.** A star surgeon's reputation (international training/fellowships, pioneer
+   status — e.g. Frontier Lifeline's Dr. K.M. Cherian) transfers trust the brand can't.
+4. **Procedure volume + outcomes data** as a quality proxy (cited).
+5. **Radical transparency** — real prices, real inclusions, real doctor names, virtual hospital tours —
+   substitutes for fame; "we hide nothing" is the trust posture when recognition is absent.
+6. **Peer proof** — consented patient stories from the *same source market*.
+7. **The facilitator's vetting** — "we only partner with accredited hospitals that clear our quality bar."
+
+Implemented by `data-core/gen_credibility.mjs` (accreditation-led trust profile per lesser-known partner;
+every unsupplied stat/credential emitted as a `[VERIFY: …]` placeholder — never fabricated; human fills with
+a citation before publish).
+
+## Distribution — repurposing to platform-native posts
+
+Each published cornerstone page is repurposed (`data-core/repurpose_content.mjs`) into platform-native posts —
+**LinkedIn** (B2B thought-leadership), **Instagram** (5-slide carousel + per-slide image briefs + caption +
+hashtags), **Reddit** (value-first, non-promotional), **WhatsApp** (broadcast), **X** (thread) — via the
+Tier-2 failover chain, with facts injected from the source page. Visual platforms get copy + **image briefs**
+(prompts for a designer or an image model; wiring NVIDIA's `genai` image endpoint would render them
+directly). Queue is human-gated at `/distribution` — nothing auto-posts. Actual publishing to each platform
+needs its API (Meta Graph, LinkedIn, etc.) behind a key, and stays human-approved for health content.
+
 ## The proactive campaign loop (agentic)
 
 ```
