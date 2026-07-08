@@ -1,0 +1,45 @@
+# LiteLLM router config — MedYatra GTM engine
+# Maps the model tiers in /agent-os/07_MODEL_ROUTING.md to real endpoints.
+# Keys are read from environment — never hard-code them here.
+#
+# Run:  litellm --config integrations/litellm.config.yaml
+# Then point agents at http://localhost:4000 (OpenAI-compatible).
+
+model_list:
+  # ---- Tier 1: strategist / compliance / final QA (decisions, clinical claims) ----
+  - model_name: tier1-strategist
+    litellm_params:
+      model: anthropic/claude-opus-4-8
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  # ---- Tier 2: builder / bulk content drafting + enrichment (GLM 5.2 via NVIDIA NIM) ----
+  - model_name: tier2-builder
+    litellm_params:
+      model: openai/z-ai/glm-5.2              # OpenAI-compatible schema
+      api_base: https://integrate.api.nvidia.com/v1
+      api_key: os.environ/NVIDIA_API_KEY
+      max_tokens: 16384
+      temperature: 1
+      top_p: 1
+
+  # ---- Tier 3 / fallback: narrow patches, formatting (reuse GLM, lower budget) ----
+  - model_name: tier3-patch
+    litellm_params:
+      model: openai/z-ai/glm-5.2
+      api_base: https://integrate.api.nvidia.com/v1
+      api_key: os.environ/NVIDIA_API_KEY
+      max_tokens: 4096
+
+# Escalation / fallback chain (see /agent-os/08_FALLBACK_EXECUTION.md).
+# Tier-2 work that fails or touches a clinical/price/PII decision escalates to tier-1.
+router_settings:
+  fallbacks:
+    - tier2-builder: ["tier1-strategist"]
+    - tier3-patch: ["tier2-builder", "tier1-strategist"]
+  num_retries: 2
+  timeout: 120
+
+# GUARDRAIL (enforced in agent code, not here): never route patient PII or
+# unredacted medical records to tier2/tier3. Clinical/price claims are tier-1 + human gate.
+litellm_settings:
+  drop_params: true

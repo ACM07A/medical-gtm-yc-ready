@@ -1,0 +1,88 @@
+// Data-core connection helper. Requires Node >=22.5 run with --experimental-sqlite.
+import { DatabaseSync } from "node:sqlite";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
+
+const HERE = dirname(fileURLToPath(import.meta.url));
+export const DB_PATH = join(HERE, "medyatra.db");
+
+export function open(path = DB_PATH) {
+  const db = new DatabaseSync(path);
+  db.exec("PRAGMA foreign_keys = ON;");
+  db.exec(readFileSync(join(HERE, "schema.sql"), "utf8")); // idempotent (CREATE IF NOT EXISTS)
+  // lightweight migrations (add columns without a rebuild; ignore if they already exist)
+  for (const c of ["meta_title", "meta_desc"]) { try { db.exec(`ALTER TABLE content_asset ADD COLUMN ${c} TEXT`); } catch {} }
+  // account-model upgrade: turn poc rows from "front-desk directory" into real decision-maker records.
+  //  role        = the ACTUAL role of the named person (vs title_target = the role we're hunting for)
+  //  seniority    = head | senior | mid | desk   (desk = generic inbox, no named owner)
+  //  contact_type = named-verified | named-public | inferred | desk   (how sure we are it's a real path)
+  //  contact_value= the email/phone/profile URL   ·  confidence 0-100  ·  verified_at ISO date
+  for (const c of ["role TEXT", "seniority TEXT", "contact_type TEXT", "contact_value TEXT",
+                   "confidence INTEGER DEFAULT 0", "verified_at TEXT"]) {
+    try { db.exec(`ALTER TABLE poc ADD COLUMN ${c}`); } catch {}
+  }
+  // pipeline upgrade: an account is only "moving" if it has a next action and an owner.
+  for (const c of ["next_action TEXT", "owner TEXT", "fit_reason TEXT", "fit_score REAL"]) {
+    try { db.exec(`ALTER TABLE partner ADD COLUMN ${c}`); } catch {}
+  }
+  return db;
+}
+
+// Real public hospital email domains (for email-pattern inference + worklist). Public info; verify
+// before send. Shared by research_worklist.mjs and infer_contacts.mjs.
+export const PARTNER_DOMAINS = {
+  "ganga-ram": "sgrh.com", "hinduja": "hindujahospital.com", "frontier-lifeline": "frontierlifeline.com",
+  "cytecare": "cytecare.com", "lv-prasad-eye": "lvpei.org", "artemis": "artemishospitals.com",
+  "marengo": "marengoasia.com", "sakra-world": "sakraworldhospital.com", "sankara-nethralaya": "sankaranethralaya.org",
+  "cloudnine": "cloudninecare.com",
+};
+
+// Weighted category score (/build-os/03 weights). Factors are 1-5.
+export const WEIGHTS = { cost_arb: 0.25, quality: 0.20, ease: 0.15, demand: 0.20, margin: 0.10, whitespace: 0.10 };
+export function scoreOf(f) {
+  return +(f.cost_arb * WEIGHTS.cost_arb + f.quality * WEIGHTS.quality + f.ease * WEIGHTS.ease +
+           f.demand * WEIGHTS.demand + f.margin * WEIGHTS.margin + f.whitespace * WEIGHTS.whitespace).toFixed(2);
+}
+export const j = (v) => JSON.stringify(v ?? null);
+
+// Log a run/activity entry so every loop iteration is visible in the console.
+export function logRun(db, agent, action, detail = "", ref = null, status = "ok") {
+  db.prepare(`INSERT INTO run (agent,action,detail,ref,status) VALUES (?,?,?,?,?)`)
+    .run(agent, action, detail, ref, status);
+}
+
+// Opportunity/margin = quality (must clear bar) x inverse of current MVT presence.
+// High-quality + low-presence brands => better commercial terms, less competition (the margin play).
+const PRESENCE_W = { none: 1.0, latent: 0.9, emerging: 0.6, established: 0.2 };
+const QUALITY_W = { High: 1.0, Med: 0.6 };
+export function oppOf(fit, presence) {
+  const s = (QUALITY_W[fit] ?? 0.4) * (PRESENCE_W[presence] ?? 0.5);
+  return s >= 0.8 ? "High" : s >= 0.45 ? "Med" : "Low";
+}
+
+// Partner-fit ("does this partner actually NEED us?") — the margin thesis as a 0-100 score + a
+// stated reason. High score = high quality + low current MVT presence + a proof point to sell.
+// This is what makes an account worth working, and why. Inputs are real partner-row fields.
+const ACCRED_W = { JCI: 1.0, "NABH+JCI": 1.0, NABH: 0.7 };
+export function partnerFit(p, catNames = []) {
+  const quality = QUALITY_W[p.fit] ?? 0.4;                    // must clear the bar
+  const whitespace = PRESENCE_W[p.mvt_presence] ?? 0.5;      // low presence = more room for us
+  const proof = Math.max(...Object.entries(ACCRED_W)         // do they have a credential we can sell?
+    .filter(([k]) => (p.accreditation || "").toUpperCase().includes(k.split("+")[0].toUpperCase()))
+    .map(([, w]) => w), 0) || 0.4;
+  const score = Math.round(100 * (0.45 * quality + 0.40 * whitespace + 0.15 * proof));
+  const cats = catNames.length ? catNames.join(", ") : "core specialties";
+  // strip internal "(verify …)" research notes so they don't surface in a reason line
+  const accred = (p.accreditation || "").replace(/\s*\((?:verify|est)[^)]*\)/gi, "").trim();
+  const ac = accred && !/specialty/i.test(accred) ? ` (${accred})` : "";
+  let reason;
+  if (p.mvt_presence === "latent" || p.mvt_presence === "none") {
+    reason = `Benchmark quality${ac}, strong in ${cats}, but little/no international-patient presence — best margin & terms; we bring the demand engine they aren't running.`;
+  } else if (p.mvt_presence === "emerging") {
+    reason = `Quality brand${ac} building MVT (${cats}) — early enough to win preferred-facilitator terms before the desk matures.`;
+  } else {
+    reason = `Established IPS desk${ac} (${cats}); compete on our source-market demand + service depth. Thinner margin — pursue for volume/brand, not terms.`;
+  }
+  return { score, reason };
+}
