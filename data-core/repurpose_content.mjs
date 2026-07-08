@@ -72,7 +72,8 @@ for (const p of pages) {
         const briefs = [...r.text.matchAll(/IMAGE BRIEF:?\s*(.+)/gi)].map((m) => m[1].trim()).slice(0, 5);
         let n = 0;
         for (let i = 0; i < briefs.length; i++) {
-          try { await image.generate(`${briefs[i]} — clinical blue #0B4A8B and green, clean, no text`, join(ROOT, "outputs", "social", "img", `${p.category_id}-${p.market_code}-slide${i + 1}.png`), { size: "1024x1024" }); n++; } catch {}
+          const q = `${briefs[i]}. Professional editorial photography, teal and clinical-blue (#0B4A8B) brand palette, soft natural light, photorealistic, high detail, clean composition, no text, no watermark.`;
+          try { await image.generate(q, join(ROOT, "outputs", "social", "img", `${p.category_id}-${p.market_code}-slide${i + 1}.png`), { size: "1024x1024" }); n++; } catch {}
         }
         imgNote = n ? ` · ${n} images rendered (${image.providerName()})` : "";
       } else if (channel === "instagram") { imgNote = " · image briefs kept as text (no image plugin)"; }
