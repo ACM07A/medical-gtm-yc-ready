@@ -6,12 +6,20 @@
 //   node --experimental-sqlite data-core/repurpose_content.mjs [limitPages]
 import { open, logRun } from "./db.mjs";
 import { generateWithModel } from "../integrations/glm_generate.mjs";
-import * as image from "../lib/image.mjs";
+import { renderMedia, costComparisonHtml, renderInfographic } from "../lib/media.mjs";
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 const db = open();
 const A = (s, ...p) => db.prepare(s).all(...p);
+const O = (s, ...p) => db.prepare(s).get(...p);
+
+// Cited Western private-care references per category (from /build-os/08 data sources) for the cost-
+// comparison infographic. Real, sourced ranges — not invented.
+const WEST_REF = {
+  cardiac: [90000, 120000], ortho: [35000, 50000], oncology: [150000, 400000],
+  fertility: [12000, 25000], cosmetic: [20000, 30000], dental: [3000, 6000],
+};
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const LIMIT = Number(process.argv[2]) || 2;
 
@@ -67,16 +75,28 @@ for (const p of pages) {
         VALUES (?,?,?,?,?,?,?,?,'draft')`).run(p.id, p.category_id, p.market_code, channel, format, r.text, r.model, file);
       made++;
       let imgNote = "";
-      // Render the carousel IMAGE BRIEFs into real images IF an image plugin is configured (else stays text).
-      if (channel === "instagram" && image.available()) {
-        const briefs = [...r.text.matchAll(/IMAGE BRIEF:?\s*(.+)/gi)].map((m) => m[1].trim()).slice(0, 5);
-        let n = 0;
-        for (let i = 0; i < briefs.length; i++) {
-          const q = `${briefs[i]}. Professional editorial photography, teal and clinical-blue (#0B4A8B) brand palette, soft natural light, photorealistic, high detail, clean composition, no text, no watermark.`;
-          try { await image.generate(q, join(ROOT, "outputs", "social", "img", `${p.category_id}-${p.market_code}-slide${i + 1}.png`), { size: "1024x1024" }); n++; } catch {}
+      // Build the carousel visuals with the RIGHT source per slide: a data infographic (real numbers,
+      // crisp text) + stock photos for the human element + AI only for abstract graphics (no faces/text).
+      if (channel === "instagram") {
+        const imgDir = join(ROOT, "outputs", "social", "img");
+        const stub = `${p.category_id}-${p.market_code}`;
+        let kinds = [];
+        // 1) cost-comparison infographic from the data core (deterministic, cited)
+        const pr = O(`SELECT min(india_low) lo, max(india_high) hi FROM category_price WHERE category_id=?`, p.category_id);
+        const west = WEST_REF[p.category_id];
+        if (pr && pr.lo && west) {
+          try {
+            await renderInfographic(costComparisonHtml({ treatment: p.cat, market: p.mname, india_low: pr.lo, india_high: pr.hi, west_low: west[0], west_high: west[1] }), join(imgDir, `${stub}-infographic.png`));
+            kinds.push("infographic");
+          } catch {}
         }
-        imgNote = n ? ` · ${n} images rendered (${image.providerName()})` : "";
-      } else if (channel === "instagram") { imgNote = " · image briefs kept as text (no image plugin)"; }
+        // 2) route the LLM image briefs: human → stock photo, abstract → AI graphic
+        const briefs = [...r.text.matchAll(/IMAGE BRIEF:?\s*(.+)/gi)].map((m) => m[1].trim()).slice(0, 4);
+        for (let i = 0; i < briefs.length; i++) {
+          try { const m = await renderMedia(briefs[i], join(imgDir, `${stub}-slide${i + 1}.png`)); kinds.push(m.kind); } catch {}
+        }
+        imgNote = kinds.length ? ` · visuals: ${kinds.join("+")}` : " · visuals skipped";
+      }
       console.log(`  ✓ ${p.cat} × ${p.market_code} · ${channel.padEnd(9)} (${r.model}${r.failedOver ? " failover" : ""})${imgNote}`);
     } catch (e) {
       console.log(`  ✗ ${p.cat} × ${p.market_code} · ${channel}: ${String(e.message || e).slice(0, 60)}`);

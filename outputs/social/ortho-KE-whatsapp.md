@@ -1,10 +1,4 @@
 # WHATSAPP · Orthopedics × Kenya
 <!-- DRAFT — human review before posting. model:meta/llama-3.1-8b-instruct -->
 
-"Hi there, 
-
-If you're from Kenya and in need of orthopedic treatment, we can help. Prices in India for various procedures range from $3,500 to $6,500, compared to Western reference prices which vary. Let us guide you through the process. We'll help you find an accredited hospital in India and take care of arrangements.
-
-What's your procedure of interest? Let's discuss further. 📲
-
-Hit reply to start."
+"Namaste from MedYatra! 🌸 If you're from Kenya seeking top-notch orthopedic care in India, we can help. Our network of accredited hospitals in India offers comprehensive treatment options, including joint replacements, spinal surgeries, and more. The estimated cost for orthopedic treatments in India can range from $3,500 to $6,500, depending on the procedure and hospital chosen. To explore your options, kindly reply to this message or call us at [insert number]. We'll be happy to guide you through the process." MedYatra is a medical-travel facilitator, not a hospital; prices are indicative package ranges.
