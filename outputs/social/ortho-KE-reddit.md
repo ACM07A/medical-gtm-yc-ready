@@ -1,10 +1,14 @@
 # REDDIT · Orthopedics × Kenya
 <!-- DRAFT — human review before posting. model:meta/llama-3.1-8b-instruct -->
 
-Title: Exploring Orthopedics Treatment Options in India for Kenyan Patients
+Title: Seeking info on orthopedics treatment in India for patients from Kenya
 
-As a Kenyan, you may have heard about the high cost of orthopedic treatments in Western countries. If you're considering options abroad, India is a popular destination for medical travel. 
+Hi fellow Redditors,
 
-The cost of orthopedic treatments in India can range from approximately $3,500 to $6,500, depending on the procedure, hospital, and expertise of the surgeon. This is indicative of the package ranges and can vary based on individual circumstances.
+I'm reaching out to gather more information about orthopedics treatment costs in India for patients from Kenya. From my research, it appears that the price range for various orthopedic procedures in Indian hospitals is around $3,500–6,500, although this can vary depending on the specific treatment and hospital chosen.
+
+As a neutral source, I'd love to hear from others who may have experience or knowledge on this topic. Are there any notable differences in treatment options or costs between Indian hospitals? What factors should patients consider when choosing a hospital for their orthopedic treatment?
 
 MedYatra is a medical-travel facilitator, not a hospital; prices are indicative package ranges.
+
+P.S. Feel free to reach out on WhatsApp at +[insert WhatsApp number] for a chat.

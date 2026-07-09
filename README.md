@@ -1,8 +1,8 @@
 # MedYatra — an agentic Go-To-Market engine
 
-An **autonomous, multi-agent go-to-market engine** for a medical-tourism *facilitator* launching in India — and re-tailorable to any market. It decides what to sell, builds the hospital-partner supply side (down to the named decision-maker), runs a multilingual content/brand campaign, and shows all of it moving on a live operator console.
+An **autonomous, multi-agent go-to-market engine** for a medical-tourism *facilitator* launching in India — and re-tailorable to any market. It decides what to sell, builds the hospital-partner supply side (down to the named decision-maker and a tailored proposal), runs a multilingual content/brand campaign, turns each page into platform-ready social posts with real infographics and stock photos, and shows all of it moving on a live operator console — continuing on a schedule even when Claude is offline.
 
-> Built as a demonstration of end-to-end **AI product engineering**: agent orchestration, a multi-model cost-tiered factory with failover, browser automation that gets past what APIs can't, a zero-dependency data core, and a real-time UI — with an honest compliance posture throughout.
+> Built as a demonstration of end-to-end **AI product engineering**: multi-agent orchestration, a cost-tiered multi-model factory with cross-provider failover, browser automation that gets past what APIs can't, a pluggable integration layer (image gen, social posting, enrichment — each one env-key away), a zero-dependency data core, and a real-time UI — with an honest compliance posture throughout.
 
 ![Operator console — the partner account board](outputs/screenshots/console_named_pocs.png)
 
@@ -15,8 +15,9 @@ An **autonomous, multi-agent go-to-market engine** for a medical-tourism *facili
 | 1 | **Decides what to sell** | Weighted scoring model ranks 6 treatment categories on cost-arbitrage, quality, ease, demand, margin, whitespace. Prices are cross-checked against live competitor pages (Vaidam/MediGence) via browser scraping. |
 | 2 | **Builds the partner supply side** | 24 hospital partners tiered by a *"does this partner need us?"* fit score (the margin thesis: high quality × low current international presence). Finds the **named** decision-maker (Head–International Patient Services) via stealth Google→LinkedIn, infers their email, and tracks each account through a pipeline with a next action. |
 | 3 | **Builds the demand side** | 30 cornerstone cost-guide pages generated across 6 categories × target markets × 4 languages (EN/AR/AM/MY), QA-gated for cited prices + disclaimers, published to a static site. |
-| 4 | **Globalizes** | Every artifact is market-parameterized (config, not code) across the Middle East, Africa, Europe, SE Asia. |
-| 5 | **Shows its work** | A live localhost console renders the account board, content heatmap, competitor pricing, and a real-time run feed — every agent action is logged and visible. |
+| 4 | **Distributes it** | Each page is repurposed into platform-native posts (LinkedIn / Instagram / Reddit / WhatsApp / X). Visuals pick the right source per slide: **data infographics** (real numbers, crisp text), **stock photos** for people, AI only for abstract graphics. Human-gated at post. |
+| 5 | **Globalizes** | Every artifact is market-parameterized (config, not code) across the Middle East, Africa, Europe, SE Asia. |
+| 6 | **Runs itself** | A scheduled task drives the whole factory **without Claude** (generation fails over across providers); a live console renders the account board, content heatmap, competitor pricing, a plugin-readiness board, and a real-time run feed. |
 
 ## Architecture — a cost-tiered multi-model factory
 
@@ -24,19 +25,23 @@ An **autonomous, multi-agent go-to-market engine** for a medical-tourism *facili
   Tier 1  Orchestrator / QA / compliance      (Claude — strategy, guardrails, final sign-off)
      │
      ▼
-  Tier 2  Bulk generation                      NVIDIA NIM failover chain:
-     │      content, proposals, outreach          GLM-5.2 → llama-3.3-70b → llama-3.1-8b
+  Tier 2  Bulk generation                      Cross-provider failover chain:
+     │      content, proposals, outreach          GLM-5.2 → llama-70b → llama-8b → Gemini 2.5-flash
      ▼                                             (first responder wins; survives model outages
   Tier 3  Narrow patches (meta, classify)         AND Claude hitting its usage limit)
      │
      ▼
+  Plugin layer (each one env-key away)  ── image gen (Cloudflare FLUX free · Gemini · OpenAI · Stability)
+     │                                   ── infographics (HTML→PNG) · stock photos (Pexels/Openverse)
+     │                                   ── social posting (Meta · LinkedIn · X · Reddit · WhatsApp)
+     ▼                                   ── enrichment · email — all dry-run/human-gated until keyed
   Free/local execution layer  ── SQLite data core (node:sqlite, zero deps)
                               ── Browser automation (puppeteer-core → local Edge; stealth mode)
                               ── Free web research · local .eml outbox · static-site generator
-                              ── Zero-dep HTTP server + live console
+                              ── Zero-dep HTTP server + live console + scheduled factory loop
 ```
 
-The processing loop runs at **~$0 marginal cost**: the only paid call is LLM tokens (on a free NVIDIA tier), and even generation fails over automatically if a model is unreachable.
+The processing loop runs at **~$0 marginal cost**: generation is on free tiers and fails over across providers, images/infographics/stock are free, and the only optional paid calls (premium image models, enrichment, real posting) are behind env keys, off by default. See the live **plugin-readiness board** at `/plugins`.
 
 ## Quickstart
 
@@ -74,10 +79,11 @@ This is a **first-draft engine**, and it says so where it matters:
 |---|---|
 | [`agent-os/`](./agent-os/) | *How* the agents loop, route models, QA, and stop — plus the live task queue and evidence log |
 | [`build-os/`](./build-os/) | *What* to build + the actual GTM strategy, data sources, compliance, acceptance tests |
-| [`data-core/`](./data-core/) | SQLite schema + seed + every agent script (scoring, sourcing, discovery, content, QA, publish) |
-| [`server/`](./server/) | Zero-dep HTTP server, live operator console, patient landing page |
-| [`lib/`](./lib/) | Browser automation, free web research, enrichment adapter, mailer, tier-3 router |
-| [`integrations/`](./integrations/) | NVIDIA GLM/failover helper + LiteLLM config |
-| [`outputs/`](./outputs/) | Generated content, outreach drafts, research worklist, screenshots |
+| [`data-core/`](./data-core/) | SQLite schema + seed + every agent script (scoring, sourcing, discovery, content, QA, publish, repurpose, proposals, credibility, run-loop) |
+| [`server/`](./server/) | Zero-dep HTTP server, live operator console, patient landing, `/plugins`, `/distribution`, `/worklist` |
+| [`lib/`](./lib/) | Browser automation, research, enrichment, mailer, image gen, infographics, stock, media router, social publishers, plugin registry, env loader |
+| [`integrations/`](./integrations/) | Cross-provider LLM failover helper (+ Gemini) + LiteLLM config |
+| [`scripts/`](./scripts/) | `run_factory.bat` — the scheduled unattended factory loop |
+| [`outputs/`](./outputs/) | Generated content, social posts + visuals, proposals (gitignored), worklist, screenshots |
 
 **Want the deep version?** See [`PROJECT_CONTEXT.md`](./PROJECT_CONTEXT.md) — a full walkthrough of every capability, design decision, nuance, and limitation.

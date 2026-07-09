@@ -12,14 +12,17 @@ it, and its honest limits. Written so you can understand — and speak to — ev
 MedYatra is an **agentic go-to-market (GTM) engine** for a medical-tourism *facilitator* — a business that
 connects international patients to accredited Indian hospitals and takes a 10–15% facilitation fee (it is
 **not** a hospital and provides no care). The engine is a fleet of AI agents that autonomously (1) decide
-which treatments to sell, (2) build the hospital-partner supply side down to the named decision-maker,
-(3) run a multilingual content/brand campaign to pull demand, and (4) do all of it in a market-parameterized
-way so the same system relaunches in any country. Everything is visible on a live operator console, runs at
-near-zero marginal cost, and is built with an explicit no-fabrication / human-gated compliance posture.
+which treatments to sell, (2) build the hospital-partner supply side down to the named decision-maker and a
+tailored proposal, (3) run a multilingual content/brand campaign and repurpose it into platform-ready social
+posts with real infographics and stock photos, and (4) do all of it in a market-parameterized way so the same
+system relaunches in any country — continuing on a schedule even when Claude is offline. Everything is visible
+on a live operator console, runs at near-zero marginal cost, and is built with an explicit no-fabrication /
+human-gated compliance posture.
 
 **What it demonstrates (the portfolio point):** end-to-end AI product engineering — multi-agent
-orchestration, a cost-tiered multi-model factory with automatic failover, browser automation that beats
-what APIs are blocked from doing, a zero-dependency data core and real-time UI, and mature judgment about
+orchestration, a cost-tiered multi-model factory with **cross-provider failover**, browser automation that
+beats what APIs are blocked from doing, a **pluggable integration layer** (image gen, social posting,
+enrichment — each an env-key away), a zero-dependency data core and real-time UI, and mature judgment about
 compliance, privacy, and honesty about limits.
 
 ---
@@ -73,24 +76,37 @@ for anything irreversible.**
 
 ### 4.2 The failover chain (the "handoff") — [`integrations/glm_generate.mjs`](./integrations/glm_generate.mjs)
 
-Tier-2 generation tries a chain of models and the **first responder wins**:
+Tier-2 generation tries a chain of models and the **first responder wins** — and it now spans **two
+providers** (NVIDIA NIM + Google Gemini), routed by a `gemini:` prefix inside the same chain:
 
 ```
-GLM-5.2  →  meta/llama-3.3-70b-instruct  →  meta/llama-3.1-8b-instruct
+GLM-5.2  →  meta/llama-3.3-70b-instruct  →  meta/llama-3.1-8b-instruct  →  gemini-2.5-flash
 ```
 
 This is the resilience layer. It solves two real problems at once:
 1. **A model goes down.** GLM-5.2 is currently *unserved* on the NVIDIA account (the key is valid — proven
-   by Llama returning 200 — but that specific model hangs). The chain simply falls through to Llama.
+   by Llama returning 200 — but that specific model hangs). The chain falls through to Llama, and if the
+   whole NVIDIA path is unreachable, to **Gemini** (free tier). In practice Gemini already catches load and
+   produces the higher-quality proposals.
 2. **Claude hits its usage limit.** Because every generator is a standalone Node script calling this chain
    (not Claude), and [`data-core/run_loop.mjs`](./data-core/run_loop.mjs) runs them in sequence, the factory
-   keeps producing **without Claude in the loop** — schedule `run_loop.mjs` via Task Scheduler/cron for true
-   unattended operation.
+   keeps producing **without Claude in the loop**. This is wired for real: a Windows Scheduled Task
+   (`scripts/run_factory.bat`) runs the full cycle every 6 hours; a zero-dep `.env` loader (`lib/env.mjs`)
+   gives the headless scripts their keys.
 
-Fully env-tunable, no code changes:
-- `GLM_MODEL` — preferred model (default `z-ai/glm-5.2`)
-- `GLM_FALLBACKS` — comma-separated fallbacks
-- `TIER2_TIMEOUT` — per-model ms budget before failing over
+Fully env-tunable, no code changes: `GLM_MODEL`, `GLM_FALLBACKS`, `TIER2_TIMEOUT`, and `GEMINI_API_KEY`
+(appends Gemini as the backup automatically when present).
+
+### 4.2b The plugin layer (every integration one key away) — [`lib/plugins.mjs`](./lib/plugins.mjs), `/plugins`
+
+The content/delivery integrations are all wired to the correct API shape and **OFF until keyed** — a
+readiness board at `/plugins` shows what's live vs. one key away:
+- **Generation:** text (the failover chain), **image gen** ([`lib/image.mjs`](./lib/image.mjs) — Cloudflare
+  FLUX *free/no-card*, Gemini "Nano Banana", OpenAI, Stability, Pollinations fallback), **infographics**
+  (free), **stock photos** (free).
+- **Delivery:** social posting for Instagram / LinkedIn / X / Reddit / WhatsApp
+  ([`lib/publishers.mjs`](./lib/publishers.mjs)) — **double-gated** (dry-run unless `POST_LIVE=1` *and*
+  per-post approval), email (Resend or local outbox), contact enrichment (Hunter/Apollo).
 
 ### 4.3 The free/local execution layer
 
@@ -178,6 +194,21 @@ the real hospital domain, and a one-line capture command
 ([`capture_poc.mjs`](./data-core/capture_poc.mjs)) to log a confirmed find. 100% ToS-clean; a human closes
 the last inch in ~10 minutes.
 
+**Tailored proposals** ([`data-core/gen_proposals.mjs`](./data-core/gen_proposals.mjs)): a 7-section
+partnership proposal per top account, **addressed to the named POC**, grounded in that account's fit reason,
+categories, and cited pricing, with the differentiated angle (margin/demand for latent brands, scale for
+established chains) and the credibility framing (§5.2c). Facilitator terms only (10–15% fee, non-exclusive,
+pilot), no invented prices/outcomes, human-gated at `review`. Generated via the failover chain — Gemini
+already produces the best of these.
+
+### 5.2c Partner credibility for non-mainstream brands ([`data-core/gen_credibility.mjs`](./data-core/gen_credibility.mjs))
+
+The margin play brings on high-quality hospitals patients abroad haven't heard of. Customer-facing content
+must *build* their credibility, using levers that work without brand fame: **accreditation as the global
+equalizer**, reframing "lesser-known" as a **focused-specialist** advantage, named-clinician credentials,
+radical transparency, and MedYatra's vetting promise. Every unsupplied stat is emitted as a `[VERIFY: …]`
+placeholder — never fabricated. See [`build-os/05`](./build-os/05_CONTENT_BRAND_CAMPAIGN.md).
+
 ### 5.3 The Content Engine — *demand*
 
 A **content grid** = every (category × target-market × language) cell that should exist. Status:
@@ -187,6 +218,23 @@ A **content grid** = every (category × target-market × language) cell that sho
 disclaimer, a CTA, and banned phrases — 16 English pages passed to `review`; the 14 non-English drafts
 (Arabic/Amharic/Burmese) are flagged **pending native-speaker QA** (honest — machine translation isn't
 sign-off). Approved pages publish to a static site ([`publish_site.mjs`](./data-core/publish_site.mjs)).
+
+### 5.3b Distribution & the media strategy — *reach*
+
+Each published page is repurposed ([`data-core/repurpose_content.mjs`](./data-core/repurpose_content.mjs))
+into platform-native posts — LinkedIn (B2B), Instagram (carousel), Reddit (value-first), WhatsApp, X — via
+the failover chain, facts injected from the source page. Queue at `/distribution`; **human-gated**, nothing
+auto-posts (real posting needs a platform key + `POST_LIVE=1` + approval, per [`lib/publishers.mjs`](./lib/publishers.mjs)).
+
+**The media strategy** ([`lib/media.mjs`](./lib/media.mjs)) — a deliberate art-direction call: AI-generated
+*people* read as uncanny, so the router picks the right source per slide:
+- **Data → infographic** ([`lib/infographic.mjs`](./lib/infographic.mjs)): on-brand HTML rendered to PNG via
+  the local browser, built from **real data-core numbers** with a live-computed savings % — crisp real text,
+  no AI gibberish.
+- **People → stock photo** ([`lib/stock.mjs`](./lib/stock.mjs)): real, warm photography from Pexels (free
+  key) or Openverse (no key), with attribution.
+- **Abstract → AI** ([`lib/image.mjs`](./lib/image.mjs)): only for decorative graphics, prompted with no
+  faces/text. Free via Cloudflare FLUX.
 
 ### 5.4 Globalization — *re-tailorable*
 
@@ -220,6 +268,7 @@ Zero-dependency SQLite (`node:sqlite`). Core tables:
 | `poc` | Contacts: role, seniority, contact_type, contact_value, confidence, source, verified_at |
 | `proposal` / `outreach` | Partner-facing drafts (human-gated at send) |
 | `content_asset` | One row per content-grid cell (category × market × language), status, meta |
+| `channel_post` | Repurposed platform posts (LinkedIn/IG/Reddit/WhatsApp/X), human-gated |
 | `run` | The activity log — every agent action, rendered live on the console |
 | `lead` | PII-minimized demand funnel (consent-gated) |
 
@@ -265,7 +314,10 @@ Requires **Node ≥ 22.5**. All data-core scripts need the `--experimental-sqlit
 | `npm run qa` | Run the content QA agent over all drafts |
 | `npm run loop` | One unattended factory cycle (runs without Claude; add `DISCOVER=1 STEALTH=1` to include discovery) |
 
-Capture a human-confirmed contact:
+Also available (run with `node --experimental-sqlite data-core/<script>`):
+`repurpose_content.mjs` (→ social posts + visuals · `/distribution`) · `gen_proposals.mjs` (tailored
+proposals) · `gen_credibility.mjs` (trust narratives). Console routes: `/console`, `/plugins` (integration
+readiness), `/distribution`, `/worklist`. Capture a confirmed contact:
 `node --experimental-sqlite data-core/capture_poc.mjs <partner_id> "Full Name" "Role" "<email|linkedin-url>"`
 
 ---
@@ -273,18 +325,21 @@ Capture a human-confirmed contact:
 ## 9. Honest limitations & what's next
 
 **Current limits (stated plainly):**
-- **GLM-5.2 is unserved** on the current NVIDIA account (key valid, model gated) — the failover runs on
-  Llama meanwhile. Re-enable it at build.nvidia.com to restore the designed primary.
+- **GLM-5.2 is unserved** on the current NVIDIA account (key valid, model gated) — the chain runs on Llama,
+  with **Gemini 2.5-flash** as a live backup. Re-enable GLM at build.nvidia.com to restore the designed primary.
 - **Named-contact discovery is intermittent** — stealth mode gets past CAPTCHAs but not every time (≈6/9 in
   testing); running on your own desktop (less-flagged IP) improves the hit rate.
 - **Inferred emails are guesses** — low-confidence until MX-verified (blocked in the sandbox that built this;
   works on a real machine) and human-confirmed.
 - **Non-English content is machine-drafted** — flagged pending native-speaker QA; not publish-ready.
+- **Real social posting is wired but off** — adapters are dry-run until a platform key + `POST_LIVE=1` +
+  approval; Instagram also needs a public image host (see the setup notes).
+- **Premium image gen (Gemini "Nano Banana") needs billing** — the free default (Cloudflare FLUX) is on.
 - **The lead/CRM funnel and WhatsApp intake** are scaffolded, not wired end-to-end.
 
-**Natural next steps:** account-specific proposal generation (to each named POC via the failover chain);
-finish the WhatsApp→qualify→route lead flow; a new-market dry run (add Myanmar via config only); native QA
-on the non-English pages; re-enable GLM-5.2.
+**Natural next steps:** finish the WhatsApp→qualify→route lead flow; a new-market dry run (add Myanmar via
+config only); native QA on the non-English pages; turn on a real social channel (LinkedIn/X first); re-enable
+GLM-5.2.
 
 ---
 

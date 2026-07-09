@@ -1,38 +1,30 @@
 # INSTAGRAM · Orthopedics × Kenya
 <!-- DRAFT — human review before posting. model:meta/llama-3.1-8b-instruct -->
 
-**Instagram Carousel: Orthopedics Treatment Cost in India for Patients from Kenya**
+**Instagram Carousel: "Orthopedics Treatment Cost in India for Patients from Kenya"**
 
 **Slide 1**
-(a) "Get Quality Orthopedics Care at Affordable Prices in India"
-(b) Image Brief: A serene Indian hospital corridor with a blue and green color scheme, featuring a smiling Kenyan patient and an Indian doctor exchanging a warm handshake.
+(a) "Orthopedics in India: Affordable care, world-class standards"
+(b) IMAGE BRIEF: A serene Indian hospital corridor with blue-green walls, a smiling doctor, and a patient in a wheelchair.
 
 **Slide 2**
-(a) "India Offers World-Class Orthopedics Treatment at Fraction of Cost"
-(b) Image Brief: An Indian orthopedic surgeon performing a successful surgery with an external view of a hospital room background.
+(a) "Orthopedic surgery in India: Cost-effective options for Kenyan patients"
+(b) IMAGE BRIEF: A doctor in a blue-green scrubs, with a patient resting nearby, surrounded by hospital equipment.
 
 **Slide 3**
-(a) "Compare Prices: $3,500–$6,500 in India vs. Western Reference Prices"
-(b) Image Brief: A split-screen image comparing an Indian rupee with a Western currency, showcasing the cost difference.
+(a) "$3,500 - $6,500: Indicative cost range for orthopedic treatments in India"
+(b) IMAGE BRIEF: A graph or chart displaying price ranges for various orthopedic treatments in India, with a subtle Indian flag pattern.
 
 **Slide 4**
-(a) "Experience Exceptional Patient Care with Our Partner Hospitals"
-(b) Image Brief: A warm and welcoming Indian hospital interior featuring happy patients and smiling medical staff.
+(a) "Western references: Varying costs for similar treatments at home"
+(b) IMAGE BRIEF: A split-screen comparison between an Indian hospital and a Western hospital, with a subtle gradient effect.
 
 **Slide 5**
-(a) "Trust MedYatra to Facilitate Your Medical Journey to India"
-(b) Image Brief: A calm and professional MedYatra team member assisting a Kenyan patient with travel documents and hospital coordination.
+(a) "Plan your medical travel with MedYatra"
+(b) IMAGE BRIEF: A serene landscape of a Kenyan savannah, with a subtle hint of an Indian landmark, and the MedYatra logo in the distance.
 
-**Caption**
-Are you from Kenya seeking high-quality orthopedics care at affordable prices? MedYatra can help. We facilitate medical travel to accredited Indian hospitals, offering world-class treatment and exceptional patient care. Compare prices and discover the benefits of choosing India for your orthopedics treatment. Contact us today to learn more!
+**Caption (<=125 words)**
+Considering orthopedic treatment in India can be a cost-effective option for Kenyan patients. Our indicative package ranges for orthopedic treatments in India are $3,500 - $6,500. We encourage patients to research and compare costs with their local healthcare providers. MedYatra is a medical-travel facilitator, not a hospital; prices are indicative package ranges.
 
 **Hashtags**
-#OrthopedicsTreatmentInIndia
-#MedicalTravelIndia
-#KenyaMedicalTourism
-#IndiaHealthcare
-#MedYatra
-#MedicalTravelFacilitator
-#OrthopedicsCare
-#HealthcareAbroad
-#MedicalTourismIndia
+#MedicalTravel #Orthopedics #IndiaHealthcare #KenyaToIndia #CostEffectiveOptions #GlobalHealthcare #MedicalTourism #HealthcareAbroad #MedYatra
