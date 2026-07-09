@@ -4,7 +4,12 @@
 // Facilitator terms only (10-15% fee, non-exclusive, pilot). No invented prices/outcomes. Human-gated (review).
 //   node --experimental-sqlite data-core/gen_proposals.mjs [limit]
 import { generateWithModel } from "../integrations/glm_generate.mjs";
-import { open, logRun } from "./db.mjs";
+import { open, logRun, isFresh } from "./db.mjs";
+import { lintClaims } from "../lib/claims.mjs";
+const FORCE = process.env.FORCE === "1";   // idempotency override
+// Don't re-propose to accounts already past the proposal stage (or with a live outcome).
+const PAST = new Set(["Responded", "Pilot proposed", "Pilot live", "Signed", "Active"]);
+const DONE_OUTCOME = new Set(["replied", "meeting", "pilot", "signed"]);
 import { writeFileSync, mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -18,8 +23,10 @@ const clean = (s) => (s || "").replace(/\s*\((?:verify|est)[^)]*\)/gi, "").repla
 
 // idempotent for the partners we touch
 const SYSTEM = "You write structured, credible B2B partnership proposals for a medical-value-travel FACILITATOR (not a provider). " +
-  "Professional, specific, no hype, no guarantees. Never invent clinical claims, accreditations, or exact prices. " +
-  "Output clean Markdown with clear section headings.";
+  "Write PLAINLY — short declarative sentences, a real operator's voice, not marketing copy. " +
+  "BANNED phrases (never use): seamless, world-class, bridging the gap, leverage, patient journey, ecosystem, cutting-edge, holistic, empower, tailored solutions, unlock, elevate, state-of-the-art. " +
+  "Any magnitude claim (demand, growth, volume) MUST cite a specific number/source; if you don't have one, write it as '[VERIFY: quantify + cite]' rather than using a vague adjective like 'significant'. " +
+  "No hype, no guarantees, no invented clinical claims/accreditations/prices. Output clean Markdown with clear section headings.";
 
 // top accounts by fit; prefer ones with a named POC and a flagship-ish category
 const partners = A(`SELECT * FROM partner ORDER BY fit_score DESC, priority DESC LIMIT ?`, LIMIT);
@@ -57,17 +64,28 @@ Structure the proposal with these sections:
 
 Rules: NO invented prices/outcomes (reference the indicative range only, clearly labelled). No parenthetical internal notes. ~450–600 words. Professional sign-off from "MedYatra Partnerships".`;
 
+  // STAGE GUARD: don't re-propose to an account already past the proposal stage or with a live outcome.
+  if (!FORCE && (PAST.has(p.stage) || DONE_OUTCOME.has(p.outcome))) { console.log(`proposal → ${p.name} … skip (stage '${p.stage}'${p.outcome && p.outcome !== "none" ? ", outcome " + p.outcome : ""})`); continue; }
+  // IDEMPOTENCY: skip if a proposal for this partner+category was generated recently (no wasted tokens).
+  const existing = O(`SELECT generated_at FROM proposal WHERE partner_id=? AND category_id=?`, p.id, cat.id);
+  if (!FORCE && isFresh(existing?.generated_at, 14)) { console.log(`proposal → ${p.name} … skip (fresh, ${existing.generated_at})`); continue; }
+
   process.stdout.write(`proposal → ${p.name} (${angle}) … `);
   let r; try { r = await generateWithModel(prompt, { system: SYSTEM, maxTokens: 1400, temperature: 0.5 }); }
   catch (e) { console.log("FAIL:", String(e.message || e).slice(0, 50)); logRun(db, "Partner Sourcing", `proposal ${p.id}`, "gen error", null, "fail"); continue; }
 
+  // QA the prose: tag vague magnitude claims [VERIFY] (the "significant demand" leak) + flag AI-filler.
+  const lint = lintClaims(clean(r.text));
+  const flagNote = (lint.vague.length || lint.filler.length)
+    ? `<!-- QA: ${lint.vague.length} vague-claim(s) auto-tagged [VERIFY]${lint.filler.length ? ` · filler to cut: ${lint.filler.slice(0, 6).join(", ")}` : ""} -->\n` : "";
   const file = join("outputs", "proposals", `${p.id}-${cat.id}-${market.code.toLowerCase()}.md`);
-  const header = `<!-- PARTNERSHIP PROPOSAL · DRAFT (human review before send) · ${angle} angle · ${p.id} · model:${r.model} · ${new Date().toISOString().slice(0, 10)} -->\n\n# Partnership Proposal — ${p.name}\n_${cat.name} · ${market.name} · prepared by MedYatra Partnerships_\n\n`;
-  writeFileSync(join(ROOT, file), header + clean(r.text).trim() + "\n");
+  const header = `<!-- PARTNERSHIP PROPOSAL · DRAFT (human review before send) · ${angle} angle · ${p.id} · model:${r.model} · ${new Date().toISOString().slice(0, 10)} -->\n${flagNote}\n# Partnership Proposal — ${p.name}\n_${cat.name} · ${market.name} · prepared by MedYatra Partnerships_\n\n`;
+  writeFileSync(join(ROOT, file), header + lint.text.trim() + "\n");
+  if (lint.vague.length || lint.filler.length) logRun(db, "QA", `Proposal lint · ${p.id}`, `${lint.vague.length} vague→[VERIFY], filler: ${lint.filler.slice(0, 5).join(", ") || "none"}`, null, "pending");
 
   // upsert proposal row (idempotent per partner+category)
   db.prepare(`DELETE FROM proposal WHERE partner_id=? AND category_id=?`).run(p.id, cat.id);
-  db.prepare(`INSERT INTO proposal (partner_id,category_id,market_code,fee_pct,status,file_ref,blockers) VALUES (?,?,?,?, 'review', ?, ?)`)
+  db.prepare(`INSERT INTO proposal (partner_id,category_id,market_code,fee_pct,status,file_ref,blockers,generated_at) VALUES (?,?,?,?, 'review', ?, ?, datetime('now'))`)
     .run(p.id, cat.id, market.code, 0.125, file, poc ? null : "no named POC yet");
   db.prepare(`UPDATE partner SET stage='Pilot proposed' WHERE id=? AND stage NOT IN ('Responded','Pilot live','Signed','Active')`).run(p.id);
   made++;

@@ -191,8 +191,8 @@ flow straight into the board as the preferred path. Free-first; paid is a switch
 **The human bridge** ([`data-core/research_worklist.mjs`](./data-core/research_worklist.mjs)): generates
 `/worklist` — for each star account, ready-to-click Google + LinkedIn search URLs (several query combos),
 the real hospital domain, and a one-line capture command
-([`capture_poc.mjs`](./data-core/capture_poc.mjs)) to log a confirmed find. 100% ToS-clean; a human closes
-the last inch in ~10 minutes.
+([`capture_poc.mjs`](./data-core/capture_poc.mjs)) to log a confirmed find. Much lower risk than
+automated scraping — a human does the searching (manual use, no anti-bot circumvention) — ~10 min.
 
 **Tailored proposals** ([`data-core/gen_proposals.mjs`](./data-core/gen_proposals.mjs)): a 7-section
 partnership proposal per top account, **addressed to the named POC**, grounded in that account's fit reason,

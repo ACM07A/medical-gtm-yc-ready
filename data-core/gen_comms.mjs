@@ -3,8 +3,8 @@
 // Renders the paired infographics from real data. Human-gated: drafted here → submitted to Meta → sent by a
 // human (lib/publishers dry-run unless POST_LIVE=1 + approval). Reusable templates use {{n}} variables.
 //   node --experimental-sqlite data-core/gen_comms.mjs
-import { open, logRun, j } from "./db.mjs";
-import { costComparisonHtml, welcomeHtml, howItWorksHtml, renderInfographic } from "../lib/infographic.mjs";
+import { open, logRun, j, comparator } from "./db.mjs";
+import { welcomeHtml, howItWorksHtml, renderInfographic, renderCostComparison } from "../lib/infographic.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -15,25 +15,25 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const IMG = join(ROOT, "outputs", "comms", "img");
 mkdirSync(IMG, { recursive: true });
 
-// Cited Western references (from /build-os/08) for the per-category estimate infographic.
-const WEST = { cardiac: [90000, 120000], ortho: [35000, 50000], oncology: [150000, 400000], fertility: [12000, 25000], cosmetic: [20000, 30000], dental: [3000, 6000] };
 const rel = (p) => p.replace(ROOT + "\\", "").replace(ROOT + "/", "").replace(/\\/g, "/");
 
 // --- 1) Render the shared infographic headers -----------------------------------------------------
 const welcomeImg = join(IMG, "welcome.png");
 const howImg = join(IMG, "how-it-works.png");
-await renderInfographic(welcomeHtml({}), welcomeImg);
-await renderInfographic(howItWorksHtml(), howImg);
-// per-category estimate (cost comparison) headers
+try { await renderInfographic(welcomeHtml({}), welcomeImg); } catch (e) { console.log(`  ⚠ welcome render failed (browser) — retry when available`); }
+try { await renderInfographic(howItWorksHtml(), howImg); } catch (e) { console.log(`  ⚠ how-it-works render failed (browser) — retry when available`); }
+// per-category estimate (cost comparison) headers — LIKE-FOR-LIKE via comparator(), with the guard.
 const cats = A(`SELECT * FROM category WHERE status='launch' ORDER BY rank`);
 const estImg = {};
 for (const c of cats) {
-  const pr = O(`SELECT min(india_low) lo, max(india_high) hi FROM category_price WHERE category_id=?`, c.id);
-  const w = WEST[c.id];
-  if (pr && pr.lo && w) {
+  const cmp = comparator(db, c.id);
+  if (cmp && cmp.valid) {
     const out = join(IMG, `estimate-${c.id}.png`);
-    await renderInfographic(costComparisonHtml({ treatment: c.name, market: "your country", india_low: pr.lo, india_high: pr.hi, west_low: w[0], west_high: w[1] }), out);
+    await renderCostComparison({ category: c.id, treatment: cmp.label, market: "your country", india_low: cmp.india_low, india_high: cmp.india_high, west_low: cmp.west_low, west_high: cmp.west_high }, out);
     estImg[c.id] = rel(out);
+  } else if (cmp) {
+    console.log(`  ⚠ estimate-${c.id} skipped — savings ${cmp.savings}% failed the sanity guard (data/mapping review needed)`);
+    logRun(db, "Comms", `Infographic guard · ${c.id}`, `savings ${cmp.savings}% invalid — not rendered`, null, "fail");
   }
 }
 const flagship = O(`SELECT id FROM category WHERE flagship=1`)?.id || cats[0].id;

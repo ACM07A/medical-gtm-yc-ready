@@ -26,6 +26,18 @@ export function open(path = DB_PATH) {
   for (const c of ["next_action TEXT", "owner TEXT", "fit_reason TEXT", "fit_score REAL"]) {
     try { db.exec(`ALTER TABLE partner ADD COLUMN ${c}`); } catch {}
   }
+  // outcome feedback loop (ground truth) + idempotency stamps.
+  //  outcome: none|contacted|replied|meeting|pilot|signed|lost  — the ONLY real validation of the fit model.
+  //  last_discovery_at / *_generated_at: so re-runs skip already-done work instead of duplicating it.
+  for (const c of ["outcome TEXT DEFAULT 'none'", "outcome_at TEXT", "outcome_note TEXT", "last_discovery_at TEXT"]) {
+    try { db.exec(`ALTER TABLE partner ADD COLUMN ${c}`); } catch {}
+  }
+  for (const c of ["generated_at TEXT", "outcome TEXT DEFAULT 'none'", "replied_at TEXT"]) {
+    try { db.exec(`ALTER TABLE proposal ADD COLUMN ${c}`); } catch {}
+  }
+  try { db.exec(`ALTER TABLE channel_post ADD COLUMN generated_at TEXT`); } catch {}
+  // key-value system state (heartbeat, last backup) for monitoring.
+  db.exec(`CREATE TABLE IF NOT EXISTS system_state (k TEXT PRIMARY KEY, v TEXT, updated TEXT DEFAULT (datetime('now')))`);
   return db;
 }
 
@@ -37,6 +49,32 @@ export const PARTNER_DOMAINS = {
   "marengo": "marengoasia.com", "sakra-world": "sakraworldhospital.com", "sankara-nethralaya": "sankaranethralaya.org",
   "cloudnine": "cloudninecare.com",
 };
+
+// LIKE-FOR-LIKE cost comparators for infographics. The category price range is an AGGREGATE across
+// different procedures (dental spans a $500 implant AND a $9,500 full-mouth job) — comparing that blob to
+// a single Western procedure produces nonsense (dental showed "-217%"). So each category names ONE
+// representative procedure; india price comes from the data core for THAT procedure; `west` is its cited
+// Western reference (/build-os/08). Compared midpoint-to-midpoint with a sanity guard (see comparator()).
+export const CATEGORY_COMPARATOR = {
+  cardiac:   { match: "bypass",  label: "Heart bypass (CABG)",         west: [90000, 120000] },
+  ortho:     { match: "knee",    label: "Knee replacement",           west: [35000, 50000] },
+  oncology:  { match: "marrow",  label: "Bone-marrow transplant",     west: [150000, 400000] },
+  fertility: { match: "ivf",     label: "IVF (per cycle)",            west: [12000, 25000] },
+  cosmetic:  { match: "sleeve",  label: "Bariatric (gastric sleeve)", west: [20000, 30000] },
+  dental:    { match: "implant", label: "Single dental implant",      west: [2000, 3500] },
+};
+// Returns a validated like-for-like comparator {label, india_low/high, west_low/high, savings, valid} or null.
+// savings = midpoint-to-midpoint; valid=false (and no % shown) if it's ≤0 or >95 (a data/mapping error).
+export function comparator(db, categoryId) {
+  const c = CATEGORY_COMPARATOR[categoryId];
+  if (!c) return null;
+  const p = db.prepare(`SELECT procedure, india_low, india_high FROM category_price WHERE category_id=? AND lower(procedure) LIKE ? ORDER BY india_low LIMIT 1`).get(categoryId, `%${c.match}%`)
+    || db.prepare(`SELECT procedure, india_low, india_high FROM category_price WHERE category_id=? ORDER BY india_low LIMIT 1`).get(categoryId);
+  if (!p || !p.india_low) return null;
+  const savings = Math.round((1 - (p.india_low + p.india_high) / (c.west[0] + c.west[1])) * 100);
+  const valid = savings > 0 && savings <= 95;                 // guard: reject garbage before it becomes a PNG
+  return { label: c.label, india_low: p.india_low, india_high: p.india_high, west_low: c.west[0], west_high: c.west[1], savings, valid };
+}
 
 // Weighted category score (/build-os/03 weights). Factors are 1-5.
 export const WEIGHTS = { cost_arb: 0.25, quality: 0.20, ease: 0.15, demand: 0.20, margin: 0.10, whitespace: 0.10 };
@@ -50,6 +88,20 @@ export const j = (v) => JSON.stringify(v ?? null);
 export function logRun(db, agent, action, detail = "", ref = null, status = "ok") {
   db.prepare(`INSERT INTO run (agent,action,detail,ref,status) VALUES (?,?,?,?,?)`)
     .run(agent, action, detail, ref, status);
+}
+
+// System state (heartbeat, last backup) — for monitoring the unattended loop.
+export function setState(db, k, v) {
+  db.prepare(`INSERT INTO system_state (k,v,updated) VALUES (?,?,datetime('now'))
+    ON CONFLICT(k) DO UPDATE SET v=excluded.v, updated=datetime('now')`).run(k, String(v));
+}
+export function getState(db, k) { return db.prepare(`SELECT v, updated FROM system_state WHERE k=?`).get(k) || null; }
+
+// Freshness guard for idempotency: true if `iso` is within `days` of now (so we SKIP re-doing it).
+export function isFresh(iso, days = 7) {
+  if (!iso) return false;
+  const t = Date.parse(iso.replace(" ", "T") + (iso.includes("Z") ? "" : "Z"));
+  return Number.isFinite(t) && (Date.now() - t) < days * 864e5;
 }
 
 // Opportunity/margin = quality (must clear bar) x inverse of current MVT presence.

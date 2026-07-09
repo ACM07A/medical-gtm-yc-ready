@@ -82,6 +82,23 @@ function leads() {
   if (!r.length) return console.log("  (none yet)");
   for (const x of r) console.log(`  ${x.status.padEnd(10)} ${x.n}`);
 }
+// Ground-truth check: does a higher fit_score actually correlate with better outcomes? This is how the
+// weights (0.45 quality + 0.40 whitespace + 0.15 proof) get VALIDATED instead of just asserted.
+function calibration() {
+  console.log("\n== FIT-vs-OUTCOME CALIBRATION (is the model right?) ==");
+  const POS = ["replied", "meeting", "pilot", "signed"];
+  const logged = rows(`SELECT count(*) c FROM partner WHERE outcome IS NOT NULL AND outcome<>'none'`)[0].c;
+  const buckets = [["High (85+)", 85, 999], ["Med (68-84)", 68, 84], ["Low (<68)", 0, 67]];
+  for (const [label, lo, hi] of buckets) {
+    const ps = rows(`SELECT outcome FROM partner WHERE fit_score BETWEEN ? AND ?`, lo, hi);
+    const withOutcome = ps.filter((p) => p.outcome && p.outcome !== "none");
+    const pos = withOutcome.filter((p) => POS.includes(p.outcome)).length;
+    const rate = withOutcome.length ? Math.round((pos / withOutcome.length) * 100) + "%" : "—";
+    console.log(`  ${label.padEnd(14)} ${String(ps.length).padStart(2)} accounts · ${withOutcome.length} with outcome · positive rate ${rate}`);
+  }
+  console.log(`\n  ${logged} outcomes logged. Need ≥20 across buckets before re-weighting; until then fit_score is a PRIOR, not validated.`);
+  console.log(`  Log outcomes: node --experimental-sqlite data-core/log_outcome.mjs <partner_id> <contacted|replied|meeting|pilot|signed|lost>`);
+}
 function leadAdd([mkt,cat,ch,urg,bud]) {
   if (!mkt||!cat) return console.log("usage: lead-add <market> <category> <channel> <urgency> <budget>");
   db.prepare(`INSERT INTO lead (market_code,category_id,channel,ref,urgency,budget_band,docs_ready,consent,status)
@@ -89,8 +106,8 @@ function leadAdd([mkt,cat,ch,urg,bud]) {
   console.log(`  + qualified lead: ${cat} from ${mkt} via ${ch||"whatsapp"} (PII-minimized ref stored)`);
 }
 
-({ portfolio, partners:()=>partners(args[0]), candidates, units, pipeline, content, gaps, leads,
+({ portfolio, partners:()=>partners(args[0]), candidates, units, pipeline, content, gaps, leads, calibration,
    "lead-add":()=>leadAdd(args) }[cmd] || (()=>{
-   console.log("cmds: portfolio | partners [cat] | candidates | units | pipeline | content | gaps | leads | lead-add ...");
+   console.log("cmds: portfolio | partners [cat] | candidates | units | pipeline | content | gaps | leads | calibration | lead-add ...");
 }))();
 db.close();

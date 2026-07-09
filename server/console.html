@@ -124,7 +124,7 @@ async function tick(){
       <td><div class="an">${a.opp==="High"?"★ ":""}${a.name}</div><div class="rs">${a.reason||""}</div></td>
       <td><span class="pres ${a.presence||""}">${a.presence||"–"}</span></td>
       <td><span class="pdot p-${pt}"></span>${who}<div class="cn">${pocLabel[pt]||pt}</div>${contact}</td>
-      <td><div class="nx">${a.next||"–"}</div><div class="cn">${a.owner||""} · ${a.stage||""}</div></td></tr>`;
+      <td><div class="nx">${a.next||"–"}</div><div class="cn">${a.owner||""} · ${a.stage||""}${a.outcome?` · <b style="color:${a.outcome==='lost'?'var(--red)':'var(--green)'}">${a.outcome}</b>`:""}</div></td></tr>`;
   }).join("")||'<tr><td class="mut" colspan="5">run partner_layer.mjs</td></tr>';
   if(s.contactMix)$("cmix").textContent=" · "+s.contactMix.map(c=>c.n+" "+c.t).join(", ");
   $("pf").innerHTML=s.portfolio.map(c=>`<tr><td class="rk">${c.rank}</td><td class="ct">${c.name}${c.flagship?'<span class="flag">⚑</span>':""}</td><td><div class="bar"><i style="width:${Math.round(c.score/5*100)}%"></i></div></td><td style="font-weight:700">${c.score}</td><td class="mut">${c.band}${c.mkt?`<br><span style="font-size:10px">mkt ${c.mkt}</span>`:""}</td></tr>`).join("");

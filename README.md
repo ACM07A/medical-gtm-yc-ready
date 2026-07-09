@@ -69,7 +69,7 @@ npm run loop                # one unattended factory cycle (runs without Claude)
 This is a **first-draft engine**, and it says so where it matters:
 
 - **No fabrication.** Prices are cited or marked indicative; discovered contacts are stored **UNVERIFIED** for human confirmation; the engine is a *facilitator*, never a provider, and makes no clinical claims.
-- **Real walls, honestly handled.** Named decision-makers live behind forms and Sales-Nav — free *automated* search is CAPTCHA-walled, so the engine uses a **stealth real-browser** path plus a paid-enrichment adapter that's one env-key away. Both documented, neither faked.
+- **Real walls, honestly handled — including the legal one.** Named decision-makers live behind forms and Sales-Nav. The **compliant** path is a licensed enrichment API (used first when keyed). The stealth-browser fallback is **off by default and opt-in** (`ALLOW_SCRAPE=1`) because defeating anti-bot detection can violate a service's ToS *regardless of the data being public* — with a **CAPTCHA circuit-breaker** that backs off when the IP is flagged and falls to a human worklist. No pretending scraping is "clean." (See [`build-os/10`](./build-os/10_SECURITY_COMPLIANCE.md).)
 - **Human gates** on everything outbound: publishing pages, sending outreach, and any commercial term.
 - **Privacy-respecting repo.** Individual contact data lives only in the local gitignored database — the published repo ships institutional/public data only.
 

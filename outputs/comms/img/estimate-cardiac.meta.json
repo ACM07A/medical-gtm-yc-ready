@@ -1,0 +1,18 @@
+{
+  "type": "cost-comparison",
+  "category": "cardiac",
+  "treatment": "Heart bypass (CABG)",
+  "market": "your country",
+  "india": [
+    5000,
+    9000
+  ],
+  "west": [
+    90000,
+    120000
+  ],
+  "savings_pct": 93,
+  "valid": true,
+  "source": "data-core india + /build-os/08 western ref",
+  "generated": "2026-07-09T13:40:56.530Z"
+}

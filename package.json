@@ -16,7 +16,15 @@
     "infer": "node --experimental-sqlite data-core/infer_contacts.mjs",
     "qa": "node --experimental-sqlite data-core/qa_content.mjs",
     "loop": "node --experimental-sqlite data-core/run_loop.mjs",
-    "competitor-scan": "node --experimental-sqlite data-core/competitor_scan.mjs"
+    "competitor-scan": "node --experimental-sqlite data-core/competitor_scan.mjs",
+    "proposals": "node --experimental-sqlite data-core/gen_proposals.mjs",
+    "comms": "node --experimental-sqlite data-core/gen_comms.mjs",
+    "outcome": "node --experimental-sqlite data-core/log_outcome.mjs",
+    "calibration": "node --experimental-sqlite data-core/query.mjs calibration",
+    "backup": "node --experimental-sqlite data-core/backup.mjs",
+    "health": "node --experimental-sqlite data-core/check_health.mjs",
+    "qa-infographics": "node --experimental-sqlite data-core/qa_infographics.mjs",
+    "qa-proposals": "node --experimental-sqlite data-core/qa_proposals.mjs"
   },
   "keywords": [
     "agentic",

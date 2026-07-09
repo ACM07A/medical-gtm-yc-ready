@@ -1,0 +1,18 @@
+{
+  "type": "cost-comparison",
+  "category": "dental",
+  "treatment": "Single dental implant",
+  "market": "your country",
+  "india": [
+    500,
+    950
+  ],
+  "west": [
+    2000,
+    3500
+  ],
+  "savings_pct": 74,
+  "valid": true,
+  "source": "data-core india + /build-os/08 western ref",
+  "generated": "2026-07-09T13:40:56.871Z"
+}

@@ -2,7 +2,8 @@
 // it emits ready-to-click, multi-combination search URLs (Google + LinkedIn + Bing) targeting the roles
 // that route facilitator deals, plus the inferred email pattern. An operator opens each, reads the public
 // LinkedIn result, and captures the confirmed name with:  node capture_poc.mjs <id> "Name" "Role" "<email|url>"
-// 100% ToS-clean (a human clicks), and closes the last inch the automated CAPTCHA wall blocks.
+// Much lower risk than bot scraping — a human does the searching (normal manual use, no automated
+// anti-bot circumvention) — and closes the last inch the CAPTCHA wall blocks.
 //   node --experimental-sqlite data-core/research_worklist.mjs
 import { open, logRun } from "./db.mjs";
 import { writeFileSync, mkdirSync } from "node:fs";
@@ -27,7 +28,7 @@ const DOMAINS = {
 const domainOf = (p) => DOMAINS[p.id] || (p.ips_channel_public || "").match(/@([a-z0-9.-]+\.[a-z]{2,})/i)?.[1] || `${p.id}.com (verify domain)`;
 
 let md = `# Partner Research Worklist — named decision-makers\n\n`;
-md += `> Free, ToS-clean bridge past the search-CAPTCHA wall. Open the links, read the **public** LinkedIn\n`;
+md += `> Free bridge past the search-CAPTCHA wall — a human does the searching (manual use, no automated circumvention). Open the links, read the **public** LinkedIn\n`;
 md += `> result (name + business role — no login, no personal data), then capture:\n`;
 md += `> \`node --experimental-sqlite data-core/capture_poc.mjs <partner_id> "Full Name" "Role" "<email or linkedin url>"\`\n`;
 md += `> Target roles (in priority order): ${ROLES.map((r) => "**" + r + "**").join(" · ")}\n\n`;

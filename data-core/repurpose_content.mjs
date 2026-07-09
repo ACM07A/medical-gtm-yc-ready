@@ -4,9 +4,10 @@
 // disclaimer) so the model never invents a number. Human-gated: writes status='draft', nothing auto-posts.
 // This is the GLM-driven work the scheduled loop does when Claude is offline.
 //   node --experimental-sqlite data-core/repurpose_content.mjs [limitPages]
-import { open, logRun } from "./db.mjs";
+import { open, logRun, isFresh, comparator } from "./db.mjs";
 import { generateWithModel } from "../integrations/glm_generate.mjs";
-import { renderMedia, costComparisonHtml, renderInfographic } from "../lib/media.mjs";
+import { renderMedia, renderCostComparison } from "../lib/media.mjs";
+const FORCE = process.env.FORCE === "1";   // idempotency override
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -14,12 +15,6 @@ const db = open();
 const A = (s, ...p) => db.prepare(s).all(...p);
 const O = (s, ...p) => db.prepare(s).get(...p);
 
-// Cited Western private-care references per category (from /build-os/08 data sources) for the cost-
-// comparison infographic. Real, sourced ranges — not invented.
-const WEST_REF = {
-  cardiac: [90000, 120000], ortho: [35000, 50000], oncology: [150000, 400000],
-  fertility: [12000, 25000], cosmetic: [20000, 30000], dental: [3000, 6000],
-};
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const LIMIT = Number(process.argv[2]) || 2;
 
@@ -62,17 +57,20 @@ let made = 0;
 console.log(`Repurposing ${pages.length} published page(s) → ${CHANNELS.length} channels each (human-gated drafts)`);
 
 for (const p of pages) {
+  // IDEMPOTENCY: skip pages already repurposed recently (don't regenerate 5 posts + media every cycle).
+  const last = O(`SELECT max(generated_at) g FROM channel_post WHERE content_asset_id=?`, p.id);
+  if (!FORCE && isFresh(last?.g, 14)) { console.log(` · ${p.cat} × ${p.market_code} … skip (fresh)`); continue; }
   let md = ""; try { md = readFileSync(join(ROOT, p.file_ref), "utf8"); } catch { continue; }
   const f = facts(md);
-  db.prepare(`DELETE FROM channel_post WHERE content_asset_id=?`).run(p.id);   // idempotent
+  db.prepare(`DELETE FROM channel_post WHERE content_asset_id=?`).run(p.id);
   for (const [channel, format] of CHANNELS) {
     try {
       const r = await generateWithModel(prompt(channel, f, p.mname, p.cat), { maxTokens: 700, temperature: 0.7 });
       const stub = `${p.category_id}-${p.market_code}-${channel}`;
       const file = join("outputs", "social", `${stub}.md`);
       writeFileSync(join(ROOT, file), `# ${channel.toUpperCase()} · ${p.cat} × ${p.mname}\n<!-- DRAFT — human review before posting. model:${r.model} -->\n\n${r.text}\n`);
-      db.prepare(`INSERT INTO channel_post (content_asset_id,category_id,market_code,channel,format,body,model,file_ref,status)
-        VALUES (?,?,?,?,?,?,?,?,'draft')`).run(p.id, p.category_id, p.market_code, channel, format, r.text, r.model, file);
+      db.prepare(`INSERT INTO channel_post (content_asset_id,category_id,market_code,channel,format,body,model,file_ref,status,generated_at)
+        VALUES (?,?,?,?,?,?,?,?,'draft',datetime('now'))`).run(p.id, p.category_id, p.market_code, channel, format, r.text, r.model, file);
       made++;
       let imgNote = "";
       // Build the carousel visuals with the RIGHT source per slide: a data infographic (real numbers,
@@ -81,15 +79,14 @@ for (const p of pages) {
         const imgDir = join(ROOT, "outputs", "social", "img");
         const stub = `${p.category_id}-${p.market_code}`;
         let kinds = [];
-        // 1) cost-comparison infographic from the data core (deterministic, cited)
-        const pr = O(`SELECT min(india_low) lo, max(india_high) hi FROM category_price WHERE category_id=?`, p.category_id);
-        const west = WEST_REF[p.category_id];
-        if (pr && pr.lo && west) {
+        // 1) cost-comparison infographic — LIKE-FOR-LIKE via comparator() (real numbers, guarded)
+        const cmp = comparator(db, p.category_id);
+        if (cmp && cmp.valid) {
           try {
-            await renderInfographic(costComparisonHtml({ treatment: p.cat, market: p.mname, india_low: pr.lo, india_high: pr.hi, west_low: west[0], west_high: west[1] }), join(imgDir, `${stub}-infographic.png`));
+            await renderCostComparison({ category: p.category_id, treatment: cmp.label, market: p.mname, india_low: cmp.india_low, india_high: cmp.india_high, west_low: cmp.west_low, west_high: cmp.west_high }, join(imgDir, `${stub}-infographic.png`));
             kinds.push("infographic");
           } catch {}
-        }
+        } else if (cmp) { logRun(db, "Content Engine", `Infographic guard · ${p.category_id}`, `savings ${cmp.savings}% invalid — not rendered`, null, "fail"); }
         // 2) route the LLM image briefs: human → stock photo, abstract → AI graphic
         const briefs = [...r.text.matchAll(/IMAGE BRIEF:?\s*(.+)/gi)].map((m) => m[1].trim()).slice(0, 4);
         for (let i = 0; i < briefs.length; i++) {

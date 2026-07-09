@@ -1,0 +1,18 @@
+{
+  "type": "cost-comparison",
+  "category": "cosmetic",
+  "treatment": "Bariatric (gastric sleeve)",
+  "market": "your country",
+  "india": [
+    4000,
+    7000
+  ],
+  "west": [
+    20000,
+    30000
+  ],
+  "savings_pct": 78,
+  "valid": true,
+  "source": "data-core india + /build-os/08 western ref",
+  "generated": "2026-07-09T13:40:57.077Z"
+}

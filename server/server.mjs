@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { loadEnv } from "../lib/env.mjs";
 loadEnv();   // so /plugins reflects configured keys
-import { open } from "../data-core/db.mjs";
+import { open, getState } from "../data-core/db.mjs";
 import { mdToHtml } from "./md.mjs";
 import { renderHome } from "./landing_home.mjs";
 import { plugins as pluginList } from "../lib/plugins.mjs";
@@ -69,6 +69,7 @@ function buildState(db) {
       return {
         id: p.id, name: p.name, city: p.city, presence: p.mvt_presence, opp: p.opportunity,
         fit: p.fit_score, reason: p.fit_reason, stage: p.stage, next: p.next_action, owner: p.owner,
+        outcome: p.outcome && p.outcome !== "none" ? p.outcome : null,
         poc: poc && poc.person_name ? poc.person_name : null,
         pocRole: poc ? (poc.role || poc.title_target) : null,
         pocType: poc ? poc.contact_type : "open", pocConf: poc ? poc.confidence : 0,
@@ -111,6 +112,19 @@ const server = createServer((req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   const db = open();
   const send = (code, type, body) => { res.writeHead(code, { "content-type": type, "cache-control": "no-store" }); res.end(body); };
+  // ACCESS CONTROL: the console + APIs expose named partner contacts and pipeline. If CONSOLE_TOKEN is set,
+  // gate everything except the public patient site (/, /site, /outputs) and the health probe. REQUIRED
+  // before exposing this beyond localhost. (No token set = open, for localhost dev.)
+  const PROTECTED = /^\/(console|api\/(state|runs)|draft|outreach|worklist|comms|distribution|plugins)/;
+  if (process.env.CONSOLE_TOKEN && PROTECTED.test(url.pathname)) {
+    const auth = req.headers.authorization || "";
+    const pass = auth.startsWith("Basic ") ? Buffer.from(auth.slice(6), "base64").toString().split(":").slice(1).join(":") : "";
+    if (pass !== process.env.CONSOLE_TOKEN) {
+      db.close();
+      res.writeHead(401, { "WWW-Authenticate": 'Basic realm="MedYatra console"', "content-type": "text/plain" });
+      return res.end("authentication required");
+    }
+  }
   try {
     if (url.pathname === "/") {
       const cats = db.prepare(`SELECT c.*, (SELECT min(india_low) FROM category_price p WHERE p.category_id=c.id) lo,
@@ -127,7 +141,7 @@ const server = createServer((req, res) => {
       try {
         const md = readFileSync(join(ROOT, "outputs", "partner-research-worklist.md"), "utf8");
         return send(200, "text/html; charset=utf-8",
-          docPage("Partner Research Worklist", "HUMAN research worklist · named decision-makers (public, ToS-clean)", mdToHtml(md)));
+          docPage("Partner Research Worklist", "HUMAN research worklist · named decision-makers (manual search — no automated circumvention)", mdToHtml(md)));
       } catch { return send(404, "text/html", "not built — run research_worklist.mjs"); }
     }
     if (url.pathname === "/plugins") {
@@ -191,6 +205,18 @@ ${rows.map(card).join("")}</main></body></html>`;
         const ct = { html: "text/html; charset=utf-8", png: "image/png", jpg: "image/jpeg", css: "text/css", js: "text/javascript" }[ext] || "application/octet-stream";
         return send(200, ct, readFileSync(fp));
       } catch { return send(404, "text/html", "not built yet — run publish_site.mjs"); }
+    }
+    if (url.pathname === "/api/health") {
+      const done = getState(db, "loop_completed");
+      const ageH = done ? (Date.now() - Date.parse(done.v)) / 36e5 : null;
+      const staleAfter = Number(process.env.LOOP_STALE_HOURS) || 8;   // 6h schedule + grace
+      return send(200, "application/json", JSON.stringify({
+        ok: ageH != null && ageH < staleAfter,
+        last_loop_completed: done?.v || null, hours_since: ageH == null ? null : +ageH.toFixed(1),
+        stale: ageH == null || ageH >= staleAfter, last_backup: getState(db, "last_backup")?.v || null,
+        runs: db.prepare(`SELECT count(*) c FROM run`).get().c,
+        fails_recent: db.prepare(`SELECT count(*) c FROM run WHERE status='fail' AND ts > datetime('now','-1 day')`).get().c,
+      }));
     }
     if (url.pathname === "/api/state")
       return send(200, "application/json", JSON.stringify(buildState(db)));

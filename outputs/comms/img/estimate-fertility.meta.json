@@ -1,0 +1,18 @@
+{
+  "type": "cost-comparison",
+  "category": "fertility",
+  "treatment": "IVF (per cycle)",
+  "market": "your country",
+  "india": [
+    2500,
+    5000
+  ],
+  "west": [
+    12000,
+    25000
+  ],
+  "savings_pct": 80,
+  "valid": true,
+  "source": "data-core india + /build-os/08 western ref",
+  "generated": "2026-07-09T13:40:57.890Z"
+}
