@@ -108,7 +108,7 @@ async function tick(){
   const s=await (await fetch("/api/state")).json();
   const k=s.kpi;
   $("stamp").textContent="live · updated "+new Date(s.now).toLocaleTimeString();
-  $("infra").innerHTML=" · site: <a href='/site/index.html' target='_blank'>"+(k.sitePages||0)+" live</a> · outbox: "+(k.outbox||0);
+  $("infra").innerHTML=" · <a href='/comms' target='_blank'>comms</a> · <a href='/distribution' target='_blank'>distribution</a> · <a href='/plugins' target='_blank'>plugins</a> · <a href='/worklist' target='_blank'>worklist</a> · site: <a href='/site/index.html' target='_blank'>"+(k.sitePages||0)+" live</a> · outbox: "+(k.outbox||0);
   $("kpis").innerHTML=[
    [k.markets,"Source markets","4 regions"],[k.cats,"Launch categories","Cardiac ⚑"],
    [k.partners,"Partners",k.latent+" latent/emerging"],[k.highOpp,"High-opp candidates","margin play"],

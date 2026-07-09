@@ -136,6 +136,37 @@ const server = createServer((req, res) => {
       const body = `# Content Plugins — readiness\n\n> Every integration is wired to the correct API shape. **${ps.filter((p) => p.ready).length}/${ps.length} ready**; the rest are one API key away. Delivery is double-gated (needs \`POST_LIVE=1\` **and** per-post approval) — nothing auto-posts.\n\n| Status | Plugin | What it does | Env key(s) | Needs |\n|---|---|---|---|---|\n${rows}\n\nAdd keys to \`integrations/.env\`, restart, and the status flips to 🟢.`;
       return send(200, "text/html; charset=utf-8", docPage("Content Plugins", "Integration readiness — what's live vs one key away", mdToHtml(body)));
     }
+    if (url.pathname === "/comms") {
+      const rows = db.prepare(`SELECT * FROM comms_template ORDER BY seq`).all();
+      const card = (t) => {
+        const btns = (() => { try { return JSON.parse(t.buttons || "[]"); } catch { return []; } })();
+        const img = t.header_asset ? `/${t.header_asset.replace(/^\//, "")}` : "";
+        return `<div class="wa">
+          <div class="stg"><span class="n">${t.seq}</span> ${t.stage.replace(/_/g, " ")}
+            <span class="tag ${t.category}">${t.category}</span><span class="tag ${t.msg_type}">${t.msg_type}</span></div>
+          <div class="bub">
+            ${img ? `<img src="${img}" alt="header">` : ""}
+            <div class="bd">${(t.body || "").replace(/\{\{(\d)\}\}/g, '<b>{{$1}}</b>')}</div>
+            <div class="btns">${btns.map((b) => `<span>${b.text}</span>`).join("")}</div>
+          </div></div>`;
+      };
+      const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sales Comms — WhatsApp sequence</title>
+<style>body{margin:0;font-family:"Segoe UI",Roboto,Arial,system-ui,sans-serif;color:#0c1b2e;background:linear-gradient(180deg,#e9f1f8,#eef4fb);line-height:1.5}
+.ribbon{background:#e5a13a;color:#3a2600;font-weight:700;font-size:13px;text-align:center;padding:8px}.ribbon a{color:#3a2600}
+main{max-width:820px;margin:0 auto;padding:24px 20px 70px}h1{color:#0b4a8b;font-size:24px;margin:0 0 4px}.sub{color:#5a6b80;font-size:14px;margin-bottom:20px}
+.wa{margin:26px 0}.stg{font-weight:700;text-transform:capitalize;color:#0b4a8b;margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.stg .n{background:#0b4a8b;color:#fff;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:13px}
+.tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:2px 8px;border-radius:6px;background:#dbe4ef;color:#5a6b80}
+.tag.utility{background:rgba(37,168,98,.15);color:#1c8b50}.tag.marketing{background:rgba(229,161,58,.2);color:#9a6a12}.tag.session{background:rgba(31,111,214,.12);color:#1f6fd6}
+.bub{background:#fff;border-radius:4px 18px 18px 18px;box-shadow:0 10px 30px -18px rgba(11,74,139,.5);overflow:hidden;max-width:420px;border:1px solid #e2ecf7}
+.bub img{width:100%;display:block}.bd{padding:12px 15px;font-size:14.5px}.bd b{color:#0b4a8b;background:#eef4fb;padding:0 3px;border-radius:3px;font-weight:600}
+.btns{display:flex;flex-direction:column;border-top:1px solid #eef2f7}.btns span{padding:11px;text-align:center;color:#1f6fd6;font-weight:600;font-size:14px;border-top:1px solid #eef2f7;cursor:default}
+.btns span:first-child{border-top:none}</style></head>
+<body><div class="ribbon">SALES COMMS · WhatsApp sequence · body = minimal/kosher, value rides in the image header · human submits to Meta &amp; sends — <a href="/console">back to console</a></div>
+<main><h1>Post-lead WhatsApp sequence</h1><div class="sub">${rows.length} templates · body kept Utility-flavoured for approval; the persuasion (cost, savings, process) lives in the infographic header. See <a href="/site/../build-os/09_SALES_COMMS_PLAYBOOK.md">/build-os/09</a>.</div>
+${rows.map(card).join("")}</main></body></html>`;
+      return send(200, "text/html; charset=utf-8", html);
+    }
     if (url.pathname === "/distribution") {
       const posts = db.prepare(`SELECT cp.*, c.name cat, mk.name mname FROM channel_post cp
         JOIN category c ON c.id=cp.category_id JOIN market mk ON mk.code=cp.market_code
@@ -151,7 +182,8 @@ const server = createServer((req, res) => {
       return send(200, "text/html; charset=utf-8",
         docPage("Content Distribution Queue", "REPURPOSED social posts · human-gated (nothing auto-posts)", mdToHtml(body)));
     }
-    if (url.pathname.startsWith("/site/") || url.pathname.startsWith("/outputs/screenshots/")) {
+    if (url.pathname.startsWith("/site/") || url.pathname.startsWith("/outputs/screenshots/")
+        || url.pathname.startsWith("/outputs/comms/") || url.pathname.startsWith("/outputs/social/")) {
       const fp = join(ROOT, url.pathname.replace(/^\//, ""));
       if (!fp.startsWith(ROOT)) return send(403, "text/plain", "forbidden");
       try {

@@ -40,6 +40,8 @@ Each task small, verifiable, safe. Status: TODO · IN_PROGRESS · BLOCKED · PAS
 | T053 | PASS | Account-specific partnership proposals (was T005) | gen_proposals | 3 tailored proposals → review; named-POC addressed | Med |
 | T005 | PASS | Proposal generator (superseded by T053) | gen_proposals | done | Med |
 | T050 | TODO | Platform posting APIs (Meta Graph/LinkedIn) behind keys, human-approved | repurpose, new adapter | a post published to a test account | Med |
+| T054 | PASS | Sales comms: post-lead WhatsApp sequence (approval-ready, infographic-header tactic) | build-os/09, gen_comms, comms_template, /comms | 6 templates + headers; /comms renders; sendTemplate wired | Med |
+| T055 | TODO | Wire comms sequence to lead lifecycle (trigger per lead stage) + Meta template submission | gen_comms, lead, publishers | a lead advances through the sequence (human-gated) | Med |
 | T021 | PASS(local) | Publish: 16 EN pages built to /site (local preview). Deploy to public host = human/deploy gate | data-core/publish_site | site index 200 | Med |
 | T002 | TODO | Category Intelligence: score + rank portfolio | 03, 08 | ranked top-6, all inputs cited | Med |
 | T003 | TODO | Partner Sourcing: cardiac hospitals + POCs | 04, 08 | ≥5 hospitals, public POC each | Med |

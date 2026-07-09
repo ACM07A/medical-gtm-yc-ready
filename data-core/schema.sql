@@ -154,6 +154,26 @@ CREATE TABLE IF NOT EXISTS channel_post (
   status TEXT DEFAULT 'draft'         -- draft | review | approved | posted
 );
 
+-- Sales comms templates (/build-os/09). The post-lead WhatsApp sequence. Body kept minimal & approvable;
+-- the persuasion rides in the image HEADER (an infographic). Human-gated: drafted here, submitted to Meta
+-- and sent by a human. status: draft -> review -> submitted (to Meta) -> approved.
+CREATE TABLE IF NOT EXISTS comms_template (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  stage TEXT,                          -- acknowledge | qualify | estimate | hospital_options | logistics | reengage
+  seq INTEGER,                         -- order in the sequence
+  name TEXT,                           -- meta template name (snake_case)
+  channel TEXT DEFAULT 'whatsapp',
+  msg_type TEXT,                       -- template | session (session = free-form, within 24h window)
+  category TEXT,                       -- utility | marketing
+  language TEXT DEFAULT 'en',
+  header_type TEXT DEFAULT 'image',    -- image | none
+  header_asset TEXT,                   -- path to the infographic used as the header
+  body TEXT,                           -- minimal, {{n}}-variable body
+  variables TEXT,                      -- json: what each {{n}} maps to
+  buttons TEXT,                        -- json: quick-reply / CTA buttons
+  status TEXT DEFAULT 'draft'          -- draft | review | submitted | approved
+);
+
 -- Run / activity log — every loop iteration writes here so it's tangibly visible in the console.
 CREATE TABLE IF NOT EXISTS run (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
