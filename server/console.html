@@ -122,7 +122,7 @@ async function tick(){
     const contact=a.pocContact?`<div class="cn">${a.pocContact}${a.pocConf?` · conf ${a.pocConf}`:""}</div>`:"";
     return `<tr><td><span class="fitn">${a.fit??"–"}</span></td>
       <td><div class="an">${a.opp==="High"?"★ ":""}${a.name}</div><div class="rs">${a.reason||""}</div></td>
-      <td><span class="pres ${a.presence||""}">${a.presence||"–"}</span></td>
+      <td><span class="pres ${a.presence||""}">${a.presence||"–"}</span>${a.readiness?`<div class="cn" title="execution risk — kept separate from fit/opportunity" style="margin-top:5px">${a.readiness.label} · ~${a.readiness.months}mo</div>`:""}</td>
       <td><span class="pdot p-${pt}"></span>${who}<div class="cn">${pocLabel[pt]||pt}</div>${contact}</td>
       <td><div class="nx">${a.next||"–"}</div><div class="cn">${a.owner||""} · ${a.stage||""}${a.outcome?` · <b style="color:${a.outcome==='lost'?'var(--red)':'var(--green)'}">${a.outcome}</b>`:""}</div></td></tr>`;
   }).join("")||'<tr><td class="mut" colspan="5">run partner_layer.mjs</td></tr>';

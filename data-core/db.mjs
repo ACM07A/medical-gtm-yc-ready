@@ -76,6 +76,20 @@ export function comparator(db, categoryId) {
   return { label: c.label, india_low: p.india_low, india_high: p.india_high, west_low: c.west[0], west_high: c.west[1], savings, valid };
 }
 
+// SALES-READINESS — deliberately SEPARATE from fit_score. Fit = "should we want them" (opportunity).
+// Readiness = "can they actually take an international patient soon" (execution risk). High whitespace
+// (the thing that makes fit attractive) usually means LOW readiness: no visa-invite desk, no interpreter
+// network, no international pricing sheet. Conflating the two hides a 6-12 month setup behind a 96 score.
+// Inferred from MVT presence + an international credential (JCI = a real int'l-readiness signal).
+export function readiness(p) {
+  const base = { established: 85, emerging: 55, latent: 30, none: 20 }[p.mvt_presence] ?? 40;
+  const jci = /JCI/i.test(p.accreditation || "") ? 15 : 0;   // JCI implies int'l-patient infrastructure
+  const score = Math.min(100, base + jci);
+  const months = score >= 75 ? "0–2" : score >= 50 ? "3–6" : "6–12";   // rough time-to-first-bookable
+  const label = score >= 75 ? "ready" : score >= 50 ? "ramping" : "needs setup";
+  return { score, label, months };
+}
+
 // Weighted category score (/build-os/03 weights). Factors are 1-5.
 export const WEIGHTS = { cost_arb: 0.25, quality: 0.20, ease: 0.15, demand: 0.20, margin: 0.10, whitespace: 0.10 };
 export function scoreOf(f) {

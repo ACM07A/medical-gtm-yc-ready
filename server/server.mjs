@@ -7,7 +7,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { loadEnv } from "../lib/env.mjs";
 loadEnv();   // so /plugins reflects configured keys
-import { open, getState } from "../data-core/db.mjs";
+import { open, getState, readiness } from "../data-core/db.mjs";
 import { mdToHtml } from "./md.mjs";
 import { renderHome } from "./landing_home.mjs";
 import { plugins as pluginList } from "../lib/plugins.mjs";
@@ -70,6 +70,7 @@ function buildState(db) {
         id: p.id, name: p.name, city: p.city, presence: p.mvt_presence, opp: p.opportunity,
         fit: p.fit_score, reason: p.fit_reason, stage: p.stage, next: p.next_action, owner: p.owner,
         outcome: p.outcome && p.outcome !== "none" ? p.outcome : null,
+        readiness: readiness(p),   // execution risk, kept SEPARATE from fit (opportunity)
         poc: poc && poc.person_name ? poc.person_name : null,
         pocRole: poc ? (poc.role || poc.title_target) : null,
         pocType: poc ? poc.contact_type : "open", pocConf: poc ? poc.confidence : 0,
