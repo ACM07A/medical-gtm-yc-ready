@@ -33,15 +33,22 @@ const partners = A(`SELECT * FROM partner ORDER BY fit_score DESC, priority DESC
 let made = 0;
 
 for (const p of partners) {
-  const cat = O(`SELECT c.* FROM partner_category pc JOIN category c ON c.id=pc.category_id WHERE pc.partner_id=? ORDER BY c.rank LIMIT 1`, p.id)
-    || O(`SELECT * FROM category WHERE status='launch' ORDER BY rank LIMIT 1`);
+  const latent = ["latent", "emerging"].includes(p.mvt_presence);
+  const angle = latent ? "latent" : "established";
+  // WEDGE by trust tier: an UNKNOWN brand can't lead with the highest-fear purchase (a parent's CABG at a
+  // hospital nobody's heard of). Low-consideration categories (dental/cosmetic) convert on price and BUILD
+  // the trust you need before asking for cardiac. So for latent/unknown brands, lead with the lowest-fear
+  // category they cover; established names can lead with their highest-value category.
+  const FEAR = { dental: 1, cosmetic: 2, fertility: 3, ophthalmology: 3, ortho: 4, oncology: 5, cardiac: 6 };
+  const pcats = A(`SELECT c.* FROM partner_category pc JOIN category c ON c.id=pc.category_id WHERE pc.partner_id=? AND c.status='launch'`, p.id);
+  const cat = pcats.length
+    ? (latent ? pcats.slice().sort((a, b) => (FEAR[a.id] || 9) - (FEAR[b.id] || 9)) : pcats.slice().sort((a, b) => a.rank - b.rank))[0]
+    : O(`SELECT * FROM category WHERE status='launch' ORDER BY rank LIMIT 1`);
   const market = O(`SELECT m.* FROM category_market cm JOIN market m ON m.code=cm.market_code WHERE cm.category_id=? ORDER BY m.tier LIMIT 1`, cat.id)
     || O(`SELECT * FROM market ORDER BY tier LIMIT 1`);
   const price = O(`SELECT min(india_low) lo, max(india_high) hi FROM category_price WHERE category_id=?`, cat.id) || {};
   const comp = O(`SELECT low, high FROM competitor_price WHERE category_id=? ORDER BY samples DESC LIMIT 1`, cat.id);
   const poc = O(`SELECT person_name, role, title_target FROM poc WHERE partner_id=? AND person_name IS NOT NULL AND person_name<>'' ORDER BY confidence DESC LIMIT 1`, p.id);
-  const latent = ["latent", "emerging"].includes(p.mvt_presence);
-  const angle = latent ? "latent" : "established";
   const band = price.lo ? `US $${(price.lo / 1000)}k–${(price.hi / 1000)}k (indicative package range, cited; not a quote)` : "indicative ranges (cited)";
 
   const prompt = `Write a partnership proposal from MedYatra (a medical-value-travel FACILITATOR, not a hospital) to ${p.name}${poc ? `, attn: ${poc.person_name} (${clean(poc.role || poc.title_target || "International Patient Services")}, public business contact)` : " — International Patient Services / International Business"}.
@@ -50,19 +57,19 @@ Context (use, do not invent beyond this):
 - Focus specialty for this proposal: ${cat.name}. Primary source market: ${market.name} (and the wider region).
 - Indicative ${cat.name} pricing in India: ${band}.${comp && comp.low ? ` Market band across facilitators: ~$${Math.round(comp.low / 1000)}k–${Math.round(comp.high / 1000)}k.` : ""}
 - Angle: ${latent
-    ? `MARGIN play — they have benchmark quality/brand but LOW international-patient presence. Lead with: we are the demand engine (Arabic+English content, WhatsApp funnel, credibility marketing that establishes their name abroad) bringing pre-qualified ${cat.name} patients; offer favourable, flexible preferred-facilitator pilot terms. For credibility, lean on their accreditation "${clean(p.accreditation)}" as the global-standard equalizer and their specialist depth.`
-    : `SCALE play — established chain. Lead with: incremental, pre-qualified ${cat.name} demand from ${market.name}/region with low acquisition effort; non-exclusive pilot.`}
+    ? `FOUNDING-PARTNER PILOT (do NOT claim existing demand volume — we are launching). Be honest: MedYatra is building its ${market.name} patient pipeline now; we're inviting them as a founding partner. The offer is ZERO-DOWNSIDE — no exclusivity, no upfront, they pay the facilitation fee ONLY on patients we actually deliver. Lead with ${cat.name} deliberately: it's a lower-consideration, price-led entry that builds trust and track record before higher-stakes specialties. We run the demand generation (Arabic+English content, WhatsApp) + credibility marketing that establishes their name abroad. Lean on their accreditation "${clean(p.accreditation)}" as the global-standard equalizer. Ask for a package sheet + a named coordinator, not a commitment.`
+    : `SCALE play — established chain. Incremental, pre-qualified ${cat.name} patients from ${market.name}/region with low acquisition effort. Non-exclusive pilot; pay-per-delivered-patient. Do not overstate current volume.`}
 
 Structure the proposal with these sections:
 1. Introduction & who we are (facilitator, not a provider)
-2. The opportunity — ${cat.name} demand from ${market.name} and the region
+2. Why patients from ${market.name} travel for ${cat.name} — the case (cost gap, quality). Do NOT claim a demand number you weren't given; if you reference volume, write "[VERIFY: cite a figure]".
 3. What MedYatra brings (demand generation, patient coordination, ${latent ? "brand/credibility building abroad, " : ""}interpreter + logistics)
-4. Commercial model — facilitation fee ~10–15%, NON-exclusive, patient never double-charged, transparent
-5. Proposed pilot — a small, time-boxed first cohort with clear success metrics
+4. Commercial model — facilitation fee ~10–15%, pay ONLY on delivered patients, patient never double-charged, transparent. ${latent ? "NON-exclusive to start; note a path to preferred/exclusive terms in this market once the pilot proves volume." : "Non-exclusive."}
+5. Proposed pilot — a small, time-boxed founding-partner cohort with clear success metrics; zero upfront
 6. Compliance & trust — facilitator disclosure, accredited-partners-only, data protection (DPDP/GDPR), no clinical claims by us
-7. Next steps — a 30-minute intro call
+7. Next steps — ask for a package sheet + a named coordinator + a 30-minute intro call (not a commitment)
 
-Rules: NO invented prices/outcomes (reference the indicative range only, clearly labelled). No parenthetical internal notes. ~450–600 words. Professional sign-off from "MedYatra Partnerships".`;
+Rules: NO invented prices/outcomes/volumes (reference the indicative range only, clearly labelled). No parenthetical internal notes. ~450–600 words. Professional sign-off from "MedYatra Partnerships".`;
 
   // STAGE GUARD: don't re-propose to an account already past the proposal stage or with a live outcome.
   if (!FORCE && (PAST.has(p.stage) || DONE_OUTCOME.has(p.outcome))) { console.log(`proposal → ${p.name} … skip (stage '${p.stage}'${p.outcome && p.outcome !== "none" ? ", outcome " + p.outcome : ""})`); continue; }
