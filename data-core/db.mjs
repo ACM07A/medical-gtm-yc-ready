@@ -38,6 +38,12 @@ export function open(path = DB_PATH) {
   try { db.exec(`ALTER TABLE channel_post ADD COLUMN generated_at TEXT`); } catch {}
   // key-value system state (heartbeat, last backup) for monitoring.
   db.exec(`CREATE TABLE IF NOT EXISTS system_state (k TEXT PRIMARY KEY, v TEXT, updated TEXT DEFAULT (datetime('now')))`);
+  // REGULATORY GATE — "can this business legally solicit patients here?" Facilitation is regulated
+  // differently across markets (some Gulf states require approval to solicit). Default 'unverified' =
+  // legal DD not done = do NOT market live. Cleared to 'verified' only after human/counsel sign-off.
+  for (const c of ["regulatory_status TEXT DEFAULT 'unverified'", "regulatory_note TEXT"]) {
+    try { db.exec(`ALTER TABLE market ADD COLUMN ${c}`); } catch {}
+  }
   return db;
 }
 
@@ -110,6 +116,13 @@ export function setState(db, k, v) {
     ON CONFLICT(k) DO UPDATE SET v=excluded.v, updated=datetime('now')`).run(k, String(v));
 }
 export function getState(db, k) { return db.prepare(`SELECT v, updated FROM system_state WHERE k=?`).get(k) || null; }
+
+// Regulatory gate: may we market/solicit patients in this source market yet?
+// 'verified' = counsel cleared it. 'blocked' = known not-allowed. 'unverified' (default) = DD not done → no.
+export function marketCleared(db, code) {
+  const m = db.prepare(`SELECT regulatory_status s, regulatory_note n FROM market WHERE code=?`).get(code);
+  return { cleared: m?.s === "verified", status: m?.s || "unverified", note: m?.n || null };
+}
 
 // Freshness guard for idempotency: true if `iso` is within `days` of now (so we SKIP re-doing it).
 export function isFresh(iso, days = 7) {

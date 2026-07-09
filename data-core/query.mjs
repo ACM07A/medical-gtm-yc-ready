@@ -82,6 +82,16 @@ function leads() {
   if (!r.length) return console.log("  (none yet)");
   for (const x of r) console.log(`  ${x.status.padEnd(10)} ${x.n}`);
 }
+// Regulatory clearance per market — can we legally solicit patients there yet? (default 'unverified' = no).
+function regulatory() {
+  console.log("\n== REGULATORY CLEARANCE (may we market/solicit patients?) ==");
+  for (const m of rows(`SELECT code,name,tier,COALESCE(regulatory_status,'unverified') s, regulatory_note n FROM market ORDER BY s, tier, name`)) {
+    const mark = m.s === "verified" ? "✅" : m.s === "blocked" ? "⛔" : "⚠ ";
+    console.log(`  ${mark} ${m.s.padEnd(11)} ${m.code}  ${m.name} (tier ${m.tier})${m.n ? " — " + m.n : ""}`);
+  }
+  const n = rows(`SELECT count(*) c FROM market WHERE COALESCE(regulatory_status,'unverified')<>'verified'`)[0].c;
+  console.log(`\n  ${n} market(s) NOT cleared — content builds as preview-only, not deployed. Clear via set_regulatory.mjs (needs counsel sign-off).`);
+}
 // Ground-truth check: does a higher fit_score actually correlate with better outcomes? This is how the
 // weights (0.45 quality + 0.40 whitespace + 0.15 proof) get VALIDATED instead of just asserted.
 function calibration() {
@@ -106,8 +116,8 @@ function leadAdd([mkt,cat,ch,urg,bud]) {
   console.log(`  + qualified lead: ${cat} from ${mkt} via ${ch||"whatsapp"} (PII-minimized ref stored)`);
 }
 
-({ portfolio, partners:()=>partners(args[0]), candidates, units, pipeline, content, gaps, leads, calibration,
+({ portfolio, partners:()=>partners(args[0]), candidates, units, pipeline, content, gaps, leads, calibration, regulatory,
    "lead-add":()=>leadAdd(args) }[cmd] || (()=>{
-   console.log("cmds: portfolio | partners [cat] | candidates | units | pipeline | content | gaps | leads | calibration | lead-add ...");
+   console.log("cmds: portfolio | partners [cat] | candidates | units | pipeline | content | gaps | leads | calibration | regulatory | lead-add ...");
 }))();
 db.close();

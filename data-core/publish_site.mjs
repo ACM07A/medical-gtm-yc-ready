@@ -2,7 +2,7 @@
 // from QA-passed (review) English content into /site, and an index. Marks them published (in the
 // LOCAL build). Deploying /site to the public internet stays a human/deploy gate.
 //   node --experimental-sqlite data-core/publish_site.mjs
-import { open, logRun } from "./db.mjs";
+import { open, logRun, marketCleared } from "./db.mjs";
 import { mdToHtml } from "../server/md.mjs";
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -26,16 +26,25 @@ const rows = db.prepare(`SELECT ca.*, c.name cat, mk.name mname FROM content_ass
   WHERE ca.status IN ('review','published') AND ca.language='en'`).all();
 
 const links = [];
+let gated = 0;
 for (const a of rows) {
   const md = readFileSync(join(ROOT, a.file_ref), "utf8");
   const slug = basename(a.file_ref).replace(/\.md$/, ".html");
-  writeFileSync(join(SITE, slug), page(a.meta_title || `${a.cat} — ${a.mname}`, mdToHtml(md), a.meta_desc || ""));
-  if (a.status !== "published") db.prepare(`UPDATE content_asset SET status='published' WHERE id=?`).run(a.id);
-  links.push({ slug, title: `${a.cat} cost in India — ${a.mname}` });
-  logRun(db, "Publisher", `published ${a.category_id}×${a.market_code}`, `local site`, `/site/${slug}`, "ok");
+  // REGULATORY GATE: only mark a page publish-ready if its source market is legally cleared to solicit.
+  const reg = marketCleared(db, a.market_code);
+  const warn = reg.cleared ? "" : `<div style="background:#d05a5a;color:#fff;padding:8px;text-align:center;font-size:13px;font-weight:700">⚠ ${a.mname}: market NOT regulatory-cleared (${reg.status}) — PREVIEW ONLY, do not deploy live</div>`;
+  writeFileSync(join(SITE, slug), warn + page(a.meta_title || `${a.cat} — ${a.mname}`, mdToHtml(md), a.meta_desc || ""));
+  if (reg.cleared) {
+    if (a.status !== "published") db.prepare(`UPDATE content_asset SET status='published' WHERE id=?`).run(a.id);
+    logRun(db, "Publisher", `published ${a.category_id}×${a.market_code}`, `local site (market cleared)`, `/site/${slug}`, "ok");
+  } else {
+    gated++;
+    logRun(db, "Publisher", `GATED ${a.category_id}×${a.market_code}`, `market '${a.market_code}' regulatory ${reg.status} — preview only, not published`, `/site/${slug}`, "pending");
+  }
+  links.push({ slug, title: `${a.cat} cost in India — ${a.mname}${reg.cleared ? "" : " ⚠"}` });
 }
 const index = page("MedYatra — Treatment cost guides", `<h1>Treatment cost guides (India)</h1><p>Accredited hospitals, honest prices, full support. Facilitator, not a provider.</p><ul>${links.map(l => `<li><a href="/site/${l.slug}">${l.title}</a></li>`).join("")}</ul>`);
 writeFileSync(join(SITE, "index.html"), index);
-logRun(db, "Publisher", "Site build complete", `${links.length} pages → /site (local preview)`, "/site/index.html", "ok");
-console.log(`published ${links.length} English pages → site/  (deploy to go live = human gate)`);
+logRun(db, "Publisher", "Site build complete", `${links.length} pages → /site · ${gated} gated (market not regulatory-cleared)`, "/site/index.html", gated ? "pending" : "ok");
+console.log(`built ${links.length} English pages → site/  (${gated} regulatory-GATED — preview only; clear markets via set_regulatory.mjs)`);
 db.close();
