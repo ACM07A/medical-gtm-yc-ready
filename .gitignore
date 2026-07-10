@@ -21,6 +21,9 @@ scratchpad/
 # Runtime logs (scheduled factory loop)
 outputs/loop.log
 
+# Ephemeral comms drafts (regenerated every comms-run; can reflect lead context)
+outputs/comms/outbox/
+
 # Generated drafts that can contain DISCOVERED individual names/emails (privacy — keep local only)
 outputs/proposals/
 

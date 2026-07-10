@@ -58,6 +58,21 @@ export function open(path = DB_PATH) {
   for (const c of ["source_type TEXT DEFAULT 'own'", "source_ref TEXT", "ingested_at TEXT"]) {
     try { db.exec(`ALTER TABLE lead ADD COLUMN ${c}`); } catch {}
   }
+  // COMMS STATE MACHINE needs per-lead journey position + timing. The 24h WhatsApp session is derived from
+  // last_inbound_at; nudge_count caps the no-reply loop; next_action_at schedules the follow-up cadence.
+  for (const c of ["journey_stage TEXT DEFAULT 'intake'", "last_inbound_at TEXT", "last_outbound_at TEXT",
+                   "nudge_count INTEGER DEFAULT 0", "next_action_at TEXT", "opted_out INTEGER DEFAULT 0"]) {
+    try { db.exec(`ALTER TABLE lead ADD COLUMN ${c}`); } catch {}
+  }
+  // Ancillary SERVICES per lead — the wrap-around that makes a medical TRIP work (not just a procedure):
+  // visa + attendant visas, accommodation (pre/post-op, patient + relatives), transfers. Delivered by
+  // adapters (lib/visa, lib/stay); human-gated. status walks a per-kind lifecycle.
+  //  kind   : visa | attendant_visa | stay_preop | stay_postop | transfer
+  //  status : requested | awaiting_hospital_letter | letter_ready | applied | approved | booked | complete | failed
+  db.exec(`CREATE TABLE IF NOT EXISTS service (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, lead_id INTEGER REFERENCES lead(id), kind TEXT, provider TEXT,
+    status TEXT DEFAULT 'requested', ref TEXT, detail TEXT,
+    created TEXT DEFAULT (datetime('now')), updated TEXT DEFAULT (datetime('now')))`);
   return db;
 }
 

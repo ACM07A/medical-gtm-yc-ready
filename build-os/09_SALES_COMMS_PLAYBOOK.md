@@ -34,19 +34,23 @@ Rules we follow so templates pass:
 - Quick-reply + CTA buttons (talk to coordinator, view options) — allowed and lift engagement.
 - Facilitator voice; no clinical claims; consent captured (`lead.consent`) before any outbound.
 
-## The sequence — what we send, in order
+## The full journey — a state machine, not a fixed list
 
-| # | Stage | Type | WA category | Body (minimal, kosher) | Image header (carries the value) |
-|---|---|---|---|---|---|
-| 1 | **Acknowledge** | template/session | Utility | "Hi {{1}}, thanks for reaching out to MedYatra about {{2}} in India. Your care coordinator will share options shortly." | Welcome ("world-class care, honest prices") |
-| 2 | **Qualify** | session (in 24h) | — | "To tailor your options, could you share your recent reports, preferred timing, and the city you'll travel from?" | *How it works* (sets expectations) |
-| 3 | **Estimate** | template | Utility | "Hi {{1}}, here's the indicative cost range for {{2}} you asked about — a package estimate, not a final quote. Your coordinator will confirm details." | **Cost comparison** (India vs Western, save X%) ← the workhorse |
-| 4 | **Hospital options** | template/session | Utility | "We've shortlisted accredited hospitals for your {{2}}. Tap to see doctor profiles." | Credibility / hospital spotlight |
-| 5 | **Logistics** | template/session | Utility | "Here's how your medical trip works — visa invitation, travel, stay and support, step by step." | *How it works* (4 steps) |
-| 6 | **Re-engage** | template | Marketing (opt-in) | "Hi {{1}}, still considering treatment in India? Your coordinator is here whenever you're ready — no pressure." | Reassurance / testimonial |
+The post-lead comms are a **state machine** (`lib/comms_machine.mjs`) that drives the map in
+[`design/patient-journey-flow.html`](../design/patient-journey-flow.html). It decides the next action per
+lead from its journey position + timing, honouring the 24h session rule, the no-reply nudge cadence
+(D2/D5/D9, cap 3 → channel-fallback → dormant), human gates, and which steps are **clinical hospital
+handoffs** (remote opinion, quote, slot, invitation letter, pre-op, discharge).
 
-Within the 24h window, steps 2/4/5 are free-form session messages (no template needed). Outside it, they
-fall back to the pre-approved template. Step 3 (estimate) and 6 (re-engage) are template-first.
+**19 approval-ready templates** (`medyatra_<stage>`) cover every stage — first-touch, nudge, channel-
+fallback, qualify, collect-reports, opinion-pending, off-ramp, estimate, doc-reminder, objection, booking,
+**visa_start**, **stay_options**, pre-op, in-treatment, post-op, recovery-bundle, review/referral, re-engage.
+Utility for transactional; Marketing (opt-in + STOP) for recovery-bundle / review / re-engage. Bodies stay
+minimal; the persuasion rides in the image header.
+
+The driver `data-core/comms_run.mjs` walks each lead: **consent → regulatory → opt-out** gates, then drafts
+the next message (human-gated dry-run to `outputs/comms/outbox/`), advances stages on no-reply, and fires the
+ancillary services (below) at the visa/travel stages. Run: `npm run seed-leads && npm run comms-run`.
 
 ## Buttons
 
@@ -62,12 +66,28 @@ fall back to the pre-approved template. Step 3 (estimate) and 6 (re-engage) are 
 - **Human gate** — templates are drafted by the agent, **submitted to Meta and sent by a human**. The engine
   never auto-sends (see `lib/publishers.mjs`: dry-run unless `POST_LIVE=1` + approval).
 
+## Ancillary services — the wrap-around that makes it a TRIP
+
+A procedure isn't a trip. Two services close the gap (both human-gated, tracked in the `service` table):
+
+- **Visa assistance** (`lib/visa.mjs`) — a *workflow*, not an API (no third-party access to the government
+  portal). Since **1 Apr 2025** the e-Medical Visa requires a **system-generated invitation letter issued by
+  the hospital** (a clinical handoff we already model); the patient then applies on indianvisaonline.gov.in.
+  We orchestrate the letter, give a **country-correct document checklist**, guide the application, and handle
+  **attendant visas** (2 allowed; PK 1, BD 3). `startVisa()` creates the patient + attendant service rows,
+  blocked on the hospital letter. Optional VFS concierge via `VFS_API_KEY`.
+- **Accommodation** (`lib/stay.mjs`) — near-hospital, **extended-stay, family rooms for patient + relatives,
+  pre- AND post-op** (post-op window sized by category). Provider-agnostic behind env keys (Booking.com
+  Demand API / Hotelbeds / RateHawk), with a **curated near-hospital fallback** until a provider is keyed.
+  `bookStay()` is dry-run unless a provider is keyed + `POST_LIVE=1` + confirm.
+
 ## Implementation
 
-- `data-core/gen_comms.mjs` — drafts the 6 approval-ready templates (body + category + buttons + which
-  infographic header) and renders the paired infographics; stores them in `comms_template`; view at `/comms`.
-- `lib/publishers.mjs` `whatsapp.sendTemplate()` — sends an approved template with image header + variables
-  (human-gated).
+- `lib/comms_machine.mjs` — the state machine (states, transitions, session/template + nudge logic).
+- `data-core/gen_comms.mjs` — drafts the **19** approval-ready templates + renders infographic headers → `comms_template` (`/comms`).
+- `data-core/comms_run.mjs` — the engine driver (gates → draft → advance → fire services). `npm run comms-run`.
+- `data-core/seed_leads.mjs` — demo leads across journey stages. `npm run seed-leads`.
+- `lib/visa.mjs` · `lib/stay.mjs` — ancillary-service adapters. `lib/publishers.mjs` `whatsapp.sendTemplate()` sends (human-gated).
 - `lib/infographic.mjs` — the image headers (welcome, cost comparison, how-it-works).
 
 ## Related
