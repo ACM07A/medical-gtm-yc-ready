@@ -82,7 +82,7 @@ This is a **first-draft engine**, and it says so where it matters:
 | [`agent-os/`](./agent-os/) | *How* the agents loop, route models, QA, and stop — plus the live task queue and evidence log |
 | [`build-os/`](./build-os/) | *What* to build + the actual GTM strategy, data sources, compliance, acceptance tests |
 | [`data-core/`](./data-core/) | SQLite schema + seed + every agent script (scoring, sourcing, discovery, content, QA, publish, repurpose, proposals, credibility, run-loop) |
-| [`server/`](./server/) | Zero-dep HTTP server, live operator console, patient landing, `/plugins`, `/distribution`, `/worklist` |
+| [`server/`](./server/) | Zero-dep HTTP server, live operator console, **`/studio`** (live approve-and-deploy, writes back to the DB), patient landing, `/comms`, `/plugins`, `/distribution`, `/worklist` |
 | [`lib/`](./lib/) | Browser automation, research, enrichment, mailer, image gen, infographics, stock, media router, social publishers, plugin registry, env loader |
 | [`integrations/`](./integrations/) | Cross-provider LLM failover helper (+ Gemini) + LiteLLM config |
 | [`scripts/`](./scripts/) | `run_factory.bat` — the scheduled unattended factory loop |

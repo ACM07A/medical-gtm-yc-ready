@@ -7,10 +7,12 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { loadEnv } from "../lib/env.mjs";
 loadEnv();   // so /plugins reflects configured keys
-import { open, getState, readiness } from "../data-core/db.mjs";
+import { open, getState, readiness, marketCleared, logRun } from "../data-core/db.mjs";
 import { mdToHtml } from "./md.mjs";
 import { renderHome } from "./landing_home.mjs";
 import { plugins as pluginList } from "../lib/plugins.mjs";
+import { nextAction } from "../lib/comms_machine.mjs";
+import { renderStudio, studioQueue, studioApprove } from "./studio.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..");
@@ -109,14 +111,20 @@ code{background:#e7eef7;padding:1px 5px;border-radius:4px}</style></head>
 <main>${inner}<p style="margin-top:30px"><a class="cta" href="#">Message us on WhatsApp →</a></p></main></body></html>`;
 }
 
-const server = createServer((req, res) => {
+const readBody = (req) => new Promise((resolve) => {
+  let s = ""; req.on("data", (d) => { s += d; if (s.length > 1e6) req.destroy(); });
+  req.on("end", () => { try { resolve(JSON.parse(s || "{}")); } catch { resolve({}); } });
+  req.on("error", () => resolve({}));
+});
+
+const server = createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   const db = open();
   const send = (code, type, body) => { res.writeHead(code, { "content-type": type, "cache-control": "no-store" }); res.end(body); };
   // ACCESS CONTROL: the console + APIs expose named partner contacts and pipeline. If CONSOLE_TOKEN is set,
   // gate everything except the public patient site (/, /site, /outputs) and the health probe. REQUIRED
   // before exposing this beyond localhost. (No token set = open, for localhost dev.)
-  const PROTECTED = /^\/(console|api\/(state|runs)|draft|outreach|worklist|comms|distribution|plugins)/;
+  const PROTECTED = /^\/(console|studio|api\/(state|runs|studio)|draft|outreach|worklist|comms|distribution|plugins)/;
   if (process.env.CONSOLE_TOKEN && PROTECTED.test(url.pathname)) {
     const auth = req.headers.authorization || "";
     const pass = auth.startsWith("Basic ") ? Buffer.from(auth.slice(6), "base64").toString().split(":").slice(1).join(":") : "";
@@ -127,6 +135,15 @@ const server = createServer((req, res) => {
     }
   }
   try {
+    // STUDIO — the live approve-and-deploy console (real data + write-back actions).
+    if (req.method === "POST" && url.pathname === "/api/studio/approve") {
+      const body = await readBody(req);
+      return send(200, "application/json", JSON.stringify(studioApprove(db, body)));
+    }
+    if (url.pathname === "/studio")
+      return send(200, "text/html; charset=utf-8", renderStudio(db));
+    if (url.pathname === "/api/studio")
+      return send(200, "application/json", JSON.stringify(studioQueue(db)));
     if (url.pathname === "/") {
       const cats = db.prepare(`SELECT c.*, (SELECT min(india_low) FROM category_price p WHERE p.category_id=c.id) lo,
         (SELECT max(india_high) FROM category_price p WHERE p.category_id=c.id) hi
