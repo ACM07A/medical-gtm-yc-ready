@@ -13,6 +13,7 @@ import { renderHome } from "./landing_home.mjs";
 import { plugins as pluginList } from "../lib/plugins.mjs";
 import { nextAction } from "../lib/comms_machine.mjs";
 import { renderStudio, studioQueue, studioApprove } from "./studio.mjs";
+import { ingestLeads } from "../data-core/ingest.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..");
@@ -144,6 +145,13 @@ const server = createServer(async (req, res) => {
       return send(200, "text/html; charset=utf-8", renderStudio(db));
     if (url.pathname === "/api/studio")
       return send(200, "application/json", JSON.stringify(studioQueue(db)));
+    // DUAL-MODE — an external operator plugs in their lead DB. Own token (not the console's); dev-open if unset.
+    if (req.method === "POST" && url.pathname === "/api/lead/ingest") {
+      if (process.env.INGEST_TOKEN && req.headers["x-ingest-token"] !== process.env.INGEST_TOKEN)
+        return send(401, "application/json", JSON.stringify({ ok: false, error: "invalid or missing X-Ingest-Token" }));
+      const body = await readBody(req);
+      return send(200, "application/json", JSON.stringify(ingestLeads(db, body)));
+    }
     if (url.pathname === "/") {
       const cats = db.prepare(`SELECT c.*, (SELECT min(india_low) FROM category_price p WHERE p.category_id=c.id) lo,
         (SELECT max(india_high) FROM category_price p WHERE p.category_id=c.id) hi
