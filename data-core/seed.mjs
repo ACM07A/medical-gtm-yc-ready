@@ -47,11 +47,10 @@ const cStmt = db.prepare(`INSERT INTO category (id,name,subtypes,status,cost_arb
 scored.forEach((c, i) => cStmt.run(c.id,c.name,c.sub,c.f.cost_arb,c.f.quality,c.f.ease,c.f.demand,c.f.margin,c.f.whitespace,c.score,i+1));
 // T013 decision: accept model rank, but keep Cardiac as brand/deal-size flagship.
 db.prepare(`UPDATE category SET flagship=1 WHERE id='cardiac'`).run();
-// incubate specialty category so wider/latent specialty brands (eye centres) have a home
-{ const f = { cost_arb:5, quality:5, ease:5, demand:4, margin:2, whitespace:4 };
-  db.prepare(`INSERT INTO category (id,name,subtypes,status,cost_arb,quality,ease,demand,margin,whitespace,score,rank,flagship)
-    VALUES ('ophthalmology','Ophthalmology','LASIK · cataract · retina','incubate',?,?,?,?,?,?,?,NULL,0)`)
-    .run(f.cost_arb,f.quality,f.ease,f.demand,f.margin,f.whitespace,scoreOf(f)); }
+// NOTE: Ophthalmology was evaluated and DROPPED (2026-07). Eye is a low-ticket, follow-up-heavy,
+// locally-deliverable category — arbitrage is real in % but thin in absolute $ after travel, and the
+// category leader (Dr Agarwal's) validated the opposite model (250+ clinics, incl. 9 African source
+// markets). See 03_TREATMENT_CATEGORY_STRATEGY.md. Wedges are Dental + Cosmetic + Fertility.
 
 // ---- pricing anchors ----
 const prices = [
@@ -113,8 +112,6 @@ const partners = [
   {id:"sakra-world",name:"Sakra World Hospital",network:"Sakra",city:"Bengaluru",acc:"NABH (verify)",ch:"resolve IPS",src:"est — verify",fit:"High",pri:0,type:"standalone",presence:"emerging",cats:["cardiac","ortho","oncology"],notes:"Toyota/Secom JV; quality brand — est/verify"},
   {id:"frontier-lifeline",name:"Frontier Lifeline Hospital",network:"Frontier",city:"Chennai",acc:"cardiac specialty (verify)",ch:"resolve IPS",src:"est — verify",fit:"High",pri:0,type:"standalone",presence:"latent",cats:["cardiac"],notes:"cardiac specialty (Dr K M Cherian) — est/verify"},
   {id:"cytecare",name:"Cytecare Cancer Hospital",network:"Cytecare",city:"Bengaluru",acc:"oncology specialty (verify)",ch:"resolve IPS",src:"est — verify",fit:"High",pri:0,type:"standalone",presence:"latent",cats:["oncology"],notes:"dedicated onco brand — est/verify"},
-  {id:"sankara-nethralaya",name:"Sankara Nethralaya",network:"SN",city:"Chennai",acc:"specialty (verify)",ch:"IPS dept (has intl services)",src:"sankaranethralaya.org; FICCI MVT award 2018",fit:"High",pri:0,type:"standalone",presence:"emerging",cats:["ophthalmology"],notes:"world-class eye; niche MVT"},
-  {id:"lv-prasad-eye",name:"L V Prasad Eye Institute",network:"LVPEI",city:"Hyderabad",acc:"specialty (verify)",ch:"resolve IPS",src:"est — verify",fit:"High",pri:0,type:"standalone",presence:"latent",cats:["ophthalmology"],notes:"world-class ophthalmology; minimal MVT — est/verify"},
 ];
 const paStmt = db.prepare(`INSERT INTO partner (id,name,network,city,accreditation,ips_channel_public,ips_source,fit,stage,priority,type,parent_id,mvt_presence,opportunity,notes)
   VALUES (?,?,?,?,?,?,?,?, 'Enriched', ?,?,?,?,?,?)`);

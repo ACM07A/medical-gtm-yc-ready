@@ -12,12 +12,13 @@ An **autonomous, multi-agent go-to-market engine** for a medical-tourism *facili
 
 | # | Capability | How it's real (not a mock) |
 |---|---|---|
-| 1 | **Decides what to sell** | Weighted scoring model ranks 6 treatment categories on cost-arbitrage, quality, ease, demand, margin, whitespace. Prices are cross-checked against live competitor pages (Vaidam/MediGence) via browser scraping. |
-| 2 | **Builds the partner supply side** | 24 hospital partners tiered by a *"does this partner need us?"* fit score (the margin thesis: high quality × low current international presence). Finds the **named** decision-maker (Head–International Patient Services) via stealth Google→LinkedIn, infers their email, and tracks each account through a pipeline with a next action. |
+| 1 | **Decides what to sell** | Weighted scoring model ranks 6 medical categories on cost-arbitrage, quality, ease, demand, margin, whitespace — plus a **bundleable wellness/naturopathy line** sold standalone (lowest-friction, cash-pay) or as a post-op recovery add-on. Prices are cross-checked against live competitor pages (Vaidam/MediGence) via browser scraping. *(Ophthalmology was evaluated and dropped — low-ticket, follow-up-heavy, better delivered locally; see `build-os/03`.)* |
+| 2 | **Builds the partner supply side** | Hospital partners tiered by a *"does this partner need us?"* fit score (the margin thesis: high quality × low current international presence), plus naturopathy-resort **wellness supply** (Jindal, Kshemavana, Soukya…). Finds the **named** decision-maker (Head–International Patient Services) via stealth Google→LinkedIn, infers their email, and tracks each account through a pipeline with a next action. |
 | 3 | **Builds the demand side** | 30 cornerstone cost-guide pages generated across 6 categories × target markets × 4 languages (EN/AR/AM/MY), QA-gated for cited prices + disclaimers, published to a static site. |
 | 4 | **Distributes it** | Each page is repurposed into platform-native posts (LinkedIn / Instagram / Reddit / WhatsApp / X). Visuals pick the right source per slide: **data infographics** (real numbers, crisp text), **stock photos** for people, AI only for abstract graphics. Human-gated at post. |
 | 5 | **Globalizes** | Every artifact is market-parameterized (config, not code) across the Middle East, Africa, Europe, SE Asia. |
 | 6 | **Runs itself** | A scheduled task drives the whole factory **without Claude** (generation fails over across providers); a live console renders the account board, content heatmap, competitor pricing, a plugin-readiness board, and a real-time run feed. |
+| 7 | **Sells & onboards patients** | A **dual-mode funnel**: leads enter from the engine's *own acquisition* **or** an *external lead DB plugged in* by a partner operator (`lead.source_type`). A mapped WhatsApp sales-comms flow — template/session-aware, with a **diagnosis fork** (knows the procedure vs. needs diagnosing) and explicit **hospital handoffs** — drives first touch → booked patient. Approvals happen in **MedYatra Studio**, a human approve-and-deploy console. |
 
 ## Architecture — a cost-tiered multi-model factory
 
@@ -26,8 +27,9 @@ An **autonomous, multi-agent go-to-market engine** for a medical-tourism *facili
      │
      ▼
   Tier 2  Bulk generation                      Cross-provider failover chain:
-     │      content, proposals, outreach          GLM-5.2 → llama-70b → llama-8b → Gemini 2.5-flash
-     ▼                                             (first responder wins; survives model outages
+     │      content, proposals, outreach          GLM-5.2 → Gemini 2.5-flash  (NIM gets a short
+     ▼                                             probe budget → fast failover; first responder wins;
+                                                   survives model outages
   Tier 3  Narrow patches (meta, classify)         AND Claude hitting its usage limit)
      │
      ▼
@@ -49,7 +51,7 @@ Requires **Node ≥ 22.5** (for the built-in `node:sqlite`).
 
 ```bash
 npm install                 # only dependency: puppeteer-core (drives your local Edge/Chrome)
-cp integrations/.env.example integrations/.env   # add your NVIDIA NIM key (optional; failover works without GLM)
+cp integrations/.env.example integrations/.env   # add NVIDIA NIM and/or Gemini key (Gemini carries generation when GLM is unserved)
 npm run seed                # build + seed the SQLite data core
 npm run serve               # → http://localhost:5173  (patient landing) and /console (operator console)
 ```

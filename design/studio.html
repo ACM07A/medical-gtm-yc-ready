@@ -1,0 +1,428 @@
+<title>MedYatra Studio — Approve &amp; Deploy</title>
+<style>
+  :root{
+    --bg:#eef4fa; --panel:#ffffff; --panel-2:#f6f9fd; --ink:#0c1b2e; --ink-soft:#3f556e; --muted:#6c8199;
+    --line:#d7e3f0; --line-strong:#b7ccdf;
+    --accent:#1f6fd6; --accent-deep:#0b4a8b; --accent-wash:#e7f0fb;
+    --good:#1f9d57; --good-wash:#e3f5ea; --good-line:#a7dcbd;
+    --warn:#c9862a; --warn-wash:#faf0dd; --warn-line:#e8cf9a;
+    --stop:#c8503f; --stop-wash:#fae5e1; --stop-line:#e7b2a8;
+    --radius:14px; --shadow:0 14px 34px -24px rgba(11,47,90,.6);
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0a1521; --panel:#122130; --panel-2:#0e1b28; --ink:#e9f1f8; --ink-soft:#b4c5d7; --muted:#7d93a8;
+      --line:#22384c; --line-strong:#31506b;
+      --accent:#5aa0ee; --accent-deep:#8cc2ff; --accent-wash:#14293e;
+      --good:#42c47e; --good-wash:#12301f; --good-line:#1f5236;
+      --warn:#e0a94a; --warn-wash:#33270f; --warn-line:#5a441a;
+      --stop:#e8735f; --stop-wash:#331612; --stop-line:#5c2a22;
+      --shadow:0 16px 38px -26px rgba(0,0,0,.85);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0a1521; --panel:#122130; --panel-2:#0e1b28; --ink:#e9f1f8; --ink-soft:#b4c5d7; --muted:#7d93a8;
+    --line:#22384c; --line-strong:#31506b; --accent:#5aa0ee; --accent-deep:#8cc2ff; --accent-wash:#14293e;
+    --good:#42c47e; --good-wash:#12301f; --good-line:#1f5236; --warn:#e0a94a; --warn-wash:#33270f; --warn-line:#5a441a;
+    --stop:#e8735f; --stop-wash:#331612; --stop-line:#5c2a22; --shadow:0 16px 38px -26px rgba(0,0,0,.85);
+  }
+  :root[data-theme="light"]{
+    --bg:#eef4fa; --panel:#ffffff; --panel-2:#f6f9fd; --ink:#0c1b2e; --ink-soft:#3f556e; --muted:#6c8199;
+    --line:#d7e3f0; --line-strong:#b7ccdf; --accent:#1f6fd6; --accent-deep:#0b4a8b; --accent-wash:#e7f0fb;
+    --good:#1f9d57; --good-wash:#e3f5ea; --good-line:#a7dcbd; --warn:#c9862a; --warn-wash:#faf0dd; --warn-line:#e8cf9a;
+    --stop:#c8503f; --stop-wash:#fae5e1; --stop-line:#e7b2a8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5;-webkit-font-smoothing:antialiased}
+  .app{max-width:1000px;margin:0 auto;padding:26px 20px 100px}
+  header.top{display:flex;align-items:center;gap:14px;margin-bottom:4px}
+  .logo{width:34px;height:34px;border-radius:9px;background:linear-gradient(150deg,var(--accent),var(--accent-deep));
+    display:grid;place-items:center;color:#fff;font-weight:800;font-size:17px;flex:none}
+  h1{font-size:20px;margin:0;letter-spacing:-.02em}
+  .top .sub{font-size:12.5px;color:var(--muted)}
+  .spacer{flex:1}
+  .theme-btn{border:1px solid var(--line-strong);background:var(--panel);color:var(--ink-soft);border-radius:999px;
+    padding:7px 13px;font-size:12.5px;cursor:pointer;font-family:inherit}
+  .theme-btn:hover{border-color:var(--accent)}
+
+  .bar{display:flex;gap:16px;flex-wrap:wrap;align-items:center;margin:18px 0 6px;color:var(--ink-soft);font-size:12.5px}
+  .stat{display:flex;align-items:baseline;gap:6px}
+  .stat b{font-size:19px;color:var(--ink);font-variant-numeric:tabular-nums}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin:16px 0 18px}
+  .tab{border:1px solid var(--line);background:var(--panel);color:var(--ink-soft);border-radius:999px;
+    padding:6px 14px;font-size:12.5px;cursor:pointer;font-family:inherit}
+  .tab[aria-selected="true"]{background:var(--accent-deep);color:#fff;border-color:var(--accent-deep)}
+  .tab .c{opacity:.6;font-variant-numeric:tabular-nums}
+
+  .inbox{display:flex;flex-direction:column;gap:12px}
+  .card{background:var(--panel);border:1px solid var(--line);border-left:5px solid var(--line-strong);
+    border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+  .card.ready{border-left-color:var(--good)} .card.pending{border-left-color:var(--warn)} .card.blocked{border-left-color:var(--stop)}
+  .card-head{display:flex;align-items:center;gap:13px;padding:14px 16px;cursor:pointer}
+  .card-head:hover{background:var(--panel-2)}
+  .tico{width:34px;height:34px;border-radius:9px;background:var(--accent-wash);color:var(--accent-deep);
+    display:grid;place-items:center;flex:none}
+  .tico svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7}
+  .ttl{flex:1;min-width:0}
+  .ttl .h{font-weight:650;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ttl .m{font-size:12px;color:var(--muted);margin-top:1px;display:flex;gap:8px;flex-wrap:wrap}
+  .kind{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;color:var(--accent-deep);
+    background:var(--accent-wash);padding:2px 7px;border-radius:5px}
+  .status{font-size:11px;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap;flex:none}
+  .status.ready{background:var(--good-wash);color:var(--good);border:1px solid var(--good-line)}
+  .status.pending{background:var(--warn-wash);color:var(--warn);border:1px solid var(--warn-line)}
+  .status.blocked{background:var(--stop-wash);color:var(--stop);border:1px solid var(--stop-line)}
+  .chev{color:var(--muted);transition:transform .18s ease;flex:none}
+  .card.open .chev{transform:rotate(90deg)}
+
+  /* inline drawer BELOW the card */
+  .drawer{display:none;border-top:1px solid var(--line);background:var(--panel-2)}
+  .card.open .drawer{display:block}
+  .drawer-grid{display:grid;grid-template-columns:1fr 250px;gap:0}
+  @media(max-width:760px){.drawer-grid{grid-template-columns:1fr}}
+  .preview{padding:20px 22px;min-width:0}
+  .side{border-left:1px solid var(--line);padding:18px 18px;background:var(--panel)}
+  @media(max-width:760px){.side{border-left:none;border-top:1px solid var(--line)}}
+  .side h4{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 9px}
+  .side h4:not(:first-child){margin-top:18px}
+  .qa{display:flex;flex-direction:column;gap:7px}
+  .qa .row{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;color:var(--ink-soft)}
+  .qa .ic{flex:none;margin-top:1px}
+  .ok{color:var(--good)} .no{color:var(--stop)} .wa{color:var(--warn)}
+  .gate{font-size:12.5px;color:var(--ink-soft);display:flex;gap:7px;align-items:flex-start;margin-bottom:6px}
+
+  .deploy-bar{display:flex;align-items:center;gap:12px;padding:14px 18px;border-top:1px solid var(--line);
+    background:var(--panel);flex-wrap:wrap}
+  .btn{border:none;border-radius:9px;padding:10px 18px;font-size:13.5px;font-weight:700;font-family:inherit;cursor:pointer}
+  .btn.go{background:var(--good);color:#fff}
+  .btn.go:hover{filter:brightness(1.05)}
+  .btn.ghost{background:transparent;color:var(--ink-soft);border:1px solid var(--line-strong)}
+  .btn:disabled{background:var(--panel-2);color:var(--muted);border:1px solid var(--line);cursor:not-allowed;font-weight:600}
+  .why{font-size:12px;color:var(--stop);display:flex;align-items:center;gap:6px}
+  .why.ok{color:var(--muted)}
+
+  /* preview document styling */
+  .doc{font-size:13.5px;color:var(--ink)}
+  .doc h2{font-size:19px;color:var(--accent-deep);margin:2px 0 4px;letter-spacing:-.01em;text-wrap:balance}
+  .doc .lede{color:var(--ink-soft);font-size:13px;margin:0 0 14px}
+  .doc h3{font-size:14px;margin:18px 0 6px;color:var(--ink);border-bottom:1px solid var(--line);padding-bottom:4px}
+  .doc p{margin:8px 0}
+  .doc ul{margin:8px 0;padding-left:18px}.doc li{margin:4px 0}
+  .doc .disc{font-size:11.5px;color:var(--muted);background:var(--accent-wash);border-radius:8px;padding:9px 11px;margin-top:14px}
+  .doc table{border-collapse:collapse;width:100%;margin:10px 0;font-size:12.5px}
+  .doc th,.doc td{border:1px solid var(--line);padding:7px 9px;text-align:left}
+  .doc th{background:var(--accent-deep);color:#fff;font-weight:600}
+  .doc td:last-child{font-variant-numeric:tabular-nums}
+  .verify{background:var(--warn-wash);color:var(--warn);border:1px dashed var(--warn-line);border-radius:5px;
+    padding:0 5px;font-size:.9em;font-weight:600}
+
+  /* infographic (inline) */
+  .ig{background:linear-gradient(160deg,#0b4a8b,#1f6fd6);color:#fff;border-radius:12px;padding:18px 20px;margin:12px 0;
+    box-shadow:0 12px 26px -18px rgba(11,74,139,.8)}
+  .ig .eyebrow{font-size:10.5px;text-transform:uppercase;letter-spacing:.14em;opacity:.8;font-weight:700}
+  .ig .rows{display:flex;flex-direction:column;gap:8px;margin:12px 0}
+  .ig .r{display:flex;align-items:center;gap:10px}
+  .ig .r .lab{width:120px;font-size:12px;opacity:.9;flex:none}
+  .ig .track{flex:1;height:22px;border-radius:6px;background:rgba(255,255,255,.16);position:relative;overflow:hidden}
+  .ig .fill{position:absolute;left:0;top:0;bottom:0;border-radius:6px;background:#8fd0ff}
+  .ig .fill.hi{background:#bfe3ff}
+  .ig .val{font-size:12px;font-variant-numeric:tabular-nums;white-space:nowrap;flex:none;width:96px;text-align:right}
+  .ig .save{font-size:26px;font-weight:800;letter-spacing:-.02em}.ig .save small{font-size:12px;font-weight:600;opacity:.85}
+
+  /* carousel */
+  .caro{display:flex;gap:10px;overflow-x:auto;padding:4px 2px 12px;scroll-snap-type:x mandatory}
+  .slide{flex:none;width:190px;height:238px;scroll-snap-align:start;border-radius:12px;padding:15px;color:#fff;
+    display:flex;flex-direction:column;background:linear-gradient(160deg,#0b4a8b,#1f6fd6);box-shadow:var(--shadow)}
+  .slide .sn{font-size:10.5px;opacity:.7;font-weight:700}
+  .slide .sh{font-size:16px;font-weight:750;margin-top:8px;letter-spacing:-.01em;text-wrap:balance}
+  .slide .sb{font-size:12px;opacity:.92;margin-top:auto}
+  .slide.alt{background:linear-gradient(160deg,#12321f,#1f9d57)}
+  .slide.light{background:var(--panel);color:var(--ink);border:1px solid var(--line)}
+  .caption{font-size:12.5px;color:var(--ink-soft);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:11px 13px;margin-top:6px;white-space:pre-wrap}
+  .tags{color:var(--accent);font-size:12px;margin-top:6px}
+
+  /* whatsapp mock */
+  .wa-wrap{display:flex;gap:16px;flex-wrap:wrap}
+  .phone{width:290px;flex:none;background:#e5ded7;border-radius:22px;padding:12px 10px;box-shadow:var(--shadow)}
+  @media (prefers-color-scheme:dark){.phone{background:#0b1a12}}
+  :root[data-theme="dark"] .phone{background:#0b1a12}
+  .bubble{background:#fff;border-radius:4px 12px 12px 12px;padding:0 0 8px;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.12);color:#111}
+  .bubble .hdr-img{background:linear-gradient(160deg,#0b4a8b,#1f6fd6);color:#fff;padding:14px}
+  .bubble .body{padding:9px 11px;font-size:12.5px;line-height:1.45}
+  .bubble .btns{border-top:1px solid #eee;display:flex;flex-direction:column}
+  .bubble .btns a{color:#1f6fd6;font-size:12.5px;text-align:center;padding:8px;border-top:1px solid #f0f0f0;text-decoration:none;font-weight:600}
+  .seq{flex:1;min-width:200px}
+  .seq .s{display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:12.5px}
+  .seq .s .d{font-weight:700;color:var(--accent-deep);width:52px;flex:none;font-variant-numeric:tabular-nums}
+
+  .toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--ink);
+    color:var(--bg);padding:12px 20px;border-radius:11px;font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;
+    transition:all .25s ease;box-shadow:0 16px 40px -12px rgba(0,0,0,.5);z-index:50}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="logo">M</div>
+    <div>
+      <h1>MedYatra Studio</h1>
+      <div class="sub">Nothing goes out until a human approves it here.</div>
+    </div>
+    <div class="spacer"></div>
+    <button class="theme-btn" onclick="var r=document.documentElement,d=r.getAttribute('data-theme')==='dark';r.setAttribute('data-theme',d?'light':'dark')">◐ Theme</button>
+  </header>
+
+  <div class="bar">
+    <div class="stat"><b id="s-ready">3</b> ready to deploy</div>
+    <div class="stat"><b id="s-pending">2</b> waiting on a gate</div>
+    <div class="stat"><b id="s-blocked">1</b> blocked</div>
+    <div class="stat" style="color:var(--muted)">Only <b style="font-size:13px">Oman</b> is regulatory-cleared right now.</div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+  <div class="inbox" id="inbox"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const IC = {
+  content:'<svg viewBox="0 0 24 24"><path d="M6 3h9l4 4v14a0 0 0 0 1 0 0H6z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg>',
+  campaign:'<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 20h8M12 18v2"/><path d="M8 9l3 2-3 2z"/></svg>',
+  comms:'<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-11.9 7.6L4 20l1-4.9A8.4 8.4 0 1 1 21 11.5Z"/></svg>',
+  partner:'<svg viewBox="0 0 24 24"><path d="M8 21v-2a4 4 0 0 1 4-4 4 4 0 0 1 4 4v2"/><circle cx="12" cy="8" r="3.2"/></svg>'
+};
+
+// ---------- reusable preview builders ----------
+function ig(d){ // like-for-like cost comparison
+  const max=d.westHi; const pct=(v)=>Math.round(v/max*100);
+  return `<div class="ig"><div class="eyebrow">${d.eyebrow}</div>
+    <div class="rows">
+      <div class="r"><span class="lab">India</span><span class="track"><span class="fill" style="width:${pct(d.indiaHi)}%"></span></span><span class="val">$${d.indiaLo/1000}k–${d.indiaHi/1000}k</span></div>
+      <div class="r"><span class="lab">${d.westLabel}</span><span class="track"><span class="fill hi" style="width:100%"></span></span><span class="val">$${d.westLo/1000}k–${d.westHi/1000}k</span></div>
+    </div>
+    <div class="save">~${d.savings}% less <small>vs ${d.westLabel} · like-for-like, indicative</small></div></div>`;
+}
+
+const kneeGuide = `<div class="doc">
+  <h2>Total Knee Replacement in India — a guide for patients from Oman</h2>
+  <p class="lede">What it costs, how the quality compares, and exactly how the journey works. MedYatra is a facilitator — we coordinate care with accredited hospitals; we don't provide treatment ourselves.</p>
+  ${ig({eyebrow:'Cost of care · Oman → India',indiaLo:3.5,indiaHi:6.5,westLabel:'US',westLo:40,westHi:50,savings:88})}
+  <h3>Why patients travel for this</h3>
+  <p>A total knee replacement in a US hospital runs about <b>$40,000–50,000</b>; in the UK privately, £15,000–21,000. In an accredited Indian hospital the same surgery — same implant brands (Zimmer, Stryker, J&amp;J), same imaging, fellowship-trained surgeons — is an indicative <b>$3,500–6,500</b>. For most families from Oman the deciding factors are three: price, no waiting list, and English-speaking care close to home (a 3–4 hour flight).</p>
+  <h3>What the indicative package covers</h3>
+  <ul>
+    <li>Surgeon, anaesthesia, operating theatre and the implant</li>
+    <li>Private room, typically 3–5 nights inpatient</li>
+    <li>Pre-op workup and post-op physiotherapy to discharge</li>
+    <li>Airport pickup, interpreter, and a dedicated coordinator</li>
+  </ul>
+  <p>It does <em>not</em> include flights, hotel for accompanying family, or the outpatient rehab weeks. We give you the full split before you commit — <span class="verify">[VERIFY: confirm inclusions with the specific hospital quote]</span>.</p>
+  <h3>Choosing the hospital — accreditation matters</h3>
+  <p>We only place patients with <b>NABH</b> (India's national standard) or <b>JCI</b> (international) accredited hospitals. Accreditation is the global-standard equaliser that lets a lesser-known-abroad Indian hospital be judged on the same yardstick as a Western one. You'll get the accreditation certificate and the surgeon's credentials in writing.</p>
+  <h3>How the journey works — step by step</h3>
+  <table><tr><th>Stage</th><th>What happens</th><th>Time</th></tr>
+    <tr><td>1 · Enquiry</td><td>Share your reports on WhatsApp; we confirm you're a candidate</td><td>Day 0–1</td></tr>
+    <tr><td>2 · Opinion + quote</td><td>Accredited hospital reviews and gives an indicative package</td><td>Day 2–4</td></tr>
+    <tr><td>3 · Plan travel</td><td>Visa-invitation letter, dates, flights, appointment</td><td>1–2 weeks</td></tr>
+    <tr><td>4 · Surgery + stay</td><td>Procedure and inpatient recovery</td><td>3–5 nights</td></tr>
+    <tr><td>5 · Recover in-country</td><td>Physio and review before you fly home</td><td>~10–14 days total</td></tr>
+    <tr><td>6 · Follow-up</td><td>Tele-review with the surgeon after you're home</td><td>ongoing</td></tr>
+  </table>
+  <h3>Recovery &amp; how long to stay</h3>
+  <p>Plan for roughly <b>two weeks</b> in India end to end. You'll be walking with support within a day or two of surgery; the surgeon signs off flying home once the wound is stable and early physio is going well.</p>
+  <h3>Your safety and your rights</h3>
+  <ul>
+    <li>You are never double-charged — you pay the hospital directly for care; our facilitation fee is separate and disclosed.</li>
+    <li>Your medical records are handled under India's DPDP Act and shared only with the treating hospital.</li>
+    <li>We make no clinical promises. Outcomes are the treating doctor's remit, not ours.</li>
+  </ul>
+  <h3>Common questions</h3>
+  <p><b>Is cheaper worse?</b> No — the cost gap is mostly lower hospital overheads and salaries, not lower standards. The implants and protocols are the same.<br>
+  <b>Will language be a problem?</b> Care is delivered in English; we provide Arabic interpretation for admin and consent.<br>
+  <b>What if something goes wrong at home?</b> You get a written discharge summary and a tele-follow-up line to the surgeon's team.</p>
+  <p class="disc">MedYatra is a medical-travel facilitator, not a healthcare provider. Prices are indicative ranges, not quotes, and are confirmed by the accredited hospital after reviewing your records. We disclose our facilitation fee up front.</p>
+</div>`;
+
+const proposalDoc = `<div class="doc">
+  <h2>Partnership Proposal — Sir Ganga Ram Hospital</h2>
+  <p class="lede">Cardiac · Iraq &amp; the wider Gulf · prepared by MedYatra Partnerships · <b>DRAFT — human review before send</b></p>
+  <h3>1 · Who we are</h3>
+  <p>MedYatra is a medical-value-travel <b>facilitator</b> — not a provider. We generate demand in specific source markets, qualify patients, and coordinate their journey to accredited Indian hospitals. We make no clinical claims; the care and the medical decisions are entirely yours.</p>
+  <h3>2 · Why patients from Iraq travel for cardiac care</h3>
+  <p>Cost gap and capacity. A bypass in the US is $90k–120k; in an accredited Indian hospital, an indicative $5k–9k. Iraqi patients already travel regionally for tertiary cardiac care — <span class="verify">[VERIFY: cite an outflow figure]</span> — and Ganga Ram's reputation travels with the diaspora.</p>
+  <h3>3 · What MedYatra brings</h3>
+  <ul>
+    <li>Arabic + English demand generation (content, WhatsApp) in Iraq and the Gulf</li>
+    <li>Pre-qualified patients with documents in hand — not tyre-kickers</li>
+    <li>Credibility marketing that builds your name abroad</li>
+    <li>Interpreter, logistics and coordination end to end</li>
+  </ul>
+  <h3>4 · Commercial model</h3>
+  <p>A facilitation fee of <b>10–15%</b>, paid <b>only on patients we actually deliver</b>. No upfront, no retainer. The patient is never double-charged. Non-exclusive to start, with a path to preferred terms in this market once a pilot proves volume.</p>
+  <h3>5 · Proposed pilot</h3>
+  <p>A small, time-boxed founding-partner cohort with clear success metrics and zero downside to you. We ask for a package sheet and one named coordinator — not a commitment.</p>
+  <h3>6 · Compliance &amp; trust</h3>
+  <p>Facilitator disclosure on every touch; accredited-partners-only; DPDP/GDPR-aligned data handling; no clinical claims by us.</p>
+  <h3>7 · Next steps</h3>
+  <p>A 30-minute intro call, a package sheet, and a named coordinator to pilot with.</p>
+  <p class="disc">Sent to a public International Patient Services contact. Indicative prices only, clearly labelled; no invented volumes or outcomes.</p>
+</div>`;
+
+const carouselDoc = `<div class="doc">
+  <h3 style="margin-top:0;border:none">Instagram carousel — "Dental in India, for patients from the UK"</h3>
+  <div class="caro">
+    <div class="slide"><span class="sn">01 / 05</span><div class="sh">A new smile for the price of a UK check-up plan?</div><div class="sb">Swipe for the real numbers →</div></div>
+    <div class="slide light"><span class="sn">02 / 05</span><div class="sh" style="color:var(--accent-deep)">The gap, like-for-like</div>
+      <div class="sb" style="color:var(--ink-soft)">Single implant<br>UK £2,000–3,000<br>India ~$500–950</div></div>
+    <div class="slide alt"><span class="sn">03 / 05</span><div class="sh">~74% less</div><div class="sb">Same implant systems. Accredited clinics. Indicative ranges.</div></div>
+    <div class="slide"><span class="sn">04 / 05</span><div class="sh">How it works</div><div class="sb">Send an X-ray → indicative plan → treatment in 5–7 days → fly home.</div></div>
+    <div class="slide light"><span class="sn">05 / 05</span><div class="sh" style="color:var(--accent-deep)">Talk to a coordinator</div><div class="sb" style="color:var(--ink-soft)">Message us on WhatsApp. Facilitator, not a provider.</div></div>
+  </div>
+  ${ig({eyebrow:'Slide 2 infographic · UK → India',indiaLo:0.5,indiaHi:0.95,westLabel:'UK',westLo:2,westHi:3,savings:74})}
+  <div class="caption">Thinking about dental work abroad? Here's the honest maths for a single implant, UK vs an accredited clinic in India — same implant systems, a fraction of the price. We're a facilitator: we coordinate, the clinic treats. Indicative ranges, confirmed after your X-ray.
+</div>
+  <div class="tags">#dentalimplants #dentaltourism #smilemakeover #india #uk</div>
+</div>`;
+
+const commsDoc = `<div class="doc">
+  <h3 style="margin-top:0;border:none">WhatsApp first-touch template + follow-up sequence</h3>
+  <div class="wa-wrap">
+    <div class="phone">
+      <div class="bubble">
+        <div class="hdr-img">${ig({eyebrow:'Cardiac · Oman → India',indiaLo:5,indiaHi:9,westLabel:'US',westLo:90,westHi:120,savings:93}).replace('class="ig"','class="ig" style="margin:0;box-shadow:none"')}</div>
+        <div class="body">Hello {{1}}, this is MedYatra. You asked about heart bypass options in India. Here's an indicative cost comparison. Reply YES and a coordinator will share accredited-hospital options and answer your questions.</div>
+        <div class="btns"><a>Yes, tell me more</a><a>Not now</a></div>
+      </div>
+      <div style="text-align:center;font-size:10.5px;color:var(--muted);margin-top:6px">Utility template · infographic header · human-approved</div>
+    </div>
+    <div class="seq">
+      <h3 style="margin-top:0">If no reply — the fallback loop</h3>
+      <div class="s"><span class="d">Day 0</span><span>First touch (this template) — persuasion sits in the infographic, body stays policy-clean.</span></div>
+      <div class="s"><span class="d">Day 2</span><span>Nudge 1 (template) — different angle: "no waiting list."</span></div>
+      <div class="s"><span class="d">Day 5</span><span>Nudge 2 (template) — accreditation + a patient story.</span></div>
+      <div class="s"><span class="d">Day 9</span><span>Nudge 3 (template) — last value touch, then stop.</span></div>
+      <div class="s"><span class="d">Then</span><span>Channel fallback (email/SMS) → dormant nurture. Re-enters on any reply.</span></div>
+    </div>
+  </div>
+  <p class="disc">A reply opens a 24h session where we can speak freely; outside it, every message must be an approved template. Opt-out is honoured instantly.</p>
+</div>`;
+
+const wellnessDoc = `<div class="doc">
+  <h2>Naturopathy recovery retreat — a post-op add-on &amp; a standalone stay</h2>
+  <p class="lede">Two ways to sell one product: a low-consideration wellness stay in its own right, and a recovery extension that clips onto any surgical journey. Cash-pay, no clinical-outcome liability — the lowest-friction thing in the catalogue.</p>
+  ${ig({eyebrow:'7-day program · vs Western wellness week',indiaLo:0.5,indiaHi:2.5,westLabel:'West',westLo:3,westHi:7,savings:70})}
+  <h3>What it is</h3>
+  <p>A supervised naturopathy / panchakarma / detox residential stay at an accredited wellness centre — Jindal, Kshemavana, Soukya and peers. 7 to 21 days, all-inclusive of stay, diet, and therapies.</p>
+  <h3>Two ways we sell it</h3>
+  <ul>
+    <li><b>Standalone</b> — the frictionless first sale: no surgery, no fear, no clinical risk. It seeds the customer relationship and the trust that a later medical trip needs.</li>
+    <li><b>Bundled recovery</b> — "come for the knee, recover at Soukya." A 5–10 day recovery stay attached to a surgical package. Lifts basket size and gives India an edge Thailand and Turkey can't match as credibly.</li>
+  </ul>
+  <h3>Indicative pricing</h3>
+  <table><tr><th>Package</th><th>Duration</th><th>Indicative</th></tr>
+    <tr><td>Naturopathy &amp; detox program</td><td>7 days</td><td>$500–2,500</td></tr>
+    <tr><td>Residential program</td><td>14–21 days</td><td>$1,200–6,000</td></tr>
+    <tr><td>Post-op recovery stay (add-on)</td><td>5–10 days</td><td>$700–3,000</td></tr>
+  </table>
+  <p class="disc">Wellness supply, not medical treatment. Ranges are indicative and confirmed per property. We disclose our facilitation fee; the centre delivers the stay.</p>
+</div>`;
+
+// ---------- the queue ----------
+const ITEMS = [
+  {id:7,kind:'content',status:'ready',h:'Naturopathy recovery retreat — Oman (standalone + bundle)',m:['Landing page','Wellness · bundleable','Oman ✓ cleared'],
+    qa:[['ok','Numbers verified — 70% vs Western wellness week'],['ok','No clinical claims (wellness supply)'],['ok','Facilitator disclosure present']],
+    gate:['ok','Oman cleared · cash-pay, no clinical-outcome liability'],deploy:{label:'Approve &amp; publish',enabled:true,done:'Published to site'},body:wellnessDoc},
+
+  {id:1,kind:'content',status:'ready',h:'Knee replacement cost guide — Oman',m:['Landing page','English','Oman ✓ cleared'],
+    qa:[['ok','Numbers verified — 88% is like-for-like, re-derived from the data core'],['ok','No vague claims — 1 item tagged [VERIFY] for you'],['ok','Facilitator disclosure present']],
+    gate:['ok','Oman is regulatory-cleared'],deploy:{label:'Approve &amp; publish',enabled:true,done:'Published to site'},body:kneeGuide},
+
+  {id:2,kind:'comms',status:'ready',h:'Cardiac first-touch WhatsApp template — Oman',m:['WhatsApp','Utility template','Oman ✓ cleared'],
+    qa:[['ok','Numbers verified — 93% cardiac, cross-checked'],['ok','Body is policy-clean; persuasion in image header'],['ok','Opt-out button present']],
+    gate:['ok','Oman cleared · template pre-approved'],deploy:{label:'Approve &amp; submit to Meta',enabled:true,done:'Submitted to Meta for send'},body:commsDoc},
+
+  {id:3,kind:'partner',status:'ready',h:'Partnership proposal — Sir Ganga Ram (cardiac)',m:['Proposal','B2B','no market-gate'],
+    qa:[['ok','Facilitator terms only — 10–15%, pay-per-delivered'],['wa','1 volume claim tagged [VERIFY] — add a source before send'],['ok','No banned filler']],
+    gate:['ok','B2B outreach — not patient solicitation, no market gate'],deploy:{label:'Approve &amp; send',enabled:true,done:'Sent to IPS contact'},body:proposalDoc},
+
+  {id:4,kind:'campaign',status:'pending',h:'Dental carousel — United Kingdom',m:['Instagram','5 slides','UK ⚠ not cleared'],
+    qa:[['ok','Numbers verified — 74% dental, like-for-like'],['ok','No faces / no on-image claims'],['wa','Caption filler: none']],
+    gate:['wa','UK market not regulatory-cleared — builds as preview, cannot deploy live'],deploy:{label:'Deploy blocked',enabled:false,why:'UK is not regulatory-cleared'},body:carouselDoc},
+
+  {id:5,kind:'content',status:'pending',h:'Bariatric cost guide — Nigeria',m:['Landing page','English','Nigeria ⚠ not cleared'],
+    qa:[['ok','Numbers verified — 78% cosmetic/bariatric'],['ok','Facilitator disclosure present'],['wa','Awaiting counsel on Nigeria solicitation rules']],
+    gate:['wa','Nigeria not regulatory-cleared'],deploy:{label:'Deploy blocked',enabled:false,why:'Nigeria is not regulatory-cleared'},body:kneeGuide.replace(/Oman/g,'Nigeria').replace('Total Knee Replacement','Bariatric Surgery')},
+
+  {id:6,kind:'partner',status:'blocked',h:'Proposal — Sakra World (contact inferred)',m:['Proposal','B2B','contact unverified'],
+    qa:[['ok','Facilitator terms correct'],['no','Contact is INFERRED, not verified — do not send'],['ok','No banned filler']],
+    gate:['no','POC is an inferred email pattern, not a confirmed person'],deploy:{label:'Send blocked',enabled:false,why:'Contact is inferred, not verified'},body:proposalDoc.replace(/Ganga Ram/g,'Sakra World').replace(/Iraq/g,'Kenya').replace(/cardiac/gi,'ortho')},
+];
+
+const TABS=[['all','All'],['content','Content'],['campaign','Campaigns'],['comms','Comms'],['partner','Partners']];
+let filter='all';
+const $=(s)=>document.querySelector(s);
+
+function render(){
+  const tabsEl=$('#tabs'); tabsEl.innerHTML='';
+  for(const [k,label] of TABS){
+    const n=k==='all'?ITEMS.length:ITEMS.filter(i=>i.kind===k).length;
+    const b=document.createElement('button');b.className='tab';b.setAttribute('aria-selected',filter===k);
+    b.innerHTML=`${label} <span class="c">${n}</span>`;b.onclick=()=>{filter=k;render();};
+    tabsEl.appendChild(b);
+  }
+  const inbox=$('#inbox');inbox.innerHTML='';
+  const list=ITEMS.filter(i=>filter==='all'||i.kind===filter);
+  for(const it of list) inbox.appendChild(cardEl(it));
+  const cnt=(st)=>ITEMS.filter(i=>i.status===st).length;
+  $('#s-ready').textContent=cnt('ready');$('#s-pending').textContent=cnt('pending');$('#s-blocked').textContent=cnt('blocked');
+}
+
+function cardEl(it){
+  const c=document.createElement('div');c.className='card '+it.status;
+  const statusLabel={ready:'Ready',pending:'Gate pending',blocked:'Blocked'}[it.status];
+  const dep=it.deploy;
+  c.innerHTML=`
+    <div class="card-head">
+      <div class="tico">${IC[it.kind]}</div>
+      <div class="ttl">
+        <div class="h">${it.h}</div>
+        <div class="m"><span class="kind">${it.kind}</span>${it.m.map(x=>`<span>${x}</span>`).join('')}</div>
+      </div>
+      <span class="status ${it.status}">${statusLabel}</span>
+      <span class="chev">▸</span>
+    </div>
+    <div class="drawer">
+      <div class="drawer-grid">
+        <div class="preview">${it.body}</div>
+        <div class="side">
+          <h4>Automated QA</h4>
+          <div class="qa">${it.qa.map(([s,t])=>`<div class="row"><span class="ic ${s}">${s==='ok'?'✓':s==='no'?'✕':'!'}</span><span>${t}</span></div>`).join('')}</div>
+          <h4>Deploy gate</h4>
+          <div class="gate"><span class="ic ${it.gate[0]}">${it.gate[0]==='ok'?'✓':it.gate[0]==='no'?'✕':'!'}</span><span>${it.gate[1]}</span></div>
+        </div>
+      </div>
+      <div class="deploy-bar">
+        <button class="btn ${dep.enabled?'go':''}" ${dep.enabled?'':'disabled'} data-id="${it.id}">${dep.label}</button>
+        <button class="btn ghost">Edit</button>
+        ${dep.enabled?`<span class="why ok">Human-gated — this is the only send path</span>`:`<span class="why">⚠ ${dep.why}</span>`}
+      </div>
+    </div>`;
+  c.querySelector('.card-head').onclick=()=>c.classList.toggle('open');
+  const gb=c.querySelector('.btn.go');
+  if(gb) gb.onclick=(e)=>{e.stopPropagation();deploy(it,c);};
+  return c;
+}
+
+function deploy(it,c){
+  it.status='ready';
+  toast('✓ '+it.deploy.done+' — '+it.h.replace(/&amp;/g,'&'));
+  const idx=ITEMS.indexOf(it);ITEMS.splice(idx,1);
+  render();
+}
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
+
+render();
+</script>

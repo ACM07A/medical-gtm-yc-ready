@@ -1,0 +1,347 @@
+<title>MedYatra — Sales Comms &amp; Patient-Journey Flow</title>
+<style>
+  :root{
+    --bg:#f3f7fb; --panel:#ffffff; --ink:#0c1b2e; --ink-soft:#3f556e; --muted:#6c8199;
+    --line:#d3e0ee; --line-strong:#b4c8dd;
+    --accent:#1f6fd6; --accent-deep:#0b4a8b; --accent-wash:#e7f0fb;
+    --good:#1f9d57; --good-wash:#e3f5ea;
+    --warn:#c9862a; --warn-wash:#faf0dd;
+    --stop:#c8503f; --stop-wash:#fae5e1;
+    --loop:#7a4fc4; --loop-wash:#efe8fb;
+    --hosp:#0d8a8a; --hosp-wash:#dbf1f1; --hosp-line:#9dd6d6;
+    --template:#0b4a8b; --session:#1f9d57;
+    --radius:12px; --shadow:0 10px 26px -20px rgba(11,47,90,.55);
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#0b1622; --panel:#12212f; --ink:#e8f0f8; --ink-soft:#b3c4d6; --muted:#7d93a8;
+      --line:#22384c; --line-strong:#31506b;
+      --accent:#5aa0ee; --accent-deep:#8cc2ff; --accent-wash:#14293e;
+      --good:#42c47e; --good-wash:#12301f; --warn:#e0a94a; --warn-wash:#33270f;
+      --stop:#e8735f; --stop-wash:#331612; --loop:#b394e8; --loop-wash:#241733;
+      --hosp:#3fc7c7; --hosp-wash:#0e2e2e; --hosp-line:#1d5252;
+      --template:#8cc2ff; --session:#42c47e; --shadow:0 12px 30px -22px rgba(0,0,0,.8);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0b1622; --panel:#12212f; --ink:#e8f0f8; --ink-soft:#b3c4d6; --muted:#7d93a8;
+    --line:#22384c; --line-strong:#31506b; --accent:#5aa0ee; --accent-deep:#8cc2ff; --accent-wash:#14293e;
+    --good:#42c47e; --good-wash:#12301f; --warn:#e0a94a; --warn-wash:#33270f;
+    --stop:#e8735f; --stop-wash:#331612; --loop:#b394e8; --loop-wash:#241733;
+    --hosp:#3fc7c7; --hosp-wash:#0e2e2e; --hosp-line:#1d5252;
+    --template:#8cc2ff; --session:#42c47e; --shadow:0 12px 30px -22px rgba(0,0,0,.8);
+  }
+  :root[data-theme="light"]{
+    --bg:#f3f7fb; --panel:#ffffff; --ink:#0c1b2e; --ink-soft:#3f556e; --muted:#6c8199;
+    --line:#d3e0ee; --line-strong:#b4c8dd; --accent:#1f6fd6; --accent-deep:#0b4a8b; --accent-wash:#e7f0fb;
+    --good:#1f9d57; --good-wash:#e3f5ea; --warn:#c9862a; --warn-wash:#faf0dd;
+    --stop:#c8503f; --stop-wash:#fae5e1; --loop:#7a4fc4; --loop-wash:#efe8fb;
+    --hosp:#0d8a8a; --hosp-wash:#dbf1f1; --hosp-line:#9dd6d6; --template:#0b4a8b; --session:#1f9d57;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1140px;margin:0 auto;padding:34px 22px 90px}
+  header.top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap;margin-bottom:8px}
+  h1{font-size:26px;letter-spacing:-.02em;margin:0 0 4px;text-wrap:balance}
+  .sub{color:var(--ink-soft);font-size:14.5px;max-width:64ch}
+  .theme-btn{border:1px solid var(--line-strong);background:var(--panel);color:var(--ink-soft);
+    border-radius:999px;padding:7px 14px;font-size:12.5px;cursor:pointer;font-family:inherit}
+  .theme-btn:hover{border-color:var(--accent)}
+
+  .legend{display:flex;flex-wrap:wrap;gap:8px 16px;margin:20px 0 22px;padding:14px 16px;
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+  .legend b{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);align-self:center;margin-right:2px}
+  .lg{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;color:var(--ink-soft)}
+  .swatch{width:22px;height:14px;border-radius:4px;border:1px solid var(--line-strong);flex:none}
+  .pill{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;letter-spacing:.02em}
+  .pill.tpl{background:var(--accent-wash);color:var(--template);border:1px solid color-mix(in srgb,var(--template) 40%,transparent)}
+  .pill.ses{background:var(--good-wash);color:var(--session);border:1px solid color-mix(in srgb,var(--session) 40%,transparent)}
+  .pill.hp{background:var(--hosp-wash);color:var(--hosp);border:1px solid var(--hosp-line)}
+
+  /* ownership split */
+  .owns{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 12px}
+  @media(max-width:680px){.owns{grid-template-columns:1fr}}
+  .own{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
+  .own.h{border-top:3px solid var(--hosp)} .own.m{border-top:3px solid var(--accent)}
+  .own h3{margin:0 0 8px;font-size:13.5px;display:flex;align-items:center;gap:8px}
+  .own ul{margin:0;padding-left:16px;font-size:12.5px;color:var(--ink-soft)}.own li{margin:3px 0}
+  .dot{width:9px;height:9px;border-radius:3px;flex:none}.dot.h{background:var(--hosp)}.dot.m{background:var(--accent)}
+
+  .phase-head{display:flex;align-items:center;gap:10px;margin:30px 0 14px}
+  .phase-head .n{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--panel);
+    background:var(--accent-deep);width:26px;height:26px;border-radius:7px;display:grid;place-items:center;flex:none}
+  .phase-head h2{font-size:16.5px;margin:0;letter-spacing:-.01em}
+  .phase-head .tag{margin-left:auto;font-size:11.5px;color:var(--muted);text-align:right}
+
+  .node{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--accent);
+    border-radius:10px;padding:11px 13px;box-shadow:var(--shadow)}
+  .node .t{font-weight:650;font-size:14px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .node .d{font-size:12.5px;color:var(--ink-soft);margin-top:4px}
+  .node.good{border-left-color:var(--good)} .node.warn{border-left-color:var(--warn)}
+  .node.stop{border-left-color:var(--stop)} .node.loop{border-left-color:var(--loop);background:var(--loop-wash)}
+  .node.gate{border-left-color:var(--warn);background:var(--warn-wash)}
+  .node.start{border-left-color:var(--accent-deep);background:var(--accent-wash)}
+  .node.term{border-left-color:var(--good);background:var(--good-wash)}
+  .node.hosp{border-left-color:var(--hosp);background:var(--hosp-wash)}
+  .node.hosp .t::before{content:"⇄";color:var(--hosp);font-weight:800;margin-right:2px}
+
+  .lanes{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:760px){.lanes{grid-template-columns:1fr}}
+  .lanes.two{grid-template-columns:1fr 1fr}@media(max-width:680px){.lanes.two{grid-template-columns:1fr}}
+  .lane-cap{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:0 0 7px}
+  .lane-cap.a{color:var(--accent)} .lane-cap.b{color:var(--hosp)} .lane-cap.c{color:var(--stop)}
+
+  .step{display:grid;grid-template-columns:230px 1fr;gap:14px;align-items:stretch}
+  @media(max-width:680px){.step{grid-template-columns:1fr}}
+  .main-col{position:relative;padding-bottom:16px}
+  .main-col:not(:last-child)::after{content:"";position:absolute;left:12px;top:100%;width:2px;height:16px;
+    background:var(--line-strong);transform:translateY(-16px)}
+  .branch-col{display:flex;flex-direction:column;gap:8px;padding-bottom:16px}
+  .arrow{font-size:11.5px;color:var(--ink-soft);margin:2px 0;display:flex;align-items:flex-start;gap:6px;flex-wrap:wrap}
+  .cond{font-size:11px;font-weight:700;padding:1px 7px;border-radius:5px;background:var(--accent-wash);color:var(--accent-deep);white-space:nowrap;flex:none}
+  .cond.no{background:var(--stop-wash);color:var(--stop)} .cond.yes{background:var(--good-wash);color:var(--good)}
+  .cond.wait{background:var(--warn-wash);color:var(--warn)} .cond.hp{background:var(--hosp-wash);color:var(--hosp)}
+  .loopback{color:var(--loop);font-weight:700;display:inline-flex;align-items:center;gap:5px}
+  .edge{font-size:11px;color:var(--muted);font-style:italic}
+
+  .cross{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:14px}
+  .cross .node{border-left-color:var(--accent-deep)}
+  .cross .node.key{border-left-color:var(--stop);background:var(--stop-wash)}
+  footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
+  code{font-family:var(--mono);font-size:.86em;background:var(--accent-wash);color:var(--accent-deep);padding:1px 5px;border-radius:4px}
+  .mini{font-size:11px;color:var(--muted)}
+  .divider{height:1px;background:var(--line);margin:26px 0 0}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>Sales Comms &amp; Patient-Journey Flow</h1>
+      <p class="sub">The full path from first message to treated patient — with the <b>diagnosis fork</b> (they know their procedure, or they don't), the <b>moment they commit to travel</b>, every <b class="" style="color:var(--hosp)">⇄ hospital handoff</b>, and the fallback loops. One engine, multiple front doors. Paths only; comms copy comes later.</p>
+    </div>
+    <button class="theme-btn" onclick="var r=document.documentElement,d=r.getAttribute('data-theme')==='dark';r.setAttribute('data-theme',d?'light':'dark')">◐ Theme</button>
+  </header>
+
+  <div class="legend">
+    <b>Nodes</b>
+    <span class="lg"><span class="swatch" style="border-left:4px solid var(--accent)"></span>action / state</span>
+    <span class="lg"><span class="swatch" style="border-left:4px solid var(--hosp);background:var(--hosp-wash)"></span>⇄ hospital handoff</span>
+    <span class="lg"><span class="swatch" style="border-left:4px solid var(--warn);background:var(--warn-wash)"></span>gate</span>
+    <span class="lg"><span class="swatch" style="border-left:4px solid var(--loop);background:var(--loop-wash)"></span>fallback loop</span>
+    <span class="lg"><span class="swatch" style="border-left:4px solid var(--good);background:var(--good-wash)"></span>terminal</span>
+    <b style="margin-left:8px">Send</b>
+    <span class="lg"><span class="pill tpl">TEMPLATE</span>can initiate</span>
+    <span class="lg"><span class="pill ses">SESSION</span>≤24h after their reply</span>
+  </div>
+
+  <!-- WHO OWNS WHAT -->
+  <div class="phase-head"><span class="n">◆</span><h2>The handoff — who owns what</h2>
+    <span class="tag">the facilitator/provider line, made explicit</span></div>
+  <div class="owns">
+    <div class="own m"><h3><span class="dot m"></span>MedYatra owns (facilitator)</h3>
+      <ul>
+        <li>Lead, all comms &amp; nurture, qualification</li>
+        <li>Relaying the requirement &amp; reports to the hospital</li>
+        <li>Coordination: travel, visa logistics, accommodation, interpreter</li>
+        <li>Payment facilitation &amp; fee transparency</li>
+        <li>Chasing the hospital; keeping the patient warm</li>
+      </ul></div>
+    <div class="own h"><h3><span class="dot h"></span>Hospital owns (provider)</h3>
+      <ul>
+        <li>Medical opinion, diagnosis, treatment recommendation</li>
+        <li>The quote / package price &amp; what it includes</li>
+        <li>Every clinical follow-up question</li>
+        <li>Appointment slot, admission date, surgeon assignment</li>
+        <li>Visa-invitation letter, pre-op instructions, the procedure</li>
+        <li>Discharge summary, tele-follow-up, clinical outcomes</li>
+      </ul></div>
+  </div>
+  <p class="mini" style="margin:0 0 6px">Rule: anything <b>clinical</b> (diagnosis, suitability, medication, risk) is <b style="color:var(--hosp)">⇄ handed to the hospital's medical team</b> — MedYatra never advises. This is the facilitator boundary and the liability firewall.</p>
+
+  <div class="divider"></div>
+
+  <!-- PHASE 1 -->
+  <div class="phase-head"><span class="n">1</span><h2>Intake — front doors → one funnel</h2>
+    <span class="tag">tagged by <code>source_type</code></span></div>
+  <div class="lanes">
+    <div><p class="lane-cap">A · Own acquisition</p>
+      <div class="node start"><div class="t">Content → inbound</div><div class="d">LinkedIn / IG / site → WhatsApp tap or form. <span class="mini">source_type=<code>own</code></span></div></div></div>
+    <div><p class="lane-cap">B · Referral partner</p>
+      <div class="node start"><div class="t">Referred patient</div><div class="d">A diaspora org / clinic / channel refers someone. <span class="mini">source_type=<code>partner</code></span></div></div></div>
+    <div><p class="lane-cap">C · Plugged-in lead DB</p>
+      <div class="node start"><div class="t">External list</div><div class="d">A ME operator streams its lead DB in. <span class="mini">source_type=<code>external</code></span></div></div></div>
+  </div>
+  <div class="step" style="margin-top:14px">
+    <div class="main-col"><div class="node gate"><div class="t">Normalise · dedupe · consent · regulatory</div>
+      <div class="d">Valid + de-duped → have WhatsApp opt-in? → is the market cleared to solicit?</div></div></div>
+    <div class="branch-col">
+      <div class="arrow"><span class="cond no">no opt-in</span> opt-in-first via email/SMS/call before any template</div>
+      <div class="arrow"><span class="cond no">market not cleared</span> nurture-only hold — no active selling</div>
+    </div>
+  </div>
+
+  <!-- PHASE 2 -->
+  <div class="phase-head"><span class="n">2</span><h2>First touch &amp; the no-reply loop</h2>
+    <span class="tag">no session yet → template only</span></div>
+  <div class="step">
+    <div class="main-col"><div class="node"><div class="t">T0 · First touch <span class="pill tpl">TEMPLATE</span></div>
+      <div class="d">Approved template; infographic header carries persuasion, body stays policy-clean. Human-gated.</div></div></div>
+    <div class="branch-col"><div class="arrow"><span class="cond yes">reply</span> opens 24h session → Discovery</div></div>
+  </div>
+  <div class="step">
+    <div class="main-col"><div class="node loop"><div class="t">↺ Nudge → channel-fallback → dormant</div>
+      <div class="d">Nudge 1 (D2) · 2 (D5) · 3 (D9), cap 3 → then email/SMS → dormant nurture.</div></div></div>
+    <div class="branch-col">
+      <div class="arrow"><span class="cond yes">any reply</span> Discovery</div>
+      <div class="arrow"><span class="cond no">silent</span> <span class="loopback">↺ dormant</span> (monthly; re-enters on inbound)</div>
+    </div>
+  </div>
+
+  <!-- PHASE 3 — DISCOVERY FORK -->
+  <div class="phase-head"><span class="n">3</span><h2>Discovery — do they know what they need?</h2>
+    <span class="tag"><span class="pill ses">SESSION</span> free-form; reset 24h on each inbound</span></div>
+  <div class="step">
+    <div class="main-col"><div class="node"><div class="t">Qualify the intent</div>
+      <div class="d">What's the concern · which market · timeline · budget band · docs on hand · who decides.</div></div></div>
+    <div class="branch-col"><div class="arrow">Then fork on <b>how defined the need is</b> ↓</div></div>
+  </div>
+
+  <div class="lanes" style="margin-bottom:14px">
+    <div>
+      <p class="lane-cap a">A · Knows the procedure</p>
+      <div class="node"><div class="t">States a known surgery</div>
+        <div class="d">"I need a bypass / knee / IVF." Capture it verbatim + any prior diagnosis.</div></div>
+      <div style="height:8px"></div>
+      <div class="node hosp"><div class="t">Confirm candidacy</div>
+        <div class="d">Send reports for a quick hospital sanity-check that the stated procedure fits. → Phase 4.</div></div>
+    </div>
+    <div>
+      <p class="lane-cap b">B · Symptoms / reports only</p>
+      <div class="node"><div class="t">Collect reports &amp; history</div>
+        <div class="d">No defined procedure — just complaints, scans, or a vague referral. PII-minimised, consented.</div></div>
+      <div style="height:8px"></div>
+      <div class="node hosp"><div class="t">Remote medical opinion</div>
+        <div class="d">Hospital's doctor reviews → returns <b>diagnosis + recommended treatment path(s)</b>, surgical or not.</div></div>
+      <div style="height:8px"></div>
+      <div class="node"><div class="t">Explain options plainly</div>
+        <div class="d">MedYatra relays the doctor's options in the patient's language — <span class="edge">never adds clinical advice.</span> → Phase 4.</div></div>
+    </div>
+    <div>
+      <p class="lane-cap c">C · Off-ramps (edge cases)</p>
+      <div class="node warn"><div class="t">Needs more tests first</div>
+        <div class="d">Hospital wants diagnostics → do locally, or defer to on-arrival work-up. <span class="loopback">↺ back to opinion</span></div></div>
+      <div style="height:8px"></div>
+      <div class="node stop"><div class="t">Not surgical / manage locally</div>
+        <div class="d">Honest referral home — don't manufacture a trip.</div></div>
+      <div style="height:8px"></div>
+      <div class="node stop"><div class="t">Out of network capability</div>
+        <div class="d">No accredited partner can do it well → decline, don't overreach.</div></div>
+    </div>
+  </div>
+
+  <!-- PHASE 4 — PRODUCT SELECTION -->
+  <div class="phase-head"><span class="n">4</span><h2>Product selection — what they'll travel for</h2>
+    <span class="tag">"product" = procedure + hospital + package + dates</span></div>
+  <div class="step">
+    <div class="main-col"><div class="node hosp"><div class="t">Requirement → hospital(s): opinion + indicative quote</div>
+      <div class="d">Relay the agreed requirement. Hospital returns an indicative package (range, inclusions). Offer a <b>2-hospital compare</b> where it helps.</div></div></div>
+    <div class="branch-col">
+      <div class="arrow"><span class="cond hp">⇄ needs more info</span> hospital asks a question → <span class="loopback">↺ clinical-query relay</span></div>
+      <div class="arrow"><span class="cond wait">partner slow</span> <span class="loopback">↺ chase</span> + holding message to patient</div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="main-col"><div class="node loop"><div class="t">↺ Follow-up clinical queries</div>
+      <div class="d">Patient's medical questions loop to the hospital's team; MedYatra relays answers verbatim. Non-clinical Qs (cost, travel) MedYatra answers directly.</div></div></div>
+    <div class="branch-col"><div class="arrow"><span class="cond hp">⇄ HOSPITAL</span> owns every clinical answer</div></div>
+  </div>
+  <div class="step">
+    <div class="main-col"><div class="node"><div class="t">Patient picks the product</div>
+      <div class="d">Compares price · surgeon · hospital · dates · (financing). Chooses what to travel for.</div></div></div>
+    <div class="branch-col">
+      <div class="arrow"><span class="cond">objections</span> <span class="loopback">↺ objection loop</span>: price→infographic+instalments · trust→accreditation/2nd opinion · safety→<b>⇄ doctor call</b></div>
+      <div class="arrow"><span class="cond wait">went cold</span> <span class="loopback">↺ nudge</span> → dormant</div>
+      <div class="arrow"><span class="cond no">chose not to</span> Lost — log reason (calibration)</div>
+      <div class="arrow"><span class="cond yes">committed</span> Booking ↓</div>
+    </div>
+  </div>
+
+  <!-- PHASE 5 — BOOKING & HANDOFF -->
+  <div class="phase-head"><span class="n">5</span><h2>Booking &amp; the hospital handoff</h2>
+    <span class="tag">MedYatra logistics ↔ hospital clinical</span></div>
+  <div class="step">
+    <div class="main-col"><div class="node hosp"><div class="t">Slot booking on hospital calendar</div>
+      <div class="d">Hospital confirms admission date + surgeon. This is the real commitment point.</div></div></div>
+    <div class="branch-col">
+      <div class="arrow"><span class="cond no">slot unavailable</span> <span class="loopback">↺ alt date / surgeon</span></div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="main-col"><div class="node hosp"><div class="t">Visa-invite letter + pre-op instructions + deposit</div>
+      <div class="d">Hospital issues the invitation letter &amp; pre-op prep; patient pays deposit to hospital (MedYatra facilitates, never holds clinical fees).</div></div></div>
+    <div class="branch-col">
+      <div class="arrow"><span class="cond no">visa delay/denied</span> <span class="loopback">↺ rebook slot</span> (release/hold) · re-apply</div>
+      <div class="arrow"><span class="cond wait">payment fails</span> retry / alt method</div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="main-col"><div class="node"><div class="t">Travel &amp; arrival logistics</div>
+      <div class="d">Flights, accommodation for patient + attendant, airport pickup, interpreter, SIM. Pure MedYatra.</div></div></div>
+    <div class="branch-col"><div class="arrow"><span class="cond yes">arrived</span> Phase 6 ↓</div></div>
+  </div>
+
+  <!-- PHASE 6 — ARRIVAL / RE-EVAL / TREATMENT -->
+  <div class="phase-head"><span class="n">6</span><h2>Arrival → re-evaluation → treatment</h2>
+    <span class="tag">the remote plan isn't final</span></div>
+  <div class="step">
+    <div class="main-col"><div class="node hosp"><div class="t">On-site consult &amp; re-evaluation</div>
+      <div class="d">In-person exam + any pending diagnostics. The plan or price can change here.</div></div></div>
+    <div class="branch-col">
+      <div class="arrow"><span class="cond wait">material change</span> <b>re-consent + re-quote</b> → mini product-decision before proceeding <span class="edge">(key edge — never proceed on a stale quote)</span></div>
+      <div class="arrow"><span class="cond yes">plan holds</span> proceed ↓</div>
+    </div>
+  </div>
+  <div class="step">
+    <div class="main-col"><div class="node hosp"><div class="t">Procedure &amp; inpatient care</div>
+      <div class="d">Hospital delivers. MedYatra keeps family updated + handles non-clinical needs.</div></div></div>
+    <div class="branch-col">
+      <div class="arrow"><span class="cond no">complication</span> <span class="cond hp">⇄ clinical escalation</span> + family comms + logistics extension</div>
+    </div>
+  </div>
+
+  <!-- PHASE 7 — POST / BUNDLE / REFERRAL -->
+  <div class="phase-head"><span class="n">7</span><h2>Post-op → recovery bundle → referral</h2>
+    <span class="tag">where the flywheel turns</span></div>
+  <div class="lanes">
+    <div><div class="node hosp"><div class="t">Discharge summary + follow-up plan</div>
+      <div class="d">Hospital issues records + a tele-follow-up schedule. MedYatra stores &amp; shares with the patient.</div></div></div>
+    <div><div class="node term"><div class="t">Recovery-bundle upsell</div>
+      <div class="d">Offer the wellness / naturopathy stay (the <code>bundleable</code> product) — the natural post-op add-on. Basket-size lift.</div></div></div>
+    <div><div class="node term"><div class="t">↺ Review + referral → new lead</div>
+      <div class="d">Happy patient's referral re-enters Phase 1 as <code>source_type=own</code>. The flywheel.</div></div></div>
+  </div>
+  <div class="step" style="margin-top:14px">
+    <div class="main-col"><div class="node hosp"><div class="t">Tele-follow-up after home</div>
+      <div class="d">Ongoing clinical check-ins run through the hospital; MedYatra coordinates timing.</div></div></div>
+    <div class="branch-col"><div class="arrow"><span class="cond wait">recovery issue</span> <span class="cond hp">⇄ route to hospital</span></div></div>
+  </div>
+
+  <!-- CROSS-CUTTING -->
+  <div class="phase-head"><span class="n">✳</span><h2>Rules at every step</h2></div>
+  <div class="cross">
+    <div class="node key"><div class="t">Clinical → hospital, always</div><div class="d">Any diagnosis/suitability/medication/risk question routes to the hospital's doctors. MedYatra never advises. The liability firewall.</div></div>
+    <div class="node key"><div class="t">Material change → re-consent</div><div class="d">If on-arrival findings change plan or price, stop and re-quote + re-consent before proceeding.</div></div>
+    <div class="node"><div class="t">Human gate</div><div class="d">No template, quote, or clinical message auto-sends. Approved in the Studio.</div></div>
+    <div class="node"><div class="t">24h session timer</div><div class="d">Each inbound resets it; outside the window you must use an approved template.</div></div>
+    <div class="node stop"><div class="t">Opt-out = instant</div><div class="d">STOP honoured immediately, suppressed on all channels.</div></div>
+    <div class="node"><div class="t">Escalate to human agent</div><div class="d">Complex medical Q, strong objection, high value, or "talk to a person."</div></div>
+    <div class="node"><div class="t">Outcome logging</div><div class="d">Every terminal state (won/lost/dormant) logs a reason → fit-model calibration.</div></div>
+    <div class="node"><div class="t">Re-engagement cap</div><div class="d">Dormant leads get a quarterly value touch only, unless opted out.</div></div>
+  </div>
+
+  <footer>
+    Path map only — comms copy, templates &amp; cadences come after sign-off. <b style="color:var(--hosp)">⇄</b> marks a hospital handoff; the ownership split up top is the facilitator/provider boundary. Nodes map to states the engine models (<code>lead</code>, <code>proposal</code>, <code>outcome</code>, regulatory gate, <code>bundleable</code> wellness).
+  </footer>
+</div>

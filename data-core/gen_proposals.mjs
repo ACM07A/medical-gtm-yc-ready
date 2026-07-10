@@ -28,8 +28,9 @@ const SYSTEM = "You write structured, credible B2B partnership proposals for a m
   "Any magnitude claim (demand, growth, volume) MUST cite a specific number/source; if you don't have one, write it as '[VERIFY: quantify + cite]' rather than using a vague adjective like 'significant'. " +
   "No hype, no guarantees, no invented clinical claims/accreditations/prices. Output clean Markdown with clear section headings.";
 
-// top accounts by fit; prefer ones with a named POC and a flagship-ish category
-const partners = A(`SELECT * FROM partner ORDER BY fit_score DESC, priority DESC LIMIT ?`, LIMIT);
+// top accounts by fit; prefer ones with a named POC and a flagship-ish category.
+// Exclude wellness/naturopathy supply — that's a cash-pay product sell, not a surgical founding-partner pilot.
+const partners = A(`SELECT * FROM partner WHERE COALESCE(type,'') <> 'wellness' ORDER BY fit_score DESC, priority DESC LIMIT ?`, LIMIT);
 let made = 0;
 
 for (const p of partners) {
@@ -39,7 +40,7 @@ for (const p of partners) {
   // hospital nobody's heard of). Low-consideration categories (dental/cosmetic) convert on price and BUILD
   // the trust you need before asking for cardiac. So for latent/unknown brands, lead with the lowest-fear
   // category they cover; established names can lead with their highest-value category.
-  const FEAR = { dental: 1, cosmetic: 2, fertility: 3, ophthalmology: 3, ortho: 4, oncology: 5, cardiac: 6 };
+  const FEAR = { dental: 1, cosmetic: 2, fertility: 3, ortho: 4, oncology: 5, cardiac: 6 };
   const pcats = A(`SELECT c.* FROM partner_category pc JOIN category c ON c.id=pc.category_id WHERE pc.partner_id=? AND c.status='launch'`, p.id);
   const cat = pcats.length
     ? (latent ? pcats.slice().sort((a, b) => (FEAR[a.id] || 9) - (FEAR[b.id] || 9)) : pcats.slice().sort((a, b) => a.rank - b.rank))[0]

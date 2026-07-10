@@ -31,7 +31,11 @@ Each candidate category is scored 1–5 on six weighted factors. The agent recom
 | 5 | **Cosmetic & bariatric surgery** | 4 | 4 | 5 | 4 | 4 | 3 | Elective, high margin, Western + regional; strong social-content fit |
 | 6 | **Dental (implants, full-mouth, cosmetic)** | 5 | 4 | 5 | 4 | 2 | 4 | Easiest funnel, short trip, Western "combine with holiday" angle; low competition |
 
-**Incubate (next 4):** Ophthalmology (LASIK/cataract), Neurosurgery/spine, Organ transplant (liver/kidney — high value but heavy regulation & ethics/donor rules; handle carefully), Ayurveda/wellness (brand differentiator for Western wellness tourists).
+**Launched as a distinct line — Wellness / Naturopathy:** sold **standalone** (lowest-friction, cash-pay, no clinical-outcome liability — the easiest first sale in the catalogue) or bundled as a **post-op recovery add-on** onto a surgical journey (`bundleable=1`). India's Ayurveda/naturopathy depth is an edge Thailand/Turkey can't match as credibly. Supply: Jindal, Kshemavana, Soukya, Nimba, Atmantan (all prospect/verify).
+
+**Incubate (next):** Neurosurgery/spine, Organ transplant (liver/kidney — high value but heavy regulation & ethics/donor rules; handle carefully).
+
+**Evaluated & DROPPED — Ophthalmology (LASIK / cataract / retina):** the arbitrage is real in *percentage* but small in *absolute dollars* (cataract ~$700–1,500 vs US $3,500–6,000), and eye care is low-ticket, follow-up-heavy, and better delivered locally. The tell: the category leader, **Dr Agarwal's, built physical clinics across 9 African source markets** rather than importing patients to India — validating the *opposite* of a tourism thesis. Viable only as a narrow complex-surgery line (cornea/retina/oculoplasty) under an established brand, never a volume wedge.
 
 **Park:** anything requiring emergency/unplanned travel, experimental treatments, or procedures where India lacks accreditation depth.
 

@@ -8,9 +8,15 @@ integrations/.env
 node_modules/
 npm-debug.log*
 
-# Data core (generated DB)
+# Data core (generated DB) — and ALL sqlite files anywhere (backups can hold discovered contacts)
 data-core/*.db
 data-core/*.db-*
+*.db
+*.db-*
+outputs/backups/
+
+# Working scratch (temp HTML prototypes, server logs). Design source lives in design/.
+scratchpad/
 
 # Runtime logs (scheduled factory loop)
 outputs/loop.log

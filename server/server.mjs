@@ -105,7 +105,7 @@ th,td{padding:10px 12px;border-bottom:1px solid #dbe4ef;text-align:${rtl ? "righ
 a{color:#1f6fd6}hr{border:none;border-top:1px solid #dbe4ef;margin:22px 0}
 .cta{display:inline-block;margin-top:8px;background:#25a862;color:#fff;padding:12px 20px;border-radius:999px;font-weight:700;text-decoration:none}
 code{background:#e7eef7;padding:1px 5px;border-radius:4px}</style></head>
-<body><div class="ribbon">DRAFT preview · ${a.language.toUpperCase()} · GLM-5.2 · ${a.language !== "en" ? "pending native QA · " : ""}not published — <a href="/console">back to console</a></div>
+<body><div class="ribbon">DRAFT preview · ${a.language.toUpperCase()} · Tier-2 draft · ${a.language !== "en" ? "pending native QA · " : ""}not published — <a href="/console">back to console</a></div>
 <main>${inner}<p style="margin-top:30px"><a class="cta" href="#">Message us on WhatsApp →</a></p></main></body></html>`;
 }
 

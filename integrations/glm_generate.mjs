@@ -19,15 +19,21 @@ const ENDPOINT = process.env.NVIDIA_BASE_URL
 // unreachable (GLM-5.2 unserved) OR when Opus/Claude hits its usage limit and Node scripts must carry on
 // alone. Tries each model in order; the first that responds within TIER2_TIMEOUT wins. Fully env-tunable:
 //   GLM_MODEL       — preferred model (default z-ai/glm-5.2)
-//   GLM_FALLBACKS   — comma list tried next (default llama-3.3-70b, llama-3.1-8b)
+//   GLM_FALLBACKS   — comma list tried next (default: none → chain is GLM → Gemini)
 //   TIER2_TIMEOUT   — per-model ms budget before failing over (default 40000)
+// Backend research/generation runs on GLM (primary) + Gemini (backup). The llama tiers are no longer
+// in the default chain — re-add them via GLM_FALLBACKS if a NIM-only, Gemini-off fallback is wanted.
 const PRIMARY = process.env.GLM_MODEL || process.env.NVIDIA_MODEL || "z-ai/glm-5.2";
-const FALLBACKS = (process.env.GLM_FALLBACKS || "meta/llama-3.3-70b-instruct,meta/llama-3.1-8b-instruct")
+const FALLBACKS = (process.env.GLM_FALLBACKS || "")
   .split(",").map((s) => s.trim()).filter(Boolean);
 // Gemini as the LAST-RESORT backup (different API — routed via a "gemini:" prefix). Added only when keyed.
 const GEMINI_BACKUP = process.env.GEMINI_API_KEY ? [`gemini:${process.env.GEMINI_TEXT_MODEL || "gemini-2.5-flash"}`] : [];
 export const MODEL_CHAIN = [PRIMARY, ...FALLBACKS.filter((m) => m !== PRIMARY), ...GEMINI_BACKUP];
 const PER_MODEL_MS = Number(process.env.TIER2_TIMEOUT) || 40000;
+// NVIDIA/GLM has been intermittently unserved (times out). Give NIM models a SHORT probe budget so a dead
+// primary fails over to Gemini in seconds, not 40s — but leave Gemini the full budget for real generation.
+const NIM_MS = Number(process.env.NIM_TIMEOUT) || 12000;
+const budgetFor = (model, base) => model.startsWith("gemini:") ? base : Math.min(base, NIM_MS);
 
 // Route a model to the right endpoint/key. "gemini:<model>" → Google's OpenAI-compatible endpoint;
 // everything else → NVIDIA NIM. This lets one failover chain span two providers.
@@ -69,7 +75,7 @@ export async function generateWithModel(prompt, {
   const errors = [];
   for (const model of models) {
     try {
-      const text = await callModel(model, null, body, timeoutMs);   // callModel derives its own endpoint+key
+      const text = await callModel(model, null, body, budgetFor(model, timeoutMs));   // callModel derives its own endpoint+key; NIM gets a short probe budget
       return { text, model, failedOver: model !== models[0], tried: errors.length + 1 };
     } catch (e) {
       errors.push(`${model}: ${e.name === "TimeoutError" ? "timeout" : (e.message || e)}`);

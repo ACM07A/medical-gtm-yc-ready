@@ -44,6 +44,20 @@ export function open(path = DB_PATH) {
   for (const c of ["regulatory_status TEXT DEFAULT 'unverified'", "regulatory_note TEXT"]) {
     try { db.exec(`ALTER TABLE market ADD COLUMN ${c}`); } catch {}
   }
+  // WELLNESS / naturopathy as a SELLABLE product line — NOT an acquisition channel. It's low-consideration,
+  // cash-pay, and carries no clinical-outcome liability: the lowest-hanging fruit to sell on its own, AND a
+  // post-op RECOVERY add-on that bundles onto a surgical journey (come for the knee, stay for the recovery).
+  //  kind       = 'medical' | 'wellness'   (keeps wellness out of the surgical pricing/proposal logic)
+  //  bundleable = 1         → can be attached to any surgical category as a recovery extension
+  for (const c of ["kind TEXT DEFAULT 'medical'", "bundleable INTEGER DEFAULT 0"]) {
+    try { db.exec(`ALTER TABLE category ADD COLUMN ${c}`); } catch {}
+  }
+  // DUAL-MODE lead origin. The engine runs on BOTH our own funnel AND a lead DB an outside party plugs in.
+  //  source_type: own | partner (a referral/channel source) | external (a client's plugged-in lead DB)
+  //  source_ref = the referring partner / external tenant id.  ingested_at = when it entered.
+  for (const c of ["source_type TEXT DEFAULT 'own'", "source_ref TEXT", "ingested_at TEXT"]) {
+    try { db.exec(`ALTER TABLE lead ADD COLUMN ${c}`); } catch {}
+  }
   return db;
 }
 
@@ -51,8 +65,8 @@ export function open(path = DB_PATH) {
 // before send. Shared by research_worklist.mjs and infer_contacts.mjs.
 export const PARTNER_DOMAINS = {
   "ganga-ram": "sgrh.com", "hinduja": "hindujahospital.com", "frontier-lifeline": "frontierlifeline.com",
-  "cytecare": "cytecare.com", "lv-prasad-eye": "lvpei.org", "artemis": "artemishospitals.com",
-  "marengo": "marengoasia.com", "sakra-world": "sakraworldhospital.com", "sankara-nethralaya": "sankaranethralaya.org",
+  "cytecare": "cytecare.com", "artemis": "artemishospitals.com",
+  "marengo": "marengoasia.com", "sakra-world": "sakraworldhospital.com",
   "cloudnine": "cloudninecare.com",
 };
 

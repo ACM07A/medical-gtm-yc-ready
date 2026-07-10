@@ -21,8 +21,8 @@ const accounts = A(`SELECT * FROM partner WHERE opportunity='High' OR mvt_presen
 // Real public hospital domains (for the inferred-email pattern). Public info; still verify before send.
 const DOMAINS = {
   "ganga-ram": "sgrh.com", "hinduja": "hindujahospital.com", "frontier-lifeline": "frontierlifeline.com",
-  "cytecare": "cytecare.com", "lv-prasad-eye": "lvpei.org", "artemis": "artemishospitals.com",
-  "marengo": "marengoasia.com", "sakra-world": "sakraworldhospital.com", "sankara-nethralaya": "sankaranethralaya.org",
+  "cytecare": "cytecare.com", "artemis": "artemishospitals.com",
+  "marengo": "marengoasia.com", "sakra-world": "sakraworldhospital.com",
   "cloudnine": "cloudninecare.com",
 };
 const domainOf = (p) => DOMAINS[p.id] || (p.ips_channel_public || "").match(/@([a-z0-9.-]+\.[a-z]{2,})/i)?.[1] || `${p.id}.com (verify domain)`;

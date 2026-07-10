@@ -80,14 +80,15 @@ Tier-2 generation tries a chain of models and the **first responder wins** — a
 providers** (NVIDIA NIM + Google Gemini), routed by a `gemini:` prefix inside the same chain:
 
 ```
-GLM-5.2  →  meta/llama-3.3-70b-instruct  →  meta/llama-3.1-8b-instruct  →  gemini-2.5-flash
+GLM-5.2  →  gemini-2.5-flash     (llama tiers dropped; NIM gets a short probe budget → fast failover)
 ```
 
 This is the resilience layer. It solves two real problems at once:
 1. **A model goes down.** GLM-5.2 is currently *unserved* on the NVIDIA account (the key is valid — proven
-   by Llama returning 200 — but that specific model hangs). The chain falls through to Llama, and if the
-   whole NVIDIA path is unreachable, to **Gemini** (free tier). In practice Gemini already catches load and
-   produces the higher-quality proposals.
+   by Llama returning 200 — but that specific model hangs). The backend research/generation was deliberately
+   narrowed to **GLM → Gemini**; a short NIM probe budget (`NIM_TIMEOUT`, default 12s) means a dead GLM
+   **fails over to Gemini in seconds, not 40s**. In practice Gemini carries generation and produces the
+   higher-quality proposals.
 2. **Claude hits its usage limit.** Because every generator is a standalone Node script calling this chain
    (not Claude), and [`data-core/run_loop.mjs`](./data-core/run_loop.mjs) runs them in sequence, the factory
    keeps producing **without Claude in the loop**. This is wired for real: a Windows Scheduled Task
@@ -134,7 +135,7 @@ cost_arb 0.25 · quality 0.20 · demand 0.20 · ease 0.15 · margin 0.10 · whit
 ```
 
 Current ranking (`npm run query portfolio`): **Orthopedics 4.45 · Cardiac 4.40 (⚑ flagship) · Oncology 4.30
-· Dental 4.20 · Cosmetic 4.05 · Fertility 3.95.** Ophthalmology is seeded as an *incubate* category.
+· Dental 4.20 · Cosmetic 4.05 · Fertility 3.95.** A **wellness/naturopathy** line (score 4.5, `kind='wellness'`, `bundleable=1`) sits alongside these — sold standalone (lowest-friction, cash-pay) or bundled as a post-op recovery add-on onto a surgical journey. *(Ophthalmology was evaluated and **dropped** — low-ticket, follow-up-heavy, better delivered locally; the category leader, Dr Agarwal's, built clinics in the African source markets rather than importing patients. See `build-os/03`.)*
 
 **Nuance — model vs. brand:** the model ranked Orthopedics #1, but Cardiac is kept as the *flagship* (brand
 lead, deal size) via an explicit `flagship` flag — a documented decision (task T013) where a human overrode
@@ -325,8 +326,8 @@ readiness), `/distribution`, `/worklist`. Capture a confirmed contact:
 ## 9. Honest limitations & what's next
 
 **Current limits (stated plainly):**
-- **GLM-5.2 is unserved** on the current NVIDIA account (key valid, model gated) — the chain runs on Llama,
-  with **Gemini 2.5-flash** as a live backup. Re-enable GLM at build.nvidia.com to restore the designed primary.
+- **GLM-5.2 is unserved** on the current NVIDIA account (key valid, model gated) — the chain now runs on
+  **Gemini 2.5-flash** (llama tiers dropped; GLM fails over in ~12s via a short NIM probe budget). Re-enable GLM at build.nvidia.com to restore the designed primary.
 - **Named-contact discovery is intermittent** — stealth mode gets past CAPTCHAs but not every time (≈6/9 in
   testing); running on your own desktop (less-flagged IP) improves the hit rate.
 - **Inferred emails are guesses** — low-confidence until MX-verified (blocked in the sandbox that built this;
