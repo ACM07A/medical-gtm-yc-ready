@@ -73,6 +73,14 @@ export function open(path = DB_PATH) {
     id INTEGER PRIMARY KEY AUTOINCREMENT, lead_id INTEGER REFERENCES lead(id), kind TEXT, provider TEXT,
     status TEXT DEFAULT 'requested', ref TEXT, detail TEXT,
     created TEXT DEFAULT (datetime('now')), updated TEXT DEFAULT (datetime('now')))`);
+  // MULTI-TENANCY — the moat-preserving posture (see build-os/11). One engine powers many operators; each is
+  // a tenant with its own ingest token, and leads are scoped by lead.source_ref = tenant.id. Own-acquisition
+  // is just the 'medyatra' tenant (mode='own'). Staying multi-tenant is what keeps us a platform, not a
+  // captive vendor — the tech IP + cross-tenant calibration data are the assets no single operator owns.
+  //  mode : own | operator      token : per-tenant ingest secret (null = dev-open)      rev_share : 0..1
+  db.exec(`CREATE TABLE IF NOT EXISTS tenant (
+    id TEXT PRIMARY KEY, name TEXT, mode TEXT DEFAULT 'operator', token TEXT, rev_share REAL,
+    active INTEGER DEFAULT 1, created TEXT DEFAULT (datetime('now')))`);
   return db;
 }
 

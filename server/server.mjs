@@ -58,7 +58,10 @@ function buildState(db) {
       proposals: O(`SELECT count(*) c FROM proposal WHERE status IN ('review','draft')`).c,
       outbox: (() => { try { return readdirSync(join(ROOT, "outputs", "outbox")).filter((f) => f.endsWith(".eml")).length; } catch { return 0; } })(),
       sitePages: assets.filter((a) => a.status === "published" && a.language === "en").length,
+      tenants: O(`SELECT count(*) c FROM tenant WHERE active=1`).c,
+      extLeads: O(`SELECT count(*) c FROM lead WHERE source_type='external'`).c,
     },
+    tenants: A(`SELECT id, name, mode, rev_share, (SELECT count(*) FROM lead WHERE source_ref=tenant.id) leads FROM tenant WHERE active=1 ORDER BY mode DESC, id`),
     markets: markets.map((m) => ({ code: m.code, tier: m.tier })),
     portfolio, grid,
     pipeline: A(`SELECT stage, count(*) n FROM partner GROUP BY stage`),
@@ -145,12 +148,12 @@ const server = createServer(async (req, res) => {
       return send(200, "text/html; charset=utf-8", renderStudio(db));
     if (url.pathname === "/api/studio")
       return send(200, "application/json", JSON.stringify(studioQueue(db)));
-    // DUAL-MODE — an external operator plugs in their lead DB. Own token (not the console's); dev-open if unset.
+    // DUAL-MODE — an external operator plugs in their lead DB. Authenticated PER TENANT (build-os/11):
+    // the body's `source` must be a known active tenant, and X-Ingest-Token must match that tenant's token.
     if (req.method === "POST" && url.pathname === "/api/lead/ingest") {
-      if (process.env.INGEST_TOKEN && req.headers["x-ingest-token"] !== process.env.INGEST_TOKEN)
-        return send(401, "application/json", JSON.stringify({ ok: false, error: "invalid or missing X-Ingest-Token" }));
       const body = await readBody(req);
-      return send(200, "application/json", JSON.stringify(ingestLeads(db, body)));
+      const result = ingestLeads(db, { ...body, token: req.headers["x-ingest-token"] });
+      return send(result.ok ? 200 : 401, "application/json", JSON.stringify(result));
     }
     if (url.pathname === "/") {
       const cats = db.prepare(`SELECT c.*, (SELECT min(india_low) FROM category_price p WHERE p.category_id=c.id) lo,

@@ -67,7 +67,7 @@ export function studioQueue(db) {
     const pass = consentOk && reg.cleared;
     items.push({
       type: "comms", id: L.id, title: `WhatsApp ${act.stage.replace(/_/g, " ")} — ${L.market_code}`,
-      sub: `${L.category_id} · ${act.via}${act.clinical ? " · clinical handoff" : ""}${act.nudge ? ` · nudge ${act.nudge}` : ""}`,
+      sub: `${L.category_id} · ${act.via}${act.clinical ? " · clinical handoff" : ""}${act.nudge ? ` · nudge ${act.nudge}` : ""}${L.source_type === "external" && L.source_ref ? ` · via ${L.source_ref}` : ""}`,
       preview: null,
       qa: [["consent captured", consentOk], ["policy-clean body", true], [act.clinical ? "hospital-owned content" : "opt-out honoured", true]],
       gate: [!consentOk ? "no consent — opt-in first" : (reg.cleared ? `${L.market_code} cleared` : `${L.market_code} not cleared`), pass],

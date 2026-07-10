@@ -41,9 +41,13 @@ function minimiseHandle(raw) {
   return digits.length >= 4 ? `***${digits.slice(-4)}` : `ref-${v.slice(-4)}`;
 }
 
-export function ingestLeads(db, { source = "external", leads = [] } = {}) {
+export function ingestLeads(db, { source = "external", token, leads = [] } = {}) {
   if (!Array.isArray(leads)) return { ok: false, error: "body.leads must be an array" };
-  const res = { ok: true, source, received: leads.length, accepted: 0, deduped: 0, held_no_consent: 0, held_regulatory: 0, rejected: [] };
+  // TENANT auth (build-os/11): the source must be a known, active tenant; per-tenant token if it has one.
+  const tenant = db.prepare(`SELECT * FROM tenant WHERE id=? AND active=1`).get(source);
+  if (!tenant) return { ok: false, error: `unknown or inactive tenant '${source}' — provision it in the tenant table` };
+  if (tenant.token && token !== tenant.token) return { ok: false, error: "invalid tenant token (X-Ingest-Token)" };
+  const res = { ok: true, source: tenant.id, tenant: tenant.name, received: leads.length, accepted: 0, deduped: 0, held_no_consent: 0, held_regulatory: 0, rejected: [] };
   const ins = db.prepare(`INSERT INTO lead
     (market_code,category_id,channel,ref,urgency,budget_band,consent,status,source_type,source_ref,ingested_at,journey_stage,docs_ready,opted_out)
     VALUES (?,?, 'import', ?, ?, ?, ?, 'qualified', 'external', ?, datetime('now'), 'intake', 0, 0)`);
