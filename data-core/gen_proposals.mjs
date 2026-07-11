@@ -23,11 +23,12 @@ mkdirSync(join(ROOT, "outputs", "proposals"), { recursive: true });
 const clean = (s) => (s || "").replace(/\s*\((?:verify|est)[^)]*\)/gi, "").replace(/\s*—\s*est.*/i, "").trim();
 
 // idempotent for the partners we touch
-const SYSTEM = "You write structured, credible B2B partnership proposals for a medical-value-travel FACILITATOR (not a provider). " +
-  "Write PLAINLY — short declarative sentences, a real operator's voice, not marketing copy. " +
-  "BANNED phrases (never use): seamless, world-class, bridging the gap, leverage, patient journey, ecosystem, cutting-edge, holistic, empower, tailored solutions, unlock, elevate, state-of-the-art. " +
-  "Any magnitude claim (demand, growth, volume) MUST cite a specific number/source; if you don't have one, write it as '[VERIFY: quantify + cite]' rather than using a vague adjective like 'significant'. " +
-  "No hype, no guarantees, no invented clinical claims/accreditations/prices. Output clean Markdown with clear section headings.";
+const SYSTEM = "You are an experienced business-development lead at a medical-value-travel FACILITATOR (not a provider), writing to a hospital's international-patient director. " +
+  "Write like a real, senior person: formal, practical, specific — NOT like an AI assistant, and NOT marketing copy. Short declarative sentences of varied length; concrete nouns and numbers over adjectives; get to the point. " +
+  "BANNED phrases: seamless, world-class, bridging the gap, leverage, patient journey, ecosystem, cutting-edge, holistic, empower, tailored solutions, unlock, elevate, state-of-the-art, synergy, robust, streamline. " +
+  "BANNED AI tells (never write): 'I hope this finds you well', 'In today's world', 'Let's dive in', rhetorical questions, a closing paragraph that restates the ask, and 'Furthermore/Moreover/Additionally' chains. Do not open with a throat-clearing preamble; open with the point. " +
+  "Only promise what a facilitator actually does — demand generation, pre-qualified patients, and coordination of the enquiry + supporting documents. Do NOT promise interpreters, flights, hotels, or on-ground logistics (those are partner- or operator-provided, not ours). " +
+  "Any magnitude claim (demand, growth, volume) MUST cite a specific number/source, else write '[VERIFY: quantify + cite]'. No hype, no guarantees, no invented clinical claims/accreditations/prices. Output clean Markdown with clear section headings.";
 
 // top accounts by fit; prefer ones with a named POC and a flagship-ish category.
 // Exclude wellness/naturopathy supply — that's a cash-pay product sell, not a surgical founding-partner pilot.
@@ -65,7 +66,7 @@ Context (use, do not invent beyond this):
 Structure the proposal with these sections:
 1. Introduction & who we are (facilitator, not a provider)
 2. Why patients from ${market.name} travel for ${cat.name} — the case (cost gap, quality). Do NOT claim a demand number you weren't given; if you reference volume, write "[VERIFY: cite a figure]".
-3. What MedYatra brings (demand generation, patient coordination, ${latent ? "brand/credibility building abroad, " : ""}interpreter + logistics)
+3. What MedYatra brings — be precise and modest: demand generation in the source market, pre-qualified patients who arrive with their documents in order, and coordination of the enquiry plus supporting documents (for example, helping the patient obtain your invitation letter). ${latent ? "Also credibility marketing that builds your name in that market. " : ""}Do NOT claim interpreters, flights, hotels or on-ground logistics as ours — if relevant, note they are arranged by the patient or a local partner.
 4. Commercial model — facilitation fee ~10–15%, pay ONLY on delivered patients, patient never double-charged, transparent. ${latent ? "NON-exclusive to start; note a path to preferred/exclusive terms in this market once the pilot proves volume." : "Non-exclusive."}
 5. Proposed pilot — a small, time-boxed founding-partner cohort with clear success metrics; zero upfront
 6. Compliance & trust — facilitator disclosure, accredited-partners-only, data protection (DPDP/GDPR), no clinical claims by us
@@ -80,7 +81,9 @@ Rules: NO invented prices/outcomes/volumes (reference the indicative range only,
   if (!FORCE && isFresh(existing?.generated_at, 14)) { console.log(`proposal → ${p.name} … skip (fresh, ${existing.generated_at})`); continue; }
 
   process.stdout.write(`proposal → ${p.name} (${angle}) … `);
-  let r; try { r = await generateWithModel(prompt, { system: SYSTEM, maxTokens: 1400, temperature: 0.5 }); }
+  // maxTokens high on purpose: gemini-2.5-flash spends tokens on internal reasoning, so a low cap truncates
+  // the visible output. 4096 leaves room for the reasoning AND a full ~500-word proposal.
+  let r; try { r = await generateWithModel(prompt, { system: SYSTEM, maxTokens: 4096, temperature: 0.5 }); }
   catch (e) { console.log("FAIL:", String(e.message || e).slice(0, 50)); logRun(db, "Partner Sourcing", `proposal ${p.id}`, "gen error", null, "fail"); continue; }
 
   // QA the prose: tag vague magnitude claims [VERIFY] (the "significant demand" leak) + flag AI-filler.
