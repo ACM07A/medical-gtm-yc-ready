@@ -72,21 +72,21 @@
 ## 12. visa_start — `medyatra_visa_start`
 - **Type:** template · **Category:** utility
 - **Image header:** `outputs/comms/img/how-it-works.png`
-- **Body:** To start your India medical visa, the hospital will issue your official invitation letter. Here's your document checklist. Up to {{1}} attendant(s) can travel with you.
+- **Body:** For your India medical visa, the hospital issues your official invitation letter (a required supporting document) and we send you the full checklist. You apply on the government portal yourself — it's straightforward. Up to {{1}} attendant(s) may travel with you.
 - **Buttons:** [See my checklist] [Ask about visa]
-- _Invitation letter is a HOSPITAL handoff (system-generated, mandatory since Apr-2025). See lib/visa.mjs._
+- _SUPPORTING DOCS ONLY — hospital letter (system-generated, mandatory since Apr-2025) + checklist. The patient applies themselves; we don't submit for them. See lib/visa.mjs._
 
 ## 13. stay_options — `medyatra_stay_options`
 - **Type:** template · **Category:** utility
 - **Image header:** `outputs/comms/img/how-it-works.png`
-- **Body:** Here are near-hospital stay options for you and your family — for before and after treatment. Walkable, family-friendly, extended-stay. Want me to hold one?
-- **Buttons:** [See stays] [Hold a room]
-- _Options come from lib/stay.mjs (curated near-hospital until a booking provider is keyed)._
+- **Body:** Here are near-hospital stay options via our partners, for you and your family before and after treatment. You book your own flights and visa; we help with the stay and the paperwork. Want these options?
+- **Buttons:** [See stays] [Ask a question]
+- _Partner-provided stay (lib/stay.mjs). Flights + visa are the patient's own; MedYatra keeps coordination light._
 
 ## 14. pre_op — `medyatra_pre_op`
 - **Type:** session · **Category:** utility
 - **Image header:** `null`
-- **Body:** Hi {{1}}, your pre-op instructions from the hospital are ready (fasting, medicines, what to bring). Your coordinator will meet you on arrival. Safe travels.
+- **Body:** Hi {{1}}, your pre-op instructions from the hospital are ready (fasting, medicines, what to bring). Safe travels — message us anytime if you need anything.
 - **Buttons:** [Got it] [Ask a question]
 
 ## 15. in_treatment — `medyatra_in_treatment`
@@ -120,6 +120,20 @@
 - **Body:** Hi {{1}}, still considering treatment in India? Your MedYatra coordinator is here whenever you're ready — no pressure. Reply STOP to opt out.
 - **Buttons:** [I'm ready] [Not now]
 - _Marketing category — requires prior opt-in; includes opt-out._
+
+## 20. cant_travel — `medyatra_cant_travel`
+- **Type:** session · **Category:** utility
+- **Image header:** `null`
+- **Body:** Hi {{1}}, sorry the visa or travel didn't work out this time. No problem — we'll hold everything and pick up whenever you're ready to try again. Just message us.
+- **Buttons:** [Try again later] [Ask a question]
+- _Reached when a visa is denied or the patient isn't fit to fly — honest hold, not a loss._
+
+## 21. complication — `medyatra_complication`
+- **Type:** session · **Category:** utility
+- **Image header:** `null`
+- **Body:** Hi {{1}}, your care is with the hospital's medical team and they are on it. We're keeping your family updated and are here for anything non-medical. Please follow the doctors' guidance.
+- **Buttons:** [Thank you]
+- _Clinical escalation — hospital-led. MedYatra never advises clinically; family-comms + logistics only._
 
 
 **Compliance:** consent required before outbound; no clinical claims/guarantees; prices indicative (shown in image, not body); facilitator voice; honor opt-out. See /build-os/09.

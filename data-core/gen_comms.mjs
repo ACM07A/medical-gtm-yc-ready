@@ -84,15 +84,15 @@ const SEQ = [
     body: "Good news {{1}} — the hospital can offer an admission slot around {{2}}. Shall we hold it and start your visa invitation letter?",
     variables: { "1": "first name", "2": "date window" }, buttons: QR("Hold my slot", "Discuss dates") },
   { stage: "visa_start", seq: 12, msg_type: "template", category: "utility", header: HOW,
-    body: "To start your India medical visa, the hospital will issue your official invitation letter. Here's your document checklist. Up to {{1}} attendant(s) can travel with you.",
+    body: "For your India medical visa, the hospital issues your official invitation letter (a required supporting document) and we send you the full checklist. You apply on the government portal yourself — it's straightforward. Up to {{1}} attendant(s) may travel with you.",
     variables: { "1": "attendant count" }, buttons: QR("See my checklist", "Ask about visa"),
-    note: "Invitation letter is a HOSPITAL handoff (system-generated, mandatory since Apr-2025). See lib/visa.mjs." },
+    note: "SUPPORTING DOCS ONLY — hospital letter (system-generated, mandatory since Apr-2025) + checklist. The patient applies themselves; we don't submit for them. See lib/visa.mjs." },
   { stage: "stay_options", seq: 13, msg_type: "template", category: "utility", header: HOW,
-    body: "Here are near-hospital stay options for you and your family — for before and after treatment. Walkable, family-friendly, extended-stay. Want me to hold one?",
-    variables: {}, buttons: QR("See stays", "Hold a room"),
-    note: "Options come from lib/stay.mjs (curated near-hospital until a booking provider is keyed)." },
+    body: "Here are near-hospital stay options via our partners, for you and your family before and after treatment. You book your own flights and visa; we help with the stay and the paperwork. Want these options?",
+    variables: {}, buttons: QR("See stays", "Ask a question"),
+    note: "Partner-provided stay (lib/stay.mjs). Flights + visa are the patient's own; MedYatra keeps coordination light." },
   { stage: "pre_op", seq: 14, msg_type: "session", category: "utility", header: null, clinical: true,
-    body: "Hi {{1}}, your pre-op instructions from the hospital are ready (fasting, medicines, what to bring). Your coordinator will meet you on arrival. Safe travels.",
+    body: "Hi {{1}}, your pre-op instructions from the hospital are ready (fasting, medicines, what to bring). Safe travels — message us anytime if you need anything.",
     variables: { "1": "first name" }, buttons: QR("Got it", "Ask a question") },
   { stage: "in_treatment", seq: 15, msg_type: "session", category: "utility", header: null, clinical: true,
     body: "Wishing you a smooth procedure, {{1}}. Your coordinator is on hand for anything non-medical; the hospital team is with you for care. We'll keep your family updated.",
@@ -112,6 +112,16 @@ const SEQ = [
     body: "Hi {{1}}, still considering treatment in India? Your MedYatra coordinator is here whenever you're ready — no pressure. Reply STOP to opt out.",
     variables: { "1": "first name" }, buttons: QR("I'm ready", "Not now"),
     note: "Marketing category — requires prior opt-in; includes opt-out." },
+
+  // Edge states (stress-hardening) — see lib/comms_machine.mjs.
+  { stage: "cant_travel", seq: 20, msg_type: "session", category: "utility", header: null,
+    body: "Hi {{1}}, sorry the visa or travel didn't work out this time. No problem — we'll hold everything and pick up whenever you're ready to try again. Just message us.",
+    variables: { "1": "first name" }, buttons: QR("Try again later", "Ask a question"),
+    note: "Reached when a visa is denied or the patient isn't fit to fly — honest hold, not a loss." },
+  { stage: "complication", seq: 21, msg_type: "session", category: "utility", header: null, clinical: true,
+    body: "Hi {{1}}, your care is with the hospital's medical team and they are on it. We're keeping your family updated and are here for anything non-medical. Please follow the doctors' guidance.",
+    variables: { "1": "first name" }, buttons: QR("Thank you"),
+    note: "Clinical escalation — hospital-led. MedYatra never advises clinically; family-comms + logistics only." },
 ];
 
 db.exec(`DELETE FROM comms_template`);

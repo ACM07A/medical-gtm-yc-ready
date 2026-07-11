@@ -68,23 +68,29 @@ ancillary services (below) at the visa/travel stages. Run: `npm run seed-leads &
 
 ## Ancillary services — the wrap-around that makes it a TRIP
 
-A procedure isn't a trip. Two services close the gap (both human-gated, tracked in the `service` table):
+A procedure isn't a trip — but MedYatra's role in the trip is **deliberately light**. We provide *supporting
+documents* and *hospital coordination*; the **patient books their own tickets and applies for their own visa**;
+interpreter / transfers / accommodation are **partner-** (and, with a tenant, operator-) provided. This keeps
+the coordination layer simple and the liability narrow. Both services below are human-gated, tracked in `service`.
 
-- **Visa assistance** (`lib/visa.mjs`) — a *workflow*, not an API (no third-party access to the government
-  portal). Since **1 Apr 2025** the e-Medical Visa requires a **system-generated invitation letter issued by
-  the hospital** (a clinical handoff we already model); the patient then applies on indianvisaonline.gov.in.
-  We orchestrate the letter, give a **country-correct document checklist**, guide the application, and handle
-  **attendant visas** (2 allowed; PK 1, BD 3). `startVisa()` creates the patient + attendant service rows,
-  blocked on the hospital letter. Optional VFS concierge via `VFS_API_KEY`.
-- **Accommodation** (`lib/stay.mjs`) — near-hospital, **extended-stay, family rooms for patient + relatives,
-  pre- AND post-op** (post-op window sized by category). Provider-agnostic behind env keys (Booking.com
-  Demand API / Hotelbeds / RateHawk), with a **curated near-hospital fallback** until a provider is keyed.
-  `bookStay()` is dry-run unless a provider is keyed + `POST_LIVE=1` + confirm.
+- **Visa — supporting documents only** (`lib/visa.mjs`) — NOT an application service, and no third-party API
+  into the government portal. Since **1 Apr 2025** the e-Medical Visa requires a **system-generated invitation
+  letter issued by the hospital** (a handoff we model); the **patient then applies themselves** on
+  indianvisaonline.gov.in. MedYatra's role: orchestrate the hospital letter + hand over a **country-correct
+  checklist**, and flag **attendant** limits (2; PK 1, BD 3). We do **not** submit for the patient. Optional VFS
+  concierge (`VFS_API_KEY`) is a later, tenant-only add-on.
+- **Accommodation — partner-provided** (`lib/stay.mjs`) — near-hospital, extended-stay, family rooms, pre/post-op.
+  Provider-agnostic behind env keys (Booking.com Demand API / Hotelbeds / RateHawk) with a curated near-hospital
+  fallback; `bookStay()` is dry-run unless keyed + `POST_LIVE=1` + confirm. Flights are the patient's own.
+
+**Who does what:** MedYatra = demand-gen · qualification · relaying reports · **supporting docs** · light
+coordination. Hospital = all clinical + invitation letter + slot + treatment + discharge. Patient = **their own
+visa application + tickets**. Partners/operator = interpreter · transfers · accommodation.
 
 ## Implementation
 
 - `lib/comms_machine.mjs` — the state machine (states, transitions, session/template + nudge logic).
-- `data-core/gen_comms.mjs` — drafts the **19** approval-ready templates + renders infographic headers → `comms_template` (`/comms`).
+- `data-core/gen_comms.mjs` — drafts the **21** approval-ready templates + renders infographic headers → `comms_template` (`/comms`).
 - `data-core/comms_run.mjs` — the engine driver (gates → draft → advance → fire services). `npm run comms-run`.
 - `data-core/seed_leads.mjs` — demo leads across journey stages. `npm run seed-leads`.
 - `lib/visa.mjs` · `lib/stay.mjs` — ancillary-service adapters. `lib/publishers.mjs` `whatsapp.sendTemplate()` sends (human-gated).

@@ -1,6 +1,7 @@
 // Patient-facing marketing landing page (Nuvica-inspired) — served at "/" from the live data core.
 // Clinical blue + trust green, glassmorphic cards, big display type, organ-motif treatment cards.
 import { basename } from "node:path";
+import { range } from "../lib/money.mjs";
 
 const ICON = {
   cardiac: '<path d="M12 20s-6.5-4-6.5-9A3.4 3.4 0 0 1 12 8a3.4 3.4 0 0 1 6.5 3c0 5-6.5 9-6.5 9Z"/><path d="M4.5 12.5H8l1.4-3 2.2 5.2L13 12h6.5"/>',
@@ -10,7 +11,7 @@ const ICON = {
   cosmetic: '<path d="M12 3l1.7 5L19 9.7l-5.3 1.7L12 17l-1.7-5.6L5 9.7 10.3 8Z"/>',
   dental: '<path d="M8 3c-2 0-3.2 1.6-3.2 4.2 0 2 .5 3 1 6C6.3 19.7 6.5 22 8 22c1.3 0 1.1-2.6 1.6-4.7.2-.9.7-.9.9 0C11 19.4 10.8 22 12.2 22c1.5 0 1.7-2.7 2.2-6 .5-3 1-4.2 1-6.2C15.4 4.6 14.2 3 12.2 3c-1.2 0-1.6.6-2.1.6S9.2 3 8 3Z"/>',
 };
-const band = (c) => c.lo ? `$${(c.lo/1000)}k–${(c.hi/1000)}k` : "";
+const band = (c) => c.lo ? range(c.lo, c.hi) : "";
 
 export function renderHome({ cats, guides }) {
   const guideHref = (g) => "/site/" + basename(g.file_ref).replace(/\.md$/, ".html");

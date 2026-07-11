@@ -6,6 +6,7 @@
 import { generateWithModel } from "../integrations/glm_generate.mjs";
 import { open, logRun, isFresh } from "./db.mjs";
 import { lintClaims } from "../lib/claims.mjs";
+import { range } from "../lib/money.mjs";
 const FORCE = process.env.FORCE === "1";   // idempotency override
 // Don't re-propose to accounts already past the proposal stage (or with a live outcome).
 const PAST = new Set(["Responded", "Pilot proposed", "Pilot live", "Signed", "Active"]);
@@ -50,13 +51,13 @@ for (const p of partners) {
   const price = O(`SELECT min(india_low) lo, max(india_high) hi FROM category_price WHERE category_id=?`, cat.id) || {};
   const comp = O(`SELECT low, high FROM competitor_price WHERE category_id=? ORDER BY samples DESC LIMIT 1`, cat.id);
   const poc = O(`SELECT person_name, role, title_target FROM poc WHERE partner_id=? AND person_name IS NOT NULL AND person_name<>'' ORDER BY confidence DESC LIMIT 1`, p.id);
-  const band = price.lo ? `US $${(price.lo / 1000)}k–${(price.hi / 1000)}k (indicative package range, cited; not a quote)` : "indicative ranges (cited)";
+  const band = price.lo ? `${range(price.lo, price.hi)} (indicative package range, cited; not a quote)` : "indicative ranges (cited)";
 
   const prompt = `Write a partnership proposal from MedYatra (a medical-value-travel FACILITATOR, not a hospital) to ${p.name}${poc ? `, attn: ${poc.person_name} (${clean(poc.role || poc.title_target || "International Patient Services")}, public business contact)` : " — International Patient Services / International Business"}.
 Context (use, do not invent beyond this):
 - Their positioning: ${clean(p.fit_reason || "quality hospital")}
 - Focus specialty for this proposal: ${cat.name}. Primary source market: ${market.name} (and the wider region).
-- Indicative ${cat.name} pricing in India: ${band}.${comp && comp.low ? ` Market band across facilitators: ~$${Math.round(comp.low / 1000)}k–${Math.round(comp.high / 1000)}k.` : ""}
+- Indicative ${cat.name} pricing in India: ${band}.${comp && comp.low ? ` Market band across facilitators: ~${range(comp.low, comp.high)}.` : ""}
 - Angle: ${latent
     ? `FOUNDING-PARTNER PILOT (do NOT claim existing demand volume — we are launching). Be honest: MedYatra is building its ${market.name} patient pipeline now; we're inviting them as a founding partner. The offer is ZERO-DOWNSIDE — no exclusivity, no upfront, they pay the facilitation fee ONLY on patients we actually deliver. Lead with ${cat.name} deliberately: it's a lower-consideration, price-led entry that builds trust and track record before higher-stakes specialties. We run the demand generation (Arabic+English content, WhatsApp) + credibility marketing that establishes their name abroad. Lean on their accreditation "${clean(p.accreditation)}" as the global-standard equalizer. Ask for a package sheet + a named coordinator, not a commitment.`
     : `SCALE play — established chain. Incremental, pre-qualified ${cat.name} patients from ${market.name}/region with low acquisition effort. Non-exclusive pilot; pay-per-delivered-patient. Do not overstate current volume.`}

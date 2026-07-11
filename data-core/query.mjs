@@ -2,10 +2,10 @@
 // Commands: portfolio | partners [category] | pipeline | content | gaps | leads
 //           lead-add <market> <category> <channel> <urgency> <budget>   (demo CRM insert, consent assumed)
 import { open } from "./db.mjs";
+import { range as money } from "../lib/money.mjs";
 const db = open();
 const [cmd, ...args] = process.argv.slice(2);
 const rows = (sql, ...p) => db.prepare(sql).all(...p);
-const money = (lo, hi) => `$${(lo/1000).toLocaleString()}k–${(hi/1000).toLocaleString()}k`;
 
 function portfolio() {
   console.log("\n== TREATMENT PORTFOLIO (model-ranked by weighted score) ==");

@@ -9,11 +9,12 @@ const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").
 const ok = (b) => (b ? "ok" : "no");
 
 // ---- the real queue ------------------------------------------------------------------------------------
-export function studioQueue(db) {
+export function studioQueue(db, { tenant } = {}) {
   const items = [];
 
   // CONTENT — cost-guide pages awaiting publish. Gate: the source market must be regulatory-cleared.
-  for (const a of db.prepare(`SELECT ca.*, c.name cat, mk.name mname FROM content_asset ca
+  // MedYatra-internal pipeline — hidden in a tenant-scoped operator view (which sees only its own leads).
+  if (!tenant) for (const a of db.prepare(`SELECT ca.*, c.name cat, mk.name mname FROM content_asset ca
       JOIN category c ON c.id=ca.category_id JOIN market mk ON mk.code=ca.market_code
       WHERE ca.status='review' ORDER BY ca.id`).all()) {
     const reg = marketCleared(db, a.market_code);
@@ -28,7 +29,7 @@ export function studioQueue(db) {
   }
 
   // PARTNER — proposals awaiting send. Gate: a verified/public named contact (never send to an inferred guess).
-  for (const p of db.prepare(`SELECT pr.*, pt.name partner FROM proposal pr JOIN partner pt ON pt.id=pr.partner_id
+  if (!tenant) for (const p of db.prepare(`SELECT pr.*, pt.name partner FROM proposal pr JOIN partner pt ON pt.id=pr.partner_id
       WHERE pr.status='review' ORDER BY pr.id`).all()) {
     const poc = db.prepare(`SELECT contact_type, person_name FROM poc WHERE partner_id=? AND person_name IS NOT NULL
       ORDER BY CASE contact_type WHEN 'named-verified' THEN 0 WHEN 'named-public' THEN 1 WHEN 'inferred' THEN 2 ELSE 3 END LIMIT 1`).get(p.partner_id);
@@ -44,7 +45,7 @@ export function studioQueue(db) {
   }
 
   // CAMPAIGN — repurposed social posts awaiting approval. Gate: source market cleared.
-  for (const cp of db.prepare(`SELECT cp.*, c.name cat, mk.name mname FROM channel_post cp
+  if (!tenant) for (const cp of db.prepare(`SELECT cp.*, c.name cat, mk.name mname FROM channel_post cp
       JOIN category c ON c.id=cp.category_id JOIN market mk ON mk.code=cp.market_code
       WHERE cp.status IN ('draft','review') ORDER BY cp.id LIMIT 12`).all()) {
     const reg = marketCleared(db, cp.market_code);
@@ -60,6 +61,7 @@ export function studioQueue(db) {
 
   // COMMS — leads with a drafted next message awaiting release. Gates: consent, opt-out, regulatory.
   for (const L of db.prepare(`SELECT * FROM lead ORDER BY id`).all()) {
+    if (tenant && L.source_ref !== tenant) continue;   // TENANT ISOLATION — operator sees only its own leads
     const act = nextAction(L);
     if (!act || act.do !== "send") continue;
     const reg = marketCleared(db, L.market_code);
@@ -135,8 +137,8 @@ const ICON = {
   content: "M6 3h9l4 4v14H6z", campaign: "M3 5h18v12H3z", comms: "M21 11a8 8 0 0 1-11.5 7.2L4 20l1.8-5.5A8 8 0 1 1 21 11z",
   partner: "M16 19v-2a4 4 0 0 0-8 0v2",
 };
-export function renderStudio(db) {
-  const items = db && studioQueue(db);
+export function renderStudio(db, { tenant } = {}) {
+  const items = db && studioQueue(db, { tenant });
   const cnt = { ready: items.filter((i) => i.status === "ready").length, blocked: items.filter((i) => i.status === "blocked").length };
   const card = (it) => {
     const badge = (label, good) => `<span class="qa ${ok(good)}">${good ? "✓" : "✕"} ${esc(label)}</span>`;
@@ -184,7 +186,7 @@ h1{font-size:22px;margin:0 0 2px;letter-spacing:-.01em;color:var(--deep)}.sub{co
 </style></head><body>
 <div class="ribbon">MEDYATRA STUDIO · live approve-and-deploy · nothing goes out until you approve it here — <a href="/console">console</a> · <a href="/comms">comms</a></div>
 <main>
-  <h1>Approvals</h1><div class="sub">Real items from the data core. Deploy buttons are physically disabled until the gate (regulatory · verified contact · consent) is green.</div>
+  <h1>Approvals</h1><div class="sub">Real items from the data core. Deploy buttons are physically disabled until the gate (regulatory · verified contact · consent) is green.${tenant ? ` <b style="color:var(--deep)">Scoped to operator: ${esc(tenant)}</b> — isolated view, only this operator's leads.` : ""}</div>
   <div class="bar"><div><b id="n-ready">${cnt.ready}</b> ready</div><div><b id="n-blocked">${cnt.blocked}</b> blocked</div></div>
   <div id="inbox">${items.length ? items.map(card).join("") : '<div class="empty">Queue empty — generate content/proposals/comms, or seed demo leads (npm run seed-leads).</div>'}</div>
 </main>

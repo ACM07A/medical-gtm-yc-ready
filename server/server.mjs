@@ -14,6 +14,8 @@ import { plugins as pluginList } from "../lib/plugins.mjs";
 import { nextAction } from "../lib/comms_machine.mjs";
 import { renderStudio, studioQueue, studioApprove } from "./studio.mjs";
 import { ingestLeads } from "../data-core/ingest.mjs";
+import { benchmarks } from "../data-core/benchmarks.mjs";
+import { range } from "../lib/money.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..");
@@ -35,8 +37,8 @@ function buildState(db) {
   const portfolio = cats.map((c) => {
     const pr = O(`SELECT min(india_low) lo, max(india_high) hi FROM category_price WHERE category_id=?`, c.id);
     const cp = O(`SELECT low, high FROM competitor_price WHERE category_id=? ORDER BY samples DESC LIMIT 1`, c.id);
-    return { ...c, band: pr.lo ? `$${pr.lo / 1000}k–${pr.hi / 1000}k` : "—",
-      mkt: cp && cp.low ? `$${Math.round(cp.low / 1000)}k–${Math.round(cp.high / 1000)}k` : "" };
+    return { ...c, band: pr.lo ? range(pr.lo, pr.hi) : "—",
+      mkt: cp && cp.low ? range(cp.low, cp.high) : "" };
   });
   const grid = cats.map((c) => ({
     id: c.id, name: c.name,
@@ -128,7 +130,7 @@ const server = createServer(async (req, res) => {
   // ACCESS CONTROL: the console + APIs expose named partner contacts and pipeline. If CONSOLE_TOKEN is set,
   // gate everything except the public patient site (/, /site, /outputs) and the health probe. REQUIRED
   // before exposing this beyond localhost. (No token set = open, for localhost dev.)
-  const PROTECTED = /^\/(console|studio|api\/(state|runs|studio)|draft|outreach|worklist|comms|distribution|plugins)/;
+  const PROTECTED = /^\/(console|studio|benchmarks|api\/(state|runs|studio|benchmarks)|draft|outreach|worklist|comms|distribution|plugins)/;
   if (process.env.CONSOLE_TOKEN && PROTECTED.test(url.pathname)) {
     const auth = req.headers.authorization || "";
     const pass = auth.startsWith("Basic ") ? Buffer.from(auth.slice(6), "base64").toString().split(":").slice(1).join(":") : "";
@@ -145,9 +147,19 @@ const server = createServer(async (req, res) => {
       return send(200, "application/json", JSON.stringify(studioApprove(db, body)));
     }
     if (url.pathname === "/studio")
-      return send(200, "text/html; charset=utf-8", renderStudio(db));
+      return send(200, "text/html; charset=utf-8", renderStudio(db, { tenant: url.searchParams.get("tenant") || undefined }));
     if (url.pathname === "/api/studio")
-      return send(200, "application/json", JSON.stringify(studioQueue(db)));
+      return send(200, "application/json", JSON.stringify(studioQueue(db, { tenant: url.searchParams.get("tenant") || undefined })));
+    // CROSS-TENANT BENCHMARKS — de-identified aggregate learning (k-anonymised; no tenant/patient identifiers).
+    if (url.pathname === "/api/benchmarks")
+      return send(200, "application/json", JSON.stringify(benchmarks(db, { k: Number(url.searchParams.get("k")) || 5 })));
+    if (url.pathname === "/benchmarks") {
+      const b = benchmarks(db, { k: Number(url.searchParams.get("k")) || 5 });
+      const cm = b.category_market.map((c) => `| ${c.category} | ${c.market} | ${c.suppressed ? `_suppressed (${c.suppressed})_` : c.leads} | ${c.suppressed ? "—" : c.reached_booking_pct + "%"} |`).join("\n");
+      const sm = b.stage_mix.map((s) => `| ${s.stage} | ${s.n == null ? `_suppressed (${s.suppressed})_` : s.n} |`).join("\n");
+      const md = `# Cross-tenant benchmarks (de-identified)\n\n> ${b.note}\n\n**${b.tenants} tenants · ${b.total_leads} leads · k=${b.k} · ${b.cells_shown} cells shown, ${b.cells_suppressed} suppressed.**\n\n## Funnel (all tenants)\n\n| Stage | Leads |\n|---|---|\n${sm}\n\n## Category × Market\n\n| Category | Market | Leads | Reached booking+ |\n|---|---|---|---|\n${cm}\n\n_This is aggregate learning, **not** patient-data reuse. Every tenant + patient identifier is stripped before aggregation; any group below k is suppressed._`;
+      return send(200, "text/html; charset=utf-8", docPage("Cross-tenant benchmarks", "De-identified aggregate learning — the legally-clean moat (build-os/11)", mdToHtml(md)));
+    }
     // DUAL-MODE — an external operator plugs in their lead DB. Authenticated PER TENANT (build-os/11):
     // the body's `source` must be a known active tenant, and X-Ingest-Token must match that tenant's token.
     if (req.method === "POST" && url.pathname === "/api/lead/ingest") {
