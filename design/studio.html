@@ -196,12 +196,13 @@ const IC = {
 };
 
 // ---------- reusable preview builders ----------
-function ig(d){ // like-for-like cost comparison
+function ig(d){ // like-for-like cost comparison. NOTE: values are in $k units; M() renders them for humans.
   const max=d.westHi; const pct=(v)=>Math.round(v/max*100);
+  const M=(v)=> v>=1 ? '$'+(Number.isInteger(v)?v:v)+'k' : '$'+Math.round(v*1000);  // 3.5→$3.5k · 0.5→$500 · 90→$90k
   return `<div class="ig"><div class="eyebrow">${d.eyebrow}</div>
     <div class="rows">
-      <div class="r"><span class="lab">India</span><span class="track"><span class="fill" style="width:${pct(d.indiaHi)}%"></span></span><span class="val">$${d.indiaLo/1000}k–${d.indiaHi/1000}k</span></div>
-      <div class="r"><span class="lab">${d.westLabel}</span><span class="track"><span class="fill hi" style="width:100%"></span></span><span class="val">$${d.westLo/1000}k–${d.westHi/1000}k</span></div>
+      <div class="r"><span class="lab">India</span><span class="track"><span class="fill" style="width:${pct(d.indiaHi)}%"></span></span><span class="val">${M(d.indiaLo)}–${M(d.indiaHi)}</span></div>
+      <div class="r"><span class="lab">${d.westLabel}</span><span class="track"><span class="fill hi" style="width:100%"></span></span><span class="val">${M(d.westLo)}–${M(d.westHi)}</span></div>
     </div>
     <div class="save">~${d.savings}% less <small>vs ${d.westLabel} · like-for-like, indicative</small></div></div>`;
 }

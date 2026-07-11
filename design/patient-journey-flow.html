@@ -144,8 +144,8 @@
       <ul>
         <li>Lead, all comms &amp; nurture, qualification</li>
         <li>Relaying the requirement &amp; reports to the hospital</li>
-        <li>Coordination: travel, visa logistics, accommodation, interpreter</li>
-        <li>Payment facilitation &amp; fee transparency</li>
+        <li><b>Supporting documents</b> — the hospital invitation letter + a visa checklist</li>
+        <li>Light coordination; payment facilitation &amp; fee transparency</li>
         <li>Chasing the hospital; keeping the patient warm</li>
       </ul></div>
     <div class="own h"><h3><span class="dot h"></span>Hospital owns (provider)</h3>
@@ -158,7 +158,8 @@
         <li>Discharge summary, tele-follow-up, clinical outcomes</li>
       </ul></div>
   </div>
-  <p class="mini" style="margin:0 0 6px">Rule: anything <b>clinical</b> (diagnosis, suitability, medication, risk) is <b style="color:var(--hosp)">⇄ handed to the hospital's medical team</b> — MedYatra never advises. This is the facilitator boundary and the liability firewall.</p>
+  <p class="mini" style="margin:8px 0 0"><b style="color:var(--accent)">Patient owns:</b> their own flights/tickets + their own visa application (using our supporting docs). <b style="color:var(--hosp)">Partners / operator (tenant) own:</b> interpreter, airport transfers &amp; accommodation. MedYatra keeps the coordination layer deliberately light.</p>
+  <p class="mini" style="margin:6px 0 0">Rule: anything <b>clinical</b> (diagnosis, suitability, medication, risk) is <b style="color:var(--hosp)">⇄ handed to the hospital's medical team</b> — MedYatra never advises. This is the facilitator boundary and the liability firewall.</p>
 
   <div class="divider"></div>
 
@@ -279,17 +280,20 @@
     </div>
   </div>
   <div class="step">
-    <div class="main-col"><div class="node hosp"><div class="t">Visa-invite letter + pre-op instructions + deposit</div>
-      <div class="d">Hospital issues the invitation letter &amp; pre-op prep; patient pays deposit to hospital (MedYatra facilitates, never holds clinical fees).</div></div></div>
+    <div class="main-col"><div class="node hosp"><div class="t">Invitation letter (supporting doc) → patient applies for the visa</div>
+      <div class="d">Hospital issues the system-generated invitation letter; MedYatra sends the checklist. The <b>patient applies themselves</b> for the e-Medical Visa and pays any deposit to the hospital directly — MedYatra never submits the visa or holds clinical fees.</div></div></div>
     <div class="branch-col">
-      <div class="arrow"><span class="cond no">visa delay/denied</span> <span class="loopback">↺ rebook slot</span> (release/hold) · re-apply</div>
-      <div class="arrow"><span class="cond wait">payment fails</span> retry / alt method</div>
+      <div class="arrow"><span class="cond no">visa denied / not fit to fly</span> <span class="loopback">↺ cant_travel</span> — honest hold, revisit later</div>
+      <div class="arrow"><span class="cond wait">delay</span> <span class="loopback">↺ rebook slot</span> (release/hold) · re-apply</div>
     </div>
   </div>
   <div class="step">
-    <div class="main-col"><div class="node"><div class="t">Travel &amp; arrival logistics</div>
-      <div class="d">Flights, accommodation for patient + attendant, airport pickup, interpreter, SIM. Pure MedYatra.</div></div></div>
-    <div class="branch-col"><div class="arrow"><span class="cond yes">arrived</span> Phase 6 ↓</div></div>
+    <div class="main-col"><div class="node"><div class="t">Travel — patient-arranged; partner stay</div>
+      <div class="d"><b>Patient books their own flights</b> &amp; visa. Accommodation, airport transfers &amp; interpreter via <b>partners / the operator</b> (tenant). MedYatra shares options + the paperwork — light coordination only.</div></div></div>
+    <div class="branch-col">
+      <div class="arrow"><span class="cond yes">arrived</span> Phase 6 ↓</div>
+      <div class="arrow"><span class="cond wait">stalls booking own travel</span> <span class="loopback">↺ nudge → dormant</span></div>
+    </div>
   </div>
 
   <!-- PHASE 6 — ARRIVAL / RE-EVAL / TREATMENT -->
