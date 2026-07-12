@@ -1,0 +1,405 @@
+<title>MedYatra — Patient Journey Sandbox</title>
+<style>
+:root{--bg:#eef3f9;--panel:#fff;--ink:#0c1b2e;--muted:#5a6b80;--line:#e2ecf7;--brand:#0b4a8b;--brand2:#1f6fd6;
+  --green:#1c8b50;--amber:#e5a13a;--wa:#e5ddd5;--wa-out:#fff;--chip:#f1f6fc;--shadow:0 18px 46px -26px rgba(11,74,139,.55)}
+@media (prefers-color-scheme:dark){:root{--bg:#0e1621;--panel:#152232;--ink:#e7eefb;--muted:#8ba0ba;--line:#22364d;
+  --brand:#5aa0ee;--brand2:#7cb6f5;--wa:#0b141a;--wa-out:#1f2c39;--chip:#1b2b3f;--shadow:0 18px 46px -22px rgba(0,0,0,.6)}}
+:root[data-theme=dark]{--bg:#0e1621;--panel:#152232;--ink:#e7eefb;--muted:#8ba0ba;--line:#22364d;--brand:#5aa0ee;--brand2:#7cb6f5;--wa:#0b141a;--wa-out:#1f2c39;--chip:#1b2b3f;--shadow:0 18px 46px -22px rgba(0,0,0,.6)}
+:root[data-theme=light]{--bg:#eef3f9;--panel:#fff;--ink:#0c1b2e;--muted:#5a6b80;--line:#e2ecf7;--brand:#0b4a8b;--brand2:#1f6fd6;--wa:#e5ddd5;--wa-out:#fff;--chip:#f1f6fc}
+*{box-sizing:border-box}body{margin:0;font-family:"Segoe UI",Roboto,system-ui,-apple-system,sans-serif;color:var(--ink);background:var(--bg);line-height:1.5}
+.ribbon{background:var(--amber);color:#3a2600;font-weight:700;font-size:12.5px;text-align:center;padding:7px 12px;letter-spacing:.01em}
+.topbar{display:flex;align-items:center;gap:14px;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--panel);flex-wrap:wrap}
+.logo{font-weight:800;color:var(--brand);font-size:17px;letter-spacing:-.01em}.logo small{font-weight:600;color:var(--muted);font-size:12px;letter-spacing:0}
+.spacer{flex:1}
+.tsel{display:flex;align-items:center;gap:7px;font-size:12.5px;color:var(--muted)}
+select#tenant{font:inherit;font-size:13px;padding:5px 8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--ink)}
+.wl-note{font-size:11.5px;color:var(--muted);max-width:230px;line-height:1.35}
+button{font:inherit;cursor:pointer}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:9px;padding:7px 13px;font-size:13px;font-weight:600}
+.btn.play.on{background:var(--green);color:#fff;border-color:var(--green)}
+.btn:hover{border-color:var(--brand2)}
+#app{display:grid;grid-template-columns:290px 1fr;gap:0;min-height:calc(100vh - 84px)}
+#app.editing{grid-template-columns:290px 1fr 380px}
+.rail{border-right:1px solid var(--line);padding:14px 12px;overflow-y:auto;max-height:calc(100vh - 84px)}
+.phase{margin-bottom:14px}.ph-name{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700;margin:0 4px 6px}
+.chip{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:1px solid var(--line);background:var(--panel);color:var(--ink);
+  border-radius:9px;padding:7px 9px;margin-bottom:5px;font-size:13px}
+.chip:hover{border-color:var(--brand2);background:var(--chip)}
+.chip.active{border-color:var(--brand);box-shadow:inset 3px 0 0 var(--brand);background:var(--chip)}
+.chip.edited .c-name::after{content:" ·edited";color:var(--amber);font-size:10px;font-weight:700}
+.c-seq{background:var(--brand);color:#fff;min-width:20px;height:20px;border-radius:6px;display:grid;place-items:center;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums}
+.c-name{flex:1;text-transform:capitalize}
+.dot{width:8px;height:8px;border-radius:50%}.dot.clinical{background:#8b5cf6}.dot.won{background:var(--green)}.dot.end{background:#9aa7b6}
+.stage-main{display:flex;flex-direction:column;align-items:center;padding:22px 16px;overflow-y:auto;max-height:calc(100vh - 84px)}
+.phone{width:390px;max-width:100%;background:var(--panel);border:1px solid var(--line);border-radius:26px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column}
+.wa-top{background:var(--brand);color:#fff;padding:12px 15px;display:flex;align-items:center;gap:11px}
+.wa-av{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.22);display:grid;place-items:center;font-weight:700}
+.wa-top b{font-size:15px}.wa-top .on{font-size:11.5px;opacity:.85}
+#thread{background:var(--wa);padding:14px 12px;height:460px;overflow-y:auto;display:flex;flex-direction:column;gap:9px}
+.row{display:flex}.row.out{justify-content:flex-start}.row.in{justify-content:flex-end}
+.msg{max-width:90%}
+.tpl-tag{font-size:10.5px;color:var(--muted);margin:0 0 3px 2px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.tpl-tag .seq{background:var(--brand);color:#fff;border-radius:5px;padding:0 5px;font-weight:700}
+.edit-link{border:none;background:none;color:var(--brand2);font-weight:700;font-size:10.5px;text-decoration:underline;padding:0}
+.bubble{background:var(--wa-out);border-radius:3px 13px 13px 13px;box-shadow:0 1px 1px rgba(0,0,0,.12);overflow:hidden;color:#0c1b2e}
+@media (prefers-color-scheme:dark){.bubble{color:var(--ink)}}
+:root[data-theme=dark] .bubble{color:var(--ink)}
+.row.in .bubble{border-radius:13px 3px 13px 13px;background:#d9fdd3;color:#0c1b2e}
+.bubble .txt{padding:9px 12px;font-size:13.5px}.bubble .v{background:#eef4fb;color:var(--brand);border-radius:3px;padding:0 3px;font-weight:600}
+@media (prefers-color-scheme:dark){.bubble .v{background:rgba(90,160,238,.18)}}
+.hdr{background:linear-gradient(135deg,#0b4a8b,#1f6fd6);color:#fff}.hdr img{width:100%;display:block}
+.hdr-ph{display:flex;flex-direction:column;padding:16px;gap:2px}.hdr-ic{font-size:20px;opacity:.9}.hdr-ph em{font-size:11.5px;opacity:.9;font-style:normal}
+.qrs{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.qr{padding:9px;text-align:center;color:var(--brand2);font-weight:600;font-size:12.5px;border-top:1px solid var(--line)}
+.qr:first-child{border-top:none}
+.reply{padding:8px 12px;font-size:13px;font-weight:600}
+.sys{align-self:center;font-size:11.5px;color:var(--muted);background:var(--chip);padding:4px 12px;border-radius:20px}
+.tag{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:1px 6px;border-radius:5px;background:#dbe4ef;color:#5a6b80}
+.tag.utility{background:rgba(28,139,80,.16);color:#1c8b50}.tag.marketing{background:rgba(229,161,58,.22);color:#9a6a12}
+.tag.session{background:rgba(31,111,214,.14);color:#1f6fd6}.tag.template{background:rgba(90,90,120,.14);color:#6a6a8a}
+.tag.clinical{background:rgba(139,92,246,.16);color:#7c4ddb}.tag.review{background:rgba(229,161,58,.2);color:#9a6a12}
+.controls{width:390px;max-width:100%;margin-top:14px}
+.ctl-head{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);margin-bottom:8px}
+.advance{border:1px solid var(--green);background:rgba(28,139,80,.1);color:var(--green);border-radius:8px;padding:6px 11px;font-weight:700;font-size:12.5px}
+.ctl-row{display:flex;flex-wrap:wrap;gap:7px}
+.act{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:8px;padding:7px 11px;font-size:12.5px;font-weight:600}
+.act:hover{border-color:var(--brand);background:var(--chip)}
+.ctl-wait{margin-top:9px;font-size:11.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.wait{border:1px dashed var(--line);background:none;color:var(--muted);border-radius:7px;padding:4px 9px;font-size:11.5px}
+.ended{padding:13px;border-radius:11px;text-align:center;font-weight:700;font-size:13.5px}
+.ended.won{background:rgba(28,139,80,.12);color:var(--green)}.ended.closed{background:var(--chip);color:var(--muted)}
+.ghost{border:1px solid var(--line);background:none;color:var(--brand2);border-radius:8px;padding:5px 11px;font-weight:600;font-size:12.5px}
+.ghost.sm{font-size:11.5px;padding:4px 9px;margin-top:6px}
+.drawer{border-left:1px solid var(--line);background:var(--panel);padding:16px;overflow-y:auto;max-height:calc(100vh - 84px)}
+#app:not(.editing) .drawer{display:none}
+.dr-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
+.dr-title{font-weight:700;font-size:15px;text-transform:capitalize;color:var(--brand)}
+.dr-sub{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-top:4px}.dr-sub code{font-size:11px;color:var(--muted)}
+.x{border:none;background:var(--chip);color:var(--ink);border-radius:7px;width:28px;height:28px;font-size:14px}
+.warn{background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);color:#7c4ddb;font-size:11.5px;border-radius:9px;padding:8px 10px;margin-bottom:11px}
+.fld{display:block;margin-bottom:13px}.fld>span{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin-bottom:5px}
+textarea,.b-in{width:100%;font:inherit;font-size:13px;border:1px solid var(--line);border-radius:9px;padding:9px;background:var(--bg);color:var(--ink);resize:vertical}
+.varchips{display:flex;flex-wrap:wrap;gap:6px}.varchip{border:1px solid var(--line);background:var(--chip);color:var(--brand2);border-radius:7px;padding:4px 8px;font-size:11.5px;font-weight:600}
+.btn-edit{display:flex;gap:6px;margin-bottom:6px}.b-del{border:1px solid var(--line);background:none;color:var(--muted);border-radius:7px;width:32px}
+.preview{margin:6px 0 13px;background:var(--wa);padding:12px;border-radius:11px}.pv-label{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin-bottom:7px}
+.dr-foot{border-top:1px solid var(--line);padding-top:12px}.gate{font-size:11.5px;color:var(--muted);display:block;margin-bottom:9px}
+.dr-actions{display:flex;justify-content:flex-end;gap:8px}
+.primary{background:var(--brand);color:#fff;border:none;border-radius:9px;padding:8px 15px;font-weight:700;font-size:13px}
+.muted{color:var(--muted);font-size:12px}
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);
+  padding:11px 18px;border-radius:11px;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:.25s;z-index:50;box-shadow:var(--shadow)}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:900px){#app,#app.editing{grid-template-columns:1fr}.rail{max-height:none;border-right:none;border-bottom:1px solid var(--line)}
+  .drawer{border-left:none;border-top:1px solid var(--line)}.phone,.controls{width:100%}}
+</style>
+<div class="ribbon">SANDBOX — a safe, editable walk-through of the patient journey. Nothing is sent. Reset anytime.</div>
+<div class="topbar">
+  <div class="logo">MedYatra <small>· patient-journey studio</small></div>
+  <div class="spacer"></div>
+  <div class="tsel">Viewing as
+    <select id="tenant" aria-label="brand"></select>
+    <span class="wl-note" id="wl-note">MedYatra’s own acquisition brand.</span>
+  </div>
+  <button class="btn play" id="play">▶ Auto-play</button>
+  <button class="btn" id="reset">Reset</button>
+</div>
+<div id="app">
+  <aside class="rail" id="rail"></aside>
+  <main class="stage-main">
+    <div class="phone">
+      <div class="wa-top"><div class="wa-av">M</div><div><b id="wa-brand">MedYatra</b><div class="on">online · typical reply in minutes</div></div></div>
+      <div id="thread"></div>
+    </div>
+    <div class="controls" id="controls"></div>
+  </main>
+  <aside class="drawer" id="drawer"></aside>
+</div>
+<div id="toast"></div>
+<script>window.__SANDBOX__={"templates":[{"id":38,"stage":"first_touch","seq":1,"name":"medyatra_first_touch","msg_type":"template","category":"utility","header_type":"image","header_asset":"outputs/comms/img/welcome.png","body":"Hi {{1}}, thanks for reaching out to MedYatra about {{2}} in India. A coordinator will share accredited-hospital options shortly. Reply YES to continue.","variables":{"1":"first name","2":"treatment"},"buttons":[{"type":"quick_reply","text":"Yes, tell me more"},{"type":"quick_reply","text":"Not now"}],"status":"review","clinical":false,"handoff":null},{"id":39,"stage":"nudge","seq":2,"name":"medyatra_nudge","msg_type":"template","category":"utility","header_type":"image","header_asset":"outputs/comms/img/estimate-cardiac.png","body":"Hi {{1}}, still exploring {{2}} in India? Accredited hospitals, no waiting list, English-speaking care. Options whenever you're ready.","variables":{"1":"first name","2":"treatment"},"buttons":[{"type":"quick_reply","text":"Show me options"},{"type":"quick_reply","text":"Not now"}],"status":"review","clinical":false,"handoff":null},{"id":40,"stage":"channel_fallback","seq":3,"name":"medyatra_channel_fallback","msg_type":"template","category":"utility","header_type":"none","header_asset":null,"body":"Hi {{1}}, we tried reaching you about {{2}}. If it's easier, reply here or email us — no pressure, we're here when you need us.","variables":{"1":"first name","2":"treatment"},"buttons":[{"type":"quick_reply","text":"I'm ready"},{"type":"quick_reply","text":"Stop messages"}],"status":"review","clinical":false,"handoff":null},{"id":41,"stage":"qualify","seq":4,"name":"medyatra_qualify","msg_type":"session","category":"utility","header_type":"image","header_asset":"outputs/comms/img/how-it-works.png","body":"To tailor your options, could you share your recent medical reports, your preferred timing, and the city you'll travel from?","variables":{},"buttons":[{"type":"quick_reply","text":"Send reports"},{"type":"quick_reply","text":"Ask a question"}],"status":"review","clinical":false,"handoff":null},{"id":42,"stage":"collect_reports","seq":5,"name":"medyatra_collect_reports","msg_type":"session","category":"utility","header_type":"none","header_asset":null,"body":"Thanks {{1}}. Please share your latest reports or scans (or a doctor's summary). An accredited hospital's specialist will review and recommend the right path.","variables":{"1":"first name"},"buttons":[{"type":"quick_reply","text":"Uploaded"},{"type":"quick_reply","text":"Need help"}],"status":"review","clinical":false,"handoff":null},{"id":43,"stage":"opinion_pending","seq":6,"name":"medyatra_opinion_pending","msg_type":"session","category":"utility","header_type":"none","header_asset":null,"body":"Your reports are with the hospital's specialist for review. You'll have their opinion and recommended options within {{1}}. We'll message you the moment it's back.","variables":{"1":"turnaround, e.g. 2–3 days"},"buttons":[{"type":"quick_reply","text":"Okay"},{"type":"quick_reply","text":"Ask a question"}],"status":"review","clinical":false,"handoff":null},{"id":44,"stage":"off_ramp","seq":7,"name":"medyatra_off_ramp","msg_type":"session","category":"utility","header_type":"none","header_asset":null,"body":"Hi {{1}}, based on the doctor's review, travelling for surgery isn't the right step now — this is better managed locally. We've summarised their guidance for you, no charge. We're here if things change.","variables":{"1":"first name"},"buttons":[{"type":"quick_reply","text":"Thank you"}],"status":"review","clinical":false,"handoff":null},{"id":45,"stage":"estimate","seq":8,"name":"medyatra_estimate","msg_type":"template","category":"utility","header_type":"image","header_asset":"outputs/comms/img/estimate-cardiac.png","body":"Hi {{1}}, here's the indicative cost range for {{2}} — a package estimate, not a final quote. Your coordinator will confirm details for your case.","variables":{"1":"first name","2":"treatment"},"buttons":[{"type":"quick_reply","text":"Discuss my estimate"},{"type":"quick_reply","text":"See hospitals"}],"status":"review","clinical":false,"handoff":null},{"id":46,"stage":"doc_reminder","seq":9,"name":"medyatra_doc_reminder","msg_type":"session","category":"utility","header_type":"none","header_asset":null,"body":"Hi {{1}}, we're ready to firm up your quote — we just need {{2}} to complete it. Whenever you can.","variables":{"1":"first name","2":"the pending document"},"buttons":[{"type":"quick_reply","text":"Sending now"},{"type":"quick_reply","text":"Need help"}],"status":"review","clinical":false,"handoff":null},{"id":47,"stage":"objection","seq":10,"name":"medyatra_objection","msg_type":"session","category":"utility","header_type":"none","header_asset":null,"body":"Great questions, {{1}} — happy to help. Whether it's cost, choosing the hospital, or safety, I can share accreditation, a free second opinion, or a call with the doctor. What matters most?","variables":{"1":"first name"},"buttons":[{"type":"quick_reply","text":"Cost & payment"},{"type":"quick_reply","text":"Hospital & safety"},{"type":"quick_reply","text":"Talk to a doctor"}],"status":"review","clinical":false,"handoff":null},{"id":48,"stage":"booking","seq":11,"name":"medyatra_booking","msg_type":"template","category":"utility","header_type":"none","header_asset":null,"body":"Good news {{1}} — the hospital can offer an admission slot around {{2}}. Shall we hold it and start your visa invitation letter?","variables":{"1":"first name","2":"date window"},"buttons":[{"type":"quick_reply","text":"Hold my slot"},{"type":"quick_reply","text":"Discuss dates"}],"status":"review","clinical":false,"handoff":null},{"id":49,"stage":"visa_start","seq":12,"name":"medyatra_visa_start","msg_type":"template","category":"utility","header_type":"image","header_asset":"outputs/comms/img/how-it-works.png","body":"For your India medical visa, the hospital issues your official invitation letter (a required supporting document) and we send you the full checklist. You apply on the government portal yourself — it's straightforward. Up to {{1}} attendant(s) may travel with you.","variables":{"1":"attendant count"},"buttons":[{"type":"quick_reply","text":"See my checklist"},{"type":"quick_reply","text":"Ask about visa"}],"status":"review","clinical":false,"handoff":null},{"id":50,"stage":"stay_options","seq":13,"name":"medyatra_stay_options","msg_type":"template","category":"utility","header_type":"image","header_asset":"outputs/comms/img/how-it-works.png","body":"Here are near-hospital stay options via our partners, for you and your family before and after treatment. You book your own flights and visa; we help with the stay and the paperwork. Want these options?","variables":{},"buttons":[{"type":"quick_reply","text":"See stays"},{"type":"quick_reply","text":"Ask a question"}],"status":"review","clinical":false,"handoff":null},{"id":51,"stage":"pre_op","seq":14,"name":"medyatra_pre_op","msg_type":"session","category":"utility","header_type":"none","header_asset":null,"body":"Hi {{1}}, your pre-op instructions from the hospital are ready (fasting, medicines, what to bring). Safe travels — message us anytime if you need anything.","variables":{"1":"first name"},"buttons":[{"type":"quick_reply","text":"Got it"},{"type":"quick_reply","text":"Ask a question"}],"status":"review","clinical":true,"handoff":"hospital"},{"id":52,"stage":"in_treatment","seq":15,"name":"medyatra_in_treatment","msg_type":"session","category":"utility","header_type":"none","header_asset":null,"body":"Wishing you a smooth procedure, {{1}}. Your coordinator is on hand for anything non-medical; the hospital team is with you for care. We'll keep your family updated.","variables":{"1":"first name"},"buttons":[{"type":"quick_reply","text":"Thank you"}],"status":"review","clinical":true,"handoff":"hospital"},{"id":53,"stage":"post_op","seq":16,"name":"medyatra_post_op","msg_type":"session","category":"utility","header_type":"none","header_asset":null,"body":"Hi {{1}}, glad you're through it. Your discharge summary and follow-up plan are saved for you. How are you feeling today?","variables":{"1":"first name"},"buttons":[{"type":"quick_reply","text":"Doing okay"},{"type":"quick_reply","text":"Need help"}],"status":"review","clinical":false,"handoff":null},{"id":54,"stage":"recovery_bundle","seq":17,"name":"medyatra_recovery_bundle","msg_type":"template","category":"marketing","header_type":"image","header_asset":"outputs/comms/img/how-it-works.png","body":"Hi {{1}}, many patients add a short naturopathy recovery stay before flying home — restful, supervised, well-priced. Want options? Reply STOP to opt out.","variables":{"1":"first name"},"buttons":[{"type":"quick_reply","text":"Show recovery stays"},{"type":"quick_reply","text":"No thanks"}],"status":"review","clinical":false,"handoff":null},{"id":55,"stage":"review_referral","seq":18,"name":"medyatra_review_referral","msg_type":"template","category":"marketing","header_type":"none","header_asset":null,"body":"Hi {{1}}, we hope your treatment and recovery went well. If we helped, a short review means a lot — and if a friend or relative ever needs care in India, we're here. Reply STOP to opt out.","variables":{"1":"first name"},"buttons":[{"type":"quick_reply","text":"Leave a review"},{"type":"quick_reply","text":"Refer someone"}],"status":"review","clinical":false,"handoff":null},{"id":56,"stage":"reengage","seq":19,"name":"medyatra_reengage","msg_type":"template","category":"marketing","header_type":"image","header_asset":"outputs/comms/img/welcome.png","body":"Hi {{1}}, still considering treatment in India? Your MedYatra coordinator is here whenever you're ready — no pressure. Reply STOP to opt out.","variables":{"1":"first name"},"buttons":[{"type":"quick_reply","text":"I'm ready"},{"type":"quick_reply","text":"Not now"}],"status":"review","clinical":false,"handoff":null},{"id":57,"stage":"cant_travel","seq":20,"name":"medyatra_cant_travel","msg_type":"session","category":"utility","header_type":"none","header_asset":null,"body":"Hi {{1}}, sorry the visa or travel didn't work out this time. No problem — we'll hold everything and pick up whenever you're ready to try again. Just message us.","variables":{"1":"first name"},"buttons":[{"type":"quick_reply","text":"Try again later"},{"type":"quick_reply","text":"Ask a question"}],"status":"review","clinical":false,"handoff":null},{"id":58,"stage":"complication","seq":21,"name":"medyatra_complication","msg_type":"session","category":"utility","header_type":"none","header_asset":null,"body":"Hi {{1}}, your care is with the hospital's medical team and they are on it. We're keeping your family updated and are here for anything non-medical. Please follow the doctors' guidance.","variables":{"1":"first name"},"buttons":[{"type":"quick_reply","text":"Thank you"}],"status":"review","clinical":true,"handoff":"hospital"}],"stages":[{"id":"intake","desc":"First touch — infographic header, policy-clean body","clinical":false,"handoff":null,"terminal":false,"won":false,"msg_type":"template","transitions":[{"event":"onReply","label":"Patient replies","to":"qualifying","kind":"action"},{"event":"advance","label":"No reply — nudge loop","to":"awaiting_reply","kind":"timeout"}]},{"id":"awaiting_reply","desc":"No-reply nudge loop (D2/D5/D9)","clinical":false,"handoff":null,"terminal":false,"won":false,"msg_type":"template","transitions":[{"event":"onReply","label":"Patient replies","to":"qualifying","kind":"action"},{"event":"onSilent","label":"Goes quiet","to":"channel_fallback","kind":"timeout"}]},{"id":"channel_fallback","desc":"One value touch via email/SMS, then dormant","clinical":false,"handoff":null,"terminal":false,"won":false,"msg_type":"template","transitions":[{"event":"onReply","label":"Patient replies","to":"qualifying","kind":"action"},{"event":"onSilent","label":"Goes quiet","to":"dormant","kind":"timeout"}]},{"id":"qualifying","desc":"Fork: knows the procedure vs needs diagnosing","clinical":false,"handoff":null,"terminal":false,"won":false,"msg_type":"auto","transitions":[{"event":"onKnownProcedure","label":"Knows their procedure","to":"product_selection","kind":"action"},{"event":"onSymptoms","label":"Has symptoms — needs diagnosis","to":"triage","kind":"action"},{"event":"onNotFit","label":"Not a surgical fit","to":"off_ramp","kind":"action"},{"event":"onSilent","label":"Goes quiet","to":"dormant","kind":"timeout"}]},{"id":"triage","desc":"Collect reports for a remote opinion","clinical":false,"handoff":null,"terminal":false,"won":false,"msg_type":"auto","transitions":[{"event":"onDocs","label":"Sends reports","to":"awaiting_opinion","kind":"action"},{"event":"onSilent","label":"Goes quiet","to":"dormant","kind":"timeout"}]},{"id":"awaiting_opinion","desc":"Hospital's doctor reviews → diagnosis + path(s)","clinical":true,"handoff":"hospital","terminal":false,"won":false,"msg_type":"auto","transitions":[{"event":"onOpinion","label":"Hospital opinion is back","to":"product_selection","kind":"action"},{"event":"onNotFit","label":"Not a surgical fit","to":"off_ramp","kind":"action"}]},{"id":"off_ramp","desc":"Not surgical / out of network — honest referral","clinical":false,"handoff":null,"terminal":true,"won":false,"msg_type":"auto","transitions":[]},{"id":"product_selection","desc":"Options + indicative quote; patient picks the product","clinical":false,"handoff":null,"terminal":false,"won":false,"msg_type":"auto","transitions":[{"event":"onPick","label":"Picks a package","to":"booking","kind":"action"},{"event":"onObjection","label":"Raises an objection","to":"objection","kind":"action"},{"event":"onDocsNeeded","label":"A document is still needed","to":"awaiting_docs","kind":"action"},{"event":"onSilent","label":"Goes quiet","to":"dormant","kind":"timeout"}]},{"id":"awaiting_docs","desc":"Doc-reminder loop before the quote firms up","clinical":false,"handoff":null,"terminal":false,"won":false,"msg_type":"auto","transitions":[{"event":"onDocs","label":"Sends reports","to":"product_selection","kind":"action"},{"event":"onSilent","label":"Goes quiet","to":"dormant","kind":"timeout"}]},{"id":"objection","desc":"Route by objection (price/trust/safety/timing) → back to decision","clinical":false,"handoff":null,"terminal":false,"won":false,"msg_type":"auto","transitions":[{"event":"onResolved","label":"Concern resolved","to":"product_selection","kind":"action"},{"event":"onLost","label":"Drops off","to":"lost","kind":"action"},{"event":"onSilent","label":"Goes quiet","to":"dormant","kind":"timeout"}]},{"id":"booking","desc":"Patient confirms the hospital slot they want held (MedYatra relays; hospital owns the calendar)","clinical":false,"handoff":null,"terminal":false,"won":false,"msg_type":"auto","transitions":[{"event":"onConfirm","label":"Confirms the slot","to":"visa","kind":"action"},{"event":"onReschedule","label":"Reschedules","to":"booking","kind":"action"},{"event":"onStall","label":"Stalls on dates","to":"product_selection","kind":"action"},{"event":"onSilent","label":"Goes quiet","to":"dormant","kind":"timeout"}]},{"id":"visa","desc":"SUPPORTING DOCS ONLY — hospital issues the invitation letter, we supply the checklist; the PATIENT applies","clinical":false,"handoff":null,"terminal":false,"won":false,"msg_type":"auto","transitions":[{"event":"onReady","label":"Visa documents ready","to":"travel","kind":"action"},{"event":"onDenied","label":"Visa denied / not fit to fly","to":"cant_travel","kind":"action"},{"event":"onSilent","label":"Goes quiet","to":"dormant","kind":"timeout"}]},{"id":"travel","desc":"Patient books their OWN tickets + visa (with our docs); partner stay options; light coordination only","clinical":false,"handoff":null,"terminal":false,"won":false,"msg_type":"auto","transitions":[{"event":"onBooked","label":"Books own travel","to":"pre_op","kind":"action"},{"event":"onSilent","label":"Goes quiet","to":"dormant","kind":"timeout"}]},{"id":"cant_travel","desc":"Travel blocked (visa denied / not fit to fly) — honest hold, revisit later","clinical":false,"handoff":null,"terminal":false,"won":false,"msg_type":"auto","transitions":[{"event":"onReply","label":"Patient replies","to":"booking","kind":"action"},{"event":"onSilent","label":"Goes quiet","to":"dormant","kind":"timeout"}]},{"id":"pre_op","desc":"Pre-op instructions from the hospital; patient arrived on their own arrangements","clinical":true,"handoff":"hospital","terminal":false,"won":false,"msg_type":"auto","transitions":[{"event":"onArrive","label":"Arrives at the hospital","to":"in_treatment","kind":"action"},{"event":"onNoShow","label":"No-show","to":"dormant","kind":"action"}]},{"id":"in_treatment","desc":"On-site consult, any re-eval, the procedure","clinical":true,"handoff":"hospital","terminal":false,"won":false,"msg_type":"auto","transitions":[{"event":"onDischarge","label":"Discharged","to":"post_op","kind":"action"},{"event":"onComplication","label":"A complication arises","to":"complication","kind":"action"}]},{"id":"complication","desc":"Clinical escalation — hospital-led; MedYatra keeps the family informed only","clinical":true,"handoff":"hospital","terminal":false,"won":false,"msg_type":"auto","transitions":[{"event":"onResolved","label":"Concern resolved","to":"post_op","kind":"action"}]},{"id":"post_op","desc":"Recovery check-ins + wellness recovery-bundle upsell","clinical":false,"handoff":null,"terminal":false,"won":false,"msg_type":"auto","transitions":[{"event":"onRecoverUpsell","label":"Adds a recovery stay","to":"recovery_bundle","kind":"action"},{"event":"onReferral","label":"Leaves a review / refers","to":"referral","kind":"action"},{"event":"onSilent","label":"Goes quiet","to":"referral","kind":"timeout"}]},{"id":"recovery_bundle","desc":"Naturopathy recovery stay (bundleable product)","clinical":false,"handoff":null,"terminal":false,"won":false,"msg_type":"auto","transitions":[{"event":"onReferral","label":"Leaves a review / refers","to":"referral","kind":"action"}]},{"id":"referral","desc":"Review + referral → re-enters intake as a new own lead","clinical":false,"handoff":null,"terminal":true,"won":true,"msg_type":"auto","transitions":[]},{"id":"dormant","desc":"Quarterly value touch only, unless opted out","clinical":false,"handoff":null,"terminal":false,"won":false,"msg_type":"template","transitions":[{"event":"onReply","label":"Patient replies","to":"qualifying","kind":"action"}]},{"id":"lost","desc":"Closed — reason logged for calibration","clinical":false,"handoff":null,"terminal":true,"won":false,"msg_type":null,"transitions":[]}],"phases":[{"name":"Acquire","stages":["intake","awaiting_reply","channel_fallback"]},{"name":"Qualify & diagnose","stages":["qualifying","triage","awaiting_opinion","off_ramp"]},{"name":"Decide","stages":["product_selection","awaiting_docs","objection"]},{"name":"Book & travel","stages":["booking","visa","travel","cant_travel"]},{"name":"Treat","stages":["pre_op","in_treatment","complication"]},{"name":"Recover & refer","stages":["post_op","recovery_bundle","referral"]},{"name":"Dormant","stages":["dormant","lost"]}],"happy":{"intake":{"event":"onReply","label":"Patient replies","to":"qualifying"},"awaiting_reply":{"event":"onReply","label":"Patient replies","to":"qualifying"},"qualifying":{"event":"onKnownProcedure","label":"Knows their procedure","to":"product_selection"},"triage":{"event":"onDocs","label":"Sends reports","to":"awaiting_opinion"},"awaiting_opinion":{"event":"onOpinion","label":"Hospital opinion is back","to":"product_selection"},"product_selection":{"event":"onPick","label":"Picks a package","to":"booking"},"awaiting_docs":{"event":"onDocs","label":"Sends reports","to":"product_selection"},"objection":{"event":"onResolved","label":"Concern resolved","to":"product_selection"},"booking":{"event":"onConfirm","label":"Confirms the slot","to":"visa"},"visa":{"event":"onReady","label":"Visa documents ready","to":"travel"},"travel":{"event":"onBooked","label":"Books own travel","to":"pre_op"},"cant_travel":{"event":"onReply","label":"Patient replies","to":"booking"},"pre_op":{"event":"onArrive","label":"Arrives at the hospital","to":"in_treatment"},"in_treatment":{"event":"onDischarge","label":"Discharged","to":"post_op"},"complication":{"event":"onResolved","label":"Concern resolved","to":"post_op"},"post_op":{"event":"onRecoverUpsell","label":"Adds a recovery stay","to":"recovery_bundle"},"recovery_bundle":{"event":"onReferral","label":"Leaves a review / refers","to":"referral"},"dormant":{"event":"onReply","label":"Patient replies","to":"qualifying"}},"tenants":[{"id":"medyatra","name":"MedYatra (own acquisition)","mode":"own"},{"id":"trudoc-demo","name":"Trudoc (demo operator)","mode":"operator"}]};window.__LIVE__=false;</script>
+<script>/* MedYatra patient-journey sandbox — client SPA.
+   Reads window.__SANDBOX__ (data) + window.__LIVE__ (bool). No build step, no deps.
+   Same file powers the live /sandbox route (LIVE=true, edits POST to the DB) and the
+   self-contained customer artifact (LIVE=false, edits persist to localStorage). */
+(function () {
+  "use strict";
+  var D = window.__SANDBOX__ || { templates: [], stages: [], tenants: [], phases: [], happy: {} };
+  var LIVE = !!window.__LIVE__;
+
+  var byStage = {}; D.templates.forEach(function (t) { byStage[t.stage] = t; });
+  var stageMap = {}; D.stages.forEach(function (s) { stageMap[s.id] = s; });
+
+  // Sandbox-only: rehydrate any edits saved to this browser's localStorage.
+  if (!LIVE) {
+    D.templates.forEach(function (t) {
+      try {
+        var raw = localStorage.getItem("medyatra_tpl_" + t.id);
+        if (raw) { var e = JSON.parse(raw); if (e.body != null) t.body = e.body; if (e.buttons) t.buttons = e.buttons; t.status = "review"; t._edited = true; }
+      } catch (e) {}
+    });
+  }
+
+  var state = {
+    stageId: "intake",
+    log: [{ dir: "out", stage: "intake" }],
+    editing: null,
+    brand: D.tenants[0] || { id: "medyatra", name: "MedYatra", mode: "own" },
+    auto: false
+  };
+
+  // ---- sample values so the {{n}} variables read like a real conversation ------------------------
+  function sampleFor(desc) {
+    desc = (desc || "").toLowerCase();
+    if (desc.indexOf("name") >= 0) return "Aisha";
+    if (desc.indexOf("treatment") >= 0) return "knee replacement";
+    if (desc.indexOf("city") >= 0) return "Lagos";
+    if (desc.indexOf("attendant") >= 0) return "2";
+    if (desc.indexOf("turnaround") >= 0) return "2–3 days";
+    if (desc.indexOf("date") >= 0) return "the week of 12 Aug";
+    if (desc.indexOf("document") >= 0 || desc.indexOf("pending") >= 0) return "your latest MRI report";
+    return "…";
+  }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]; }); }
+  function fillBody(t) {
+    var vars = t.variables || {};
+    return esc(t.body || "").replace(/\{\{(\d)\}\}/g, function (m, n) { return '<span class="v">' + esc(sampleFor(vars[n])) + "</span>"; });
+  }
+
+  // ---- header placeholder (real infographic in live mode; branded band otherwise) ---------------
+  function headerBand(t) {
+    if (t.header_type !== "image") return "";
+    var label = t.stage === "estimate" || t.stage === "nudge" ? "Cost comparison — India vs. home"
+      : t.stage === "first_touch" || t.stage === "reengage" ? "Welcome — accredited care in India"
+      : "How it works — 4 simple steps";
+    var src = LIVE && t.header_asset ? "/" + String(t.header_asset).replace(/^\//, "") : "";
+    var img = src ? '<img src="' + esc(src) + '" alt="" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' : "";
+    return '<div class="hdr">' + img + '<div class="hdr-ph"' + (src ? ' style="display:none"' : "") + '><span class="hdr-ic">▦</span> Infographic header<em>' + esc(label) + "</em></div></div>";
+  }
+
+  // ---- badges -----------------------------------------------------------------------------------
+  function badges(s, t) {
+    var out = [];
+    out.push('<span class="tag ' + t.msg_type + '">' + t.msg_type + "</span>");
+    out.push('<span class="tag ' + t.category + '">' + t.category + "</span>");
+    if (s && s.clinical) out.push('<span class="tag clinical">hospital handoff</span>');
+    if (t.status === "review" || t._edited) out.push('<span class="tag review">review</span>');
+    return out.join("");
+  }
+
+  // ---- the phone thread -------------------------------------------------------------------------
+  function bubbleOut(stage) {
+    var t = byStage[stage]; if (!t) return "";
+    var s = stageMap[stage] || {};
+    var qrs = (t.buttons || []).map(function (b) { return '<span class="qr">' + esc(b.text) + "</span>"; }).join("");
+    return '<div class="row out">'
+      + '<div class="msg">'
+      + '<div class="tpl-tag"><span class="seq">' + t.seq + "</span> " + esc(stage.replace(/_/g, " ")) + " " + badges(s, t)
+      + ' <button class="edit-link" data-edit="' + stage + '">edit</button></div>'
+      + '<div class="bubble">' + headerBand(t) + '<div class="txt">' + fillBody(t) + "</div>"
+      + (qrs ? '<div class="qrs">' + qrs + "</div>" : "")
+      + "</div></div></div>";
+  }
+  function bubbleIn(label) {
+    return '<div class="row in"><div class="bubble reply">↩ ' + esc(label) + "</div></div>";
+  }
+  function sysLine(label) { return '<div class="sys">' + esc(label) + "</div>"; }
+
+  function renderPhone() {
+    var html = state.log.map(function (e) {
+      if (e.dir === "out") return bubbleOut(e.stage);
+      if (e.dir === "in") return bubbleIn(e.label);
+      return sysLine(e.label);
+    }).join("");
+    var thread = document.getElementById("thread");
+    thread.innerHTML = html;
+    thread.scrollTop = thread.scrollHeight;
+    document.getElementById("wa-brand").textContent = state.brand.name.replace(/\s*\(.*\)/, "");
+  }
+
+  // ---- the event control bar (drives the branches) ----------------------------------------------
+  function renderControls() {
+    var s = stageMap[state.stageId];
+    var el = document.getElementById("controls");
+    if (!s || s.terminal) {
+      var kind = s && s.won ? "won" : "closed";
+      el.innerHTML = '<div class="ended ' + kind + '">' + (s && s.won ? "✓ Journey complete — treated &amp; referred" : "Conversation ended — " + esc(state.stageId.replace(/_/g, " ")))
+        + ' <button class="ghost" id="reset2">start over</button></div>';
+      var r2 = document.getElementById("reset2"); if (r2) r2.onclick = reset;
+      return;
+    }
+    var acts = (s.transitions || []).filter(function (x) { return x.kind !== "timeout"; });
+    var waits = (s.transitions || []).filter(function (x) { return x.kind === "timeout"; });
+    var happy = D.happy[state.stageId];
+    var html = '<div class="ctl-head"><span>' + esc(s.desc || state.stageId) + "</span>"
+      + (happy ? '<button class="advance" id="advance">▶ ' + esc(happy.label) + "</button>" : "") + "</div>";
+    html += '<div class="ctl-row">';
+    acts.forEach(function (x) { html += '<button class="act" data-to="' + x.to + '" data-label="' + esc(x.label) + '">' + esc(x.label) + "</button>"; });
+    html += "</div>";
+    if (waits.length) {
+      html += '<div class="ctl-wait">If the patient goes quiet: ' + waits.map(function (x) {
+        return '<button class="wait" data-to="' + x.to + '" data-label="' + esc(x.label) + '">' + esc(x.label) + "</button>";
+      }).join("") + "</div>";
+    }
+    el.innerHTML = html;
+    var adv = document.getElementById("advance"); if (adv) adv.onclick = function () { fire(happy.to, happy.label); };
+  }
+
+  function fire(to, label) {
+    state.log.push({ dir: "in", label: label });
+    state.stageId = to;
+    if (byStage[to]) state.log.push({ dir: "out", stage: to });
+    else state.log.push({ dir: "sys", label: "Closed — " + to.replace(/_/g, " ") });
+    render();
+  }
+
+  function autoPlay() {
+    state.auto = !state.auto;
+    document.getElementById("play").classList.toggle("on", state.auto);
+    step();
+  }
+  function step() {
+    if (!state.auto) return;
+    var h = D.happy[state.stageId];
+    var s = stageMap[state.stageId];
+    if (!h || (s && s.terminal)) { state.auto = false; document.getElementById("play").classList.remove("on"); return; }
+    fire(h.to, h.label);
+    setTimeout(step, 1100);
+  }
+
+  // ---- the journey rail (browse + jump + edit) --------------------------------------------------
+  function renderRail() {
+    var html = "";
+    D.phases.forEach(function (p) {
+      html += '<div class="phase"><div class="ph-name">' + esc(p.name) + "</div>";
+      p.stages.forEach(function (sid) {
+        var t = byStage[sid], s = stageMap[sid] || {};
+        var cls = "chip" + (sid === state.stageId ? " active" : "") + (t && t._edited ? " edited" : "");
+        var flags = (s.clinical ? '<span class="dot clinical" title="hospital handoff"></span>' : "")
+          + (s.won ? '<span class="dot won" title="won"></span>' : "")
+          + (s.terminal && !s.won ? '<span class="dot end" title="terminal"></span>' : "");
+        html += '<button class="' + cls + '" data-jump="' + sid + '"><span class="c-seq">' + (t ? t.seq : "·") + "</span>"
+          + '<span class="c-name">' + esc(sid.replace(/_/g, " ")) + "</span>" + flags + "</button>";
+      });
+      html += "</div>";
+    });
+    document.getElementById("rail").innerHTML = html;
+  }
+
+  // ---- the editor drawer ------------------------------------------------------------------------
+  function openEditor(stage) { state.editing = stage; renderDrawer(); document.getElementById("app").classList.add("editing"); }
+  function closeEditor() { state.editing = null; document.getElementById("app").classList.remove("editing"); }
+
+  function renderDrawer() {
+    var stage = state.editing; if (!stage) return;
+    var t = byStage[stage], s = stageMap[stage] || {};
+    var vars = t.variables || {};
+    var varChips = Object.keys(vars).map(function (n) { return '<button class="varchip" data-var="' + n + '">{{' + n + "}} · " + esc(vars[n]) + "</button>"; }).join("") || '<span class="muted">no variables</span>';
+    var btnRows = (t.buttons || []).map(function (b, i) {
+      return '<div class="btn-edit"><input class="b-in" data-bi="' + i + '" value="' + esc(b.text) + '"><button class="b-del" data-bdel="' + i + '">✕</button></div>';
+    }).join("");
+    var clin = s.clinical ? '<div class="warn">Hospital handoff — the wording here is the hospital medical team’s responsibility; MedYatra never advises clinically.</div>' : "";
+    var d = document.getElementById("drawer");
+    d.innerHTML = '<div class="dr-head"><div><div class="dr-title">' + t.seq + ". " + esc(stage.replace(/_/g, " ")) + "</div>"
+      + '<div class="dr-sub">' + badges(s, t) + '<code>' + esc(t.name) + "</code></div></div>"
+      + '<button class="x" id="dr-x">✕</button></div>'
+      + clin
+      + '<label class="fld"><span>Message body</span><textarea id="ed-body" rows="6">' + esc(t.body || "") + "</textarea></label>"
+      + '<div class="fld"><span>Insert variable</span><div class="varchips">' + varChips + "</div></div>"
+      + '<div class="fld"><span>Quick-reply buttons</span><div id="ed-btns">' + btnRows + '</div><button class="ghost sm" id="ed-addbtn">+ add button</button></div>'
+      + '<div class="preview"><div class="pv-label">Live preview</div><div class="bubble">' + headerBand(t) + '<div class="txt">' + fillBody(t) + "</div>"
+      + ((t.buttons || []).length ? '<div class="qrs">' + t.buttons.map(function (b) { return '<span class="qr">' + esc(b.text) + "</span>"; }).join("") + "</div>" : "") + "</div></div>"
+      + '<div class="dr-foot"><span class="gate">' + (LIVE ? "Saving sets this template back to <b>Review</b> — a human approves before it can send." : "Sandbox — edits stay in this browser. Nothing is sent.")
+      + '</span><div class="dr-actions"><button class="ghost" id="ed-revert">Revert</button><button class="primary" id="ed-save">Save draft</button></div></div>';
+
+    document.getElementById("dr-x").onclick = closeEditor;
+    var bodyEl = document.getElementById("ed-body");
+    bodyEl.oninput = function () { t.body = bodyEl.value; livePreview(); };
+    document.getElementById("ed-addbtn").onclick = function () { t.buttons = (t.buttons || []).concat([{ text: "New button" }]); renderDrawer(); livePreview(); };
+    document.getElementById("ed-revert").onclick = function () { revert(stage); };
+    document.getElementById("ed-save").onclick = function () { save(stage); };
+    Array.prototype.forEach.call(d.querySelectorAll(".varchip"), function (c) {
+      c.onclick = function () { insertAtCursor(bodyEl, "{{" + c.getAttribute("data-var") + "}}"); t.body = bodyEl.value; livePreview(); };
+    });
+    Array.prototype.forEach.call(d.querySelectorAll(".b-in"), function (inp) {
+      inp.oninput = function () { t.buttons[+inp.getAttribute("data-bi")].text = inp.value; livePreview(); };
+    });
+    Array.prototype.forEach.call(d.querySelectorAll(".b-del"), function (btn) {
+      btn.onclick = function () { t.buttons.splice(+btn.getAttribute("data-bdel"), 1); renderDrawer(); livePreview(); };
+    });
+  }
+  function livePreview() {
+    var t = byStage[state.editing]; if (!t) return;
+    var pv = document.querySelector("#drawer .preview .bubble");
+    if (pv) pv.innerHTML = headerBand(t) + '<div class="txt">' + fillBody(t) + "</div>"
+      + ((t.buttons || []).length ? '<div class="qrs">' + t.buttons.map(function (b) { return '<span class="qr">' + esc(b.text) + "</span>"; }).join("") + "</div>" : "");
+    renderPhone(); renderRail();
+  }
+  function insertAtCursor(el, text) {
+    var s = el.selectionStart || el.value.length, e = el.selectionEnd || el.value.length;
+    el.value = el.value.slice(0, s) + text + el.value.slice(e);
+    el.focus(); el.selectionStart = el.selectionEnd = s + text.length;
+  }
+
+  var _orig = {};
+  D.templates.forEach(function (t) { _orig[t.id] = { body: t.body, buttons: JSON.parse(JSON.stringify(t.buttons || [])) }; });
+  function revert(stage) {
+    var t = byStage[stage], o = _orig[t.id];
+    t.body = o.body; t.buttons = JSON.parse(JSON.stringify(o.buttons)); t._edited = false;
+    if (!LIVE) try { localStorage.removeItem("medyatra_tpl_" + t.id); } catch (e) {}
+    renderDrawer(); render(); toast("Reverted to the original");
+  }
+  function save(stage) {
+    var t = byStage[stage];
+    t._edited = true; t.status = "review";
+    if (LIVE) {
+      fetch("/api/comms/save", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ id: t.id, body: t.body, buttons: t.buttons }) })
+        .then(function (r) { return r.json(); })
+        .then(function (r) { toast(r.ok ? "Saved — back to Review for human approval" : "Save failed: " + (r.error || "unknown")); })
+        .catch(function () { toast("Save failed — is the server running?"); });
+    } else {
+      try { localStorage.setItem("medyatra_tpl_" + t.id, JSON.stringify({ body: t.body, buttons: t.buttons })); } catch (e) {}
+      toast("Saved in this sandbox (demo — nothing sent)");
+    }
+    renderRail(); renderDrawer();
+  }
+
+  // ---- toast ------------------------------------------------------------------------------------
+  var toastT;
+  function toast(msg) {
+    var el = document.getElementById("toast");
+    el.textContent = msg; el.classList.add("show");
+    clearTimeout(toastT); toastT = setTimeout(function () { el.classList.remove("show"); }, 2600);
+  }
+
+  // ---- reset / tenant switch --------------------------------------------------------------------
+  function reset() {
+    state.auto = false; document.getElementById("play").classList.remove("on");
+    state.stageId = "intake"; state.log = [{ dir: "out", stage: "intake" }];
+    render();
+  }
+
+  function render() { renderPhone(); renderControls(); renderRail(); }
+
+  // ---- wire global events -----------------------------------------------------------------------
+  document.addEventListener("click", function (ev) {
+    var jump = ev.target.closest && ev.target.closest("[data-jump]");
+    if (jump) { var sid = jump.getAttribute("data-jump"); openEditor(sid); return; }
+    var edit = ev.target.closest && ev.target.closest("[data-edit]");
+    if (edit) { openEditor(edit.getAttribute("data-edit")); return; }
+    var act = ev.target.closest && ev.target.closest("[data-to]");
+    if (act) { fire(act.getAttribute("data-to"), act.getAttribute("data-label")); return; }
+  });
+  document.getElementById("reset").onclick = reset;
+  document.getElementById("play").onclick = autoPlay;
+  var sel = document.getElementById("tenant");
+  D.tenants.forEach(function (tn) { var o = document.createElement("option"); o.value = tn.id; o.textContent = tn.name; sel.appendChild(o); });
+  sel.onchange = function () {
+    state.brand = D.tenants.filter(function (x) { return x.id === sel.value; })[0] || state.brand;
+    document.getElementById("wl-note").textContent = state.brand.mode === "operator"
+      ? "White-labelled — patients see " + state.brand.name.replace(/\s*\(.*\)/, "") + "’s brand; MedYatra runs the engine underneath."
+      : "MedYatra’s own acquisition brand.";
+    renderPhone();
+  };
+
+  render();
+})();
+</script>

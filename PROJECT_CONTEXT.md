@@ -253,6 +253,41 @@ feed, the pipeline, the margin-play candidates, and named contacts. The patient-
 ([`server/landing_home.mjs`](./server/landing_home.mjs)) is the Nuvica-inspired clinical-blue design. Every
 agent action writes a `run` row, so the console *is* the proof the engine is working.
 
+### 5.6 Patient acquisition & the journey sandbox — *demand → booked patient*
+
+Once a lead exists, a **WhatsApp sales-comms state machine** ([`lib/comms_machine.mjs`](./lib/comms_machine.mjs))
+drives it from first touch to treated-and-referred. It's pure logic (no I/O): given a lead's journey position
+and timing, it returns the next human-gated action, honouring the WhatsApp **24-hour session rule** (free-form
+only ≤24h after the patient's last message, otherwise an approved template), a no-reply **nudge cadence + cap**,
+a **diagnosis fork** (knows the procedure → product selection vs. has symptoms → remote opinion), explicit
+**hospital handoffs** (`clinical:true` steps the medical team owns — MedYatra never advises), and stress-hardened
+edge states (visa denied / not-fit-to-fly, reschedule, complication). 22 stages, one approval-ready template each
+([`data-core/gen_comms.mjs`](./data-core/gen_comms.mjs), stored in `comms_template`).
+
+**Scope, deliberately narrow** (build-os/09): MedYatra does *light* coordination — demand-gen, qualification,
+relaying reports to the hospital, and **supporting documents** (orchestrating the hospital invitation letter +
+a visa checklist, [`lib/visa.mjs`](./lib/visa.mjs)). The **patient applies for their own visa and books their
+own tickets**; near-hospital stay is partner-provided ([`lib/stay.mjs`](./lib/stay.mjs)). No heavy logistics.
+
+**Dual-mode intake:** leads enter from the engine's own acquisition *or* an external operator's lead DB plugged
+in via `POST /api/lead/ingest` ([`data-core/ingest.mjs`](./data-core/ingest.mjs) — per-tenant token, normalises
+country→market + treatment→category, masks PII, dedupes, tags `source_type`). Multi-tenant, with **tenant data
+isolation** and a de-identified k-anonymised cross-tenant benchmark (`/benchmarks`) as the honest, legally-clean
+learning layer — *not* patient-data reuse (see [`build-os/11`](./build-os/11_GTM_MODEL_FORK.md)).
+
+**The deployment surface — `/sandbox`** ([`server/sandbox.mjs`](./server/sandbox.mjs)): the customer-facing,
+deployment-ready demo of the whole journey. A WhatsApp **phone simulator** plays the conversation; every branch
+and fallback is a one-click event; the journey rail groups all 22 stages by phase. Any of the 21 templates is
+**clickable and editable live** — body text, quick-reply buttons, variables — with a live preview and a
+white-label **tenant switch** (show an operator their own front). Editing is **human-gated**: a saved edit routes
+the template back to `review` before it can ever send. The same page powers the live route (edits `POST` to the
+DB) and a self-contained shareable artifact (edits persist to the browser). This is what you put in front of a
+prospective operator to let them *feel* the product and shape the copy without touching anything real.
+
+Everything outbound is still approved in **MedYatra Studio** (`/studio`, [`server/studio.mjs`](./server/studio.mjs)) —
+the live approve-and-deploy console that re-checks the gates (regulatory · verified contact · consent) and writes
+back: publishes a page, marks a proposal sent, approves a post, or releases a comms draft and advances the lead.
+
 ---
 
 ## 6. The data model ([`data-core/schema.sql`](./data-core/schema.sql))
@@ -317,8 +352,9 @@ Requires **Node ≥ 22.5**. All data-core scripts need the `--experimental-sqlit
 
 Also available (run with `node --experimental-sqlite data-core/<script>`):
 `repurpose_content.mjs` (→ social posts + visuals · `/distribution`) · `gen_proposals.mjs` (tailored
-proposals) · `gen_credibility.mjs` (trust narratives). Console routes: `/console`, `/plugins` (integration
-readiness), `/distribution`, `/worklist`. Capture a confirmed contact:
+proposals) · `gen_credibility.mjs` (trust narratives). Server routes: `/console`, `/studio` (approve-and-deploy),
+`/sandbox` (editable patient-journey demo), `/comms` (template list), `/benchmarks` (de-identified aggregate),
+`/plugins` (integration readiness), `/distribution`, `/worklist`. Capture a confirmed contact:
 `node --experimental-sqlite data-core/capture_poc.mjs <partner_id> "Full Name" "Role" "<email|linkedin-url>"`
 
 ---
@@ -336,11 +372,13 @@ readiness), `/distribution`, `/worklist`. Capture a confirmed contact:
 - **Real social posting is wired but off** — adapters are dry-run until a platform key + `POST_LIVE=1` +
   approval; Instagram also needs a public image host (see the setup notes).
 - **Premium image gen (Gemini "Nano Banana") needs billing** — the free default (Cloudflare FLUX) is on.
-- **The lead/CRM funnel and WhatsApp intake** are scaffolded, not wired end-to-end.
+- **The WhatsApp comms are logic-complete but not connected to a real Meta number.** The state machine, all
+  21 approval-ready templates, the diagnosis fork, hospital handoffs, and the editable **/sandbox** demo are
+  built and driveable; going live needs a WhatsApp Business API number + template approval + `POST_LIVE=1`.
 
-**Natural next steps:** finish the WhatsApp→qualify→route lead flow; a new-market dry run (add Myanmar via
-config only); native QA on the non-English pages; turn on a real social channel (LinkedIn/X first); re-enable
-GLM-5.2.
+**Natural next steps:** connect a live WhatsApp number and submit the templates to Meta; a new-market dry run
+(add Myanmar via config only); native QA on the non-English pages; turn on a real social channel (LinkedIn/X
+first); re-enable GLM-5.2.
 
 ---
 

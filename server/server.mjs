@@ -13,6 +13,7 @@ import { renderHome } from "./landing_home.mjs";
 import { plugins as pluginList } from "../lib/plugins.mjs";
 import { nextAction } from "../lib/comms_machine.mjs";
 import { renderStudio, studioQueue, studioApprove } from "./studio.mjs";
+import { renderSandbox, saveTemplate } from "./sandbox.mjs";
 import { ingestLeads } from "../data-core/ingest.mjs";
 import { benchmarks } from "../data-core/benchmarks.mjs";
 import { range } from "../lib/money.mjs";
@@ -130,7 +131,7 @@ const server = createServer(async (req, res) => {
   // ACCESS CONTROL: the console + APIs expose named partner contacts and pipeline. If CONSOLE_TOKEN is set,
   // gate everything except the public patient site (/, /site, /outputs) and the health probe. REQUIRED
   // before exposing this beyond localhost. (No token set = open, for localhost dev.)
-  const PROTECTED = /^\/(console|studio|benchmarks|api\/(state|runs|studio|benchmarks)|draft|outreach|worklist|comms|distribution|plugins)/;
+  const PROTECTED = /^\/(console|studio|sandbox|benchmarks|api\/(state|runs|studio|benchmarks|comms)|draft|outreach|worklist|comms|distribution|plugins)/;
   if (process.env.CONSOLE_TOKEN && PROTECTED.test(url.pathname)) {
     const auth = req.headers.authorization || "";
     const pass = auth.startsWith("Basic ") ? Buffer.from(auth.slice(6), "base64").toString().split(":").slice(1).join(":") : "";
@@ -150,6 +151,14 @@ const server = createServer(async (req, res) => {
       return send(200, "text/html; charset=utf-8", renderStudio(db, { tenant: url.searchParams.get("tenant") || undefined }));
     if (url.pathname === "/api/studio")
       return send(200, "application/json", JSON.stringify(studioQueue(db, { tenant: url.searchParams.get("tenant") || undefined })));
+    // SANDBOX — the deployment-ready patient-journey walk-through: simulate every branch + edit templates
+    // live. Editing a template routes it back to `review` (human-gated before it can ever send).
+    if (url.pathname === "/sandbox")
+      return send(200, "text/html; charset=utf-8", renderSandbox(db));
+    if (req.method === "POST" && url.pathname === "/api/comms/save") {
+      const body = await readBody(req);
+      return send(200, "application/json", JSON.stringify(saveTemplate(db, body)));
+    }
     // CROSS-TENANT BENCHMARKS — de-identified aggregate learning (k-anonymised; no tenant/patient identifiers).
     if (url.pathname === "/api/benchmarks")
       return send(200, "application/json", JSON.stringify(benchmarks(db, { k: Number(url.searchParams.get("k")) || 5 })));
@@ -217,7 +226,7 @@ main{max-width:820px;margin:0 auto;padding:24px 20px 70px}h1{color:#0b4a8b;font-
 .bub img{width:100%;display:block}.bd{padding:12px 15px;font-size:14.5px}.bd b{color:#0b4a8b;background:#eef4fb;padding:0 3px;border-radius:3px;font-weight:600}
 .btns{display:flex;flex-direction:column;border-top:1px solid #eef2f7}.btns span{padding:11px;text-align:center;color:#1f6fd6;font-weight:600;font-size:14px;border-top:1px solid #eef2f7;cursor:default}
 .btns span:first-child{border-top:none}</style></head>
-<body><div class="ribbon">SALES COMMS · WhatsApp sequence · body = minimal/kosher, value rides in the image header · human submits to Meta &amp; sends — <a href="/console">back to console</a></div>
+<body><div class="ribbon">SALES COMMS · WhatsApp sequence · body = minimal/kosher, value rides in the image header · human submits to Meta &amp; sends — <a href="/sandbox">open the interactive sandbox →</a> · <a href="/console">back to console</a></div>
 <main><h1>Post-lead WhatsApp sequence</h1><div class="sub">${rows.length} templates · body kept Utility-flavoured for approval; the persuasion (cost, savings, process) lives in the infographic header. See <a href="/site/../build-os/09_SALES_COMMS_PLAYBOOK.md">/build-os/09</a>.</div>
 ${rows.map(card).join("")}</main></body></html>`;
       return send(200, "text/html; charset=utf-8", html);
