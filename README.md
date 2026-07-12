@@ -93,4 +93,6 @@ This is a **first-draft engine**, and it says so where it matters:
 | [`scripts/`](./scripts/) | `run_factory.bat` — the scheduled unattended factory loop |
 | [`outputs/`](./outputs/) | Generated content, social posts + visuals, proposals (gitignored), worklist, screenshots |
 
+**Want to run it?** See [`USER_GUIDE.md`](./USER_GUIDE.md) — step-by-step setup, the demo path, how to use every surface, the daily approval loop, and troubleshooting.
+
 **Want the deep version?** See [`PROJECT_CONTEXT.md`](./PROJECT_CONTEXT.md) — a full walkthrough of every capability, design decision, nuance, and limitation.
