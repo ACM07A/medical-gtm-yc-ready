@@ -1,0 +1,173 @@
+<title>MedYatra × TruDoc — Partnership</title>
+<style>
+  :root{
+    --bg:#f4f8fc; --panel:#ffffff; --ink:#0c1b2e; --ink-soft:#3f556e; --muted:#6c8199;
+    --line:#dbe6f2; --line-strong:#bcd0e4;
+    --accent:#1f6fd6; --deep:#0b4a8b; --wash:#e7f0fb;
+    --good:#1f9d57; --good-wash:#e3f5ea; --gold:#b7791f;
+    --radius:16px; --shadow:0 20px 44px -30px rgba(11,47,90,.55);
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:"SFMono-Regular",Consolas,Menlo,monospace;
+  }
+  @media (prefers-color-scheme:dark){:root{
+    --bg:#0a1421; --panel:#101f2e; --ink:#e9f1f8; --ink-soft:#b4c5d7; --muted:#7d93a8;
+    --line:#213547; --line-strong:#2f4a63; --accent:#5aa0ee; --deep:#8cc2ff; --wash:#13273b;
+    --good:#42c47e; --good-wash:#12301f; --gold:#d6a94e; --shadow:0 22px 50px -30px rgba(0,0,0,.85);
+  }}
+  :root[data-theme="dark"]{--bg:#0a1421;--panel:#101f2e;--ink:#e9f1f8;--ink-soft:#b4c5d7;--muted:#7d93a8;--line:#213547;--line-strong:#2f4a63;--accent:#5aa0ee;--deep:#8cc2ff;--wash:#13273b;--good:#42c47e;--good-wash:#12301f;--gold:#d6a94e;--shadow:0 22px 50px -30px rgba(0,0,0,.85)}
+  :root[data-theme="light"]{--bg:#f4f8fc;--panel:#ffffff;--ink:#0c1b2e;--ink-soft:#3f556e;--muted:#6c8199;--line:#dbe6f2;--line-strong:#bcd0e4;--accent:#1f6fd6;--deep:#0b4a8b;--wash:#e7f0fb;--good:#1f9d57;--good-wash:#e3f5ea;--gold:#b7791f}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:920px;margin:0 auto;padding:0 22px 100px}
+  .theme{position:fixed;top:14px;right:16px;border:1px solid var(--line-strong);background:var(--panel);color:var(--ink-soft);border-radius:999px;padding:6px 12px;font-size:12px;cursor:pointer;z-index:10}
+
+  /* hero */
+  header.hero{padding:64px 0 40px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-weight:700;display:flex;align-items:center;gap:10px}
+  .eyebrow .logo{width:22px;height:22px;border-radius:6px;background:linear-gradient(150deg,var(--accent),var(--deep));display:inline-grid;place-items:center;color:#fff;font-weight:800;font-size:12px}
+  h1{font-family:var(--serif);font-weight:600;font-size:clamp(30px,5vw,46px);line-height:1.08;letter-spacing:-.02em;margin:22px 0 0;text-wrap:balance}
+  h1 em{font-style:italic;color:var(--deep)}
+  .lede{font-size:clamp(16px,2.3vw,19px);color:var(--ink-soft);margin:20px 0 0;max-width:64ch}
+  .metabar{display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:26px;font-size:13px;color:var(--muted)}
+  .metabar b{color:var(--ink);font-weight:650}
+
+  section{padding:40px 0;border-bottom:1px solid var(--line)}
+  .kicker{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin:0 0 6px}
+  h2{font-family:var(--serif);font-weight:600;font-size:clamp(22px,3.4vw,29px);letter-spacing:-.01em;margin:0 0 14px;text-wrap:balance}
+  h2.deep{color:var(--deep)}
+  p{margin:0 0 14px;max-width:66ch}
+  .big{font-size:18px}
+  strong{font-weight:650}
+
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
+  @media(max-width:680px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+  .card h3{margin:0 0 6px;font-size:15.5px;display:flex;align-items:center;gap:9px}
+  .card .n{font-family:var(--mono);font-size:12px;color:var(--accent);background:var(--wash);border-radius:6px;padding:2px 7px;font-weight:700;flex:none}
+  .card p{font-size:13.5px;color:var(--ink-soft);margin:0}
+
+  .stat-row{display:flex;flex-wrap:wrap;gap:14px;margin-top:6px}
+  .stat{flex:1;min-width:150px;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow)}
+  .stat .v{font-family:var(--serif);font-size:30px;font-weight:600;color:var(--deep);letter-spacing:-.02em;line-height:1}
+  .stat .l{font-size:12.5px;color:var(--muted);margin-top:7px}
+
+  .built{background:var(--good-wash);border:1px solid color-mix(in srgb,var(--good) 30%,transparent);border-radius:var(--radius);padding:20px 22px}
+  .built h2{color:var(--good);margin-top:0}
+  .built ul{margin:0;padding-left:2px;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:8px 20px}
+  @media(max-width:680px){.built ul{grid-template-columns:1fr}}
+  .built li{font-size:13.5px;color:var(--ink-soft);padding-left:24px;position:relative}
+  .built li::before{content:"✓";position:absolute;left:0;color:var(--good);font-weight:800}
+  .built li b{color:var(--ink)}
+
+  .moat{background:var(--wash);border-left:4px solid var(--accent);border-radius:10px;padding:16px 20px;margin-top:6px}
+  .moat b{color:var(--deep)}
+
+  table{border-collapse:collapse;width:100%;margin-top:8px;font-size:13.5px}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+  td:first-child{font-weight:650;white-space:nowrap;color:var(--ink)}
+  .who td:first-child{color:var(--accent)}
+
+  .cta{margin-top:28px;background:linear-gradient(150deg,var(--deep),var(--accent));color:#fff;border-radius:var(--radius);padding:28px 26px}
+  .cta h2{color:#fff;margin-top:0}
+  .cta p{color:rgba(255,255,255,.9);max-width:60ch}
+  .pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:9px 16px;font-size:13.5px;font-weight:600;margin-top:8px}
+  .foot{color:var(--muted);font-size:12px;margin-top:22px}
+  .demo{display:inline-block;font-size:13px;color:var(--accent);text-decoration:none;border-bottom:1px solid color-mix(in srgb,var(--accent) 40%,transparent);font-weight:600}
+</style>
+
+<button class="theme" onclick="var r=document.documentElement,d=r.getAttribute('data-theme')==='dark';r.setAttribute('data-theme',d?'light':'dark')">◐</button>
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow"><span class="logo">M</span> MedYatra × TruDoc &nbsp;·&nbsp; Partnership proposal &nbsp;·&nbsp; Confidential</div>
+    <h1>Turn your Gulf patient base into a <em>medical-travel line</em> — without building the engine.</h1>
+    <p class="lede">TruDoc already has the patients, the licences, and the trust in-market. What turns that into treatment abroad is a demand-to-care engine: content that earns attention, a funnel that qualifies and nurtures, and coordination that gets a patient from a WhatsApp message to an accredited hospital in India. MedYatra is that engine — and it is already built.</p>
+    <div class="metabar">
+      <span><b>Model:</b> we power the funnel · you keep the patient, the licence, the supply</span>
+      <span><b>Your data:</b> siloed to you — never shared or reused</span>
+      <span><b>Start:</b> a 90-day pilot on one category</span>
+    </div>
+  </header>
+
+  <section>
+    <p class="kicker">The opportunity</p>
+    <h2 class="deep">The demand is real. The gap is the machine to serve it.</h2>
+    <p class="big">Patients across the Gulf routinely travel for care. India offers the same procedures at accredited (JCI / NABH) hospitals for a fraction of Western private prices — with no waiting list and English-speaking teams.</p>
+    <div class="stat-row">
+      <div class="stat"><div class="v">60–90%</div><div class="l">lower cost vs Western private care, at accredited hospitals</div></div>
+      <div class="stat"><div class="v">Yours</div><div class="l">the patient relationship, the licence, the in-market trust</div></div>
+      <div class="stat"><div class="v">Ours</div><div class="l">the acquisition + coordination engine, already running</div></div>
+    </div>
+    <p style="margin-top:18px">You don't need to build a marketing team, a multilingual content operation, a WhatsApp sales system, or a coordination desk. You plug your patients into ours.</p>
+  </section>
+
+  <section>
+    <p class="kicker">What we plug into your operation</p>
+    <h2>Five parts, one engine — white-labelled to TruDoc.</h2>
+    <div class="grid">
+      <div class="card"><h3><span class="n">01</span> Lead ingestion</h3><p>Stream your patient or enquiry list in through one secure endpoint. We normalise it, mask the PII, dedupe, and put each lead into the funnel — tagged to you, isolated from everyone else.</p></div>
+      <div class="card"><h3><span class="n">02</span> WhatsApp comms engine</h3><p>A full patient-journey state machine: first touch to booked patient, template- and 24h-session-aware, with a diagnosis fork and clean handoffs to the hospital's medical team. Nudge loops, opt-out, and edge cases handled.</p></div>
+      <div class="card"><h3><span class="n">03</span> Multilingual content</h3><p>Arabic-native and English guides that earn organic demand — honest, specific, and written to the patient, not at them. Cost infographics built from real numbers.</p></div>
+      <div class="card"><h3><span class="n">04</span> The approval console</h3><p>Nothing goes out until your team approves it. Every page, message, and quote passes a human gate with automated QA (verified numbers, no vague claims, consent, regulatory clearance) — compliant by construction.</p></div>
+      <div class="card"><h3><span class="n">05</span> Supporting documents</h3><p>We coordinate the hospital's invitation letter and the visa checklist. The patient applies for their own visa and books their own travel — coordination stays light, liability stays narrow.</p></div>
+      <div class="card"><h3><span class="n">✳</span> Wellness recovery</h3><p>An optional naturopathy recovery stay — a calm, well-priced way for patients to heal before flying home. India does this credibly; it deepens the relationship.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">The part every operator asks about first</p>
+    <h2 class="deep">Your patients' data stays yours. Full stop.</h2>
+    <div class="moat">
+      <p style="margin:0"><b>Strict tenant isolation.</b> Your leads are siloed to TruDoc. No other operator can see them, and no patient record is ever reused for anyone else. This is enforced in the system, not just promised — your team's view shows only your patients.</p>
+      <p style="margin:12px 0 0"><b>What the platform learns is anonymous.</b> Only de-identified, aggregate patterns — which categories and markets convert, how the funnel performs — inform the shared model, computed with a privacy threshold that suppresses any group small enough to identify. That is aggregate learning, never patient-data sharing.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="built">
+      <p class="kicker" style="color:var(--good)">Not a slide — a working system</p>
+      <h2>It already runs today.</h2>
+      <p style="color:var(--ink-soft);max-width:64ch">This isn't a concept deck. The engine is built, tested end-to-end, and human-gated throughout:</p>
+      <ul>
+        <li><b>Lead ingestion</b> — live endpoint; PII-masked, deduped, tenant-tagged</li>
+        <li><b>Comms state machine</b> — 21 approval-ready templates, full journey</li>
+        <li><b>Approve-and-deploy console</b> — real queue, real write-back</li>
+        <li><b>Tenant isolation</b> — verified: an operator sees only its own leads</li>
+        <li><b>Multilingual content</b> — English + Arabic, generated from real data</li>
+        <li><b>Cross-tenant benchmarks</b> — k-anonymised, no PII</li>
+        <li><b>Regulatory + consent gates</b> — nothing markets into an uncleared market</li>
+        <li><b>Cost infographics</b> — numbers verified against the data core</li>
+      </ul>
+      <p style="margin:16px 0 0"><a class="demo" href="#" onclick="return false">Live walkthrough available on request →</a></p>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Who does what</p>
+    <h2>Clear lines, narrow liability.</h2>
+    <table class="who">
+      <tr><th>Party</th><th>Owns</th></tr>
+      <tr><td>TruDoc</td><td>The patient relationship, the licence and regulatory standing, the in-market trust, and sign-off on everything that goes out.</td></tr>
+      <tr><td>MedYatra</td><td>Demand generation, lead qualification and nurture, the comms engine, multilingual content, and supporting documents.</td></tr>
+      <tr><td>Hospital</td><td>All clinical judgement — opinion, quote, the invitation letter, the procedure, discharge and follow-up.</td></tr>
+      <tr><td>Patient</td><td>Their own flights and visa application (with our supporting documents).</td></tr>
+    </table>
+  </section>
+
+  <section style="border-bottom:none">
+    <p class="kicker">Commercial</p>
+    <h2>You pay on outcomes, not promises.</h2>
+    <p>Performance-based: a share of what each delivered patient generates, or a per-delivered fee — agreed up front, disclosed, with no retainer and no upfront build cost to TruDoc. Non-exclusive to start, with a path to preferred terms once the pilot proves out.</p>
+
+    <div class="cta">
+      <p class="kicker" style="color:rgba(255,255,255,.75)">The ask</p>
+      <h2>Start with a 90-day pilot.</h2>
+      <p>One low-stakes category — dental, cosmetic, or a wellness recovery stay — run against your existing Gulf patient base. One number to judge it on: the lift in your enquiry-to-booked conversion. If it works, we scale category by category. If it doesn't, you've risked a quarter and no capital.</p>
+      <span class="pill">→ A pilot scope + integration plan on the next call</span>
+    </div>
+    <p class="foot">MedYatra is a medical-travel facilitator, not a healthcare provider. Prices referenced are indicative package ranges, not quotes. This document is confidential and prepared for discussion with TruDoc.</p>
+  </section>
+
+</div>

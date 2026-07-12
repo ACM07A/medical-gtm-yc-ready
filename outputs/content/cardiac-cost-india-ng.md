@@ -1,108 +1,99 @@
 <!-- Content Engine · tier-2 (GLM→Gemini) · fed by data core · 2026-07-11
-     Prices injected from data core (cited /build-os/08). Prose is model-generated → DRAFT, needs human+clinical sign-off. -->
+     Prices injected from data core (cited /build-os/08). Prose is model-generated → DRAFT, needs human+clinical sign-off. · filler to cut: world-class, streamlining -->
 
 <!-- DRAFT · tier-2 · cell cardiac×NG (en) · needs clinical sign-off -->
-Making a decision about cardiac treatment, especially when considering options abroad, requires clear information and a complete understanding of the process and costs involved.
+Considering cardiac treatment in India involves understanding both the medical process and the practicalities of travel, cost, and logistics from Nigeria. This guide aims to provide clear, honest information to help you and your family make an informed decision about seeking cardiac care abroad.
 
-## Understanding Cardiac Procedures in India
+## What Cardiac Treatment in India Involves
 
-Cardiac care in India covers a range of advanced procedures aimed at treating heart conditions that cannot be managed with medication alone. For many patients from Nigeria, these treatments offer a path to improved health and quality of life.
+Cardiac conditions range from blockages in the arteries supplying the heart to issues with heart valves or the heart's overall pumping function. Indian hospitals offer a range of advanced procedures to address these conditions.
 
-One common procedure is **Angioplasty**, often performed to open blocked or narrowed coronary arteries using a balloon, typically followed by the insertion of a small mesh tube called a stent to keep the artery open. This is for patients experiencing angina or who have had a heart attack due to arterial blockages.
+*   **Angioplasty:** This procedure addresses blocked or narrowed coronary arteries, which supply blood to the heart. A thin tube (catheter) with a balloon at its tip is guided to the blockage. The balloon is inflated to open the artery, and often a small mesh tube called a stent is placed to keep it open. It is typically recommended for patients with significant blockages causing symptoms like chest pain (angina) or after a heart attack.
+*   **Heart Valve Replacement:** The heart has four valves that ensure blood flows in the correct direction. If a valve becomes severely narrowed (stenosis) or leaks (regurgitation), it can strain the heart. Valve replacement surgery involves removing the damaged valve and replacing it with an artificial one, which can be mechanical or biological. This surgery is for patients whose symptoms are severe and whose valve cannot be repaired.
+*   **Coronary Artery Bypass Graft (CABG) Surgery:** Commonly known as bypass surgery, CABG is performed when multiple coronary arteries are severely blocked. During this open-heart procedure, a healthy blood vessel (often taken from the leg, arm, or chest) is grafted to create new pathways, or "bypasses," around the blocked sections of the coronary arteries. This restores blood flow to the heart muscle. It is considered for patients with extensive blockages not suitable for angioplasty or those with complex coronary artery disease.
 
-**Valve Replacement** addresses conditions where one or more heart valves are damaged or diseased, preventing proper blood flow. Surgeons can replace a faulty valve with a mechanical or biological valve, restoring the heart's pumping efficiency. This is usually recommended for severe valvular stenosis (narrowing) or regurgitation (leaking).
+Each procedure carries its own considerations, and the most suitable option depends entirely on your specific diagnosis, overall health, and the recommendation of a cardiac specialist.
 
-**Coronary Artery Bypass Grafting (CABG)**, commonly known as bypass surgery, is a major operation for patients with severe blockages in multiple coronary arteries. It involves taking healthy blood vessels from another part of the body (like the leg or chest) and grafting them to bypass the blocked sections, improving blood flow to the heart muscle.
+## Understanding the Cost: India vs. Other Regions
 
-These procedures are serious medical interventions, and thorough pre-assessment by a cardiologist is always necessary to determine the most appropriate course of treatment.
+One of the primary reasons patients from Nigeria consider India for cardiac treatment is the significant difference in cost compared to private care in Nigeria, Western Europe, or North America, often without compromising on quality.
 
-## What Cardiac Treatment in India Costs – And What It Includes
+Here is an indicative comparison of what common cardiac procedures might cost as a package in India compared to typical prices in the US or UK:
 
-The cost of cardiac treatment in India is often significantly lower than in Western countries, primarily due to lower operating costs, salaries, and insurance premiums, rather than a difference in medical quality or technology. This cost efficiency makes India a viable option for many patients seeking high-quality care.
+| Procedure                 | Indicative Package Price in India | Typical Price in US             | Typical Price in UK (Private) |
+| :------------------------ | :-------------------------------- | :------------------------------ | :---------------------------- |
+| Angioplasty (1 stent)     | $3,500–$5,000                     | $28,000–$60,000                 | N/A                           |
+| Heart Valve Replacement   | $4,500–$7,000                     | $80,000–$150,000                | N/A                           |
+| CABG (Bypass)             | $5,000–$9,000                     | $90,000–$120,000                | £15,000–£30,000               |
 
-Here is an indicative comparison of procedure costs:
+These prices are indicative package ranges and are not firm quotes. Actual costs will depend on the specific hospital, the surgeon's fees, the complexity of your case, and any additional medical needs that arise.
 
-| Procedure               | India (Indicative Package Range) | US (Typical Private Care)    | UK (Typical Private Care)    |
-| :---------------------- | :------------------------------- | :--------------------------- | :--------------------------- |
-| Angioplasty (1 stent)   | $3,500–$5,000                    | $28,000–$60,000             |                              |
-| Valve Replacement       | $4,500–$7,000                    | $80,000–$150,000            |                              |
-| CABG (bypass)           | $5,000–$9,000                    | $90,000–$120,000            | £15,000–£30,000             |
+## What Your Package Price Covers – And What It Doesn't
 
-These price ranges are for a standard package and represent the direct medical costs. A typical package from an Indian hospital usually includes:
+When you receive an indicative package price from an Indian hospital, it typically includes:
 
-*   Hospital stay for the duration of the procedure and immediate recovery (e.g., 5-7 days for CABG, 3-5 days for angioplasty).
-*   Surgeon's fees and anaesthesiologist's fees.
-*   Operating theatre charges.
-*   Standard pre-operative investigations and post-operative follow-up tests conducted during the hospital stay.
-*   Basic medications and consumables used during the hospitalisation period.
-*   Nursing care and standard ward accommodation.
+*   **Hospital Stay:** The cost of your room and nursing care for a specified number of days (e.g., 5-7 days for an angioplasty, 7-10 days for CABG, including ICU days).
+*   **Surgeon and Anesthetist Fees:** The professional fees for the primary surgeon and the anesthesiologist.
+*   **Operating Room Charges:** Use of the operating theatre and necessary equipment.
+*   **Standard Medical Consumables:** Basic medical supplies, dressings, and standard medications used during your hospital stay.
+*   **Routine Pre-Operative Tests:** Some essential diagnostic tests required immediately before surgery.
+*   **Post-Operative Consultations:** Follow-up consultations with the surgeon during your hospital stay.
 
-It is crucial to understand what these packages generally **do not include**:
+It is equally important to understand what these packages generally **do not** include, as these can add significantly to your overall expenses:
 
-*   **International flights** to and from India for the patient and any accompanying family.
-*   **Visa application fees** and costs associated with obtaining the e-Medical Visa.
-*   **Accommodation outside the hospital**, such as hotels or guest houses for pre-procedure consultations or post-discharge recovery.
-*   **Initial diagnostic tests** performed in Nigeria to assess the condition, or any additional specialised tests required upon arrival in India that were not part of the initial assessment.
-*   **Medications after discharge** from the hospital, which can be a significant ongoing cost.
-*   **Costs associated with managing complications** that extend the hospital stay or require re-admission. While hospitals provide care for complications, the extended stay and additional procedures may incur extra charges.
-*   **Interpreter services** if needed, though English is widely spoken in major hospitals.
-*   **Personal expenses** for the patient or accompanying family members, such as food outside the hospital, local transport, or sightseeing.
+*   **International Flights:** Your airfare from Nigeria to India and back.
+*   **Visa Application Fees:** The cost associated with applying for your e-Medical Visa.
+*   **Accommodation Outside the Hospital:** Your stay in a hotel or guesthouse before hospital admission or after discharge, during your recovery period in India.
+*   **Local Transportation:** Taxis or other transport within India.
+*   **Extended Hospital Stay:** If complications arise or your recovery takes longer than anticipated, any additional days in the hospital beyond the package allowance will incur extra charges.
+*   **Treatment for Complications:** Should unexpected medical complications occur that require additional procedures, medications, or specialist consultations, these costs are typically not covered by the initial package.
+*   **Specialised or High-End Medications/Implants:** If a specific brand of stent, valve, or advanced medication is required that falls outside the standard package, there may be an additional charge.
+*   **Pre-existing Conditions:** Treatment or management of any pre-existing medical conditions not directly related to your cardiac procedure.
+*   **Personal Expenses:** Food, shopping, and other personal expenditures.
+*   **Attendant's Expenses:** Meals and accommodation for any family member or companion travelling with you.
 
-These are indicative package ranges, and the final quote will depend on the specific medical assessment by the hospital. MedYatra acts as a facilitator, coordinating your medical reports and communication with accredited hospitals in India, and providing supporting documents. The patient is responsible for booking their own travel arrangements and applying for their visa.
+Always ask for a detailed breakdown of what is included and excluded in any quote you receive.
 
-## Choosing a Hospital from Afar: Accreditation and Expertise
+## Choosing a Hospital from Afar
 
-Selecting the right hospital and medical team is a critical step. When researching hospitals in India from Nigeria, look for specific markers of quality and safety.
+Selecting the right hospital when you are thousands of kilometres away requires careful consideration. Here are key factors to evaluate:
 
-**Accreditation** is a key indicator. The **Joint Commission International (JCI)** is an independent, non-profit organisation that accredits healthcare organisations globally, setting rigorous standards for patient safety and quality of care. A JCI-accredited hospital has met these international benchmarks. Another important accreditation is **NABH (National Accreditation Board for Hospitals & Healthcare Providers)**, which is India's own comprehensive healthcare accreditation system, ensuring adherence to national standards. Hospitals holding both JCI and NABH accreditations demonstrate a strong commitment to quality.
+*   **Accreditation:** Look for hospitals accredited by recognised international bodies such as the **Joint Commission International (JCI)**. JCI accreditation signifies that a hospital meets rigorous international standards for patient safety and quality of care. Within India, the **National Accreditation Board for Hospitals & Healthcare Providers (NABH)** also sets high standards. Hospitals with both JCI and NABH accreditation often represent the highest tier of quality.
+*   **Surgeon Credentials:** Request the CV or profile of the cardiac surgeon who will perform your procedure. Look for their qualifications, years of experience, number of procedures performed, and any sub-specialisations. Do not hesitate to ask for this information.
+*   **Specific Experience and Success Rates:** Inquire about the hospital's and the surgeon's experience with your specific condition and procedure. For example, if you need a valve replacement, ask about their success rates for that particular surgery, not just general cardiac surgery. Hospitals should be able to provide data on outcomes for specific procedures.
+*   **Written Treatment Plan:** Before committing, ensure you receive a detailed written treatment plan. This document should outline the proposed procedure, the expected duration of hospital stay, any specific medications, and the anticipated recovery process. This transparency is vital for your planning and understanding.
 
-Beyond accreditation, investigate the **credentials and experience of the cardiac surgeon**. You should ask for details such as:
+MedYatra works with JCI and NABH accredited hospitals in India, ensuring that the options presented to you meet these high standards.
 
-*   The surgeon's medical qualifications and specialisations (e.g., M.Ch. in Cardio Thoracic and Vascular Surgery).
-*   Their years of experience performing the specific procedure you require.
-*   The approximate number of similar surgeries they perform annually.
-*   Their success rates, if available, for the specific procedure.
+## How MedYatra Coordinates Your Treatment Journey
 
-When you receive an opinion and indicative quote, ask for these details in writing:
+MedYatra acts as a facilitator, streamlining the connection between you and reputable cardiac hospitals in India. We handle the coordination and provide supporting documents, while you manage your own travel and visa arrangements. Here is how the process typically works:
 
-*   A detailed, itemised treatment plan outlining the proposed procedure, expected hospital stay, and any pre/post-operative care included.
-*   A clear breakdown of the indicative costs, specifying what is covered and what is not.
-*   The CV or professional profile of the lead surgeon and details of the medical team.
-*   Proof of the hospital's JCI and/or NABH accreditation.
+1.  **Share Your Medical Reports:** You begin by sending your recent medical reports, diagnostic scans, and any relevant clinical notes via WhatsApp to MedYatra. This allows our team to understand your medical history and current condition.
+2.  **Hospital Review and Opinion:** We forward your reports to multiple accredited cardiac hospitals in India. Specialist doctors at these hospitals will review your case. Within a few days, you will receive medical opinions from these hospitals, often including an indicative treatment plan and the estimated package cost.
+3.  **Hospital Invitation Letter:** Once you decide on a hospital and a treatment plan, the chosen hospital will issue an official invitation letter. This letter is a crucial supporting document for your visa application.
+4.  **Your Visa and Travel Arrangements:** With the hospital invitation letter, you will then apply for your e-Medical Visa for India yourself. You are also responsible for booking your own international flights from Nigeria to India and arranging your accommodation for the duration of your stay. MedYatra does not handle patient funds; all payments for treatment are made directly to the hospital.
+5.  **Travel and Treatment:** You travel to India. Upon arrival, you will attend pre-operative consultations and tests at the hospital. The cardiac procedure will then be performed as planned.
+6.  **Recovery and Return Home:** After your surgery, you will recover in the hospital for the specified duration, followed by a period of recuperation outside the hospital, usually in nearby accommodation, before you are medically cleared to fly home to Nigeria.
+7.  **Tele-Follow-Up:** Many Indian hospitals offer tele-consultations for post-operative follow-up, allowing you to connect with your surgeon from home to discuss your recovery.
 
-This written documentation helps you compare options thoroughly and make an informed decision.
+## Addressing Your Real Worries
 
-## The Process: From Inquiry to Recovery
+It is natural to have concerns when considering medical treatment in a foreign country. Here are honest answers to common worries:
 
-Navigating medical treatment abroad can seem complex, but understanding the steps can ease the journey. MedYatra helps manage the coordination aspects, while you handle your personal travel logistics.
+*   **Is cheaper worse?** The lower cost of cardiac treatment in India does not mean lower quality of care. The price difference primarily stems from several factors:
+    *   **Lower Operating Costs:** The overall cost of living, labour, and infrastructure in India is significantly lower than in Western countries. This translates to lower overheads for hospitals.
+    *   **Government Support:** The Indian government has policies that support the medical sector, including the development of world-class medical infrastructure.
+    *   **High Volume:** Indian hospitals perform a very high volume of procedures, which allows for economies of scale and efficient resource utilisation.
+    *   **Competitive Market:** A competitive healthcare market in India helps keep prices accessible.
+    Many Indian cardiac surgeons are highly trained, often with experience from Western institutions, and work with advanced medical technology.
+*   **Safety and What Happens if Something Goes Wrong?** As with any major surgery, cardiac procedures carry inherent risks. While Indian hospitals adhere to international safety protocols, complications can arise. In such cases, the hospital's medical team will manage the situation. However, it is important to understand that treating complications may involve additional medical expenses not covered by your initial package price. Choosing an accredited hospital with a strong track record is your best safeguard.
+*   **Language Barrier?** English is widely spoken by doctors, nurses, and hospital staff in major Indian hospitals. You will generally find it easy to communicate your needs and understand medical instructions. If needed, many hospitals can arrange interpreters for other languages.
+*   **How Payment Works:** You will pay the hospital directly for your treatment. MedYatra facilitates the connection and coordination but does not handle patient funds. Hospitals typically require a deposit before admission, with the remaining balance due before discharge.
+*   **Length of Stay in India:** The total duration you need to stay in India varies by procedure. For an angioplasty, you might be in India for approximately 7-10 days (2-3 days in hospital, plus recovery outside). For valve replacement or CABG, expect to stay for 3-4 weeks (around 7-10 days in hospital, followed by 2-3 weeks of recovery in India before you are medically fit to fly). These are general estimates; your specific recovery timeline will be determined by your medical team.
 
-1.  **Initial Contact and Report Submission:** You would typically begin by sending your existing medical reports, diagnostic scans, and any relevant doctor's notes via WhatsApp or email to MedYatra. This provides the necessary information for a preliminary assessment.
-2.  **Hospital Review and Opinion:** MedYatra then shares these reports with accredited cardiac hospitals in India. A panel of specialists at these hospitals reviews your case, provides an opinion on the most suitable treatment, and offers an indicative cost estimate for the package. This usually takes a few days.
-3.  **Invitation Letter:** Once you decide on a hospital, that hospital will issue an invitation letter. This letter is a crucial supporting document required for your visa application.
-4.  **Visa Application:** You will then apply for an e-Medical Visa directly with the Indian High Commission or Embassy in Nigeria. The invitation letter from the hospital, along with your passport, photographs, and other required documents, will be part of this application. It is important to begin this process well in advance, as visa processing times can vary.
-5.  **Travel Arrangements:** Simultaneously, you will book your own international flights to India and arrange for local accommodation for any pre-procedure consultations or post-discharge recovery outside the hospital. Many patients choose to stay in a guest house or hotel near the hospital for a week or two after discharge before flying home.
-6.  **Treatment and Recovery:** Upon arrival in India, you proceed to the hospital for pre-operative assessments, the cardiac procedure, and the initial recovery phase within the hospital.
-7.  **Post-Discharge and Follow-up:** After discharge, you complete your recovery in India for the recommended period before flying back to Nigeria. Many hospitals offer tele-follow-up consultations to monitor your progress after you return home.
+## After Your Treatment: Recovery and Follow-up
 
-## Addressing Your Concerns: Safety, Cost, and Logistics
+Your journey does not end when you leave the hospital. The recovery period is crucial. Follow all post-operative instructions carefully, including medication schedules, dietary restrictions, and physical activity guidelines. Many Indian hospitals offer tele-consultations for follow-up appointments, allowing you to connect with your surgeon from Nigeria to discuss your progress and address any concerns.
 
-It is natural to have concerns when considering medical travel for a serious condition like heart disease.
-
-**Is cheaper worse?** This is a common worry. The lower costs in India do not translate to lower quality of care or outdated technology. The primary reasons for the price difference include:
-
-*   **Lower operating costs:** Rent, utilities, and administrative overheads are significantly less expensive in India compared to Western countries.
-*   **Cost of medical education and training:** Doctors in India often complete their education with less debt, which means their salary expectations are different.
-*   **Exchange rates and economic scale:** The overall economic structure allows for competitive pricing without compromising on medical standards.
-*   **Volume:** Many Indian hospitals perform a high volume of cardiac procedures, leading to efficiency and expertise.
-
-Many Indian hospitals use the same advanced medical equipment and technologies found in leading hospitals in Europe or North America, and their surgeons are often internationally trained and highly experienced.
-
-**Safety and what happens if something goes wrong?** All medical procedures carry inherent risks, and complications can occur anywhere, regardless of the hospital's location. Indian hospitals adhere to international safety protocols. In the rare event of a complication, the hospital will provide necessary medical care. However, as noted earlier, extended stays or additional procedures due to complications may incur extra costs beyond the initial package price. It is advisable to discuss the hospital's policy on managing unexpected complications and consider purchasing comprehensive travel insurance that covers medical emergencies and extended stays.
-
-**Language barriers?** In most major hospitals in India that cater to international patients, English is widely spoken by doctors, nurses, and administrative staff. Many hospitals also have dedicated international patient departments with staff who can assist with communication and logistics.
-
-**How payment works:** You will pay the hospital directly for your treatment. MedYatra does not handle patient funds. This ensures transparency and direct accountability between you and the healthcare provider. The hospital will provide you with an invoice and receipts.
-
-**Length of stay:** The total time you need to spend in India will depend on the procedure. For an angioplasty, you might be in India for around 7-10 days in total (3-5 days in hospital, plus a few days for pre-op and post-discharge recovery). For more complex procedures like valve replacement or CABG, expect to stay in India for 2-3 weeks, with 5-7 days in the hospital and another 1-2 weeks for recovery outside the hospital before you are deemed fit to fly home. These are general guidelines; your specific recovery timeline will be determined by your medical team.
-
-Making this decision requires careful thought and clear information. If you have further questions, feel free to message us on WhatsApp.
+If you have your medical reports ready, you can message us on WhatsApp to begin the process.

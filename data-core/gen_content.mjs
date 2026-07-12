@@ -11,6 +11,7 @@ import { dirname, join } from "node:path";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const db = open();
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 // Fill ALL remaining gap cells (query gaps), each in the market's primary language.
 // Non-English drafts are flagged for native QA (T007) before publish.
@@ -59,9 +60,19 @@ Length ~900-1300 words. Open with the single most useful sentence, not a preambl
 Start the file with this exact HTML comment: <!-- DRAFT · tier-2 · cell ${catId}×${mk} (${lang}) · needs ${lang !== "en" ? "native QA + " : ""}clinical sign-off -->`;
 
   process.stdout.write(`tier-2 drafting ${catId}×${mk} (${lang}) … `);
-  let md;
-  try { md = await generate(prompt, { system: SYSTEM, maxTokens: 4096, temperature: 0.7 }); }
-  catch (e) { console.log("FAILED:", String(e).slice(0, 120)); logRun(db, "Content Engine", `draft ${catId}×${mk} (${lang})`, "GLM error: " + String(e).slice(0,80), null, "fail"); continue; }
+  // Retry with exponential backoff on rate limits (429): both providers throttle a fast batch. Also throttle
+  // between cells so we don't burst past the per-minute cap in the first place.
+  let md, lastErr;
+  for (let attempt = 1; attempt <= 4 && !md; attempt++) {
+    try { md = await generate(prompt, { system: SYSTEM, maxTokens: 4096, temperature: 0.7 }); }
+    catch (e) {
+      lastErr = e;
+      const rate = /429|too many|resource.?exhausted/i.test(String(e));
+      if (attempt < 4 && rate) { const wait = attempt * 20000; process.stdout.write(`429, waiting ${wait / 1000}s… `); await sleep(wait); }
+      else break;
+    }
+  }
+  if (!md) { console.log("FAILED:", String(lastErr).slice(0, 120)); logRun(db, "Content Engine", `draft ${catId}×${mk} (${lang})`, "gen error: " + String(lastErr).slice(0, 80), null, "fail"); await sleep(5000); continue; }
 
   // QA the prose (same linter as proposals): tag vague magnitude claims [VERIFY] + flag AI-filler to cut.
   const lint = lintClaims(md.trim());
@@ -78,6 +89,7 @@ Start the file with this exact HTML comment: <!-- DRAFT · tier-2 · cell ${catI
     .run(catId, mk, lang, `${cat.name} Cost in India — ${market.name} Guide (tier-2 draft, ${lang})`, file);
   logRun(db, "Content Engine", `draft ${catId}×${mk} (${lang})`, `${md.length} chars${qaNote}`, `/draft/${info.lastInsertRowid}`, "ok");
   console.log(`ok -> ${file} (${md.length} chars)${qaNote}`);
+  await sleep(6000);   // throttle between cells so we stay under the per-minute rate cap
 }
 
 const n = db.prepare(`SELECT count(*) c FROM content_asset`).get().c;
