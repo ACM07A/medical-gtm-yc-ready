@@ -14,6 +14,7 @@ import { plugins as pluginList } from "../lib/plugins.mjs";
 import { nextAction } from "../lib/comms_machine.mjs";
 import { renderStudio, studioQueue, studioApprove } from "./studio.mjs";
 import { renderSandbox, saveTemplate } from "./sandbox.mjs";
+import { renderDemo } from "./demo.mjs";
 import { ingestLeads } from "../data-core/ingest.mjs";
 import { benchmarks } from "../data-core/benchmarks.mjs";
 import { range } from "../lib/money.mjs";
@@ -131,7 +132,7 @@ const server = createServer(async (req, res) => {
   // ACCESS CONTROL: the console + APIs expose named partner contacts and pipeline. If CONSOLE_TOKEN is set,
   // gate everything except the public patient site (/, /site, /outputs) and the health probe. REQUIRED
   // before exposing this beyond localhost. (No token set = open, for localhost dev.)
-  const PROTECTED = /^\/(console|studio|sandbox|benchmarks|api\/(state|runs|studio|benchmarks|comms)|draft|outreach|worklist|comms|distribution|plugins)/;
+  const PROTECTED = /^\/(console|studio|sandbox|demo|benchmarks|api\/(state|runs|studio|benchmarks|comms)|draft|outreach|worklist|comms|distribution|plugins)/;
   if (process.env.CONSOLE_TOKEN && PROTECTED.test(url.pathname)) {
     const auth = req.headers.authorization || "";
     const pass = auth.startsWith("Basic ") ? Buffer.from(auth.slice(6), "base64").toString().split(":").slice(1).join(":") : "";
@@ -153,6 +154,8 @@ const server = createServer(async (req, res) => {
       return send(200, "application/json", JSON.stringify(studioQueue(db, { tenant: url.searchParams.get("tenant") || undefined })));
     // SANDBOX — the deployment-ready patient-journey walk-through: simulate every branch + edit templates
     // live. Editing a template routes it back to `review` (human-gated before it can ever send).
+    if (url.pathname === "/demo")
+      return send(200, "text/html; charset=utf-8", renderDemo(db));
     if (url.pathname === "/sandbox")
       return send(200, "text/html; charset=utf-8", renderSandbox(db));
     if (req.method === "POST" && url.pathname === "/api/comms/save") {

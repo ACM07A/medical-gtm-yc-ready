@@ -352,9 +352,11 @@ Requires **Node ≥ 22.5**. All data-core scripts need the `--experimental-sqlit
 
 Also available (run with `node --experimental-sqlite data-core/<script>`):
 `repurpose_content.mjs` (→ social posts + visuals · `/distribution`) · `gen_proposals.mjs` (tailored
-proposals) · `gen_credibility.mjs` (trust narratives). Server routes: `/console`, `/studio` (approve-and-deploy),
-`/sandbox` (editable patient-journey demo), `/comms` (template list), `/benchmarks` (de-identified aggregate),
-`/plugins` (integration readiness), `/distribution`, `/worklist`. Capture a confirmed contact:
+proposals) · `gen_credibility.mjs` (trust narratives). Server routes: **`/demo`** (the showable hub — every
+capability with live counts), `/console`, `/studio` (approve-and-deploy), `/sandbox` (editable patient-journey
+demo), `/comms` (template list), `/benchmarks` (de-identified aggregate), `/plugins` (integration readiness),
+`/distribution`, `/worklist`. **Going live is keys-only — see [`build-os/12_GO_LIVE.md`](./build-os/12_GO_LIVE.md).**
+Capture a confirmed contact:
 `node --experimental-sqlite data-core/capture_poc.mjs <partner_id> "Full Name" "Role" "<email|linkedin-url>"`
 
 ---

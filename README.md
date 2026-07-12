@@ -53,8 +53,13 @@ Requires **Node ≥ 22.5** (for the built-in `node:sqlite`).
 npm install                 # only dependency: puppeteer-core (drives your local Edge/Chrome)
 cp integrations/.env.example integrations/.env   # add NVIDIA NIM and/or Gemini key (Gemini carries generation when GLM is unserved)
 npm run seed                # build + seed the SQLite data core
-npm run serve               # → http://localhost:5173  (patient landing) and /console (operator console)
+npm run serve               # → http://localhost:5173
 ```
+
+**Showing someone the engine? Open [`/demo`](http://localhost:5173/demo)** — one page linking every capability
+(with live counts), framed as a safe sandbox. The star of it is the **[patient-journey sandbox](http://localhost:5173/sandbox)**:
+a WhatsApp phone simulator that plays every branch and lets you edit any template live. Going live from here is
+just plugging in keys — see [`build-os/12_GO_LIVE.md`](./build-os/12_GO_LIVE.md).
 
 Then explore the engine:
 

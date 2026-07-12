@@ -52,7 +52,11 @@
     var label = t.stage === "estimate" || t.stage === "nudge" ? "Cost comparison — India vs. home"
       : t.stage === "first_touch" || t.stage === "reengage" ? "Welcome — accredited care in India"
       : "How it works — 4 simple steps";
-    var src = LIVE && t.header_asset ? "/" + String(t.header_asset).replace(/^\//, "") : "";
+    var src = "";
+    if (t.header_asset) {
+      if (D.assets && D.assets[t.header_asset]) src = D.assets[t.header_asset];   // artifact: inline data-URI
+      else if (LIVE) src = "/" + String(t.header_asset).replace(/^\//, "");        // live: served from /outputs
+    }
     var img = src ? '<img src="' + esc(src) + '" alt="" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' : "";
     return '<div class="hdr">' + img + '<div class="hdr-ph"' + (src ? ' style="display:none"' : "") + '><span class="hdr-ic">▦</span> Infographic header<em>' + esc(label) + "</em></div></div>";
   }
