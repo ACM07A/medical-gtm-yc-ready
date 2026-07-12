@@ -64,11 +64,17 @@ Start the file with this exact HTML comment: <!-- DRAFT · tier-2 · cell ${catI
   // between cells so we don't burst past the per-minute cap in the first place.
   let md, lastErr;
   for (let attempt = 1; attempt <= 4 && !md; attempt++) {
-    try { md = await generate(prompt, { system: SYSTEM, maxTokens: 4096, temperature: 0.7 }); }
+    try {
+      md = await generate(prompt, { system: SYSTEM, maxTokens: 4096, temperature: 0.7 });
+      // Guard against truncated/near-empty output (gemini-2.5-flash occasionally returns a stub, esp. for
+      // non-Latin scripts). A real ~900-1300-word page is thousands of chars; anything tiny is a failure.
+      if (md.trim().length < 1500) { const n = md.trim().length; md = null; throw new Error(`output too short (${n} chars) — likely truncated`); }
+    }
     catch (e) {
       lastErr = e;
       const rate = /429|too many|resource.?exhausted/i.test(String(e));
-      if (attempt < 4 && rate) { const wait = attempt * 20000; process.stdout.write(`429, waiting ${wait / 1000}s… `); await sleep(wait); }
+      const short = /too short/.test(String(e));
+      if (attempt < 4 && (rate || short)) { const wait = rate ? attempt * 20000 : 8000; process.stdout.write(`retry (${short ? "short" : "429"})… `); await sleep(wait); }
       else break;
     }
   }
