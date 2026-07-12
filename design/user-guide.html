@@ -1,0 +1,297 @@
+<title>MedYatra — User Guide</title>
+<style>
+:root{
+  --bg:#eef3f9;--panel:#ffffff;--panel2:#f6f9fd;--ink:#0c1b2e;--muted:#5a6b80;--line:#e2ecf7;
+  --brand:#0b4a8b;--brand2:#1f6fd6;--green:#1c8b50;--amber:#e5a13a;--purple:#7c4ddb;
+  --code-bg:#0d2038;--code-ink:#dbe7f5;--shadow:0 20px 50px -30px rgba(11,74,139,.5);
+  --maxw:1140px;
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#0d141d;--panel:#141f2e;--panel2:#101a27;--ink:#e7eefb;--muted:#8ba0ba;--line:#213347;
+  --brand:#5aa0ee;--brand2:#7cb6f5;--green:#3fbd79;--amber:#f0b455;--purple:#a988ee;
+  --code-bg:#0a1420;--code-ink:#cfe0f2;--shadow:0 20px 50px -28px rgba(0,0,0,.7);
+}}
+:root[data-theme=dark]{
+  --bg:#0d141d;--panel:#141f2e;--panel2:#101a27;--ink:#e7eefb;--muted:#8ba0ba;--line:#213347;
+  --brand:#5aa0ee;--brand2:#7cb6f5;--green:#3fbd79;--amber:#f0b455;--purple:#a988ee;--code-bg:#0a1420;--code-ink:#cfe0f2;
+}
+:root[data-theme=light]{
+  --bg:#eef3f9;--panel:#ffffff;--panel2:#f6f9fd;--ink:#0c1b2e;--muted:#5a6b80;--line:#e2ecf7;
+  --brand:#0b4a8b;--brand2:#1f6fd6;--green:#1c8b50;--amber:#e5a13a;--purple:#7c4ddb;--code-bg:#0d2038;--code-ink:#dbe7f5;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",Roboto,system-ui,-apple-system,sans-serif;color:var(--ink);background:var(--bg);line-height:1.62;font-size:15.5px}
+a{color:var(--brand2);text-decoration:none}a:hover{text-decoration:underline}
+code,kbd{font-family:"SF Mono",ui-monospace,"Cascadia Code",Consolas,monospace}
+.ribbon{background:var(--amber);color:#3a2600;font-weight:700;font-size:12.5px;text-align:center;padding:8px 14px;letter-spacing:.01em}
+
+/* hero */
+.hero{max-width:var(--maxw);margin:0 auto;padding:44px 26px 8px}
+.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--brand2);font-weight:700}
+h1{font-size:38px;line-height:1.08;letter-spacing:-.025em;margin:10px 0 12px;text-wrap:balance}
+.lede{font-size:17px;color:var(--muted);max-width:660px;margin:0}
+.metarow{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
+.pill{font-size:12.5px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:5px 13px;color:var(--muted);font-weight:600}
+.pill b{color:var(--brand)}
+
+/* layout */
+.shell{max-width:var(--maxw);margin:0 auto;padding:26px 26px 90px;display:grid;grid-template-columns:210px 1fr;gap:38px;align-items:start}
+nav.toc{position:sticky;top:20px;font-size:13.5px}
+nav.toc .lbl{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:700;margin:0 0 10px}
+nav.toc a{display:block;color:var(--muted);padding:5px 11px;border-left:2px solid var(--line);font-weight:600}
+nav.toc a:hover{color:var(--ink);text-decoration:none}
+nav.toc a.on{color:var(--brand);border-left-color:var(--brand)}
+main{min-width:0}
+section{margin-bottom:44px;scroll-margin-top:18px}
+.pnum{display:inline-grid;place-items:center;width:27px;height:27px;border-radius:8px;background:var(--brand);color:#fff;font-size:14px;font-weight:800;margin-right:11px;font-variant-numeric:tabular-nums}
+h2{font-size:23px;letter-spacing:-.02em;margin:0 0 6px;display:flex;align-items:center}
+.sub{color:var(--muted);margin:0 0 18px;font-size:14.5px}
+h3{font-size:15px;margin:22px 0 8px;color:var(--brand)}
+
+/* steps */
+ol.steps{list-style:none;counter-reset:s;padding:0;margin:0}
+ol.steps>li{counter-increment:s;position:relative;padding:0 0 4px 42px;margin-bottom:18px}
+ol.steps>li::before{content:counter(s);position:absolute;left:0;top:-1px;width:28px;height:28px;border-radius:50%;
+  background:var(--panel);border:1.5px solid var(--brand);color:var(--brand);display:grid;place-items:center;font-weight:800;font-size:13.5px}
+ol.steps>li b{color:var(--ink)}
+
+/* code */
+pre{background:var(--code-bg);color:var(--code-ink);border-radius:11px;padding:14px 16px;overflow-x:auto;font-size:13px;line-height:1.65;margin:10px 0;border:1px solid rgba(255,255,255,.06)}
+pre code{color:inherit}
+.cmt{color:#7f9bb8}
+p code,li code,td code{background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:.5px 5px;font-size:13px;color:var(--brand)}
+
+/* flow (demo path) */
+.flow{display:flex;flex-wrap:wrap;gap:9px;align-items:stretch;margin:6px 0 12px}
+.fstep{flex:1 1 150px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 13px;position:relative}
+.fstep .fn{font-size:11px;font-weight:800;color:var(--brand2)}
+.fstep .ft{font-weight:700;font-size:14px;margin:3px 0}
+.fstep .fd{font-size:12.5px;color:var(--muted)}
+.fstep.star{border-color:var(--brand);box-shadow:0 0 0 1px var(--brand)}
+
+/* surface cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:13px;margin-top:6px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:15px 16px;box-shadow:var(--shadow)}
+.card.star{border-color:var(--brand)}
+.card .ic{font-size:19px}
+.card .rt{font-family:"SF Mono",ui-monospace,Consolas,monospace;font-size:13px;font-weight:700;color:var(--brand);margin:5px 0 3px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.star-tag{font-size:9px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:rgba(31,111,214,.14);color:var(--brand2);border-radius:20px;padding:1px 7px}
+.card p{margin:2px 0 0;font-size:13.5px;color:var(--muted)}
+.card p b{color:var(--ink)}
+
+/* callouts */
+.callout{border-radius:11px;padding:12px 15px;margin:14px 0;font-size:14px;border:1px solid}
+.callout.tip{background:rgba(31,111,214,.08);border-color:rgba(31,111,214,.28)}
+.callout.gate{background:rgba(229,161,58,.1);border-color:rgba(229,161,58,.35)}
+.callout b{color:var(--ink)}
+.callout .k{font-weight:800;text-transform:uppercase;font-size:11px;letter-spacing:.06em;margin-right:6px}
+.callout.tip .k{color:var(--brand2)}.callout.gate .k{color:#9a6a12}
+@media(prefers-color-scheme:dark){.callout.gate .k{color:var(--amber)}}
+:root[data-theme=dark] .callout.gate .k{color:var(--amber)}
+
+/* rules list */
+ul.rules{list-style:none;padding:0;margin:6px 0 0;display:grid;gap:9px}
+ul.rules li{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:14px;display:flex;gap:11px;align-items:flex-start}
+ul.rules .rk{color:var(--green);font-weight:800;flex:none}
+ul.rules li b{color:var(--ink)}
+
+/* table */
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin-top:6px}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:520px}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--panel2);font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+tr:last-child td{border-bottom:none}
+td:first-child{font-weight:700;color:var(--ink);white-space:nowrap}
+
+.foot{max-width:var(--maxw);margin:0 auto;padding:0 26px 60px;color:var(--muted);font-size:13px;border-top:1px solid var(--line);padding-top:22px}
+
+@media(max-width:820px){
+  .shell{grid-template-columns:1fr;gap:8px}
+  nav.toc{position:static;display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+  nav.toc .lbl{display:none}
+  nav.toc a{border-left:none;border:1px solid var(--line);border-radius:20px;padding:5px 12px}
+  nav.toc a.on{border-color:var(--brand)}
+  h1{font-size:30px}
+}
+</style>
+
+<div class="ribbon">USER GUIDE · everything runs locally at ~$0 · human-gated · nothing is sent until you plug in keys</div>
+
+<header class="hero">
+  <div class="eyebrow">MedYatra · agentic go-to-market engine</div>
+  <h1>How to run the engine</h1>
+  <p class="lede">Step-by-step: set it up, walk the demo, use every surface, run the daily approval loop, and take it live. A medical-tourism facilitator engine that decides what to sell, builds hospital supply, runs the content campaign, and drives each patient from first WhatsApp touch to treated-and-referred.</p>
+  <div class="metarow">
+    <span class="pill"><b>Node</b> ≥ 22.5</span>
+    <span class="pill"><b>Deps</b> puppeteer-core only</span>
+    <span class="pill"><b>Cost</b> ~$0 marginal</span>
+    <span class="pill"><b>Home base</b> localhost:5173/demo</span>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="toc" id="toc">
+    <p class="lbl">Contents</p>
+    <a href="#setup">1 · Setup</a>
+    <a href="#demo">2 · Demo path</a>
+    <a href="#surfaces">3 · The surfaces</a>
+    <a href="#loop">4 · Operating loop</a>
+    <a href="#dualmode">5 · Dual-mode</a>
+    <a href="#live">6 · Going live</a>
+    <a href="#rules">7 · The rules</a>
+    <a href="#trouble">8 · Troubleshooting</a>
+  </nav>
+
+  <main>
+    <section id="setup">
+      <h2><span class="pnum">1</span>Setup — once</h2>
+      <p class="sub">From a clone to a running console in five steps.</p>
+      <ol class="steps">
+        <li><b>Prerequisites.</b> Node ≥ 22.5 (for the built-in <code>node:sqlite</code>) and Microsoft Edge or Google Chrome installed (the browser drives infographic rendering + partner discovery — no Chromium download). Check with <code>node -v</code>.</li>
+        <li><b>Install.</b><pre><code>npm install            <span class="cmt"># only dependency: puppeteer-core</span></code></pre></li>
+        <li><b>Add a key (recommended).</b> Copy the env file and add at least a generation key so content, proposals, and comms can be drafted. Everything else stays off until keyed.<pre><code>cp integrations/.env.example integrations/.env
+<span class="cmt"># then add GEMINI_API_KEY (carries generation) and/or NVIDIA_API_KEY</span></code></pre></li>
+        <li><b>Build the data core.</b><pre><code>npm run seed           <span class="cmt"># creates + seeds data-core/medyatra.db</span>
+npm run seed-tenants   <span class="cmt"># own-brand + a demo operator (dual-mode)</span>
+npm run seed-leads     <span class="cmt"># demo patient leads for the journey</span>
+npm run comms          <span class="cmt"># the 21 WhatsApp templates + headers</span></code></pre></li>
+        <li><b>Start it.</b> Leave this running, then open <a href="#">localhost:5173/demo</a> — your home base.<pre><code>npm run serve          <span class="cmt"># → http://localhost:5173</span></code></pre></li>
+      </ol>
+      <div class="callout tip"><span class="k">Tip</span>If a page 404s or looks stale, you changed code while the server was up — stop it (Ctrl-C) and <code>npm run serve</code> again.</div>
+    </section>
+
+    <section id="demo">
+      <h2><span class="pnum">2</span>The 60-second demo path</h2>
+      <p class="sub">The fastest way to see the whole thing — in order.</p>
+      <div class="flow">
+        <div class="fstep"><div class="fn">START</div><div class="ft">/demo</div><div class="fd">The hub — live counts, every card a real surface.</div></div>
+        <div class="fstep star"><div class="fn">THE STAR</div><div class="ft">/sandbox</div><div class="fd">▶ Auto-play a full patient journey, then edit a message.</div></div>
+        <div class="fstep"><div class="fn">SUPPLY</div><div class="ft">/console</div><div class="fd">Fit-ranked partner accounts + live feed.</div></div>
+        <div class="fstep"><div class="fn">THE GATE</div><div class="ft">/studio</div><div class="fd">Everything awaiting human approval, gates enforced.</div></div>
+        <div class="fstep"><div class="fn">DEMAND</div><div class="ft">/</div><div class="fd">Patient landing + published cost-guides.</div></div>
+      </div>
+      <p>The story it tells: <b>decide what to sell → build supply → build demand → convert patients → approve everything.</b></p>
+    </section>
+
+    <section id="surfaces">
+      <h2><span class="pnum">3</span>The surfaces — what each does &amp; how to use it</h2>
+      <p class="sub">Every route below is real data, safe to click, and human-gated.</p>
+      <div class="grid">
+        <div class="card star"><div class="ic">💬</div><div class="rt">/sandbox <span class="star-tag">editable</span></div>
+          <p>The patient-journey simulator you put in front of an operator. <b>▶ advance</b> or Auto-play the conversation; take any branch from the control bar (objection, visa denied, complication, goes quiet…); <b>edit</b> any message → <b>Save</b> — which routes it back to <b>Review</b>, so it can't send until re-approved. White-label via the “Viewing as” switch.</p></div>
+        <div class="card"><div class="ic">🖥️</div><div class="rt">/demo</div>
+          <p>Your launchpad. Live counts of partners, contacts, content, templates, leads, tenants, and a link to every capability. <b>Start here when showing anyone.</b></p></div>
+        <div class="card"><div class="ic">🗂️</div><div class="rt">/console</div>
+          <p>The operator cockpit. Partner accounts ranked by <b>fit score</b> (quality × low current international presence), each with a reason, a contact path, and a next action — plus the portfolio scores and a live activity feed.</p></div>
+        <div class="card"><div class="ic">✅</div><div class="rt">/studio</div>
+          <p>The daily driver. One inbox of everything awaiting approval; <b>Approve stays disabled until the gates — regulatory · contact · consent — are green</b>. Approving writes back: publishes a page, marks a proposal sent, releases a comms draft. Scope to one operator with <code>?tenant=&lt;id&gt;</code>.</p></div>
+        <div class="card"><div class="ic">📄</div><div class="rt">/  (landing)</div>
+          <p>The patient-facing site: launch categories with prices and the <b>published</b> cost-guides. A guide appears only after it passes QA and its market is cleared by the regulatory gate.</p></div>
+        <div class="card"><div class="ic">🟢</div><div class="rt">/comms</div>
+          <p>The read-only library of all 21 approval-ready WhatsApp templates (body + header + buttons). This is what a human files with Meta. To edit them interactively, use <code>/sandbox</code>.</p></div>
+        <div class="card"><div class="ic">🔎</div><div class="rt">/worklist</div>
+          <p>The compliant sourcing bridge: ready-to-click Google + LinkedIn search URLs per star account, so a human confirms the named decision-maker in ~10 min — manual search, no anti-bot circumvention.</p></div>
+        <div class="card"><div class="ic">📣</div><div class="rt">/distribution</div>
+          <p>Each published page repurposed into platform-native posts (LinkedIn / IG / Reddit / WhatsApp / X). All drafts — <b>nothing auto-posts</b> without a platform key + <code>POST_LIVE=1</code> + per-post approval.</p></div>
+        <div class="card"><div class="ic">📊</div><div class="rt">/benchmarks</div>
+          <p>A de-identified, k-anonymised funnel across operators. Every tenant + patient identifier stripped, small cells suppressed — aggregate learning, <b>not</b> patient-data reuse.</p></div>
+        <div class="card"><div class="ic">🔌</div><div class="rt">/plugins</div>
+          <p>What's live (🟢) vs. one key away (⚪) — image gen, social, enrichment, WhatsApp. Add a key to <code>.env</code>, restart, and it flips.</p></div>
+      </div>
+    </section>
+
+    <section id="loop">
+      <h2><span class="pnum">4</span>The operating loop — day to day</h2>
+      <p class="sub">The engine runs one loop for content and outreach alike: <b>generate → QA → gate → human-approve → publish/send.</b></p>
+      <h3>Content</h3>
+      <pre><code>node --experimental-sqlite data-core/gen_content.mjs        <span class="cmt"># draft cost-guides (fills gaps)</span>
+npm run qa                                                  <span class="cmt"># English drafts that pass → 'review'</span>
+node --experimental-sqlite data-core/set_regulatory.mjs &lt;MK&gt; verified "counsel confirmed &lt;date&gt;"
+node --experimental-sqlite data-core/publish_site.mjs       <span class="cmt"># 'review' + cleared market → 'published'</span></code></pre>
+      <h3>Distribution</h3>
+      <pre><code>FORCE=1 node --experimental-sqlite data-core/repurpose_content.mjs &lt;N&gt;   <span class="cmt"># first N published pages → posts</span></code></pre>
+      <h3>Partners &amp; outreach</h3>
+      <pre><code>npm run partner-layer      <span class="cmt"># (re)build the fit-ranked account board</span>
+npm run worklist           <span class="cmt"># the human research worklist (/worklist)</span>
+STEALTH=1 npm run discover <span class="cmt"># named decision-makers via Google→LinkedIn (real browser)</span>
+npm run infer              <span class="cmt"># infer likely emails (INFERRED, human-gate)</span>
+npm run proposals          <span class="cmt"># tailored proposals per account (→ Studio 'review')</span></code></pre>
+      <h3>Patient comms &amp; the unattended cycle</h3>
+      <pre><code>npm run comms-run          <span class="cmt"># state machine → each lead's next human-gated action</span>
+npm run loop               <span class="cmt"># one full factory cycle, fails over across providers</span></code></pre>
+      <div class="callout gate"><span class="k">Human gate</span>None of this sends or posts on its own. The scripts <b>draft</b>; you approve the results in <code>/studio</code> with one click. That separation is the whole compliance posture.</div>
+    </section>
+
+    <section id="dualmode">
+      <h2><span class="pnum">5</span>Dual-mode — plug in an operator's leads</h2>
+      <p class="sub">The engine is its own acquisition front <b>or</b> the backend for an outside operator who pushes leads in. Each operator is a tenant with its own token; ingestion normalises, masks PII, dedupes, and tags the source.</p>
+      <pre><code>curl -X POST http://localhost:5173/api/lead/ingest \
+  -H "content-type: application/json" \
+  -H "X-Ingest-Token: &lt;that tenant's token&gt;" \
+  -d '{"source":"&lt;tenant-id&gt;","leads":[
+        {"handle":"+9715xxxxxxx","country":"AE","treatment":"knee replacement","consent":true}
+      ]}'</code></pre>
+      <p>Returns a breakdown — <code>accepted / deduped / held_no_consent / held_regulatory / rejected</code> — and the leads flow into the same journey + Studio, <b>isolated to that tenant</b>. (Tokens are set by <code>npm run seed-tenants</code>; never commit them.)</p>
+    </section>
+
+    <section id="live">
+      <h2><span class="pnum">6</span>Going live</h2>
+      <p class="sub">There is no rebuild between demo and production — it's an env file plus a few real-world approvals. Full itemised checklist in <code>build-os/12_GO_LIVE.md</code>.</p>
+      <ol class="steps">
+        <li><b>WhatsApp.</b> Provision a Business API number, submit the 21 templates to Meta, set the tokens + <code>POST_LIVE=1</code>. Still human-gated per message.</li>
+        <li><b>Enrichment / social / email.</b> Add the respective keys — each stays double-gated (dry-run until approved).</li>
+        <li><b>Regulatory.</b> Replace the demo market clearances with real counsel sign-off via <code>set_regulatory.mjs</code>. Anything not <code>verified</code> is auto-gated to preview.</li>
+        <li><b>Access.</b> Set <code>CONSOLE_TOKEN</code> before exposing anything beyond localhost — it Basic-Auth-gates the console, Studio, and operator APIs; the public patient site stays open.</li>
+      </ol>
+    </section>
+
+    <section id="rules">
+      <h2><span class="pnum">7</span>The rules — built in, by design</h2>
+      <p class="sub">These aren't policies you have to remember; the engine enforces them.</p>
+      <ul class="rules">
+        <li><span class="rk">✓</span><span><b>Facilitator, not provider</b> — no clinical claims, diagnoses, or outcome guarantees anywhere.</span></li>
+        <li><span class="rk">✓</span><span><b>No fabrication</b> — prices cited or marked indicative; discovered contacts stored <b>UNVERIFIED</b> until a human confirms.</span></li>
+        <li><span class="rk">✓</span><span><b>Human gates</b> on every publish, send, and commercial term. The engine drafts; a person approves.</span></li>
+        <li><span class="rk">✓</span><span><b>Tenant isolation</b> — one operator's patient data is never reused for another. Cross-tenant learning is de-identified aggregate only.</span></li>
+        <li><span class="rk">✓</span><span><b>Privacy</b> — individual contacts + patient PII live only in the gitignored <code>medyatra.db</code> and <code>outputs/proposals/</code>. Never commit a <code>.db</code>.</span></li>
+      </ul>
+    </section>
+
+    <section id="trouble">
+      <h2><span class="pnum">8</span>Troubleshooting</h2>
+      <p class="sub">The common snags and their one-line fixes.</p>
+      <div class="tw"><table>
+        <tr><th>Symptom</th><th>Fix</th></tr>
+        <tr><td>localhost won't load / a route 404s</td><td>The server is stale or not running. Stop it (Ctrl-C) and <code>npm run serve</code> again — code changes need a restart.</td></tr>
+        <tr><td>“experimental-sqlite” error</td><td>You're on Node &lt; 22.5. Upgrade Node.</td></tr>
+        <tr><td>Generation fails with 429</td><td>Provider rate limit. Wait a minute and retry; batch scripts back off automatically. Keep batches small.</td></tr>
+        <tr><td>Landing shows no guides</td><td>Content isn't published: <code>npm run qa</code> → <code>set_regulatory.mjs &lt;MK&gt; verified</code> → <code>publish_site.mjs</code>.</td></tr>
+        <tr><td>/distribution is empty</td><td>Run <code>FORCE=1 node --experimental-sqlite data-core/repurpose_content.mjs &lt;N&gt;</code>.</td></tr>
+        <tr><td>Infographics / discovery do nothing</td><td>No local Edge/Chrome found, or it's busy. Install one; for <code>discover</code>, close it first (profile lock).</td></tr>
+        <tr><td>Approve button disabled in Studio</td><td>A gate isn't green — the item needs a cleared market, a verified contact, or consent. That's intended.</td></tr>
+      </table></div>
+    </section>
+  </main>
+</div>
+
+<div class="foot">MedYatra ("medical journey") is a working first-draft engine and a demonstration of end-to-end agentic product engineering — a facilitator model, honest about its limits, human-gated throughout. Rename freely.</div>
+
+<script>
+(function(){
+  var links=[].slice.call(document.querySelectorAll('nav.toc a'));
+  var secs=links.map(function(a){return document.getElementById(a.getAttribute('href').slice(1));});
+  links.forEach(function(a){a.addEventListener('click',function(e){
+    var t=document.getElementById(a.getAttribute('href').slice(1));
+    if(t){e.preventDefault();t.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'start'});}
+  });});
+  var obs=new IntersectionObserver(function(es){
+    es.forEach(function(en){
+      if(en.isIntersecting){
+        var id=en.target.id;
+        links.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+id);});
+      }
+    });
+  },{rootMargin:'-15% 0px -70% 0px'});
+  secs.forEach(function(s){if(s)obs.observe(s);});
+})();
+</script>
