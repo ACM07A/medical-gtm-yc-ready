@@ -1,0 +1,18 @@
+{
+  "type": "cost-comparison",
+  "category": "ortho",
+  "treatment": "Knee replacement",
+  "market": "United Kingdom",
+  "india": [
+    3500,
+    6500
+  ],
+  "west": [
+    35000,
+    50000
+  ],
+  "savings_pct": 88,
+  "valid": true,
+  "source": "data-core india + /build-os/08 western ref",
+  "generated": "2026-07-12T17:42:58.993Z"
+}
