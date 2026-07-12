@@ -1,8 +1,10 @@
 # INSTAGRAM · Orthopedics × Kenya
 <!-- DRAFT — human review before posting. model:gemini:gemini-2.5-flash -->
 
-Here is your Instagram carousel for MedYatra, focusing on accessing quality orthopedic care in India.
+Here is your Instagram Carousel content for MedYatra:
 
 ---
 
-**Topic: Your
+**INSTAGRAM CAROUSEL**
+
+**SLIDE 1**

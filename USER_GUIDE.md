@@ -32,12 +32,23 @@ Open `integrations/.env` and add at least one generation key so content/proposal
 Everything else (WhatsApp, enrichment, social, email) is **off until keyed** and not needed to run the demo. See [`build-os/12_GO_LIVE.md`](./build-os/12_GO_LIVE.md).
 
 ### Step 4. Build the data core
+
+**Fastest — one command** (rebuilds the entire populated demo from committed files, no API keys needed):
+```bash
+npm run demo             # seed + tenants + leads + templates + published guides + distribution
+```
+
+<details><summary>Or run the steps individually</summary>
+
 ```bash
 npm run seed             # creates + seeds data-core/medyatra.db (+ activity feed)
 npm run seed-tenants     # the own-brand + a demo operator tenant (dual-mode)
 npm run seed-leads       # demo patient leads for the journey/comms
 npm run comms            # generate the 21 WhatsApp templates + infographic headers
 ```
+</details>
+
+> `npm run demo` **wipes and rebuilds** the demo database — don't run it over a DB holding real, unbacked-up captured contacts.
 
 ### Step 5. Start it
 ```bash

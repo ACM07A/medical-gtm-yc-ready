@@ -1,6 +1,12 @@
 # WHATSAPP · Orthopedics × United Kingdom
-<!-- DRAFT — human review before posting. model:gemini:gemini-2.5-flash -->
+<!-- DRAFT — human review before posting. model:z-ai/glm-5.2 -->
 
-Considering Orthopedics? 🦵 India offers accredited care with potential cost savings, typically $3,500–$6,500 (Western reference varies). MedYatra helps UK patients connect with suitable Indian hospitals, making your journey smooth. Prices are indicative package ranges. Ready to explore your options without obligation? Send us a message on WhatsApp!
+Hello from MedYatra! 🙏
+
+Considering orthopedic care in India? We help UK patients connect with accredited Indian hospitals for procedures like joint replacements.
+
+In India, indicative package prices generally range from $3,500–$6,500. Western reference costs vary widely, so it's best to compare directly.
+
+We can't guarantee specific outcomes, but we're here to guide your next steps with care. Reply to this message on WhatsApp to chat with our team and explore your options. 🦴
 
 MedYatra is a medical-travel facilitator, not a hospital; prices are indicative package ranges.

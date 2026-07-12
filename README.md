@@ -52,9 +52,11 @@ Requires **Node ≥ 22.5** (for the built-in `node:sqlite`).
 ```bash
 npm install                 # only dependency: puppeteer-core (drives your local Edge/Chrome)
 cp integrations/.env.example integrations/.env   # add NVIDIA NIM and/or Gemini key (Gemini carries generation when GLM is unserved)
-npm run seed                # build + seed the SQLite data core
-npm run serve               # → http://localhost:5173
+npm run demo                # ONE COMMAND: rebuild the whole showable demo (data + tenants + leads + templates + published guides + distribution)
+npm run serve               # → http://localhost:5173  (open /demo)
 ```
+
+> `npm run demo` reproduces the full populated state on any machine from committed files — **no API keys required** (the optional social-repurpose step runs only if a generation key is present). For the minimal core, `npm run seed` still just builds the data core.
 
 **Showing someone the engine? Open [`/demo`](http://localhost:5173/demo)** — one page linking every capability
 (with live counts), framed as a safe sandbox. The star of it is the **[patient-journey sandbox](http://localhost:5173/sandbox)**:

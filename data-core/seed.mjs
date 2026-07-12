@@ -7,9 +7,14 @@ const db = open();
 const RETRIEVED = "2026-07-03";
 const CITE = "aggregated hospital/aggregator pricing — see /build-os/08_DATA_SOURCES.md";
 
-// wipe (child->parent order)
-for (const t of ["lead","content_asset","proposal","poc","partner_category","partner","category_market","category_price","category","market"])
-  db.exec(`DELETE FROM ${t};`);
+// wipe. FK enforcement off during the reset so newer child tables (channel_post, comms_template, …) that
+// reference these can't block the delete regardless of order; the generated tables are cleared too so nothing
+// is left orphaned (gen_comms / repurpose rebuild them). Turned back on immediately after.
+db.exec("PRAGMA foreign_keys = OFF");
+for (const t of ["channel_post","comms_template","lead","content_asset","proposal","poc","partner_category","partner","category_market","category_price","category","market"]) {
+  try { db.exec(`DELETE FROM ${t};`); } catch { /* table may not exist in an older schema */ }
+}
+db.exec("PRAGMA foreign_keys = ON");
 
 // ---- markets (focus: Middle East, Africa, Europe, SE Asia; no Bangladesh) ----
 const markets = [

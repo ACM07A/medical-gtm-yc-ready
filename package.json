@@ -8,6 +8,7 @@
   },
   "scripts": {
     "seed": "node --experimental-sqlite data-core/seed.mjs && node --experimental-sqlite data-core/seed_runs.mjs",
+    "demo": "node --experimental-sqlite data-core/demo_seed.mjs",
     "serve": "node --experimental-sqlite server/server.mjs",
     "query": "node --experimental-sqlite data-core/query.mjs",
     "partner-layer": "node --experimental-sqlite data-core/partner_layer.mjs",
