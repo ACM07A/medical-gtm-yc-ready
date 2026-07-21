@@ -24,15 +24,32 @@ const COHORT = 1000;                                   // people who see a guide
 
 // ── The funnel ───────────────────────────────────────────────────────────────────────────────────────
 // `rate` = share of the previous stage that reaches this one. `cost` = $ spent per ENTRANT to that stage.
+// ACQUISITION CHANNEL is the single biggest lever and the one most easily fudged. Google charges us exactly
+// what it charges an incumbent agency — there is NO AI advantage on media cost, and an earlier version of
+// this model smuggled one in via an unrealistically cheap cost-per-reader. Our advantage is in the cost of
+// CONVERTING and SERVING a lead, not acquiring one. So the channel is explicit and defaults to paid, the
+// honest worst case: organic has to be earned over 6-12 months before it can be assumed.
+const CHANNEL = String(arg("channel", "paid"));
+const REACH_COST = { paid: 2.50, organic: 0.05, blended: 1.00 }[CHANNEL] ?? 2.50;
+
+// Each stage carries the source for its rate. CITED = a published benchmark. ASSUMED = ours, unvalidated.
 const STAGES = [
-  { key: "reach",     label: "Sees a cost guide or ad",              rate: 1,               cost: 0.45, note: "content amortised + paid media, blended" },
-  { key: "lead",      label: "Messages us on WhatsApp",              rate: num("ctr", 0.02), cost: 0.08, note: "first agent turns" },
-  { key: "qualified", label: "Treatment, country, timeline captured", rate: num("q", 0.35),  cost: 0.35, note: "multi-turn qualification, agent-led" },
-  { key: "triaged",   label: "Reports in · structured case file",     rate: num("t", 0.55),  cost: 4.20, handoff: true,
-    note: "report chasing, OCR/structuring, human clinical-literacy review ~15 min" },
-  { key: "quoted",    label: "Hospital returns opinion + estimate",   rate: num("qt", 0.70), cost: 0.60, note: "relay + follow-up" },
-  { key: "booked",    label: "Accepts · deposit paid",                rate: num("conv", 0.30), cost: 2.10, note: "objections, payment, sponsor paperwork" },
-  { key: "treated",   label: "Travels and is treated",               rate: num("show", 0.85), cost: 40.00, note: "concierge: documents, logistics, interpreter, family updates" },
+  { key: "reach", label: "Sees a cost guide or ad", rate: 1, cost: num("reachcost", REACH_COST),
+    src: CHANNEL === "paid" ? "CITED — healthcare CPC $1.49 avg, $5.00 physicians/surgeons, $5-50 healthcare keywords"
+       : CHANNEL === "organic" ? "ASSUMED — content amortised over its lifetime; near-zero marginal cost at scale"
+       : "ASSUMED — mix of the two" },
+  { key: "lead", label: "Messages us on WhatsApp", rate: num("ctr", 0.045), cost: 0.08,
+    src: "CITED — medical-tourism landing pages convert 4.5-7% of paid visitors; healthcare site avg 3.2%" },
+  { key: "qualified", label: "Treatment, country, timeline captured", rate: num("q", 0.35), cost: 0.35,
+    src: "ASSUMED — no public benchmark found" },
+  { key: "triaged", label: "Reports in · structured case file", rate: num("t", 0.55), cost: 4.20, handoff: true,
+    src: "ASSUMED — no public benchmark found; cost = ~15 min clinically-literate review (generous vs Indian coordinator rates)" },
+  { key: "quoted", label: "Hospital returns opinion + estimate", rate: num("qt", 0.70), cost: 0.60,
+    src: "ASSUMED — no public benchmark found" },
+  { key: "booked", label: "Accepts · deposit paid", rate: num("conv", 0.30), cost: 2.10,
+    src: "PARTLY CITED — industry target is 10% inquiry→conversion end-to-end; this rate is back-solved toward it" },
+  { key: "treated", label: "Travels and is treated", rate: num("show", 0.85), cost: 40.00,
+    src: "ASSUMED — no published no-show/visa-denial data exists for India medical visas; 85% is optimistic" },
 ];
 
 // ── Grounded: what a treated patient is worth ────────────────────────────────────────────────────────
@@ -46,13 +63,22 @@ const COMMISSION = num("commission", 0.20);            // ASK — the real rate 
 const AGENCY_CAC = num("agencycac", 1400);             // ASSUMED — coordinator time + media + sub-agent cut
 
 // ── Walk the funnel ──────────────────────────────────────────────────────────────────────────────────
-let n = COHORT, spend = 0;
-const rows = [];
-for (const s of STAGES) {
-  n = n * s.rate;
-  spend += n * s.cost;                                 // cost is incurred on everyone who reaches the stage
-  rows.push({ ...s, n, spend, per: n > 0 ? spend / n : Infinity });
+// `mult` scales every conversion rate, to walk a pessimistic / base / optimistic band. The point of the
+// band is honesty: only the package price is a measured number here. Everything else is an assumption, and
+// a point estimate would imply a confidence this model has not earned. Report ranges until the first real
+// cohort replaces the guesses — a single figure like "$122" invites people to quote it as a fact.
+function walk(mult = 1) {
+  let n = COHORT, spend = 0;
+  const rows = [];
+  for (const s of STAGES) {
+    n = n * Math.min(1, s.rate * (s.key === "reach" ? 1 : mult));
+    spend += n * s.cost;                               // cost is incurred on everyone who reaches the stage
+    rows.push({ ...s, n, spend, per: n > 0 ? spend / n : Infinity });
+  }
+  return rows;
 }
+const BAND = { low: 0.6, high: 1.5 };                  // ±, applied to every conversion rate together
+const rows = walk(1), rowsLow = walk(BAND.low), rowsHigh = walk(BAND.high);
 
 // Sign goes OUTSIDE the currency symbol ("-$267", not "$-266.67"), and anything above $100 loses the cents
 // — a contribution figure quoted to the cent implies a precision these assumptions do not have.
@@ -70,8 +96,9 @@ for (const r of rows) {
   console.log(`${mark} ${r.label.padEnd(42)}${people.padStart(8)}${$(r.per).padStart(12)}${r.handoff ? "   ◀ HANDOFF" : ""}`);
 }
 
+const hLow = rowsHigh.find((r) => r.handoff), hHigh = rowsLow.find((r) => r.handoff);   // better funnel = lower cost
 console.log(`\n  ▶ THE UNIT WE SELL: a pre-triaged, high-intent case file`);
-console.log(`     ${Math.round(handoff.n)} of ${COHORT} readers reach it · costs us ${$(handoff.per)} to produce`);
+console.log(`     ${Math.round(handoff.n)} of ${COHORT} readers reach it · costs us ${$(hLow.per)}–${$(hHigh.per)} to produce (base ${$(handoff.per)})`);
 console.log(`     What the hospital receives: treatment need confirmed, country and timeline captured,`);
 console.log(`     reports collected and structured into a reviewable case file, indicative price band`);
 console.log(`     already accepted, and ${Math.round((rows[5].n / handoff.n) * 100)}% of these go on to book.`);
@@ -86,4 +113,12 @@ console.log(`\n  ⚠ NEEDS A REAL NUMBER — ask Aster / Manipal / Fortis:`);
 console.log(`     • the commission rate they actually pay a facilitator today   (using ${Math.round(COMMISSION * 100)}%)`);
 console.log(`     • what share of their international inquiries convert          (using ${Math.round(STAGES[5].rate * 100)}% quote→book)`);
 console.log(`     • what an inquiry costs them through their current agent panel (using ${$(AGENCY_CAC)})`);
-console.log(`\n  Sensitivity:  npm run economics -- --cat oncology --conv 0.20 --commission 0.25\n`);
+// Where every number came from — printed every run, so nobody quotes this model without its foundations.
+console.log(`\n  PROVENANCE (channel: ${CHANNEL})`);
+for (const s of STAGES) console.log(`     ${s.key.padEnd(10)} ${s.src}`);
+console.log(`     package    CITED — data-core category_price rows`);
+console.log(`     commission ASSUMED ${Math.round(COMMISSION * 100)}% — reported facilitator range is 15–25%`);
+const cited = STAGES.filter((s) => s.src.startsWith("CITED")).length;
+console.log(`\n  ${cited} of ${STAGES.length} funnel stages rest on a published benchmark. The rest are ours.`);
+console.log(`  Treat every figure above as a range, not a number, until a real cohort replaces it.`);
+console.log(`\n  Compare channels:  npm run economics -- --channel organic    (paid is the honest default)\n`);
