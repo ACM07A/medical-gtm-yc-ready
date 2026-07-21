@@ -36,7 +36,9 @@
     "eval-safety": "node --experimental-sqlite data-core/eval_safety.mjs",
     "economics": "node --experimental-sqlite data-core/unit_economics.mjs",
     "demand-drivers": "node --experimental-sqlite data-core/seed_demand_drivers.mjs",
-    "eeat": "node --experimental-sqlite data-core/retrofit_eeat.mjs"
+    "eeat": "node --experimental-sqlite data-core/retrofit_eeat.mjs",
+    "warm-accounts": "node --experimental-sqlite data-core/seed_warm_accounts.mjs",
+    "plan-clusters": "node --experimental-sqlite data-core/plan_clusters.mjs"
   },
   "keywords": [
     "agentic",

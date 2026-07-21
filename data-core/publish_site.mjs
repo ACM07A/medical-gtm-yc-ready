@@ -28,6 +28,31 @@ const rows = db.prepare(`SELECT ca.*, c.name cat, mk.name mname FROM content_ass
   JOIN category c ON c.id=ca.category_id JOIN market mk ON mk.code=ca.market_code
   WHERE ca.status IN ('review','published') AND ca.language='en'`).all();
 
+// INTERNAL LINKING — a cluster only works if the pages point at each other. The hub lists its spokes; each
+// spoke links back to the hub. Without this the pages are 30 orphans and the topical-authority argument
+// that justifies organic acquisition simply does not hold. Only PUBLISHED siblings are linked: linking to
+// a gated or unwritten page is a broken promise to the reader and a dead crawl path.
+const published = db.prepare(`SELECT category_id, market_code, cluster, kind, topic, title, file_ref
+  FROM content_asset WHERE status IN ('review','published') AND language='en'`).all();
+const clusterOf = (a) => a.cluster || `${a.category_id}-cost-india-${String(a.market_code).toLowerCase()}`;
+const siblings = {};
+for (const p of published) (siblings[clusterOf(p)] ||= []).push(p);
+const hrefOf = (p) => "/site/" + basename(p.file_ref).replace(/\.md$/, ".html");
+
+function relatedHtml(a) {
+  const key = clusterOf(a);
+  const kin = (siblings[key] || []).filter((p) => p.file_ref !== a.file_ref);
+  if (!kin.length) return "";
+  const hub = kin.find((p) => p.kind !== "spoke");
+  const spokes = kin.filter((p) => p.kind === "spoke");
+  let out = "";
+  if (a.kind === "spoke" && hub)
+    out += `<p style="font-size:14px;margin-bottom:6px"><a href="${hrefOf(hub)}">&larr; ${esc(hub.title)}</a></p>`;
+  if (spokes.length)
+    out += `<hr><h2>More on this</h2><ul>${spokes.map((p) => `<li><a href="${hrefOf(p)}">${esc(p.title)}</a></li>`).join("")}</ul>`;
+  return out;
+}
+
 const links = [];
 let gated = 0;
 for (const a of rows) {
@@ -39,7 +64,7 @@ for (const a of rows) {
   const ld = jsonLd({ title: a.meta_title || `${a.cat} — ${a.mname}`, description: a.meta_desc || "",
     url: `/site/${slug}`, author: "MedYatra editorial", reviewedAt: a.reviewed_at,
     citations: ["Vaidam published package pricing", "MediGence published package pricing"] });
-  writeFileSync(join(SITE, slug), warn + page(a.meta_title || `${a.cat} — ${a.mname}`, mdToHtml(md), a.meta_desc || "", ld));
+  writeFileSync(join(SITE, slug), warn + page(a.meta_title || `${a.cat} — ${a.mname}`, mdToHtml(md) + relatedHtml(a), a.meta_desc || "", ld));
   if (reg.cleared) {
     if (a.status !== "published") db.prepare(`UPDATE content_asset SET status='published' WHERE id=?`).run(a.id);
     logRun(db, "Publisher", `published ${a.category_id}×${a.market_code}`, `local site (market cleared)`, `/site/${slug}`, "ok");
