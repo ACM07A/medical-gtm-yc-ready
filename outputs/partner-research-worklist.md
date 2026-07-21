@@ -5,7 +5,7 @@
 > `node --experimental-sqlite data-core/capture_poc.mjs <partner_id> "Full Name" "Role" "<email or linkedin url>"`
 > Target roles (in priority order): **head international patient services** · **GM international business** · **medical value travel head** · **international marketing manager**
 
-Ranked by fit (does this partner *need* us). 9 accounts.
+Ranked by fit (does this partner *need* us). 11 accounts.
 
 ---
 
@@ -104,6 +104,30 @@ _Quality brand (verify individually) building MVT (Dental) — early enough to w
 - Google: ["Premium implant clinics (verify)" GM international business](https://www.google.com/search?q=%22Premium%20implant%20clinics%20(verify)%22%20(GM%20OR%20%22general%20manager%22%20OR%20VP)%20international%20business%20hospital)
 - **Inferred email** once you have the name: `first.last@premium-dental.com (verify domain)` (label INFERRED; verify)
 - Capture → `node --experimental-sqlite data-core/capture_poc.mjs premium-dental "First Last" "Head – Intl Patient Services" "first.last@premium-dental.com (verify domain)"`
+
+## Aster DM Healthcare (India)  
+`id: aster-india` · fit **68** · established · Bengaluru / Kochi · email domain `aster-india.com (verify domain)`  
+_Established IPS desk (NABH (Aster CMI); JCI at selected units — VERIFY per unit) (Cardiac, Oncology, Orthopedics); compete on our source-market demand + service depth. Thinner margin — pursue for volume/brand, not terms._
+
+**Searches** (open, read the LinkedIn result):
+- LinkedIn people: [Aster DM Healthcare (India) international patient](https://www.linkedin.com/search/results/people/?keywords=Aster%20DM%20Healthcare%20(India)%20international%20patient%20services) · [Aster DM Healthcare (India) medical value travel](https://www.linkedin.com/search/results/people/?keywords=Aster%20DM%20Healthcare%20(India)%20medical%20value%20travel)
+- Google: [site:linkedin.com "Aster DM Healthcare (India)" intl patient](https://www.google.com/search?q=site%3Alinkedin.com%2Fin%20%22Aster%20DM%20Healthcare%20(India)%22%20(international%20patient%20OR%20%22medical%20value%20travel%22%20OR%20international%20business))
+- Google: ["Aster DM Healthcare (India)" head international patient](https://www.google.com/search?q=%22Aster%20DM%20Healthcare%20(India)%22%20%22international%20patient%20services%22%20(head%20OR%20manager%20OR%20director))
+- Google: ["Aster DM Healthcare (India)" GM international business](https://www.google.com/search?q=%22Aster%20DM%20Healthcare%20(India)%22%20(GM%20OR%20%22general%20manager%22%20OR%20VP)%20international%20business%20hospital)
+- **Inferred email** once you have the name: `first.last@aster-india.com (verify domain)` (label INFERRED; verify)
+- Capture → `node --experimental-sqlite data-core/capture_poc.mjs aster-india "First Last" "Head – Intl Patient Services" "first.last@aster-india.com (verify domain)"`
+
+## Aster DM Healthcare GCC (Medcare / Aster Clinics)  
+`id: aster-gcc` · fit **68** · established · Dubai / Abu Dhabi · email domain `aster-gcc.com (verify domain)`  
+_Established IPS desk (VERIFY — JCI/DoH per facility) (Cardiac, Oncology, Orthopedics); compete on our source-market demand + service depth. Thinner margin — pursue for volume/brand, not terms._
+
+**Searches** (open, read the LinkedIn result):
+- LinkedIn people: [Aster DM Healthcare GCC (Medcare / Aster Clinics) international patient](https://www.linkedin.com/search/results/people/?keywords=Aster%20DM%20Healthcare%20GCC%20(Medcare%20%2F%20Aster%20Clinics)%20international%20patient%20services) · [Aster DM Healthcare GCC (Medcare / Aster Clinics) medical value travel](https://www.linkedin.com/search/results/people/?keywords=Aster%20DM%20Healthcare%20GCC%20(Medcare%20%2F%20Aster%20Clinics)%20medical%20value%20travel)
+- Google: [site:linkedin.com "Aster DM Healthcare GCC (Medcare / Aster Clinics)" intl patient](https://www.google.com/search?q=site%3Alinkedin.com%2Fin%20%22Aster%20DM%20Healthcare%20GCC%20(Medcare%20%2F%20Aster%20Clinics)%22%20(international%20patient%20OR%20%22medical%20value%20travel%22%20OR%20international%20business))
+- Google: ["Aster DM Healthcare GCC (Medcare / Aster Clinics)" head international patient](https://www.google.com/search?q=%22Aster%20DM%20Healthcare%20GCC%20(Medcare%20%2F%20Aster%20Clinics)%22%20%22international%20patient%20services%22%20(head%20OR%20manager%20OR%20director))
+- Google: ["Aster DM Healthcare GCC (Medcare / Aster Clinics)" GM international business](https://www.google.com/search?q=%22Aster%20DM%20Healthcare%20GCC%20(Medcare%20%2F%20Aster%20Clinics)%22%20(GM%20OR%20%22general%20manager%22%20OR%20VP)%20international%20business%20hospital)
+- **Inferred email** once you have the name: `first.last@aster-gcc.com (verify domain)` (label INFERRED; verify)
+- Capture → `node --experimental-sqlite data-core/capture_poc.mjs aster-gcc "First Last" "Head – Intl Patient Services" "first.last@aster-gcc.com (verify domain)"`
 
 ## Cloudnine  
 `id: cloudnine` · fit **66** · emerging · Metro · email domain `cloudninecare.com`  
