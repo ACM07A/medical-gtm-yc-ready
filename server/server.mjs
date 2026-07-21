@@ -15,7 +15,12 @@ import { nextAction } from "../lib/comms_machine.mjs";
 import { renderStudio, studioQueue, studioApprove } from "./studio.mjs";
 import { renderSandbox, saveTemplate } from "./sandbox.mjs";
 import { renderDemo } from "./demo.mjs";
-import { renderAgentsDemo, runTriage, runFamilyUpdate, runDocumentChecklist, runBillingReconciliation } from "./agents.mjs";
+import {
+  renderAgentsDemo, runTriage, runDocumentChecklist,
+  runFamilyUpdateAdd, runFamilyUpdateOptin, runFamilyUpdateSend,
+  runKycInit, runKycSubmit, runBillingLead, runBillingAdhoc,
+  runDischargeRelay, runGroundLogistics, runInterpreterScheduling, runTravelReadiness, runPaymentRouting,
+} from "./agents.mjs";
 import { ingestLeads } from "../data-core/ingest.mjs";
 import { benchmarks } from "../data-core/benchmarks.mjs";
 import { range } from "../lib/money.mjs";
@@ -164,11 +169,27 @@ const server = createServer(async (req, res) => {
     if (req.method === "POST" && url.pathname.startsWith("/api/agents/")) {
       const body = await readBody(req);
       const kind = url.pathname.slice("/api/agents/".length);
-      const handler = { triage: runTriage, "family-update": runFamilyUpdate,
-        "document-checklist": runDocumentChecklist, "billing-reconciliation": runBillingReconciliation }[kind];
-      if (!handler) return send(404, "application/json", JSON.stringify({ error: "unknown agent" }));
+      // Handlers that need the live DB connection are wrapped inline; pure/generation-only ones pass straight
+      // through. Same functions a CLI script or comms_run.mjs would call — no separate "web" code path.
+      const handler = {
+        triage: () => runTriage(body),
+        "document-checklist": () => runDocumentChecklist(body),
+        "family-update-add": () => runFamilyUpdateAdd(db, body),
+        "family-update-optin": () => runFamilyUpdateOptin(db, body),
+        "family-update-send": () => runFamilyUpdateSend(db, body),
+        "kyc-init": () => runKycInit(db, body),
+        "kyc-submit": () => runKycSubmit(db, body),
+        "billing-lead": () => runBillingLead(db, body),
+        "billing-adhoc": () => runBillingAdhoc(body),
+        "discharge-relay": () => runDischargeRelay(body),
+        "ground-logistics": () => runGroundLogistics(body),
+        "interpreter-scheduling": () => runInterpreterScheduling(body),
+        "travel-readiness": () => runTravelReadiness(body),
+        "payment-routing": () => runPaymentRouting(body),
+      }[kind];
+      if (!handler) return send(404, "application/json", JSON.stringify({ error: "unknown agent action: " + kind }));
       try {
-        const result = await handler(body);
+        const result = await handler();
         logRun(db, "Agents", `${kind} run`, JSON.stringify(result).slice(0, 140), "/agents", result?.safety?.verdict === "block" ? "fail" : "ok");
         return send(200, "application/json", JSON.stringify(result));
       } catch (e) { return send(500, "application/json", JSON.stringify({ error: String(e.message || e) })); }

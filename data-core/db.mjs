@@ -86,6 +86,38 @@ export function open(path = DB_PATH) {
   db.exec(`CREATE TABLE IF NOT EXISTS tenant (
     id TEXT PRIMARY KEY, name TEXT, mode TEXT DEFAULT 'operator', token TEXT, rev_share REAL,
     active INTEGER DEFAULT 1, created TEXT DEFAULT (datetime('now')))`);
+
+  // FAMILY CONTACT — the person waiting at home is NOT the patient and is not on the patient's WhatsApp
+  // thread. That's a second, separate conversation with a second person, which means a second consent
+  // (contacting a third party about a patient's care is its own privacy question) and, on WhatsApp
+  // specifically, its own 24h-session/template rule — the first message to a number that's never messaged
+  // us is a template, exactly like the patient's own first touch (lib/comms_machine.mjs). consent starts
+  // at 0 on purpose: nothing sends to a family contact until they've opted in.
+  db.exec(`CREATE TABLE IF NOT EXISTS family_contact (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, lead_id INTEGER REFERENCES lead(id),
+    name TEXT, phone TEXT, relationship TEXT, language TEXT DEFAULT 'en',
+    consent INTEGER DEFAULT 0, consent_at TEXT, opted_out INTEGER DEFAULT 0,
+    last_outbound_at TEXT, created TEXT DEFAULT (datetime('now')))`);
+
+  // DOCUMENT ITEM — per-lead, per-document KYC-style state. document_checklist.mjs used to return a fresh,
+  // stateless list every call; a real intake process is: something is requested, the patient submits it,
+  // SOME items can be verified by a deterministic rule (a passport expiry date is just arithmetic), others
+  // genuinely need a human to look at an image (a photo spec, or that a name matches across documents) —
+  // and the record of which is which has to persist, or every re-check starts from zero.
+  //  status: missing | submitted | verified | needs_human_review | rejected
+  db.exec(`CREATE TABLE IF NOT EXISTS doc_item (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, lead_id INTEGER REFERENCES lead(id),
+    key TEXT, label TEXT, status TEXT DEFAULT 'missing', value TEXT, note TEXT,
+    submitted_at TEXT, checked_at TEXT, UNIQUE(lead_id, key))`);
+
+  // ESTIMATE LINE — a real per-lead quote, and later the real actual bill, as itemised rows. Billing
+  // reconciliation used to take two hand-typed strings; that's a UI demo, not a system. A quote is recorded
+  // once at booking (kind='quote') and the actual is recorded once at discharge (kind='actual'); the
+  // reconciliation agent reads both back from here rather than trusting whatever was typed into a box.
+  db.exec(`CREATE TABLE IF NOT EXISTS estimate_line (
+    id INTEGER PRIMARY KEY AUTOINCREMENT, lead_id INTEGER REFERENCES lead(id),
+    kind TEXT, label TEXT, amount REAL, currency TEXT DEFAULT 'USD',
+    created TEXT DEFAULT (datetime('now')))`);
   return db;
 }
 
