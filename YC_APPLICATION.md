@@ -13,11 +13,12 @@ makes the application worse.
 
 ## Describe what your company does in 50 characters or less
 
-> **AI agents run our medical travel service, not staff**
+> **Medical travel to India, coordinated by AI agents**
 
-*(49 characters.)* Alternatives if that reads oddly:
-- `Medical travel to India, coordinated by AI agents` (48)
-- `We get patients to Indian hospitals and coordinate it` (52 — too long, trim)
+*(49 characters — counted, not estimated.)* Alternatives:
+- `AI agents run our medical travel service, not staff` (51 — one over, would need trimming)
+- `We get patients from Africa and the Gulf treated in India` (56 — too long, but the clearest of the three;
+  worth trimming to fit if you prefer stating the corridor over the method)
 
 ---
 
