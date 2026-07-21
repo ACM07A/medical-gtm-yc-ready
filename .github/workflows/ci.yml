@@ -1,0 +1,26 @@
+name: CI
+
+# Gates every push: the adversarial safety suite and the agent smoke test both already caught real bugs
+# this session (a safety-verdict reducer that silently returned "pass" while holding blocking findings; a
+# KYC key-truncation issue that made a submission silently no-op). This is what stops either regressing
+# unnoticed. eval-safety needs no API key (it tests lib/safety.mjs directly); smoke-agents runs its
+# deterministic fallback paths without one — see lib/agents/*.mjs — so this workflow needs no secrets.
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm install
+      - name: Adversarial safety suite (clinical scope, emergency escalation, PII, data residency)
+        run: npm run eval-safety
+      - name: Agent smoke test (works with or without an LLM key)
+        run: npm run smoke-agents
+      - name: Seed + verify the demo state builds cleanly
+        run: npm run seed

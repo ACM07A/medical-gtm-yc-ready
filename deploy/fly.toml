@@ -1,0 +1,47 @@
+# Fly.io — chosen over a bare VPS only because it gives a persistent volume + free TLS + a health-check
+# supervisor for free/near-free, with one command to deploy (`fly deploy` from repo root, once `fly launch`
+# has been run interactively — that step needs a real account, so it isn't automated here). A $4-6/mo
+# Hetzner or DigitalOcean droplet is an equally valid, slightly more manual alternative — see
+# build-os/13_DEPLOYMENT.md for the comparison.
+app = "medyatra"                      # change to whatever's available
+primary_region = "bom"                # Mumbai — closest to the India-hosted hospital side; revisit once the
+                                       # Abu Dhabi / UAE in-country residency requirement (lib/safety.mjs
+                                       # RESIDENCY) is actually being served, since THAT traffic may need a
+                                       # separate, UAE-region deployment rather than sharing this one.
+
+[build]
+  dockerfile = "deploy/Dockerfile"
+
+[env]
+  PORT = "5173"
+
+[[mounts]]
+  source = "medyatra_data"
+  destination = "/data"
+
+[[services]]
+  internal_port = 5173
+  protocol = "tcp"
+  auto_stop_machines = false          # a stopped machine drops the SQLite writer; keep it warm
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+    force_https = true
+
+  [[services.tcp_checks]]
+    interval = "15s"
+    timeout = "4s"
+
+[[services.http_checks]]
+  path = "/"
+  interval = "30s"
+  timeout = "5s"
+
+[deploy]
+  strategy = "immediate"              # single machine, single writer — a rolling strategy buys nothing here

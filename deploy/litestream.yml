@@ -1,0 +1,17 @@
+# Continuously streams the SQLite file's WAL to cheap object storage. This is the whole reason SQLite is
+# viable in production without Supabase/Postgres: durability and point-in-time restore, without a second
+# database process. Works with ANY S3-compatible endpoint — Cloudflare R2 (10GB free, zero egress fees,
+# recommended below) or Backblaze B2 (10GB free) both work unmodified; just change the endpoint.
+#
+# Restore after a lost volume:  litestream restore -o /data/medyatra.db "$LITESTREAM_BUCKET"
+dbs:
+  - path: /data/medyatra.db
+    replicas:
+      - type: s3
+        bucket: ${LITESTREAM_BUCKET}
+        path: medyatra-db
+        endpoint: ${LITESTREAM_ENDPOINT}        # e.g. https://<accountid>.r2.cloudflarestorage.com for R2
+        access-key-id: ${LITESTREAM_ACCESS_KEY}
+        secret-access-key: ${LITESTREAM_SECRET_KEY}
+        sync-interval: 10s
+        retention: 168h                          # 7 days of point-in-time restore
