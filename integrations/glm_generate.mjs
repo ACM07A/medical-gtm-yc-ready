@@ -35,20 +35,35 @@ const PER_MODEL_MS = Number(process.env.TIER2_TIMEOUT) || 40000;
 const NIM_MS = Number(process.env.NIM_TIMEOUT) || 12000;
 const budgetFor = (model, base) => model.startsWith("gemini:") ? base : Math.min(base, NIM_MS);
 
+// GEMINI THINKING BUFFER — confirmed live, not theoretical: gemini-2.5-flash via the OpenAI-compat endpoint
+// spends part of `max_tokens` on an internal "thinking" pass BEFORE any visible output, and that spend is
+// unpredictable. A 220-token budget for a 4-sentence reply returned 10 words, silently, with HTTP 200 and no
+// error — the same failure shape as the safety-verdict bug (data-core/eval_safety.mjs) and the E-E-A-T
+// scoring bug (lib/eeat.mjs): a check that looks like it passed. Every caller's `maxTokens` is meant to mean
+// "visible output length" — gen_content.mjs, gen_proposals.mjs, and every lib/agents/*.mjs file assumes
+// that. So the buffer is added HERE, once, rather than asking every call site to know a provider's quirk
+// and over-provision defensively (which the short-form callers — gen_credibility, gen_outreach,
+// repurpose_content, and the new lib/agents/*.mjs — were not doing, and were silently exposed to this).
+// GLM-5.2 is unserved on the current NVIDIA account (confirmed: direct call times out), so Gemini is
+// currently the primary path, not a rare fallback — this is not a theoretical fix.
+const GEMINI_THINKING_BUFFER = Number(process.env.GEMINI_THINKING_BUFFER) || 1500;
+
 // Route a model to the right endpoint/key. "gemini:<model>" → Google's OpenAI-compatible endpoint;
 // everything else → NVIDIA NIM. This lets one failover chain span two providers.
 async function callModel(model, _key, body, ms) {
   let endpoint = ENDPOINT, key = process.env.NVIDIA_API_KEY, realModel = model;
+  let sendBody = body;
   if (model.startsWith("gemini:")) {
     endpoint = "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
     key = process.env.GEMINI_API_KEY;
     realModel = model.slice(7);
+    sendBody = { ...body, max_tokens: (body.max_tokens || 0) + GEMINI_THINKING_BUFFER };
   }
   if (!key) throw new Error(`${model} missing API key`);
   const res = await fetch(endpoint, {
     method: "POST", signal: AbortSignal.timeout(ms),
     headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ ...body, model: realModel }),
+    body: JSON.stringify({ ...sendBody, model: realModel }),
   });
   if (!res.ok) throw new Error(`${model} HTTP ${res.status}: ${(await res.text()).slice(0, 120)}`);
   const data = await res.json();

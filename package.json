@@ -38,7 +38,8 @@
     "demand-drivers": "node --experimental-sqlite data-core/seed_demand_drivers.mjs",
     "eeat": "node --experimental-sqlite data-core/retrofit_eeat.mjs",
     "warm-accounts": "node --experimental-sqlite data-core/seed_warm_accounts.mjs",
-    "plan-clusters": "node --experimental-sqlite data-core/plan_clusters.mjs"
+    "plan-clusters": "node --experimental-sqlite data-core/plan_clusters.mjs",
+    "smoke-agents": "node --experimental-sqlite data-core/smoke_agents.mjs"
   },
   "keywords": [
     "agentic",

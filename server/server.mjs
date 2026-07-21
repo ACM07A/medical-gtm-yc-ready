@@ -15,6 +15,7 @@ import { nextAction } from "../lib/comms_machine.mjs";
 import { renderStudio, studioQueue, studioApprove } from "./studio.mjs";
 import { renderSandbox, saveTemplate } from "./sandbox.mjs";
 import { renderDemo } from "./demo.mjs";
+import { renderAgentsDemo, runTriage, runFamilyUpdate, runDocumentChecklist, runBillingReconciliation } from "./agents.mjs";
 import { ingestLeads } from "../data-core/ingest.mjs";
 import { benchmarks } from "../data-core/benchmarks.mjs";
 import { range } from "../lib/money.mjs";
@@ -132,7 +133,7 @@ const server = createServer(async (req, res) => {
   // ACCESS CONTROL: the console + APIs expose named partner contacts and pipeline. If CONSOLE_TOKEN is set,
   // gate everything except the public patient site (/, /site, /outputs) and the health probe. REQUIRED
   // before exposing this beyond localhost. (No token set = open, for localhost dev.)
-  const PROTECTED = /^\/(console|studio|sandbox|demo|benchmarks|api\/(state|runs|studio|benchmarks|comms)|draft|outreach|worklist|comms|distribution|plugins)/;
+  const PROTECTED = /^\/(console|studio|sandbox|demo|agents|benchmarks|api\/(state|runs|studio|benchmarks|comms|agents)|draft|outreach|worklist|comms|distribution|plugins)/;
   if (process.env.CONSOLE_TOKEN && PROTECTED.test(url.pathname)) {
     const auth = req.headers.authorization || "";
     const pass = auth.startsWith("Basic ") ? Buffer.from(auth.slice(6), "base64").toString().split(":").slice(1).join(":") : "";
@@ -156,6 +157,22 @@ const server = createServer(async (req, res) => {
     // live. Editing a template routes it back to `review` (human-gated before it can ever send).
     if (url.pathname === "/demo")
       return send(200, "text/html; charset=utf-8", renderDemo(db));
+    // CONCIERGE AGENTS — post-booking journey, live and clickable (server/agents.mjs). Real model calls
+    // through the same failover chain and safety gate as everything else; deterministic fallback if no key.
+    if (url.pathname === "/agents")
+      return send(200, "text/html; charset=utf-8", renderAgentsDemo());
+    if (req.method === "POST" && url.pathname.startsWith("/api/agents/")) {
+      const body = await readBody(req);
+      const kind = url.pathname.slice("/api/agents/".length);
+      const handler = { triage: runTriage, "family-update": runFamilyUpdate,
+        "document-checklist": runDocumentChecklist, "billing-reconciliation": runBillingReconciliation }[kind];
+      if (!handler) return send(404, "application/json", JSON.stringify({ error: "unknown agent" }));
+      try {
+        const result = await handler(body);
+        logRun(db, "Agents", `${kind} run`, JSON.stringify(result).slice(0, 140), "/agents", result?.safety?.verdict === "block" ? "fail" : "ok");
+        return send(200, "application/json", JSON.stringify(result));
+      } catch (e) { return send(500, "application/json", JSON.stringify({ error: String(e.message || e) })); }
+    }
     if (url.pathname === "/sandbox")
       return send(200, "text/html; charset=utf-8", renderSandbox(db));
     if (req.method === "POST" && url.pathname === "/api/comms/save") {
