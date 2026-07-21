@@ -1,110 +1,89 @@
-// UNIT ECONOMICS — cost to acquire and fulfil one treated patient, agent-led vs the traditional agency.
+// UNIT ECONOMICS — what a patient costs us, stage by stage.
 //
-// This is the model the whole company rests on: if an AI-native facilitator cannot serve a patient for
-// materially less than a coordinator-staffed agency, there is no business, only a nicer UI.
+// The question this answers is the one a hospital partner actually asks: "what am I getting, and what did
+// it cost you to produce?" So the model is a funnel with cost accumulating down it, not a spreadsheet of
+// blended averages. The number that matters is the cost of a patient AT THE HANDOFF POINT — a pre-triaged,
+// high-intent case file — because that is the unit we sell to a hospital, not a treated patient.
 //
-// HONESTY CONTRACT: package prices are pulled LIVE from the data core (real, cited). Everything else is an
-// ASSUMPTION, is labelled as one, and carries a `source` naming who must confirm it. Assumptions marked
-// ASK are the exact questions to put to Aster / Manipal / Fortis — this file doubles as that question list.
-// Do not quote any ASK figure externally until it has been replaced with a real one.
+// Cost of dropouts is absorbed by the survivors: that is why cost-per-survivor climbs down the funnel, and
+// why "cost per lead" is a meaningless number to quote anyone.
 //
-//   npm run economics              · npm run economics -- --commission 0.18 --conv 0.04
+// HONESTY CONTRACT: package prices come live from cited category_price rows. Every rate and cost below is
+// an ASSUMPTION labelled with who must confirm it. The ones marked ASK are the questions for Aster /
+// Manipal / Fortis — do not quote them externally until a real number replaces them.
+//
+//   npm run economics                      · npm run economics -- --cat ortho --conv 0.30
 import { open } from "./db.mjs";
 
 const db = open();
-const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > 0 ? Number(process.argv[i + 1]) : d; };
+const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > 0 ? process.argv[i + 1] : d; };
+const num = (k, d) => Number(arg(k, d));
 
-// ── Grounded input: what a treated patient is actually worth ─────────────────────────────────────────
-// Package value drives everything. Taken from the cited category_price rows, not invented.
-const cats = db.prepare(
+const CAT = String(arg("cat", "cardiac"));
+const COHORT = 1000;                                   // people who see a guide, for legibility
+
+// ── The funnel ───────────────────────────────────────────────────────────────────────────────────────
+// `rate` = share of the previous stage that reaches this one. `cost` = $ spent per ENTRANT to that stage.
+const STAGES = [
+  { key: "reach",     label: "Sees a cost guide or ad",              rate: 1,               cost: 0.45, note: "content amortised + paid media, blended" },
+  { key: "lead",      label: "Messages us on WhatsApp",              rate: num("ctr", 0.02), cost: 0.08, note: "first agent turns" },
+  { key: "qualified", label: "Treatment, country, timeline captured", rate: num("q", 0.35),  cost: 0.35, note: "multi-turn qualification, agent-led" },
+  { key: "triaged",   label: "Reports in · structured case file",     rate: num("t", 0.55),  cost: 4.20, handoff: true,
+    note: "report chasing, OCR/structuring, human clinical-literacy review ~15 min" },
+  { key: "quoted",    label: "Hospital returns opinion + estimate",   rate: num("qt", 0.70), cost: 0.60, note: "relay + follow-up" },
+  { key: "booked",    label: "Accepts · deposit paid",                rate: num("conv", 0.30), cost: 2.10, note: "objections, payment, sponsor paperwork" },
+  { key: "treated",   label: "Travels and is treated",               rate: num("show", 0.85), cost: 40.00, note: "concierge: documents, logistics, interpreter, family updates" },
+];
+
+// ── Grounded: what a treated patient is worth ────────────────────────────────────────────────────────
+const cat = db.prepare(
   `SELECT c.id, c.name, AVG((p.india_low + p.india_high) / 2.0) AS pkg
-     FROM category c JOIN category_price p ON p.category_id = c.id
-    GROUP BY c.id ORDER BY pkg DESC`).all();
+     FROM category c JOIN category_price p ON p.category_id = c.id WHERE c.id = ? GROUP BY c.id`).get(CAT)
+  || db.prepare(`SELECT c.id, c.name, AVG((p.india_low + p.india_high)/2.0) AS pkg FROM category c
+                 JOIN category_price p ON p.category_id=c.id GROUP BY c.id ORDER BY pkg DESC LIMIT 1`).get();
 
-// ── Assumptions (every one needs a real number before this leaves the building) ──────────────────────
-const A = {
-  commission:   { v: arg("commission", 0.15), unit: "of package", source: "ASK — the actual facilitator rate Aster/Manipal pay today" },
-  agentPadding: { v: 0.30, unit: "of package", source: "REPORTED — 25–35% padding built into international quotes to fund agent commissions (Todd, industry analysis)" },
+const COMMISSION = num("commission", 0.20);            // ASK — the real rate Aster/Manipal pay today
+const AGENCY_CAC = num("agencycac", 1400);             // ASSUMED — coordinator time + media + sub-agent cut
 
-  // Funnel — inquiry to treated. The single most important number and the one most often guessed.
-  leadToQualified: { v: arg("q", 0.35), unit: "rate", source: "ASK — what share of international inquiries are clinically/financially viable" },
-  qualifiedToQuoted:{ v: 0.70, unit: "rate", source: "ASSUMED — hospital returns an opinion + estimate" },
-  quotedToTreated: { v: arg("conv", 0.12), unit: "rate", source: "ASK — the conversion that actually matters; agencies rarely publish it" },
-
-  // Traditional agency cost structure
-  coordinatorSalary:{ v: 700,  unit: "$/month", source: "ASSUMED — India international-patient coordinator, fully loaded" },
-  leadsPerCoord:   { v: 60,   unit: "leads/month", source: "ASSUMED — a coordinator working WhatsApp across time zones and languages" },
-  subAgentCut:     { v: 0.40, unit: "of commission", source: "REPORTED — source-market sub-agents take a large share of the facilitator fee" },
-  agencyPaidMedia: { v: 45,   unit: "$/lead", source: "ASSUMED — paid search on high-intent medical-travel terms" },
-
-  // Agent-led cost structure
-  llmPerLead:      { v: 0.12, unit: "$/lead", source: "MEASURED-ish — multi-turn WhatsApp conversation on the Gemini-flash tier; free tier today" },
-  humanOversight:  { v: 0.25, unit: "hours/qualified lead", source: "ASSUMED — approval clicks in Studio + exception handling" },
-  oversightRate:   { v: 12,   unit: "$/hour", source: "ASSUMED — a clinically-literate reviewer, not a coordinator" },
-  organicShare:    { v: 0.60, unit: "of leads", source: "ASSUMED — content engine share; the rest paid" },
-  agentPaidMedia:  { v: 45,   unit: "$/lead", source: "same as agency — no advantage claimed on media cost" },
-  concierge:       { v: 40,   unit: "$/treated patient", source: "ASSUMED — logistics APIs, interpreter minutes, comms at fulfilment" },
-};
-
-// ── The model ────────────────────────────────────────────────────────────────────────────────────────
-const funnel = A.leadToQualified.v * A.qualifiedToQuoted.v * A.quotedToTreated.v;   // lead → treated
-const leadsPerPatient = 1 / funnel;
-
-function model(kind, pkg) {
-  const revenue = pkg * A.commission.v;
-  let acquisition, fulfilment, note;
-  if (kind === "agency") {
-    const perLead = A.agencyPaidMedia.v + (A.coordinatorSalary.v / A.leadsPerCoord.v);
-    acquisition = perLead * leadsPerPatient;
-    fulfilment  = revenue * A.subAgentCut.v;                    // the sub-agent takes a cut of the fee itself
-    note = "coordinator time scales linearly with leads; sub-agent takes a cut of the fee";
-  } else {
-    const media = A.agentPaidMedia.v * (1 - A.organicShare.v);  // organic content carries the majority
-    const perLead = media + A.llmPerLead.v;
-    const oversight = A.humanOversight.v * A.oversightRate.v * (leadsPerPatient * A.leadToQualified.v);
-    acquisition = perLead * leadsPerPatient + oversight;
-    fulfilment  = A.concierge.v;
-    note = "LLM cost is ~flat per lead; humans touch only qualified leads and exceptions";
-  }
-  const contribution = revenue - acquisition - fulfilment;
-  return { revenue, acquisition, fulfilment, contribution, margin: contribution / revenue, note };
+// ── Walk the funnel ──────────────────────────────────────────────────────────────────────────────────
+let n = COHORT, spend = 0;
+const rows = [];
+for (const s of STAGES) {
+  n = n * s.rate;
+  spend += n * s.cost;                                 // cost is incurred on everyone who reaches the stage
+  rows.push({ ...s, n, spend, per: n > 0 ? spend / n : Infinity });
 }
 
-// ── Output ───────────────────────────────────────────────────────────────────────────────────────────
-const $ = (n) => (n < 0 ? "-" : "") + "$" + Math.abs(Math.round(n)).toLocaleString();
-const pct = (n) => `${Math.round(n * 100)}%`;
+// Sign goes OUTSIDE the currency symbol ("-$267", not "$-266.67"), and anything above $100 loses the cents
+// — a contribution figure quoted to the cent implies a precision these assumptions do not have.
+const $ = (v) => (v < 0 ? "-" : "") + "$" + (Math.abs(v) >= 100 ? Math.round(Math.abs(v)).toLocaleString() : Math.abs(v).toFixed(2));
+const handoff = rows.find((r) => r.handoff);
+const treated = rows[rows.length - 1];
+const fee = cat.pkg * COMMISSION;
 
-console.log(`\n  UNIT ECONOMICS — cost to acquire and fulfil one treated patient`);
-console.log(`  Funnel: lead → qualified ${pct(A.leadToQualified.v)} → quoted ${pct(A.qualifiedToQuoted.v)} → treated ${pct(A.quotedToTreated.v)}`);
-console.log(`  ⇒ ${pct(funnel)} of leads become patients — ${leadsPerPatient.toFixed(1)} leads per treated patient`);
-console.log(`  Commission: ${pct(A.commission.v)} of package\n`);
-
-console.log(`  ${"Category".padEnd(14)}${"Package".padStart(9)}${"Fee".padStart(9)}${"  │"}${"CAC".padStart(9)}${"Fulfil".padStart(9)}${"Contrib".padStart(9)}${"Margin".padStart(8)}`);
-console.log(`  ${"─".repeat(14)}${"─".repeat(27)}${"─".repeat(35)}`);
-for (const c of cats) {
-  for (const kind of ["agency", "agent"]) {
-    const m = model(kind, c.pkg);
-    const label = kind === "agency" ? "  ├ agency" : "  └ MedYatra";
-    if (kind === "agency") console.log(`  ${c.name.slice(0, 13).padEnd(14)}${$(c.pkg).padStart(9)}${$(m.revenue).padStart(9)}  │`);
-    console.log(`  ${label.padEnd(14)}${"".padStart(9)}${"".padStart(9)}  │${$(m.acquisition).padStart(9)}${$(m.fulfilment).padStart(9)}${$(m.contribution).padStart(9)}${pct(m.margin).padStart(8)}`);
-  }
+console.log(`\n  WHAT A PATIENT COSTS US — ${cat.name}, package ${$(cat.pkg)}\n`);
+console.log(`  ${"".padEnd(42)}${"people".padStart(8)}${"cost each".padStart(12)}`);
+console.log(`  ${"─".repeat(62)}`);
+for (const r of rows) {
+  const mark = r.handoff ? "▶" : " ";
+  const people = r.n >= 10 ? Math.round(r.n).toString() : r.n.toFixed(1);
+  console.log(`${mark} ${r.label.padEnd(42)}${people.padStart(8)}${$(r.per).padStart(12)}${r.handoff ? "   ◀ HANDOFF" : ""}`);
 }
 
-// The headline comparison on the flagship category.
-const flagship = cats.find((c) => /cardiac|heart/i.test(c.name)) || cats[0];
-const ag = model("agency", flagship.pkg), me = model("agent", flagship.pkg);
-console.log(`\n  ON ${flagship.name.toUpperCase()} (package ${$(flagship.pkg)}):`);
-console.log(`    Agency   — CAC ${$(ag.acquisition)}, contribution ${$(ag.contribution)} (${pct(ag.margin)} of fee)`);
-console.log(`    MedYatra — CAC ${$(me.acquisition)}, contribution ${$(me.contribution)} (${pct(me.margin)} of fee)`);
-console.log(`    Δ contribution per patient: ${$(me.contribution - ag.contribution)}`);
+console.log(`\n  ▶ THE UNIT WE SELL: a pre-triaged, high-intent case file`);
+console.log(`     ${Math.round(handoff.n)} of ${COHORT} readers reach it · costs us ${$(handoff.per)} to produce`);
+console.log(`     What the hospital receives: treatment need confirmed, country and timeline captured,`);
+console.log(`     reports collected and structured into a reviewable case file, indicative price band`);
+console.log(`     already accepted, and ${Math.round((rows[5].n / handoff.n) * 100)}% of these go on to book.`);
 
-// The patient-price argument: the padding that exists purely to fund the agent chain.
-const padding = flagship.pkg * A.agentPadding.v;
-console.log(`\n  THE PATIENT-SIDE ARGUMENT`);
-console.log(`    Reported padding in international quotes (${pct(A.agentPadding.v)}): ~${$(padding)} on this package.`);
-console.log(`    That padding exists to fund the agent chain. Removing the chain is what funds either a`);
-console.log(`    lower patient price, restored hospital margin, or our take — the three-way split is the pitch.`);
+console.log(`\n  ECONOMICS PER TREATED PATIENT`);
+console.log(`     Commission (${Math.round(COMMISSION * 100)}% of ${$(cat.pkg)})   ${$(fee).padStart(10)}`);
+console.log(`     Our all-in cost                ${$(treated.per).padStart(10)}`);
+console.log(`     Contribution                   ${$(fee - treated.per).padStart(10)}   (${Math.round(((fee - treated.per) / fee) * 100)}% of the fee)`);
+console.log(`     A traditional agency, same fee ${$(fee - AGENCY_CAC).padStart(10)}   (${Math.round(((fee - AGENCY_CAC) / fee) * 100)}% — coordinator time scales with leads)`);
 
-console.log(`\n  ⚠ ASSUMPTIONS NEEDING A REAL NUMBER (ask Aster / Manipal / Fortis):`);
-for (const [k, a] of Object.entries(A)) if (a.source.startsWith("ASK")) console.log(`    • ${k.padEnd(18)} currently ${a.v} ${a.unit.padEnd(14)} — ${a.source.slice(5)}`);
-console.log(`\n  Sensitivity: npm run economics -- --conv 0.08   (the conversion rate dominates everything)\n`);
+console.log(`\n  ⚠ NEEDS A REAL NUMBER — ask Aster / Manipal / Fortis:`);
+console.log(`     • the commission rate they actually pay a facilitator today   (using ${Math.round(COMMISSION * 100)}%)`);
+console.log(`     • what share of their international inquiries convert          (using ${Math.round(STAGES[5].rate * 100)}% quote→book)`);
+console.log(`     • what an inquiry costs them through their current agent panel (using ${$(AGENCY_CAC)})`);
+console.log(`\n  Sensitivity:  npm run economics -- --cat oncology --conv 0.20 --commission 0.25\n`);
