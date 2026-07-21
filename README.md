@@ -18,7 +18,10 @@ An **autonomous, multi-agent go-to-market engine** for a medical-tourism *facili
 | 4 | **Distributes it** | Each page is repurposed into platform-native posts (LinkedIn / Instagram / Reddit / WhatsApp / X). Visuals pick the right source per slide: **data infographics** (real numbers, crisp text), **stock photos** for people, AI only for abstract graphics. Human-gated at post. |
 | 5 | **Globalizes** | Every artifact is market-parameterized (config, not code) across the Middle East, Africa, Europe, SE Asia. |
 | 6 | **Runs itself** | A scheduled task drives the whole factory **without Claude** (generation fails over across providers); a live console renders the account board, content heatmap, competitor pricing, a plugin-readiness board, and a real-time run feed. |
-| 7 | **Sells & onboards patients** | A **dual-mode funnel**: leads enter from the engine's *own acquisition* **or** an *external lead DB plugged in* by a partner operator (`POST /api/lead/ingest` — normalises, masks PII, dedupes, tags `source_type`). A WhatsApp sales-comms **state machine** — template/session-aware, with a **diagnosis fork** and explicit **hospital handoffs** — drives first touch → booked patient, wrapped by **visa** + **accommodation** services. Everything is approved in **MedYatra Studio** (`/studio`), a live approve-and-deploy console that writes back to the DB. The whole journey is demoable in a **deployment-ready sandbox** (`/sandbox`): a WhatsApp phone simulator plays every branch, and all 21 templates are **clickable + editable live** (human-gated — an edit routes back to *review* before it can send), with a white-label tenant switch for showing an operator their own front. |
+| 7 | **Sells & onboards patients** | A **dual-mode funnel**: leads enter from the engine's *own acquisition* **or** an *external lead DB plugged in* by a partner operator (`POST /api/lead/ingest` — normalises, masks PII, dedupes, tags `source_type`). A WhatsApp sales-comms **state machine** — template/session-aware, with a **diagnosis fork** and explicit **hospital handoffs** — drives first touch → booked patient. Everything is approved in **MedYatra Studio** (`/studio`), a live approve-and-deploy console that writes back to the DB. The whole journey is demoable in a **deployment-ready sandbox** (`/sandbox`): a WhatsApp phone simulator plays every branch, and all 21 templates are **clickable + editable live** (human-gated — an edit routes back to *review* before it can send), with a white-label tenant switch for showing an operator their own front. |
+| 8 | **Runs the concierge, post-booking** | **Nine live agents** at **`/agents`** turn "booked" into "actually treated": triage (patient's own words → the structured case file a hospital reviews in three minutes), a family-update channel with its own consent + WhatsApp session rule, a stateful document-KYC workflow (one deterministic rule auto-verifies, the rest stay `needs_human_review` until a person clears them), DB-backed billing reconciliation, a discharge/medication relay that only ever relays the hospital's own words, ground logistics, interpreter scheduling, return-travel readiness, and payment routing (self-pay / insured-GOP / government-sponsored). Every agent clears the same safety gate as every other outbound message; three are deliberately deterministic, never LLM-generated, because a wrong answer on a visa rule, a dose, or a sum of money is worse than no answer. |
+| 9 | **Prices honestly** | A **price ladder** (`priceLadder()`, `data-core/db.mjs`) compares a reader's *best local option* first, then other international destinations, then India — never a US/UK strawman a patient never asked about. Unpriced rungs are explicit, visible research gaps, never guessed (`npm run price-gaps`). Content is written to a **demand driver** — *capability* (can't get it at home), *queue* (available but too slow), or *cost* (available but unaffordable) — because those are three different readers, not one. |
+| 10 | **Won't let an agent say something dangerous** | Every outbound message clears `lib/safety.mjs` before it can reach a human's approval queue: diagnosis, treatment advice, dosage, prognosis, fitness-to-fly and outcome guarantees are **blocked**; an emergency in the patient's own words **escalates** out of the funnel to local emergency care; PII is blocked from leaving the patient perimeter; data residency is enforced per source market (the UAE's Federal Law 2/2019 is the sharp edge — health data can't leave the country, including into a model prompt). A language with no native-validated coverage **fails closed** rather than silently passing. Verified by a 20-case adversarial suite (`npm run eval-safety`) that runs in CI on every push. |
 
 ## Architecture — a cost-tiered multi-model factory
 
@@ -59,9 +62,12 @@ npm run serve               # → http://localhost:5173  (open /demo)
 > `npm run demo` reproduces the full populated state on any machine from committed files — **no API keys required** (the optional social-repurpose step runs only if a generation key is present). For the minimal core, `npm run seed` still just builds the data core.
 
 **Showing someone the engine? Open [`/demo`](http://localhost:5173/demo)** — one page linking every capability
-(with live counts), framed as a safe sandbox. The star of it is the **[patient-journey sandbox](http://localhost:5173/sandbox)**:
-a WhatsApp phone simulator that plays every branch and lets you edit any template live. Going live from here is
-just plugging in keys — see [`build-os/12_GO_LIVE.md`](./build-os/12_GO_LIVE.md).
+(with live counts), framed as a safe sandbox. Two stops matter most: the **[patient-journey sandbox](http://localhost:5173/sandbox)**
+(a WhatsApp phone simulator playing every branch, templates editable live) and the **[concierge agents](http://localhost:5173/agents)**
+(click Run on any of the nine — every response is a real model call through the real safety gate, not a transcript).
+Going live from here is just plugging in keys — see [`build-os/12_GO_LIVE.md`](./build-os/12_GO_LIVE.md) (which
+features need which keys) and [`build-os/13_DEPLOYMENT.md`](./build-os/13_DEPLOYMENT.md) (where the process
+actually runs and what it costs — SQLite + Litestream, not a managed Postgres, for roughly $5–10/month).
 
 Then explore the engine:
 
@@ -71,6 +77,9 @@ npm run partner-layer       # rebuild the fit-ranked account board
 npm run worklist            # generate the human research worklist (/worklist)
 STEALTH=1 npm run discover  # find named decision-makers via Google→LinkedIn (real browser)
 npm run loop                # one unattended factory cycle (runs without Claude)
+npm run economics           # unit economics: cost to acquire + fulfil one treated patient, cited vs assumed
+npm run eval-safety         # the adversarial safety suite (20 cases; also runs in CI)
+npm run smoke-agents        # headless check that all 9 concierge agents return usable output
 ```
 
 ## What's honest about it
@@ -80,6 +89,7 @@ This is a **first-draft engine**, and it says so where it matters:
 - **No fabrication.** Prices are cited or marked indicative; discovered contacts are stored **UNVERIFIED** for human confirmation; the engine is a *facilitator*, never a provider, and makes no clinical claims.
 - **Real walls, honestly handled — including the legal one.** Named decision-makers live behind forms and Sales-Nav. The **compliant** path is a licensed enrichment API (used first when keyed). The stealth-browser fallback is **off by default and opt-in** (`ALLOW_SCRAPE=1`) because defeating anti-bot detection can violate a service's ToS *regardless of the data being public* — with a **CAPTCHA circuit-breaker** that backs off when the IP is flagged and falls to a human worklist. No pretending scraping is "clean." (See [`build-os/10`](./build-os/10_SECURITY_COMPLIANCE.md).)
 - **Human gates** on everything outbound: publishing pages, sending outreach, and any commercial term.
+- **Guardrails are enforced, not requested.** Every outbound message clears `lib/safety.mjs` in code, not by asking a model nicely — verified by an adversarial test suite (`npm run eval-safety`) that runs in CI and has already caught a real regression (a verdict reducer that silently returned "pass" while holding blocking findings).
 - **Privacy-respecting repo.** Individual contact data lives only in the local gitignored database — the published repo ships institutional/public data only.
 
 ## Repo map
@@ -89,12 +99,16 @@ This is a **first-draft engine**, and it says so where it matters:
 | [`agent-os/`](./agent-os/) | *How* the agents loop, route models, QA, and stop — plus the live task queue and evidence log |
 | [`build-os/`](./build-os/) | *What* to build + the actual GTM strategy, data sources, compliance, acceptance tests |
 | [`data-core/`](./data-core/) | SQLite schema + seed + every agent script (scoring, sourcing, discovery, content, QA, publish, repurpose, proposals, credibility, run-loop) |
-| [`server/`](./server/) | Zero-dep HTTP server, live operator console, **`/studio`** (live approve-and-deploy, writes back to the DB), **`/sandbox`** (deployment-ready, editable patient-journey demo), patient landing, `/comms`, `/plugins`, `/distribution`, `/worklist` |
-| [`lib/`](./lib/) | Browser automation, research, enrichment, mailer, image gen, infographics, stock, media router, social publishers, plugin registry, env loader |
+| [`server/`](./server/) | Zero-dep HTTP server, live operator console, **`/studio`** (live approve-and-deploy, writes back to the DB), **`/sandbox`** (editable patient-journey demo), **`/agents`** (the nine concierge agents, live), patient landing, `/comms`, `/plugins`, `/distribution`, `/worklist` |
+| [`lib/`](./lib/) | Browser automation, research, enrichment, mailer, image gen, infographics, stock, media router, social publishers, plugin registry, env loader, `safety.mjs` (the clinical/PII/residency guardrail), `eeat.mjs` (content trust signals) |
+| [`lib/agents/`](./lib/agents/) | The nine concierge agents: triage, family-update + family-channel, document-kyc, billing-reconciliation, discharge-relay, ground-logistics, interpreter-scheduling, travel-readiness, payment-routing |
 | [`integrations/`](./integrations/) | Cross-provider LLM failover helper (+ Gemini) + LiteLLM config |
 | [`scripts/`](./scripts/) | `run_factory.bat` — the scheduled unattended factory loop |
+| [`deploy/`](./deploy/) | Reference deployment kit (Dockerfile, Fly.io config, Litestream config) — not yet deployed, see `build-os/13` |
 | [`outputs/`](./outputs/) | Generated content, social posts + visuals, proposals (gitignored), worklist, screenshots |
 
 **Want to run it?** See [`USER_GUIDE.md`](./USER_GUIDE.md) — step-by-step setup, the demo path, how to use every surface, the daily approval loop, and troubleshooting.
 
 **Want the deep version?** See [`PROJECT_CONTEXT.md`](./PROJECT_CONTEXT.md) — a full walkthrough of every capability, design decision, nuance, and limitation.
+
+**Want the business version?** See [`BUSINESS_STATUS.md`](./BUSINESS_STATUS.md) — market, unit economics (with every input labelled cited or assumed), partnership status, and an honest risk register. Written for a partner or investor conversation, not an engineer.

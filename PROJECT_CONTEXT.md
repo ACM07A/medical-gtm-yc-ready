@@ -124,7 +124,7 @@ Everything below the LLMs is zero-cost and runs on your machine:
 
 ---
 
-## 5. The five capabilities, in depth
+## 5. The capabilities, in depth
 
 ### 5.1 Category Intelligence — *what to sell*
 
@@ -288,6 +288,106 @@ Everything outbound is still approved in **MedYatra Studio** (`/studio`, [`serve
 the live approve-and-deploy console that re-checks the gates (regulatory · verified contact · consent) and writes
 back: publishes a page, marks a proposal sent, approves a post, or releases a comms draft and advances the lead.
 
+### 5.7 The price ladder — the comparison a patient actually makes ([`priceLadder()`, `data-core/db.mjs`](./data-core/db.mjs))
+
+Cost-guide content used to lead with "India vs the USA" — a comparison a patient in Muscat never asked for.
+The ladder now runs in the order they actually think in: their **best local option** first, then the other
+**international destinations** they'd realistically weigh, then **India**, highlighted, preferring a
+`confirmed` partner package rate over the indicative aggregate range once one exists. Rungs with no cited
+price are returned as explicit gaps (`gap: true`, `low: null`) — never guessed — and rendered to the reader
+as an honest unknown. `npm run price-gaps` ranks what to go get, local rungs in cleared markets first, since
+a ladder that skips straight to international options is the same US/UK strawman under a different name.
+
+Content is also written to a **demand driver**, stored per (category × market): *capability* (the treatment
+isn't reliably available at home — the reader's fear is competence, not price), *queue* (available but an
+unacceptable wait — they're comparing a date, not a hospital), or *cost* (available but unaffordable — they're
+doing arithmetic). Same facts, three different readers, three different pages — and each cost-guide now
+carries a checkable **E-E-A-T trust block** (`lib/eeat.mjs`): visible authorship, a review date, named
+sources, and a stated scope (facilitator, not clinical authority) — the same line the safety gate draws,
+because YMYL content without those signals doesn't rank, and organic is the only acquisition channel that
+clears CAC below roughly a $5,000 package (§5.8).
+
+### 5.8 Unit economics ([`data-core/unit_economics.mjs`](./data-core/unit_economics.mjs))
+
+`npm run economics` models cost as a funnel, priced at the **handoff point** — a pre-triaged, high-intent
+case file — because that's the unit actually sold to a hospital, not a treated patient. Every input is
+labelled `CITED` (a published benchmark) or `ASSUMED` (ours, unvalidated); currently 2 of 7 funnel stages
+rest on a citation. The finding that shaped strategy: **Google charges the same CAC to us as to an
+incumbent agency**, so a mid-ticket case (cardiac, ~$1,100 fee) is underwater on paid acquisition and
+strongly positive on organic — meaning organic isn't a marketing channel here, it's the business, and the
+content engine (§5.7) is load-bearing, not decorative.
+
+### 5.9 The concierge agents — turning "booked" into "treated" ([`lib/agents/`](./lib/agents/), `/agents`)
+
+Nine agents cover the post-booking journey, live and clickable at `/agents` — every run is a real call
+through the same failover chain and the same safety gate as everything else, not a scripted transcript.
+Three are deliberately **deterministic, never LLM-generated**, because a wrong answer on a visa rule, a
+medication instruction, or a sum of money is worse than no answer at all:
+
+- **Triage** ([`triage.mjs`](./lib/agents/triage.mjs)) — the patient's own words → the structured case file
+  a hospital consultant reviews in three minutes (the unit §5.8's economics are built around). Extracts
+  only what was said; an emergency in the patient's text short-circuits to escalation *before* any model
+  call; the extraction is itself re-checked against the safety gate before being trusted.
+- **Family update + family channel** ([`family_update.mjs`](./lib/agents/family_update.mjs),
+  [`family_channel.mjs`](./lib/agents/family_channel.mjs)) — a daily plain-language update to whoever's
+  waiting at home, reporting status ("in recovery") never outcome ("the surgery went well"). The family
+  member is a **second person on a second WhatsApp number** who's never messaged us, so this carries its
+  own consent (`family_contact.consent`, starts at 0) and its own session/template rule, mirroring
+  `lib/comms_machine.mjs` exactly — the only allowed first message is an opt-in template; nothing sends
+  until consent is on file, and even then every draft only ever reaches the outbox, never a real send.
+- **Document KYC** ([`document_kyc.mjs`](./lib/agents/document_kyc.mjs)) — stateful, not a checklist that
+  resets on every view (`doc_item` table). One rule runs automatically because it's genuine arithmetic (a
+  passport expiry date); everything else lands in `needs_human_review` and *stays* there until a person
+  clears it — "agentic" means running the checks it actually can, honestly refusing the ones it can't.
+- **Billing reconciliation** ([`billing_reconciliation.mjs`](./lib/agents/billing_reconciliation.mjs)) —
+  a real quote and a real actual bill, read back from a ledger (`estimate_line`), not typed strings. The
+  math is always plain arithmetic; a model only ever phrases the explanation over a deterministic diff, and
+  a variance past a threshold writes back as a `pending` review rather than just displaying.
+- **Discharge & medication relay** ([`discharge_relay.mjs`](./lib/agents/discharge_relay.mjs)) — the
+  highest-stakes text in the journey, and the most restricted agent in the codebase: it never generates
+  medical content, only restructures and translates the hospital's *own* words, refuses outright if given
+  nothing to relay, and is **always** forced to human review regardless of what the automated scan says,
+  because faithfulness to a source document isn't something `checkMessage()` can verify.
+- **Ground logistics, interpreter scheduling, travel readiness, payment routing** — airport-pickup timing
+  from real arrivals-buffer math; interpreter matching over a roster explicitly labelled mock (same
+  "one key away" honesty as `lib/plugins.mjs`); return-travel timing that never itself clears a patient to
+  fly (mirrors the `FITNESS_CALL` guardrail below); and self-pay / insured-GOP / government-sponsored
+  routing, encoding real constraints found by research (Kenya SHA's ~$3,900 cap and 3-hospital list).
+
+`data-core/seed_agent_state.mjs` seeds real rows (a KYC in progress, a consented family contact, a quote
+with a deliberate variance) so the stateful agents have something real to run against out of the box.
+`data-core/smoke_agents.mjs` (`npm run smoke-agents`) is a headless check that all nine return usable output
+with or without an LLM key — a demo must not break live because a free-tier quota ran out.
+
+### 5.10 The safety gate ([`lib/safety.mjs`](./lib/safety.mjs))
+
+MedYatra is a facilitator, not a provider — that's the legal basis for operating without a healthcare
+licence in every source market, and one agent sentence of diagnosis, dosage, or prognosis voids it. So
+scope is enforced **mechanically on agent output**, not requested in a system prompt — a guardrail a model
+can be argued out of isn't a guardrail. `checkMessage()` returns `block | escalate | review | pass`:
+
+- **Clinical scope** — diagnosis, treatment advice, dosage, prognosis, fitness-to-fly, outcome guarantees → `block`.
+- **Emergency presentation**, detected in the *patient's own message* and in their own language (English
+  regex alone catches nothing in Arabic) → `escalate` out of the funnel to local emergency care.
+- **A language with no native-validated coverage fails closed** — Arabic, Amharic, Burmese and Swahili
+  cannot auto-send at all until a native clinical reviewer signs off the patterns, regardless of content.
+  Coverage is earned by review, not asserted by writing a regex.
+- **PII leaving the patient perimeter** (a proposal, a post, a benchmark, a model prompt) → `block`.
+- **Data residency per source market** — the sharp edge is the UAE: Federal Law No. 2/2019 prohibits health
+  data relating to UAE-provided services from leaving the country absent a case-by-case authority exception,
+  which covers a model prompt (that's a transfer too). GDPR markets need SCCs + a transfer risk assessment;
+  Kenya/Nigeria need recorded, purpose-specific consent.
+
+Wired into every send path — `data-core/comms_run.mjs` refuses to even *draft* a blocking message (a human
+is never given the option to click past a scope violation), and `server/studio.mjs`'s approval boundary
+re-checks independently, since a template can be edited in `/sandbox` after the original draft was made.
+Verified by 20 adversarial cases (`data-core/eval_safety.mjs`, `npm run eval-safety`) that runs in CI on
+every push and has already caught one real regression: the verdict reducer ranked outcomes against
+`rank["pass"]`, which was `undefined`, so every comparison evaluated false and the gate returned `pass`
+while holding blocking findings — detection correct, enforcement silently dead. The same failure shape
+recurred once more this session in the E-E-A-T scorer (§5.7) before both were caught the same way: assert
+the *verdict*, not the presence of a check.
+
 ---
 
 ## 6. The data model ([`data-core/schema.sql`](./data-core/schema.sql))
@@ -307,6 +407,10 @@ Zero-dependency SQLite (`node:sqlite`). Core tables:
 | `channel_post` | Repurposed platform posts (LinkedIn/IG/Reddit/WhatsApp/X), human-gated |
 | `run` | The activity log — every agent action, rendered live on the console |
 | `lead` | PII-minimized demand funnel (consent-gated) |
+| `reference_price` / `partner_price` | The price ladder's rungs (local · international · India) and negotiated partner package rates (§5.7) |
+| `family_contact` | A lead's family/attendant contact — separate consent, separate WhatsApp thread (§5.9) |
+| `doc_item` | Per-lead document KYC state — one row per required document, per lead (§5.9) |
+| `estimate_line` | A lead's real quote and real actual bill, itemised — what billing reconciliation reads (§5.9) |
 
 Migrations are additive and lightweight (try/catch `ALTER TABLE` in `db.mjs open()`) — no migration tool,
 by design, to stay dependency-free.
@@ -349,13 +453,21 @@ Requires **Node ≥ 22.5**. All data-core scripts need the `--experimental-sqlit
 | `npm run competitor-scan` | Scrape live competitor pricing and compare to our anchors |
 | `npm run qa` | Run the content QA agent over all drafts |
 | `npm run loop` | One unattended factory cycle (runs without Claude; add `DISCOVER=1 STEALTH=1` to include discovery) |
+| `npm run economics` | Unit economics: cost to acquire + fulfil one treated patient (§5.8), cited vs. assumed |
+| `npm run price-ladder` / `npm run price-gaps` | Seed the price ladder / list what's still an unpriced gap (§5.7) |
+| `npm run eval-safety` | The 20-case adversarial safety suite (§5.10) — also runs in CI on every push |
+| `npm run smoke-agents` | Headless check that all 9 concierge agents return usable output, with or without a key |
+| `npm run warm-accounts` | Seed the partner board's warm, access-ranked accounts (Aster, Manipal, Fortis Bangalore) |
 
 Also available (run with `node --experimental-sqlite data-core/<script>`):
 `repurpose_content.mjs` (→ social posts + visuals · `/distribution`) · `gen_proposals.mjs` (tailored
-proposals) · `gen_credibility.mjs` (trust narratives). Server routes: **`/demo`** (the showable hub — every
-capability with live counts), `/console`, `/studio` (approve-and-deploy), `/sandbox` (editable patient-journey
-demo), `/comms` (template list), `/benchmarks` (de-identified aggregate), `/plugins` (integration readiness),
-`/distribution`, `/worklist`. **Going live is keys-only — see [`build-os/12_GO_LIVE.md`](./build-os/12_GO_LIVE.md).**
+proposals) · `gen_credibility.mjs` (trust narratives) · `plan_clusters.mjs` (the organic content-cluster plan)
+· `seed_agent_state.mjs` (real demo rows for the concierge agents). Server routes: **`/demo`** (the showable
+hub — every capability with live counts), `/console`, `/studio` (approve-and-deploy), `/sandbox` (editable
+patient-journey demo), **`/agents`** (the nine concierge agents, live), `/comms` (template list), `/benchmarks`
+(de-identified aggregate), `/plugins` (integration readiness), `/distribution`, `/worklist`. **Going live is
+keys-only — see [`build-os/12_GO_LIVE.md`](./build-os/12_GO_LIVE.md)** (which features need which keys) **and
+[`build-os/13_DEPLOYMENT.md`](./build-os/13_DEPLOYMENT.md)** (where the process runs and what it costs).
 Capture a confirmed contact:
 `node --experimental-sqlite data-core/capture_poc.mjs <partner_id> "Full Name" "Role" "<email|linkedin-url>"`
 
@@ -377,10 +489,26 @@ Capture a confirmed contact:
 - **The WhatsApp comms are logic-complete but not connected to a real Meta number.** The state machine, all
   21 approval-ready templates, the diagnosis fork, hospital handoffs, and the editable **/sandbox** demo are
   built and driveable; going live needs a WhatsApp Business API number + template approval + `POST_LIVE=1`.
+- **Multilingual safety coverage is draft, not verified.** `lib/safety.mjs` ships Arabic/Amharic/Burmese/
+  Swahili patterns, but they are explicitly marked `verified: false` and the gate fails closed on them — every
+  message in those languages routes to human review regardless of content, by design, until a native
+  clinical reviewer signs off the lexicon. This is the correct behaviour, not a gap to silently fix by
+  writing more regex.
+- **The family-update channel writes to the outbox but isn't wired into Studio's approval-queue UI yet** —
+  the human-gate discipline is real (nothing sends automatically), the *inbox view* for it is the next step.
+- **The interpreter roster is a labelled mock** (`lib/agents/interpreter_scheduling.mjs`) — real vendor
+  integration is a plugin, one API key away, same pattern as everything in `/plugins`.
+- **Content lives as 32 orphan hub pages plus a planned-but-ungenerated cluster** — `plan_clusters.mjs` maps
+  458 spoke pages across 3 priority waves (`data-core/plan_clusters.mjs`), grounded in the comms machine's
+  real objection/stage branches rather than guessed keywords, but generating them is real token spend not
+  yet spent.
+- **The deployment kit (`deploy/`) is reference material, not a live deployment** — see `build-os/13`.
 
-**Natural next steps:** connect a live WhatsApp number and submit the templates to Meta; a new-market dry run
-(add Myanmar via config only); native QA on the non-English pages; turn on a real social channel (LinkedIn/X
-first); re-enable GLM-5.2.
+**Natural next steps:** connect a live WhatsApp number and submit the templates to Meta; native-speaker
+sign-off on the non-English safety lexicon (the single highest-leverage compliance item left) and on the
+non-English content pages; generate wave 1 of the content cluster plan (cardiac + oncology, tier-A markets);
+wire the family-update channel into Studio's queue; a new-market dry run (add Myanmar via config only);
+re-enable GLM-5.2.
 
 ---
 
