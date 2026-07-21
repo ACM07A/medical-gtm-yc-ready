@@ -119,6 +119,49 @@ export function comparator(db, categoryId) {
   return { label: c.label, india_low: p.india_low, india_high: p.india_high, west_low: c.west[0], west_high: c.west[1], savings, valid };
 }
 
+// PRICE LADDER — the comparison in the order the patient actually makes it: their best LOCAL option first,
+// then the other international destinations they'd realistically weigh, then India last (highlighted).
+// Rationale (/build-os/03): leading with "India vs the USA" answers a question a patient in Muscat never
+// asked — they are choosing between Muscat, Bangkok, Dubai, and India. Answering their real question is the
+// trust play, and it survives the case where India ISN'T the cheapest (the ladder still tells the truth).
+//
+// The India rung prefers a CONFIRMED partner package rate over the indicative aggregate range — once a
+// signed partner sheet exists, the ladder quotes a real hospital, which is the entire commercial pitch.
+// Rungs with no price are returned with low=null and `gap:true` — rendered as an explicit unknown, never
+// guessed. Returns { procedure, label, rungs[], marketCode } or null.
+export function priceLadder(db, categoryId, marketCode) {
+  const c = CATEGORY_COMPARATOR[categoryId];
+  if (!c) return null;
+  const rows = db.prepare(
+    `SELECT * FROM reference_price WHERE category_id=? AND procedure_key=? AND (market_code=? OR market_code='*')
+     ORDER BY CASE tier WHEN 'local' THEN 0 WHEN 'international' THEN 1 ELSE 2 END, low IS NULL, low`
+  ).all(categoryId, c.match, marketCode);
+
+  const rungs = rows.filter((r) => r.tier !== "india").map((r) => ({
+    tier: r.tier, dest: r.dest_code, label: r.dest_label,
+    low: r.low, high: r.high, gap: !(r.low && r.high), cite: r.source_cite,
+  }));
+
+  // Final rung: a confirmed partner package if we have one, else the indicative India range.
+  const pp = db.prepare(
+    `SELECT pp.*, p.name FROM partner_price pp JOIN partner p ON p.id=pp.partner_id
+     WHERE pp.category_id=? AND pp.procedure_key=? AND pp.status='confirmed' ORDER BY pp.low LIMIT 1`
+  ).get(categoryId, c.match);
+  const ind = db.prepare(
+    `SELECT india_low AS low, india_high AS high FROM category_price
+     WHERE category_id=? AND lower(procedure) LIKE ? ORDER BY india_low LIMIT 1`
+  ).get(categoryId, `%${c.match}%`);
+
+  if (pp) rungs.push({ tier: "india", dest: "IN", label: `${pp.name} (your package rate)`, low: pp.low, high: pp.high,
+                       gap: false, ours: true, confirmed: true, includes: pp.includes, cite: pp.source_cite });
+  else if (ind?.low) rungs.push({ tier: "india", dest: "IN", label: "India — accredited hospitals", low: ind.low,
+                                  high: ind.high, gap: false, ours: true, confirmed: false, cite: "indicative range — data-core" });
+
+  if (!rungs.length) return null;
+  return { procedure: c.match, label: c.label, marketCode, rungs,
+           complete: rungs.every((r) => !r.gap), hasLocal: rungs.some((r) => r.tier === "local" && !r.gap) };
+}
+
 // SALES-READINESS — deliberately SEPARATE from fit_score. Fit = "should we want them" (opportunity).
 // Readiness = "can they actually take an international patient soon" (execution risk). High whitespace
 // (the thing that makes fit attractive) usually means LOW readiness: no visa-invite desk, no interpreter

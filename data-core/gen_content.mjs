@@ -3,7 +3,7 @@
 // invents them. Output stays DRAFT + human-gated (/build-os/10). Fills gap cells (query gaps).
 //   NVIDIA_API_KEY=... node --experimental-sqlite data-core/gen_content.mjs
 import { generate } from "../integrations/glm_generate.mjs";
-import { open, logRun } from "./db.mjs";
+import { open, logRun, priceLadder } from "./db.mjs";
 import { lintClaims } from "../lib/claims.mjs";
 import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -41,6 +41,20 @@ for (const [catId, mk] of BATCH) {
   const prices = db.prepare(`SELECT * FROM category_price WHERE category_id=? ORDER BY india_low`).all(catId);
   const priceLines = prices.map(p =>
     `- ${p.procedure}: $${p.india_low.toLocaleString()}–${p.india_high.toLocaleString()} (vs ${p.comparator})`).join("\n");
+
+  // THE PRICE LADDER — the comparison must run in the order the reader actually thinks in: their best
+  // option at home first, then the other destinations they'd weigh, then India. Rungs we haven't priced
+  // yet are passed through as explicit unknowns so the model states the gap instead of inventing a number.
+  const ladder = priceLadder(db, catId, mk);
+  const ladderLines = ladder ? ladder.rungs.map((r, i) =>
+    `${i + 1}. ${r.label}${r.tier === "local" ? "  ← their option at home, compare here FIRST" : ""}${r.ours ? "  ← us" : ""}: ` +
+    (r.gap ? "PRICE NOT YET VERIFIED — say plainly that a like-for-like local figure isn't publicly published and offer to get a written quote; do NOT estimate it"
+           : `$${r.low.toLocaleString()}–$${r.high.toLocaleString()}`)).join("\n") : "";
+  const ladderBlock = ladder ? `
+Structure the cost comparison as this LADDER, in this exact order (this is the order the reader is actually weighing, and leading with a US/UK comparison answers a question they never asked):
+${ladderLines}
+Present it as one table with a short paragraph under it. If India is not the cheapest rung, say so plainly and argue on the real grounds (volume, surgeon case-load, wait time) rather than price alone.
+` : "";
   const langLine = lang === "en"
     ? "Language: English."
     : `Write the ENTIRE page in ${langName} (${lang})${lang === "ar" ? ", right-to-left" : ""}. Keep the price figures as USD numerals. This draft will get native-speaker QA before publish.`;
@@ -49,10 +63,10 @@ for (const [catId, mk] of BATCH) {
 Audience: a patient or their family in ${market.name} seriously researching ${cat.name} in India, making a hard, frightening decision. Write for that real person.
 Use EXACTLY these indicative India package prices (do not change or add others; present as ranges, never as firm quotes):
 ${priceLines}
-
+${ladderBlock}
 Cover the following in a natural order under clear ## subheadings — NOT a rigid template, and NOT bullet-point padding (write real paragraphs, use a table only for the price comparison):
 - What the treatment involves and who it is for — briefly, accurately, without scaring or overselling.
-- What it actually costs in India versus ${market.name} / typical Western private care, using the numbers above. Be explicit about what a package usually INCLUDES and, just as important, what it does NOT (flights, visa, extended stay, managing complications).
+- What it actually costs, presented as the LADDER above — starting with what this treatment costs at home in ${market.name}, then the other destinations they'd realistically consider, then India. Be explicit about what a package usually INCLUDES and, just as important, what it does NOT (flights, visa, extended stay, managing complications).
 - How to judge a hospital from abroad: JCI/NABH accreditation, surgeon credentials, and exactly what to ask for in writing.
 - How the process really works: you send reports on WhatsApp; an accredited hospital reviews them and gives an opinion plus an indicative quote; the hospital issues an invitation letter (a required supporting document); YOU apply for the e-Medical Visa yourself and book your own flights and stay; you travel, have the procedure, recover before flying home; tele-follow-up afterwards.
 - Honest answers to the real worries: is cheaper worse (no — explain the actual reasons), safety and what happens if something goes wrong, language, how payment works (you pay the hospital directly), and length of stay.

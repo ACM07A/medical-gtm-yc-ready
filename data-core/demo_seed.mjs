@@ -20,6 +20,7 @@ const STEPS = [
   { s: "seed.mjs", fatal: true, note: "structure + categories + partners + POCs + cornerstone content" },
   { s: "seed_runs.mjs", fatal: false, note: "activity feed" },
   { s: "import_content.mjs", fatal: false, note: "rebuild the ~30 generated content cells from files" },
+  { s: "seed_reference_prices.mjs", fatal: false, note: "price-ladder rungs (local → international → India)" },
   { s: "seed_tenants.mjs", fatal: false, note: "own-brand + demo operator (dual-mode)" },
   { s: "seed_leads.mjs", fatal: false, note: "demo patient leads for the journey" },
   { s: "gen_comms.mjs", fatal: false, note: "21 WhatsApp templates (+ infographic headers, needs a browser)" },

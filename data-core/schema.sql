@@ -200,3 +200,43 @@ CREATE TABLE IF NOT EXISTS lead (
   status TEXT DEFAULT 'new',         -- new | qualified | routed | quoted | treated | lost
   routed_to TEXT
 );
+
+-- PRICE LADDER (/build-os/03) — the honest comparison a patient actually makes. A patient in Muscat does
+-- NOT first compare India to the USA; they compare it to the best care they can get AT HOME, then to the
+-- regional/international options they've heard of, and only then to India. Ordering the comparison that way
+-- is the trust play: it shows we're answering their real question, not selling a pre-picked answer.
+--   tier: 'local'         — best available option in the patient's own country (rung 1)
+--         'international'  — other destinations they'd realistically consider (rung 2..n, sorted by price)
+--         'india'          — our destination (final rung, highlighted)
+-- Rows with status='needs_research' carry NULL prices and are rendered as an explicit gap, never guessed.
+CREATE TABLE IF NOT EXISTS reference_price (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  category_id TEXT NOT NULL REFERENCES category(id),
+  procedure_key TEXT NOT NULL,       -- matches CATEGORY_COMPARATOR.match (e.g. 'bypass', 'knee')
+  tier TEXT NOT NULL,                -- local | international | india
+  market_code TEXT,                  -- audience market this rung is FOR ('*' = every market)
+  dest_code TEXT,                    -- ISO of where the care happens (OM, AE, TH, TR, IN, US, GB...)
+  dest_label TEXT NOT NULL,          -- patient-facing label ("Private hospital, Muscat")
+  low INTEGER, high INTEGER, currency TEXT DEFAULT 'USD',
+  status TEXT DEFAULT 'needs_research',  -- cited | needs_research
+  source_cite TEXT,
+  retrieved TEXT,
+  UNIQUE(category_id, procedure_key, market_code, dest_code)
+);
+
+-- PARTNER-SPECIFIC PRICING — the negotiated package rate from a signed partner. Once a row exists and is
+-- 'confirmed', it REPLACES the indicative India range on the ladder's final rung (that's the whole pitch:
+-- a real quoted number from a named hospital, not an aggregator's range). Never shown while 'indicative'.
+CREATE TABLE IF NOT EXISTS partner_price (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  partner_id TEXT NOT NULL REFERENCES partner(id),
+  category_id TEXT NOT NULL REFERENCES category(id),
+  procedure_key TEXT NOT NULL,
+  low INTEGER, high INTEGER, currency TEXT DEFAULT 'USD',
+  includes TEXT,                     -- what the package covers (stay, follow-up, transfers)
+  status TEXT DEFAULT 'indicative',  -- indicative | confirmed   (confirmed = signed package sheet)
+  valid_until TEXT,
+  source_cite TEXT,
+  retrieved TEXT,
+  UNIQUE(partner_id, category_id, procedure_key)
+);

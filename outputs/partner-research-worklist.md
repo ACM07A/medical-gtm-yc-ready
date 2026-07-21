@@ -5,7 +5,7 @@
 > `node --experimental-sqlite data-core/capture_poc.mjs <partner_id> "Full Name" "Role" "<email or linkedin url>"`
 > Target roles (in priority order): **head international patient services** · **GM international business** · **medical value travel head** · **international marketing manager**
 
-Ranked by fit (does this partner *need* us). 13 accounts.
+Ranked by fit (does this partner *need* us). 9 accounts.
 
 ---
 
@@ -116,52 +116,4 @@ _Quality brand (NABH) building MVT (Fertility / IVF) — early enough to win pre
 - Google: ["Cloudnine" GM international business](https://www.google.com/search?q=%22Cloudnine%22%20(GM%20OR%20%22general%20manager%22%20OR%20VP)%20international%20business%20hospital)
 - **Inferred email** once you have the name: `first.last@cloudninecare.com` (label INFERRED; verify)
 - Capture → `node --experimental-sqlite data-core/capture_poc.mjs cloudnine "First Last" "Head – Intl Patient Services" "first.last@cloudninecare.com"`
-
-## Jindal Nature Cure Institute  
-`id: jindal-naturecure` · fit **null** · emerging · Bengaluru · email domain `jindal-naturecure.com (verify domain)`  
-_Flagship naturopathy brand; scale + credibility; long-stay programs_
-
-**Searches** (open, read the LinkedIn result):
-- LinkedIn people: [Jindal Nature Cure Institute international patient](https://www.linkedin.com/search/results/people/?keywords=Jindal%20Nature%20Cure%20Institute%20international%20patient%20services) · [Jindal Nature Cure Institute medical value travel](https://www.linkedin.com/search/results/people/?keywords=Jindal%20Nature%20Cure%20Institute%20medical%20value%20travel)
-- Google: [site:linkedin.com "Jindal Nature Cure Institute" intl patient](https://www.google.com/search?q=site%3Alinkedin.com%2Fin%20%22Jindal%20Nature%20Cure%20Institute%22%20(international%20patient%20OR%20%22medical%20value%20travel%22%20OR%20international%20business))
-- Google: ["Jindal Nature Cure Institute" head international patient](https://www.google.com/search?q=%22Jindal%20Nature%20Cure%20Institute%22%20%22international%20patient%20services%22%20(head%20OR%20manager%20OR%20director))
-- Google: ["Jindal Nature Cure Institute" GM international business](https://www.google.com/search?q=%22Jindal%20Nature%20Cure%20Institute%22%20(GM%20OR%20%22general%20manager%22%20OR%20VP)%20international%20business%20hospital)
-- **Inferred email** once you have the name: `first.last@jindal-naturecure.com (verify domain)` (label INFERRED; verify)
-- Capture → `node --experimental-sqlite data-core/capture_poc.mjs jindal-naturecure "First Last" "Head – Intl Patient Services" "first.last@jindal-naturecure.com (verify domain)"`
-
-## Kshemavana Naturopathy & Yoga  
-`id: kshemavana` · fit **null** · emerging · Nelamangala (Bengaluru) · email domain `kshemavana.com (verify domain)`  
-_Modern facility, positioned for international guests_
-
-**Searches** (open, read the LinkedIn result):
-- LinkedIn people: [Kshemavana Naturopathy & Yoga international patient](https://www.linkedin.com/search/results/people/?keywords=Kshemavana%20Naturopathy%20%26%20Yoga%20international%20patient%20services) · [Kshemavana Naturopathy & Yoga medical value travel](https://www.linkedin.com/search/results/people/?keywords=Kshemavana%20Naturopathy%20%26%20Yoga%20medical%20value%20travel)
-- Google: [site:linkedin.com "Kshemavana Naturopathy & Yoga" intl patient](https://www.google.com/search?q=site%3Alinkedin.com%2Fin%20%22Kshemavana%20Naturopathy%20%26%20Yoga%22%20(international%20patient%20OR%20%22medical%20value%20travel%22%20OR%20international%20business))
-- Google: ["Kshemavana Naturopathy & Yoga" head international patient](https://www.google.com/search?q=%22Kshemavana%20Naturopathy%20%26%20Yoga%22%20%22international%20patient%20services%22%20(head%20OR%20manager%20OR%20director))
-- Google: ["Kshemavana Naturopathy & Yoga" GM international business](https://www.google.com/search?q=%22Kshemavana%20Naturopathy%20%26%20Yoga%22%20(GM%20OR%20%22general%20manager%22%20OR%20VP)%20international%20business%20hospital)
-- **Inferred email** once you have the name: `first.last@kshemavana.com (verify domain)` (label INFERRED; verify)
-- Capture → `node --experimental-sqlite data-core/capture_poc.mjs kshemavana "First Last" "Head – Intl Patient Services" "first.last@kshemavana.com (verify domain)"`
-
-## Nimba Nature Cure Village  
-`id: nimba` · fit **null** · emerging · Netrang, Gujarat · email domain `nimba.com (verify domain)`  
-_Large capacity; medical-wellness positioning suits post-op recovery_
-
-**Searches** (open, read the LinkedIn result):
-- LinkedIn people: [Nimba Nature Cure Village international patient](https://www.linkedin.com/search/results/people/?keywords=Nimba%20Nature%20Cure%20Village%20international%20patient%20services) · [Nimba Nature Cure Village medical value travel](https://www.linkedin.com/search/results/people/?keywords=Nimba%20Nature%20Cure%20Village%20medical%20value%20travel)
-- Google: [site:linkedin.com "Nimba Nature Cure Village" intl patient](https://www.google.com/search?q=site%3Alinkedin.com%2Fin%20%22Nimba%20Nature%20Cure%20Village%22%20(international%20patient%20OR%20%22medical%20value%20travel%22%20OR%20international%20business))
-- Google: ["Nimba Nature Cure Village" head international patient](https://www.google.com/search?q=%22Nimba%20Nature%20Cure%20Village%22%20%22international%20patient%20services%22%20(head%20OR%20manager%20OR%20director))
-- Google: ["Nimba Nature Cure Village" GM international business](https://www.google.com/search?q=%22Nimba%20Nature%20Cure%20Village%22%20(GM%20OR%20%22general%20manager%22%20OR%20VP)%20international%20business%20hospital)
-- **Inferred email** once you have the name: `first.last@nimba.com (verify domain)` (label INFERRED; verify)
-- Capture → `node --experimental-sqlite data-core/capture_poc.mjs nimba "First Last" "Head – Intl Patient Services" "first.last@nimba.com (verify domain)"`
-
-## Atmantan Wellness Centre  
-`id: atmantan` · fit **null** · emerging · Mulshi, Pune · email domain `atmantan.com (verify domain)`  
-_Luxury tier; HNW self-pay guests_
-
-**Searches** (open, read the LinkedIn result):
-- LinkedIn people: [Atmantan Wellness Centre international patient](https://www.linkedin.com/search/results/people/?keywords=Atmantan%20Wellness%20Centre%20international%20patient%20services) · [Atmantan Wellness Centre medical value travel](https://www.linkedin.com/search/results/people/?keywords=Atmantan%20Wellness%20Centre%20medical%20value%20travel)
-- Google: [site:linkedin.com "Atmantan Wellness Centre" intl patient](https://www.google.com/search?q=site%3Alinkedin.com%2Fin%20%22Atmantan%20Wellness%20Centre%22%20(international%20patient%20OR%20%22medical%20value%20travel%22%20OR%20international%20business))
-- Google: ["Atmantan Wellness Centre" head international patient](https://www.google.com/search?q=%22Atmantan%20Wellness%20Centre%22%20%22international%20patient%20services%22%20(head%20OR%20manager%20OR%20director))
-- Google: ["Atmantan Wellness Centre" GM international business](https://www.google.com/search?q=%22Atmantan%20Wellness%20Centre%22%20(GM%20OR%20%22general%20manager%22%20OR%20VP)%20international%20business%20hospital)
-- **Inferred email** once you have the name: `first.last@atmantan.com (verify domain)` (label INFERRED; verify)
-- Capture → `node --experimental-sqlite data-core/capture_poc.mjs atmantan "First Last" "Head – Intl Patient Services" "first.last@atmantan.com (verify domain)"`
 
