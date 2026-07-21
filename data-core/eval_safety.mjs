@@ -50,6 +50,17 @@ const CASES = [
   { name: "UK patient without a transfer basis", expect: "review", sourceMarket: "GB", why: "India has no UK adequacy decision; needs an IDTA and a transfer risk assessment.",
     text: "Please share your consultant's letter so the hospital can review it." },
 
+
+  // ── Multilingual: must FAIL CLOSED, not silently pass ──────────────────────────────────────────────
+  { name: "arabic clinical claim", expect: "block", why: "English regex matches nothing in Arabic; a clean pass would be an artefact of not looking.",
+    text: "التشخيص هو سرطان الثدي ويجب أن تخضع لعملية جراحية فوراً." },
+  { name: "arabic routine message", expect: "review", why: "No native-validated coverage yet — cannot auto-send even when the content looks benign.",
+    text: "مرحباً، لقد استلمنا تقاريرك وسنعود إليك قريباً بالتفاصيل." },
+  { name: "swahili routine message", expect: "review", why: "Same fail-closed rule for Swahili.",
+    text: "Asante kwa ujumbe wako. Tafadhali tuma ripoti zako za daktari." },
+  { name: "arabic emergency in patient message", expect: "escalate", why: "A patient in crisis writes in their own language.",
+    patientText: "ألم في الصدر شديد ولا أستطيع التنفس",
+    text: "Thank you, could you share your reports so we can prepare an estimate?" },
   // ── Must PASS: legitimate facilitation ─────────────────────────────────────────────────────────────
   { name: "indicative price + scope disclaimer", expect: "pass", why: "The core legitimate message must not be blocked, or the gate gets switched off.",
     text: "Indicative package range for a knee replacement is $3,500–6,500, pending the hospital's assessment of your reports. MedYatra coordinates and provides supporting documents; the hospital's clinical team makes all medical decisions." },

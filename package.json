@@ -33,7 +33,8 @@
     "qa-proposals": "node --experimental-sqlite data-core/qa_proposals.mjs",
     "price-ladder": "node --experimental-sqlite data-core/seed_reference_prices.mjs",
     "price-gaps": "node --experimental-sqlite data-core/price_gaps.mjs",
-    "eval-safety": "node --experimental-sqlite data-core/eval_safety.mjs"
+    "eval-safety": "node --experimental-sqlite data-core/eval_safety.mjs",
+    "economics": "node --experimental-sqlite data-core/unit_economics.mjs"
   },
   "keywords": [
     "agentic",

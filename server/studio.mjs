@@ -4,6 +4,7 @@
 // publishes a page, marks a proposal sent, approves a post, or releases a comms draft + advances the lead.
 import { marketCleared, logRun } from "../data-core/db.mjs";
 import { nextAction, STAGES } from "../lib/comms_machine.mjs";
+import { checkMessage, explain } from "../lib/safety.mjs";
 
 const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 const ok = (b) => (b ? "ok" : "no");
@@ -120,6 +121,15 @@ export function studioApprove(db, { type, id } = {}) {
       if (!marketCleared(db, L.market_code).cleared) return { ok: false, error: "market not regulatory-cleared" };
       const act = nextAction(L);
       if (!act || act.do !== "send") return { ok: false, error: "no message to release" };
+      // SAFETY GATE at the approval boundary too — defence in depth. comms_run already refuses to draft a
+      // blocking message, but a template can be edited in /sandbox after the draft was made, and approval is
+      // the last point before a real send. Re-checking here means no edit path can route around the gate.
+      const tpl = db.prepare(`SELECT body FROM comms_template WHERE name=?`).get(act.template || "");
+      if (tpl) {
+        const safe = checkMessage(tpl.body, { outbound: true, sourceMarket: L.market_code });
+        if (safe.verdict === "block" || safe.verdict === "escalate")
+          return { ok: false, error: `safety gate (${safe.verdict}): ${safe.findings.map((f) => f.code).join(", ")}` };
+      }
       // Release the drafted message (dry-run send — real send stays POST_LIVE-gated) and advance the stage
       // where the machine defines a post-send transition (e.g. intake → awaiting_reply).
       const adv = STAGES[L.journey_stage]?.advance;

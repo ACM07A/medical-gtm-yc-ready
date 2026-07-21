@@ -6,6 +6,7 @@
 //   node --experimental-sqlite data-core/comms_run.mjs
 import { open, logRun, marketCleared } from "./db.mjs";
 import { nextAction, sessionOpen } from "../lib/comms_machine.mjs";
+import { checkMessage, explain } from "../lib/safety.mjs";
 import { startVisa, visaChecklist, attendantsAllowed } from "../lib/visa.mjs";
 import { searchStays, stayPlan } from "../lib/stay.mjs";
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -39,7 +40,7 @@ const contextVars = (t, L) => {
 };
 
 const leads = A(`SELECT * FROM lead ORDER BY id`);
-let sent = 0, held = 0, advanced = 0, awaiting = 0, services = 0;
+let blocked = 0; let sent = 0, held = 0, advanced = 0, awaiting = 0, services = 0;
 const report = [];
 
 for (const L of leads) {
@@ -89,7 +90,18 @@ for (const L of leads) {
       `--- body ---`, body,
       `--- gate: HUMAN — approve in Studio before send (POST_LIVE dry-run) ---`,
     ].filter(Boolean).join("\n");
-    writeFileSync(join(OUT, `lead-${L.id}-${L.journey_stage}.txt`), draft + "\n");
+    // SAFETY GATE — every drafted message clears the clinical/PII/residency guardrail before it is even
+    // written to the outbox. A 'block' verdict means the draft never becomes an approvable item: a human
+    // shouldn't be given the option to click past a scope violation (that is how gates get eroded).
+    const safe = checkMessage(body, { patientText: L.last_inbound_text || "", outbound: true, sourceMarket: L.market_code });
+    if (safe.verdict === "block" || safe.verdict === "escalate") {
+      blocked++;
+      report.push(`⛔ ${tag} — ${safe.verdict.toUpperCase()}: ${safe.findings.map((f) => f.code).join(", ")}`);
+      logRun(db, "Safety", `${safe.verdict} · lead ${L.id}`, explain(safe), "/studio", "fail");
+      continue;
+    }
+    writeFileSync(join(OUT, `lead-${L.id}-${L.journey_stage}.txt`),
+      draft + (safe.findings.length ? `\n--- safety: REVIEW ---\n${explain(safe)}\n` : "") + "\n");
     // record the outbound + advance awaiting_reply-style stages so the demo shows motion
     db.prepare(`UPDATE lead SET last_outbound_at=datetime('now'), nudge_count=nudge_count+? WHERE id=?`)
       .run(act.nudge ? 1 : 0, L.id);
@@ -100,7 +112,7 @@ for (const L of leads) {
 
 console.log(`\n== COMMS ENGINE RUN ==`);
 for (const line of report) console.log("  " + line);
-console.log(`\n  drafted ${sent} · advanced ${advanced} · awaiting-hospital ${awaiting} · services fired ${services} · held ${held}`);
+console.log(`\n  drafted ${sent} · advanced ${advanced} · awaiting-hospital ${awaiting} · services fired ${services} · held ${held} · SAFETY-BLOCKED ${blocked}`);
 console.log(`  drafts → outputs/comms/outbox/ (human-gated, dry-run). Nothing sent.`);
-logRun(db, "Comms", "Comms engine run", `${sent} drafted · ${advanced} advanced · ${awaiting} awaiting hospital · ${services} services · ${held} held`, "/comms", "ok");
+logRun(db, "Comms", "Comms engine run", `${sent} drafted · ${advanced} advanced · ${awaiting} awaiting hospital · ${services} services · ${held} held · ${blocked} safety-blocked`, "/comms", "ok");
 db.close();
