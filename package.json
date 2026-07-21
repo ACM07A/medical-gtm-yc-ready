@@ -34,7 +34,9 @@
     "price-ladder": "node --experimental-sqlite data-core/seed_reference_prices.mjs",
     "price-gaps": "node --experimental-sqlite data-core/price_gaps.mjs",
     "eval-safety": "node --experimental-sqlite data-core/eval_safety.mjs",
-    "economics": "node --experimental-sqlite data-core/unit_economics.mjs"
+    "economics": "node --experimental-sqlite data-core/unit_economics.mjs",
+    "demand-drivers": "node --experimental-sqlite data-core/seed_demand_drivers.mjs",
+    "eeat": "node --experimental-sqlite data-core/retrofit_eeat.mjs"
   },
   "keywords": [
     "agentic",

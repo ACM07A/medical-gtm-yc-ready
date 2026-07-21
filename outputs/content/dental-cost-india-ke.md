@@ -91,3 +91,15 @@ No, a lower cost for dental treatment in India does not mean lower quality of ca
 All medical procedures carry inherent risks, and dental surgery is no exception. Accredited hospitals in India adhere to strict international safety protocols to minimise these risks. They have robust systems for infection control, patient monitoring, and emergency response.
 
 If a complication arises *during your stay* in India, the hospital where you are being treated will manage it. Their priority is to ensure your well-being. However, it is important to reiterate that the initial package price typically covers the planned procedure and immediate post-operative care. While the hospital will address issues that arise from the procedure itself, extended stays, additional complex surgeries, or ongoing management of severe complications that were not part of the original treatment plan may incur additional costs for which you would be responsible. This is why comprehensive travel and medical insurance is
+
+---
+
+### About this page
+
+Written by MedYatra editorial. Last reviewed on 2026-07-21.
+
+**Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
+
+**What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
+
+**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

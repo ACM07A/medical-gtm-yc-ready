@@ -69,3 +69,15 @@ Many surgeons in top Indian hospitals are highly experienced, performing a high 
 **Length of Stay:** For procedures like total knee or hip replacement, you should anticipate being in India for approximately 2 to 3 weeks in total. This typically includes a few days before surgery for pre-operative assessments, the hospital stay (usually around 4-7 days for these procedures), and then a period of local recovery and initial physical therapy before you are cleared to fly home. Your surgeon will provide a specific recommendation based on your individual case.
 
 Researching your options thoroughly is a significant step towards managing your health. If you have further questions or wish to explore your specific orthopedic needs, you can message us on WhatsApp.
+
+---
+
+### About this page
+
+Written by MedYatra editorial. Last reviewed on 2026-07-21.
+
+**Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
+
+**What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
+
+**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

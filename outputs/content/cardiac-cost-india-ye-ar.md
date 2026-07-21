@@ -88,3 +88,15 @@
 
 *   **السلامة وماذا يحدث إذا حدث خطأ ما؟**
     العمليات الجراحية، وخاصة عمليات القلب، تحمل دائمًا مخاطر معينة، بغض النظر عن مكان إجرائها. المستشفيات الهندية المعتمدة لديها بروتوكولات صارمة للسلامة ومكافحة العدوى، وفرق طوارئ مدربة للتعامل مع المضاعفات. قبل أي إجراء، سيشرح لك الأطباء المخاطر المحتملة. من المهم أن تطرح جميع أسئلتك وتفهم هذه المخاطر. في حال حدوث مضاعفات، سيبذل المستشفى قصارى جهده لتقديم الرعاية
+
+---
+
+### About this page
+
+Written by MedYatra editorial. Last reviewed on 2026-07-21.
+
+**Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
+
+**What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
+
+**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

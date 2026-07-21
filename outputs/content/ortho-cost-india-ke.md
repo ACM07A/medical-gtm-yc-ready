@@ -119,3 +119,15 @@ Patient safety is a priority for accredited Indian hospitals. They adhere to int
 *   **Hospital Protocols:** Reputable hospitals have clear protocols for managing complications. Should an issue arise during your hospital stay, you will receive immediate medical attention from the surgical team.
 *   **Extended Stay:** If a complication requires an extended hospital stay or additional treatment beyond the initial package, this will incur extra costs, as mentioned earlier. It is important to discuss these possibilities with the hospital beforehand and consider travel insurance that covers medical emergencies.
 *   **After Returning Home:** If a complication develops after you have returned to Kenya, you would typically consult with a local orthopedic specialist. The Indian hospital can provide your full medical
+
+---
+
+### About this page
+
+Written by MedYatra editorial. Last reviewed on 2026-07-21.
+
+**Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
+
+**What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
+
+**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

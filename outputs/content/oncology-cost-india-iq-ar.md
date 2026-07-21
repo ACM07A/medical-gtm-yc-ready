@@ -98,3 +98,15 @@ MedYatra هي جهة تسهيلية (facilitator) تعمل على تنسيق ا�
 *   **حجم المعالجة الكبير:** تجري المستشفيات الهندية عددًا كبيرًا من الإجراءات الطبية يوميًا، مما يؤدي إلى كفاءة أكبر وتكاليف أقل لكل إجراء.
 *   **نظام الرعاية الصحية:** يختلف نظام الرعاية الصحية الهندي عن أنظمة الدول الأخرى، مما يسمح بتقديم خدمات بكفاءة تكلفة أعلى.
 *   **الاستثمارات:** استثمرت العديد من المستشفيات الهندية الكبيرة في أحدث التقنيات والمعد
+
+---
+
+### About this page
+
+Written by MedYatra editorial. Last reviewed on 2026-07-21.
+
+**Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
+
+**What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
+
+**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

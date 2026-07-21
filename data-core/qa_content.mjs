@@ -4,6 +4,7 @@
 // Non-English pass structural checks but stay 'draft' pending native-speaker QA (/build-os/05).
 //   node --experimental-sqlite data-core/qa_content.mjs
 import { open, logRun } from "./db.mjs";
+import { eeatCheck } from "../lib/eeat.mjs";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -23,6 +24,13 @@ for (const a of drafts) {
   if (!/facilitator/i.test(text)) issues.push("no facilitator disclaimer");
   if (!/whatsapp/i.test(text)) issues.push("no WhatsApp CTA");
   if (BANNED.test(text)) issues.push("banned phrasing");
+
+  // E-E-A-T gate. Organic acquisition is the profitable path in the economics model, and YMYL content
+  // without visible authorship, a review date and traceable sources does not rank — so a page failing this
+  // is not "publishable but weaker", it is a page that will never earn a reader. Treated as a hard issue.
+  const ee = eeatCheck(text, { author: "MedYatra editorial", reviewed_at: a.reviewed_at || new Date().toISOString().slice(0, 10) });
+  if (!ee.ready) issues.push(`E-E-A-T ${ee.score}/100 — missing: ${ee.missing.map((m) => m.signal).join(", ")}`);
+  db.prepare(`UPDATE content_asset SET eeat_score=? WHERE id=?`).run(ee.score, a.id);
 
   if (a.language !== "en") {  // structural pass, but native QA is a human gate
     db.prepare(`UPDATE content_asset SET citations_ok=? WHERE id=?`).run(priceHit ? 1 : 0, a.id);

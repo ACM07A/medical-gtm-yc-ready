@@ -80,3 +80,15 @@ Payment for your dental treatment is made directly to the hospital in India, typ
 The required length of stay in India varies depending on the complexity of your treatment. For a single dental implant, you might need to stay for approximately 7-10 days. For more extensive procedures like full-mouth restorations, a stay of 2-3 weeks might be necessary to allow for multiple appointments, healing, and fitting of prosthetics. In some complex full-mouth cases, two separate trips spaced several months apart might be recommended to allow for proper healing between stages. The hospital will provide a clear estimate of the required duration once your specific treatment plan is established.
 
 If you wish to discuss your specific situation and explore options, you can message us on WhatsApp.
+
+---
+
+### About this page
+
+Written by MedYatra editorial. Last reviewed on 2026-07-21.
+
+**Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
+
+**What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
+
+**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

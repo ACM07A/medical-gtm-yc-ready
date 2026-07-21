@@ -4,6 +4,7 @@
 //   NVIDIA_API_KEY=... node --experimental-sqlite data-core/gen_content.mjs
 import { generate } from "../integrations/glm_generate.mjs";
 import { open, logRun, priceLadder } from "./db.mjs";
+import { trustBlock } from "../lib/eeat.mjs";
 import { lintClaims } from "../lib/claims.mjs";
 import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -45,6 +46,16 @@ for (const [catId, mk] of BATCH) {
   // THE PRICE LADDER — the comparison must run in the order the reader actually thinks in: their best
   // option at home first, then the other destinations they'd weigh, then India. Rungs we haven't priced
   // yet are passed through as explicit unknowns so the model states the gap instead of inventing a number.
+  // DEMAND DRIVER — why this market travels for this treatment. It changes the angle of the whole page:
+  // a reader who cannot get the treatment at home is afraid, a reader stuck in a queue is impatient, and a
+  // reader who can get it locally but not affordably is doing arithmetic. Same facts, three different pages.
+  const cm = db.prepare(`SELECT demand_driver, driver_note FROM category_market WHERE category_id=? AND market_code=?`).get(catId, mk) || {};
+  const ANGLE = {
+    capability: `THE READER'S SITUATION: this treatment is not reliably available at home. Their fear is competence and safety, NOT price. Lead with how to verify a hospital from abroad — accreditation, procedure volume, named specialists, what to demand in writing. Price is reassurance, not the headline. Do not imply their country's doctors are inferior; the constraint is capacity and equipment, and say so respectfully.`,
+    queue: `THE READER'S SITUATION: they can get this at home but have been given an unacceptable wait. They are frustrated, not frightened, and they are comparing a DATE more than a hospital. Lead with realistic time-to-treatment and what the wait is costing them in pain and lost work. Never disparage their health system — they are angry at one queue, not at the system, and attacking it loses them.`,
+    cost: `THE READER'S SITUATION: this is available and timely at home, but privately it is expensive. They are doing arithmetic and are sceptical that cheaper is not worse. Lead with the honest price ladder against their real local option, then answer the "is cheap worse" objection with actual reasons — surgeon case volume, lower input costs, purchasing power — not reassurance.`,
+  }[cm.demand_driver] || "";
+
   const ladder = priceLadder(db, catId, mk);
   const ladderLines = ladder ? ladder.rungs.map((r, i) =>
     `${i + 1}. ${r.label}${r.tier === "local" ? "  ← their option at home, compare here FIRST" : ""}${r.ours ? "  ← us" : ""}: ` +
@@ -60,6 +71,7 @@ Present it as one table with a short paragraph under it. If India is not the che
     : `Write the ENTIRE page in ${langName} (${lang})${lang === "ar" ? ", right-to-left" : ""}. Keep the price figures as USD numerals. This draft will get native-speaker QA before publish.`;
 
   const prompt = `Write an in-depth, genuinely useful guide titled around: "${cat.name} in India — what it costs for patients from ${market.name}, and how it works". ${langLine}
+${ANGLE}
 Audience: a patient or their family in ${market.name} seriously researching ${cat.name} in India, making a hard, frightening decision. Write for that real person.
 Use EXACTLY these indicative India package prices (do not change or add others; present as ranges, never as firm quotes):
 ${priceLines}
@@ -101,7 +113,10 @@ Start the file with this exact HTML comment: <!-- DRAFT · tier-2 · cell ${catI
   const fillerNote = lint.filler.length ? ` · filler to cut: ${lint.filler.slice(0, 6).join(", ")}` : "";
   const header = `<!-- Content Engine · tier-2 (GLM→Gemini) · fed by data core · ${new Date().toISOString().slice(0, 10)}\n` +
     `     Prices injected from data core (cited /build-os/08). Prose is model-generated → DRAFT, needs human+clinical sign-off.${qaNote}${lint.vague.length ? ` · ${lint.vague.length} vague-claim(s) tagged [VERIFY]` : ""}${fillerNote} -->\n\n`;
-  writeFileSync(join(ROOT, file), header + lint.text.trim() + "\n");
+  // Every page carries its own trust block: who wrote it, when it was last reviewed, and what it is NOT.
+  // YMYL content without visible authorship and a review date does not rank — and, more to the point, an
+  // undated price page misleads someone making a five-figure decision on a number that has since moved.
+  writeFileSync(join(ROOT, file), header + lint.text.trim() + trustBlock({}) + "\n");
   if (lint.vague.length || lint.filler.length) logRun(db, "QA", `Content lint · ${catId}×${mk}`, `${lint.vague.length} vague→[VERIFY], filler: ${lint.filler.slice(0, 5).join(", ") || "none"}`, null, "pending");
 
   const info = db.prepare(`INSERT INTO content_asset (category_id,market_code,language,title,file_ref,status,cta_wired,citations_ok)

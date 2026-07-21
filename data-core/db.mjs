@@ -13,6 +13,11 @@ export function open(path = DB_PATH) {
   db.exec(readFileSync(join(HERE, "schema.sql"), "utf8")); // idempotent (CREATE IF NOT EXISTS)
   // lightweight migrations (add columns without a rebuild; ignore if they already exist)
   for (const c of ["meta_title", "meta_desc"]) { try { db.exec(`ALTER TABLE content_asset ADD COLUMN ${c} TEXT`); } catch {} }
+  // E-E-A-T score + review date: organic is the profitable acquisition path, so a page's trust signals are
+  // first-class data, not a report. reviewed_at also drives the refresh loop — price pages decay.
+  for (const c of ["eeat_score INTEGER DEFAULT 0", "reviewed_at TEXT", "cluster TEXT"]) {
+    try { db.exec(`ALTER TABLE content_asset ADD COLUMN ${c}`); } catch {}
+  }
   // account-model upgrade: turn poc rows from "front-desk directory" into real decision-maker records.
   //  role        = the ACTUAL role of the named person (vs title_target = the role we're hunting for)
   //  seniority    = head | senior | mid | desk   (desk = generic inbox, no named owner)

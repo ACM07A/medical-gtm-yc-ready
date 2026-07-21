@@ -75,3 +75,15 @@ MedYatra သည် ကုသမှုဆိုင်ရာ ညှိနှို
 1.  **ဆေးမှတ်တမ်းများ ပေးပို့ခြင်း:** ပထမဦးစွာ သင်၏ လက်ရှိဆေးမှတ်တမ်းများ၊ ရောဂါရှာဖွေရေး အစီရင်ခံစာများ (ဥပမာ- သွေးစစ်ချက်များ၊ ဓာတ်မှန်များ၊ CT/MRI scan များ၊ biopsy အစီရင်ခံစာများ) ကို စုဆောင်းပါ။ ထို့နောက် ၎င်းတို့ကို MedYatra သို့ WhatsApp မှတစ်ဆင့် ပေးပို့နိုင်ပါသည်။
 
 2.  **ဆေးရုံမှ အကြံဉာဏ်နှင့် ကုန်ကျစရိတ်ခန့်မှန်း
+
+---
+
+### About this page
+
+Written by MedYatra editorial. Last reviewed on 2026-07-21.
+
+**Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
+
+**What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
+
+**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.
