@@ -146,11 +146,29 @@ rights, and 41.88% of the India entity). Because the introduction comes from the
 — which would put demand-side clinics in the Gulf and supply-side hospitals in India inside one relationship.
 That is the single highest-value thread we have.
 
-**What we are asking for.** Not exclusivity and not volume promises. A preferred rate in exchange for
-**pre-triaged, high-intent case files with attribution** — and, as a first step, permission to send three to
-five test cases.
+**Who we work first is now a scored decision, not a vibe** (re-worked 2026-07-22). The account board ranks on
+a **pursuit score = 0.45·access + 0.30·fit + 0.25·speed**: *access* because a warm introduction changes
+everything (the adviser's own desk scores 100; a cold account 5), *fit* because the margin thesis still
+matters, and *speed* because — per Sachin — partnering is **fast once the commission number is agreed**; the
+fee is the real gate, not process. The board's next-action for every warm account is now literally "close the
+commission number." Ganga Ram (fit 96 but no path in) correctly drops below all four warm accounts.
 
-**What we have not yet secured:** any signed agreement, LOI, or preferred rate. That is the honest position.
+**What we are asking for — and the value exchange.** Not exclusivity and not volume promises. We charge the
+hospital a *lower* facilitation fee than incumbent aggregators — and in exchange we ask for something extra,
+because we bring the volume that makes a thin fee worth it: **best-of-book package rates, priority
+admission/OT scheduling for our patients, a named international coordinator, and co-funded patient-education
+content.** This value-ask is recorded per account. The commission model quantifies the pitch: at 12% vs a
+typical 18% incumbent, the hospital nets a real per-case uplift — on a cardiac package, a few hundred dollars
+more per case, on their existing rate card. First step remains: permission to send three to five test cases.
+
+**Pricing is designed to run on actuals.** The commission economics (`npm run pricing`) run on real hospital
+rate cards wherever one exists and clearly-labelled indicative ranges where none does — and the report's
+main output today is the honest gap: **0 of 16 pursued partner×category cells have a confirmed rate card.**
+Collecting those real numbers is a first-call agenda item, and a confirmed card immediately becomes the
+named-hospital price a patient sees.
+
+**What we have not yet secured:** any signed agreement, LOI, preferred rate, or actual rate card. That is the
+honest position.
 
 **Two more acquisition motions now exist alongside hospitals.** The engine no longer treats a hospital as the
 only kind of partner:
@@ -179,19 +197,33 @@ Operational today in a sandbox, without any API keys:
   templates, covering the diagnosis fork, hospital handoffs, and stress cases (visa denial, complication,
   going quiet). Fully demonstrable in an interactive sandbox.
 - **Concierge journey, post-booking — now built. This was the single biggest gap in the 21 July version of
-  this document, and it is closed.** Twelve agents carry a booked patient from intake through aftercare:
-  triage, document-KYC, visa documents, accommodation, flexible-date ticketing, airport logistics,
-  interpreter scheduling, family updates (on the family member's own separate consent), discharge-and-
-  medication relay, billing reconciliation, return-travel readiness, and payment routing. Each clears the
-  safety gate; several are deliberately deterministic — a visa rule, a medication instruction, a sum of money
-  — rather than model-generated, because a wrong answer there is worse than no answer. A **full-journey
-  orchestrator** runs one real lead through all twelve in the real chronological order, in a single click.
+  this document, and it is closed.** Thirteen agents carry a booked patient from intake through aftercare:
+  triage, document-KYC, visa documents, **a patient–doctor video consult** (the patient meets their treating
+  surgeon by video after the quote is finalized and before anyone buys a ticket — gated mechanically on a
+  finalized quote; MedYatra schedules it and is not a party to the clinical conversation), accommodation,
+  flexible-date ticketing, airport logistics, interpreter scheduling, family updates (on the family member's
+  own separate consent), discharge-and-medication relay, billing reconciliation, return-travel readiness, and
+  payment routing. Each clears the safety gate; several are deliberately deterministic — a visa rule, a
+  medication instruction, a sum of money — rather than model-generated, because a wrong answer there is worse
+  than no answer. A **full-journey orchestrator** runs one real lead through all thirteen in the real
+  chronological order, in a single click.
   *Honest caveat:* several run on curated or clearly-labelled mock data (flights and hotels return curated
   estimates; the interpreter roster is a placeholder) — a real flight, hotel, or interpreter vendor is one
   API key away, not wired, and nothing books for real.
-- **Supply side** — 27 hospital accounts ranked by a fit score, with a research worklist for confirming
-  named decision-makers. Plus the two additional acquisition motions in §4: a doctor-affiliate account type
-  (built; zero real names yet) and the base of a payer channel (built; outreach parked for phase 2/3).
+- **Supply side** — 27 hospital accounts ranked by the pursuit score (access + fit + speed, §4), with a
+  research worklist for confirming named decision-makers. Plus the two additional acquisition motions in §4:
+  a doctor-affiliate account type (built; zero real names yet) and the base of a payer channel (built;
+  outreach parked for phase 2/3).
+- **Medical data architecture — GDPR as the backbone, in code.** Clinical information moving between patient
+  and hospital (prescriptions, treatment methodologies, recommended tests, medical history) lives in an
+  encrypted vault (AES-256-GCM) in its own database, separate from everything commercial. MedYatra's own
+  read surface is limited *by construction* to what a non-clinical facilitator needs: treatment
+  name/protocol, timelines, cost structure, surgeon details. Decryption exists only for named relay purposes
+  (hospital→patient, patient→hospital, patient's own copy); every access including refusals is logged;
+  erasure leaves an audit tombstone. Runs on a local sandbox today; swaps to a GDPR-compliant EU host at
+  go-live by configuration (hosting to be provided). A per-market health-data law register covers all 22
+  source markets + India — every entry pending counsel verification, with the sharp edges named: UAE health
+  data cannot leave the UAE, and Uzbekistan/Kazakhstan/Zambia require in-country replicas.
 - **Content engine** — guide cells across categories, markets and four languages; 10 published;
   demand-driver-aware generation; trust-scored before publish.
 - **Empathy, now implemented in code, not just stated.** The §1 requirement runs through a single canonical
@@ -230,6 +262,11 @@ enforced mechanically, not by policy document.
   prohibits health data relating to UAE-provided services from leaving the country, absent a case-by-case
   authority exception. A UAE patient's records cannot be pulled into an India-hosted pipeline — including
   into an AI prompt, which is a transfer.
+- **Medical data has its own architecture now** (2026-07-22, §5): encrypted vault, facilitator-scope read
+  surface, purpose-limited decryption, full audit trail, erasure with tombstone — GDPR applied as the floor
+  in all 22 markets, including the five with no data-protection law of their own. A 23-jurisdiction
+  health-data law register backs it; **every entry is marked unverified until counsel signs it off** — the
+  register is a counsel work-list, not a legal opinion.
 
 **That last point is also a moat.** Competitors running a Bangalore-hosted WhatsApp funnel into the Gulf are
 non-compliant and mostly unaware of it. Solving it requires in-country presence — which is a strong argument

@@ -178,12 +178,25 @@ each partner is a real CRM account, not a directory row —
   › `open` (target-role slot to fill).
 - **A next action + owner + stage** so the pipeline actually moves.
 
-**The board has two layers, and the split is deliberate.** The *cold* board (`data-core/seed.mjs`) is the
-fit-ranked funnel — model-scored targets, latent brands on top. The *warm* board
-([`data-core/seed_warm_accounts.mjs`](./data-core/seed_warm_accounts.mjs)) holds the handful of groups where a
-real introduction actually exists, ranked on **access, not fit score** — because a warm group-level intro is
-scarcer than good terms, and an established international desk is the customer whose coordination pain we
-automate *today*. The concrete **first partner set (user-directed 2026-07-22) is a deliberate Bangalore
+**The board ranks on a three-axis PURSUIT score now, not fit alone** (re-worked 2026-07-22, when the set of
+real warm introductions changed who we approach first). `pursuit = 0.45·access + 0.30·fit + 0.25·speed`
+(`pursuitScore()`, `db.mjs`):
+- **Access** (`accessScore`) — how we actually get in: `adviser_desk` (100, Sachin's own Fortis desk) ›
+  `warm_group` (85, the Aster family / ex-Manipal legal head) › `warm_individual` › `named_public` › `desk` ›
+  `cold` (5). A great account we can't reach is a worse next move than a good one a trusted person walks us into.
+- **Fit** (`partnerFit`, unchanged) — the margin thesis stays legible on its own; it's no longer the ranking key,
+  and warm accounts never need their fit hand-hacked to rise.
+- **Speed** (`speedScore`) — time-to-market: Sachin's read is that partnering is *fast once the commission
+  number is agreed*, so speed = commission status (`agreed`/`in_discussion`/`unknown`) + desk readiness. New
+  partner fields carry the terms conversation: `commission_status`, `commission_target_pct`, and `value_ask` —
+  the extra we ask the hospital for in exchange for a *lower* fee (best-of-book rates, priority scheduling, a
+  named coordinator), because we bring the volume that makes a thin fee worth it.
+
+The result on the real board: Fortis Bannerghatta (pursuit 82) › Aster India (75) › Manipal (74) top it via
+access, while Ganga Ram (fit 96, but cold) correctly drops to pursuit 40 — "park / build path". The *cold*
+board (`data-core/seed.mjs`) still holds the fit-ranked funnel; the *warm* board
+([`data-core/seed_warm_accounts.mjs`](./data-core/seed_warm_accounts.mjs)) carries the connection/commission
+fields that drive access and speed. The concrete **first partner set (user-directed 2026-07-22) is a deliberate Bangalore
 cluster**: Fortis Bannerghatta Road, Aster (Hebbal unit), Manipal, SPARSH and KIMS — five hospitals in one
 city, which is also the city of our MVT adviser (Sachin Rai, Fortis Bangalore), so the whole set is a cheap,
 warm-intro beachhead. Three sit on the warm board (Fortis Bannerghatta = the adviser's own desk; Aster = the
@@ -249,6 +262,19 @@ referral reach, with readiness dominated by whether there's a real warm introduc
 exists on purpose — `capture_doctor.mjs` is the only entry point, same "a human is vouching for this" rule as
 `capture_poc.mjs`, one level up. Full rubric and rationale: [`PARTNER_AGENT.md §11`](./PARTNER_AGENT.md).
 Status: the capability exists, the board has zero rows — no real name to add yet.
+
+### 5.2e The pricing/commission model — designed to run on actuals ([`data-core/pricing_model.mjs`](./data-core/pricing_model.mjs))
+
+The facilitator economics, made explicit (`commissionModel()`, `db.mjs`): the patient pays the hospital's
+package price; the hospital pays our commission out of it; at our *lower* fee vs a typical 18% incumbent, the
+hospital **nets an uplift per case** — the value-exchange pitch, quantified (a $6,200–8,500 CABG package at
+12% → hospital keeps $372–510 more per case than under an aggregator). The model is designed to run on
+**actual hospital rate cards**: `capture_partner_price.mjs` is the only entry point (human-vouched;
+`confirmed` only when explicitly flagged, because a confirmed rate replaces the indicative rung on the
+patient-facing price ladder). `npm run pricing` reports per-case economics on actuals where they exist,
+clearly-labelled indicative fallbacks where they don't, and the **rate-card gap** for pursued partners — the
+list of real numbers to collect on the next partner call. Currently 0/16 pursued cells have actuals: that's
+the point of the report.
 
 ### 5.3 The Content Engine — *demand*
 
@@ -363,7 +389,7 @@ content engine (§5.7) is load-bearing, not decorative.
 
 ### 5.9 The concierge agents — turning "booked" into "treated" ([`lib/agents/`](./lib/agents/), `/agents`)
 
-Twelve agents cover the post-booking journey, live and clickable at `/agents` — every run is a real call
+Thirteen agents cover the post-booking journey, live and clickable at `/agents` — every run is a real call
 through the same failover chain and the same safety gate as everything else, not a scripted transcript.
 Several are deliberately **deterministic, never LLM-generated**, because a wrong answer on a visa rule, a
 medication instruction, or a sum of money is worse than no answer at all:
@@ -409,6 +435,15 @@ medication instruction, or a sum of money is worse than no answer at all:
   stays. Curated near-hospital sample until a real inventory provider (Booking.com Demand API / Hotelbeds /
   RateHawk) is keyed; "requesting" a stay is a human-gated dry-run — nothing books for real without a
   provider key, `POST_LIVE=1`, and an explicit confirm, same posture as `lib/publishers.mjs`.
+- **Patient–doctor video consult** ([`video_consult.mjs`](./lib/agents/video_consult.mjs)) — the step
+  between "quote finalized" and "book travel": the patient meets their treating surgeon by video before
+  anyone buys a ticket. Mechanically **gated on a finalized quote** (`estimate_line kind='quote'` — no
+  quote, no consult); deterministic timezone-overlap math between the surgeon's IST hours and the patient's
+  waking hours across all 22 markets; interpreter attached for non-English consults. The compliance line IS
+  the design: MedYatra schedules the call and is *not a party to it* — no joining, recording, or storing of
+  the clinical conversation; we keep scheduling metadata plus a non-clinical outcome
+  (proceed / revise_quote / not_suitable / follow_up), and `recordConsultOutcome` **refuses** notes that read
+  as clinical content. Video platform is an env-key-away plugin; scheduling is a human-gated dry-run.
 - **Ticketing** ([`lib/flights.mjs`](./lib/flights.mjs)) — the scope line above did move: MedYatra now
   searches and recommends flight dates (the patient still completes the actual purchase). The real idea:
   arrival has a hard constraint (the pre-op buffer before admission, reused directly from `stay.mjs`'s own
@@ -420,24 +455,24 @@ medication instruction, or a sum of money is worse than no answer at all:
 
 `data-core/seed_agent_state.mjs` seeds real rows (a KYC in progress, a consented family contact, a quote
 with a deliberate variance) so the stateful agents have something real to run against out of the box.
-`data-core/smoke_agents.mjs` (`npm run smoke-agents`) headlessly checks every PURE agent function (21
-assertions across all 12 agents) with or without an LLM key — a demo must not break live because a free-tier
+`data-core/smoke_agents.mjs` (`npm run smoke-agents`) headlessly checks every PURE agent function (25
+assertions across all 13 agents) with or without an LLM key — a demo must not break live because a free-tier
 quota ran out. The DB-backed paths (KYC, ledger billing, family channel, visa/stay/flights' actual DB writes)
 need a real lead row and are deliberately excluded from this test to keep it running before any seed exists —
 those are exercised live at `/agents` instead.
 
 ### 5.9b Full journey orchestration ([`server/orchestrate.mjs`](./server/orchestrate.mjs), `/journey`)
 
-`/agents` demonstrates each agent one card at a time; `/journey` runs ONE real lead through all twelve, in the
+`/agents` demonstrates each agent one card at a time; `/journey` runs ONE real lead through all thirteen, in the
 real chronological order (intake → before travel → arrival → during treatment → after treatment, derived from
 `AGENT_META`'s own `grp` field so the two pages can't drift apart), in a single click. It calls the exact same
 exported handler functions `/agents` uses — `runTriage`, `runKycInit`, `runVisaStart`, `runFlightSearch`, and
 so on — so there is no separate "demo" code path to keep in sync, and reuses the SAME per-action rendering
 logic (`RESULT_JS`, extracted out of `server/agents.mjs` into a shared constant) rather than duplicating
-twelve render branches across two pages. Deliberately resilient: one step's failure (an LLM timeout, a quota
+thirteen render branches across two pages. Deliberately resilient: one step's failure (an LLM timeout, a quota
 limit) is caught and shown, not fatal — the walkthrough continues to the next step, same as it should live.
-State discipline verified: only 2 of the 13 steps (KYC init, visa start) write to the DB, both idempotent —
-re-running the same lead's journey twice produces byte-identical row counts (tested).
+State discipline verified: only 3 of the 14 steps (KYC init, visa start, video-consult schedule) write to the
+DB, all idempotent — re-running the same lead's journey twice produces byte-identical row counts (tested).
 
 ### 5.9c The voice: empathy, hardcoded ([`lib/voice.mjs`](./lib/voice.mjs))
 
@@ -494,6 +529,26 @@ every push and has already caught one real regression: the verdict reducer ranke
 while holding blocking findings — detection correct, enforcement silently dead. The same failure shape
 recurred once more this session in the E-E-A-T scorer (§5.7) before both were caught the same way: assert
 the *verdict*, not the presence of a check.
+
+### 5.11 The medical data vault — GDPR as the backbone ([`lib/vault.mjs`](./lib/vault.mjs), `/vault`)
+
+Everything clinical moving between patient and hospital — prescriptions, treatment methodologies,
+recommended tests, medical history, discharge notes — lives in an **AES-256-GCM-encrypted vault in its own
+database file**, never mingled with the GTM core, behind a pluggable backend: local sandbox today (the
+default), a fully GDPR-compliant EU host at go-live (`VAULT_BACKEND=remote` + keys; hosting to be provided).
+The load-bearing idea is a **two-surface record**: the clinical payload is an encrypted blob MedYatra's code
+cannot casually read; the only plaintext is the **facilitator envelope** — treatment name/protocol,
+treatment timelines, cost structure, surgeon details — which is the *entire* read surface a non-clinical
+facilitator needs. Decryption exists solely for three named relay purposes (hospital→patient,
+patient→hospital, patient's own copy) with direction discipline; every access *including refusals* goes to an
+append-only log (Art. 30); erasure deletes content and leaves a tombstone (Art. 17); GCM auth tags give
+tamper detection (Art. 32). A **per-market health-data law register**
+([`data-core/seed_health_data_laws.mjs`](./data-core/seed_health_data_laws.mjs), all 22 source markets +
+India, every row `unverified` pending counsel) drives `residencyCheck()` on every write — the sharp edges:
+UAE health data may not leave the country (in-country hosting required), Uzbekistan/Kazakhstan/Zambia require
+in-country replicas. GDPR is the floor in every market, including the five with no data-protection law of
+their own. Mechanically verified by `npm run smoke-vault` (11 checks); full architecture:
+[`build-os/17_MEDICAL_DATA_ARCHITECTURE.md`](./build-os/17_MEDICAL_DATA_ARCHITECTURE.md).
 
 ---
 
@@ -563,7 +618,11 @@ Requires **Node ≥ 22.5**. All data-core scripts need the `--experimental-sqlit
 | `npm run economics` | Unit economics: cost to acquire + fulfil one treated patient (§5.8), cited vs. assumed |
 | `npm run price-ladder` / `npm run price-gaps` | Seed the price ladder / list what's still an unpriced gap (§5.7) |
 | `npm run eval-safety` | The 20-case adversarial safety suite (§5.10) — also runs in CI on every push |
-| `npm run smoke-agents` | Headless check across all 12 concierge agents' pure functions (21 assertions), with or without a key |
+| `npm run smoke-agents` | Headless check across all 13 concierge agents' pure functions (25 assertions), with or without a key |
+| `npm run smoke-vault` | The medical-data vault's 11 mechanical checks (encryption, scope, refusals, tamper, erasure) |
+| `npm run health-laws` | Seed/report the per-market health-data law register (23 jurisdictions, all pending counsel) |
+| `npm run pricing` | Commission economics on actual rate cards where present; the rate-card gap for pursued partners |
+| `npm run capture-partner-price` | Log a real hospital rate card (only entry point; `confirmed` replaces the ladder rung) |
 | `npm run warm-accounts` | Seed the partner board's warm, access-ranked accounts (Aster, Manipal, Fortis Bangalore) |
 | `npm run doctor-outreach` | Outreach drafts for doctor-affiliate accounts (§11 of PARTNER_AGENT.md — referral-fee terms never auto-filled) |
 | `npm run auto-loop -- <script.mjs>` | Keep retrying a generation script with backoff when a rate limit clears — no human needed to re-run it |
@@ -574,9 +633,10 @@ proposals) · `gen_credibility.mjs` (trust narratives) · `plan_clusters.mjs` (t
 · `seed_agent_state.mjs` (real demo rows for the concierge agents) · `capture_doctor.mjs` (log a
 human-confirmed doctor-affiliate). Server routes: **`/demo`** (the showable hub — every capability with live
 counts), `/console`, `/studio` (approve-and-deploy), `/sandbox` (editable patient-journey demo), **`/agents`**
-(the twelve concierge agents, live), **`/journey`** (one real lead through all twelve, in chronological order,
-one run), `/comms` (template list), `/benchmarks` (de-identified aggregate), `/plugins` (integration
-readiness), `/distribution`, `/worklist`. **Going live is keys-only — see
+(the thirteen concierge agents, live), **`/journey`** (one real lead through all thirteen, in chronological
+order, one run), **`/vault`** (medical-data architecture status: backend, law register, access log), `/comms`
+(template list), `/benchmarks` (de-identified aggregate), `/plugins` (integration readiness),
+`/distribution`, `/worklist`. **Going live is keys-only — see
 [`build-os/12_GO_LIVE.md`](./build-os/12_GO_LIVE.md)** (which features need which keys) **and
 [`build-os/13_DEPLOYMENT.md`](./build-os/13_DEPLOYMENT.md)** (where the process runs and what it costs).
 Capture a confirmed contact:

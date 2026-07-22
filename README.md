@@ -64,8 +64,8 @@ npm run serve               # → http://localhost:5173  (open /demo)
 **Showing someone the engine? Open [`/demo`](http://localhost:5173/demo)** — one page linking every capability
 (with live counts), framed as a safe sandbox. Three stops matter most: the **[patient-journey sandbox](http://localhost:5173/sandbox)**
 (a WhatsApp phone simulator playing every branch, templates editable live), the **[concierge agents](http://localhost:5173/agents)**
-(click Run on any of the twelve — every response is a real model call through the real safety gate, not a transcript),
-and the **[full journey orchestrator](http://localhost:5173/journey)** (one real lead through all twelve agents,
+(click Run on any of the thirteen — every response is a real model call through the real safety gate, not a transcript),
+and the **[full journey orchestrator](http://localhost:5173/journey)** (one real lead through all thirteen agents,
 in the real chronological order, in a single run — the same handlers `/agents` uses, not a separate demo path).
 Going live from here is just plugging in keys — see [`build-os/12_GO_LIVE.md`](./build-os/12_GO_LIVE.md) (which
 features need which keys) and [`build-os/13_DEPLOYMENT.md`](./build-os/13_DEPLOYMENT.md) (where the process
@@ -102,9 +102,9 @@ This is a **first-draft engine**, and it says so where it matters:
 | [`agent-os/`](./agent-os/) | *How* the agents loop, route models, QA, and stop — plus the live task queue and evidence log |
 | [`build-os/`](./build-os/) | *What* to build + the actual GTM strategy, data sources, compliance, acceptance tests |
 | [`data-core/`](./data-core/) | SQLite schema + seed + every agent script (scoring, sourcing, discovery, content, QA, publish, repurpose, proposals, credibility, run-loop) |
-| [`server/`](./server/) | Zero-dep HTTP server, live operator console, **`/studio`** (live approve-and-deploy, writes back to the DB), **`/sandbox`** (editable patient-journey demo), **`/agents`** (the twelve concierge agents, live), patient landing, `/comms`, `/plugins`, `/distribution`, `/worklist` |
+| [`server/`](./server/) | Zero-dep HTTP server, live operator console, **`/studio`** (live approve-and-deploy, writes back to the DB), **`/sandbox`** (editable patient-journey demo), **`/agents`** (the thirteen concierge agents, live), **`/vault`** (medical-data architecture status), patient landing, `/comms`, `/plugins`, `/distribution`, `/worklist` |
 | [`lib/`](./lib/) | Browser automation, research, enrichment, mailer, image gen, infographics, stock, media router, social publishers, plugin registry, env loader, `safety.mjs` (the clinical/PII/residency guardrail), `eeat.mjs` (content trust signals), `visa.mjs` + `stay.mjs` + `flights.mjs` (visa documents, accommodation, flexible-date ticketing — all provider-agnostic) |
-| [`lib/agents/`](./lib/agents/) | Nine of the twelve concierge agents: triage, family-update + family-channel, document-kyc, billing-reconciliation, discharge-relay, ground-logistics, interpreter-scheduling, travel-readiness, payment-routing (visa, accommodation + ticketing live in `lib/` directly — see above) |
+| [`lib/agents/`](./lib/agents/) | Ten of the thirteen concierge agents: triage, family-update + family-channel, document-kyc, billing-reconciliation, discharge-relay, ground-logistics, interpreter-scheduling, travel-readiness, payment-routing, video-consult (visa, accommodation + ticketing live in `lib/` directly — see above) |
 | [`integrations/`](./integrations/) | Cross-provider LLM failover helper (+ Gemini) + LiteLLM config |
 | [`scripts/`](./scripts/) | `run_factory.bat` — the scheduled unattended factory loop |
 | [`deploy/`](./deploy/) | Reference deployment kit (Dockerfile, Fly.io config, Litestream config) — not yet deployed, see `build-os/13` |

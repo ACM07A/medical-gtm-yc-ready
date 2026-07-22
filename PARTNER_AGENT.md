@@ -98,6 +98,36 @@ guess: past-outreach accounts get a 4-day follow-up; a named POC gets "verify co
 outreach"; a desk-only account gets "resolve the named [top target role]"; a bare account gets "add an IPS
 channel."
 
+### 2c. The pursuit score — access + fit + speed (the 2026-07-22 re-think, and the board's ranking key)
+
+The set of real warm introductions (the adviser's own desk at Fortis Bannerghatta, the Aster family, the
+ex-Manipal group legal head) changed *who we approach first* far more than fit ever did — so reachability and
+time-to-market became first-class scored inputs, and the board now ranks on:
+
+```
+pursuit = round(0.45 × access + 0.30 × fit + 0.25 × speed)
+band    = ≥70 "work now" · ≥45 "warm up" · else "park / build path"
+```
+
+| Axis | Function | What it measures |
+|---|---|---|
+| **access** (0.45) | `accessScore()` | The `connection` field: `adviser_desk 100` › `warm_group 85` › `warm_individual 65` › `named_public 35` › `desk 15` › `cold 5`. A great account we can't reach is a worse *next move* than a good one a trusted person walks us into. |
+| **fit** (0.30) | `partnerFit()` (§2, unchanged) | The margin thesis — still legible on its own, no longer the ranking key. No more hand-hacking fit to force warm accounts up. |
+| **speed** (0.25) | `speedScore()` | Time-to-signed-pilot. Sachin's read: partnering is **fast once the commission number is agreed** — so speed = `commission_status` (`agreed 60` / `in_discussion 35` / `unknown 20`) + 30% of desk readiness (§2b). |
+
+Three companion fields carry the terms conversation on the account itself: `commission_target_pct` (the
+number that unblocks a fast close — 12% on the warm accounts), `commission_status`, and **`value_ask`** — the
+extra we ask the hospital for in exchange for a *lower* fee than incumbents, because we bring the volume:
+best-of-book package rates, priority admission/OT scheduling, a named international coordinator, co-funded
+patient education. The next-action generator leads with the commission close whenever status is
+`in_discussion`. Real-board result: Fortis Bannerghatta 82 › Aster India 75 › Manipal 74 › Aster GCC 71,
+with Ganga Ram (fit 96, cold) correctly at pursuit 40.
+
+Once terms are agreed, the **actual rate card** goes in through `capture_partner_price.mjs` (the only entry
+point; `confirmed` only when a signed package sheet exists) and `npm run pricing` turns it into per-case
+commission economics — including the hospital's net uplift vs an 18% incumbent, which *is* the pitch deck
+number for the next partner.
+
 ---
 
 ## 3. Stage 2 — Decision-maker identification
