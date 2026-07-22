@@ -227,6 +227,26 @@ export function priceLadder(db, categoryId, marketCode) {
            complete: rungs.every((r) => !r.gap), hasLocal: rungs.some((r) => r.tier === "local" && !r.gap) };
 }
 
+// COMMISSION / MARGIN MODEL — the facilitator economics, made explicit and designed to run on ACTUAL
+// hospital package rates once we have them (capture_partner_price.mjs), falling back to the indicative range
+// only when we don't. The facilitator model: the hospital's package price is what the patient pays; the
+// hospital pays US a facilitation commission out of that price and nets the rest — we are NOT a patient
+// markup. The strategic point (Sachin, 2026-07-22): we charge the hospital a LOWER commission than incumbents
+// (they keep more per case) in exchange for the volume we bring and the "extra" we ask back (value_ask). This
+// function makes that trade legible: at our fee vs an incumbent's, how much more does the hospital net, and
+// what is our revenue per case. `pkg` is {low,high} from a confirmed partner_price (actual) or category range
+// (indicative); feePct is the partner's negotiated commission_target_pct (default 12). incumbentPct lets the
+// proposal show the hospital its net UPLIFT vs a typical 18% aggregator.
+export function commissionModel(pkg, feePct = 12, incumbentPct = 18) {
+  const lo = Number(pkg?.low) || 0, hi = Number(pkg?.high) || 0;
+  const fee = Math.max(0, feePct) / 100, inc = Math.max(0, incumbentPct) / 100;
+  const ourFee = { low: Math.round(lo * fee), high: Math.round(hi * fee) };
+  const hospitalNet = { low: Math.round(lo * (1 - fee)), high: Math.round(hi * (1 - fee)) };
+  // What the hospital nets ABOVE what an incumbent at incumbentPct would leave them — the pitch, per case.
+  const netUplift = { low: Math.round(lo * (inc - fee)), high: Math.round(hi * (inc - fee)) };
+  return { patient: { low: lo, high: hi }, ourFee, hospitalNet, feePct, incumbentPct, netUplift };
+}
+
 // SALES-READINESS — deliberately SEPARATE from fit_score. Fit = "should we want them" (opportunity).
 // Readiness = "can they actually take an international patient soon" (execution risk). High whitespace
 // (the thing that makes fit attractive) usually means LOW readiness: no visa-invite desk, no interpreter
