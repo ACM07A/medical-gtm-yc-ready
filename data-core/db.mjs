@@ -140,6 +140,16 @@ export function open(path = DB_PATH) {
     specialty TEXT, country_code TEXT, current_hospital TEXT,
     reach_est TEXT DEFAULT 'unknown', warmth TEXT DEFAULT 'cold',
     contact_channel TEXT, cme_notes TEXT, source TEXT)`);
+  // HEALTH DATA LAW REGISTER — per-market medical-data law (the Ch. V/residency layer of the vault
+  // architecture, lib/vault.mjs). One row per source market + India as destination. status mirrors the
+  // regulatory-gate pattern: 'unverified' until counsel signs off — the entries are researched, not verified.
+  //  transfer_rule: in_country_only | localization_copy | adequacy_or_sccs | consent_based | no_comprehensive_law
+  db.exec(`CREATE TABLE IF NOT EXISTS health_data_law (
+    market_code TEXT PRIMARY KEY,
+    law_name TEXT, regulator TEXT,
+    transfer_rule TEXT DEFAULT 'no_comprehensive_law',
+    key_constraints TEXT, consent_basis TEXT,
+    status TEXT DEFAULT 'unverified', source TEXT, retrieved TEXT)`);
   // PAYER — the third account type, base only (channel parked for phase 2/3). See schema.sql / PARTNER_AGENT.md §12.
   db.exec(`CREATE TABLE IF NOT EXISTS payer (
     partner_id TEXT PRIMARY KEY REFERENCES partner(id),

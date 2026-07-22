@@ -3,6 +3,8 @@
 *.env
 integrations/.env
 **/secrets*
+# Medical-data vault key (sandbox-generated; live key comes from the GDPR host's secret store)
+data-core/.vault_key
 
 # Node
 node_modules/

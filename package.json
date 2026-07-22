@@ -42,6 +42,8 @@
     "warm-accounts": "node --experimental-sqlite data-core/seed_warm_accounts.mjs",
     "plan-clusters": "node --experimental-sqlite data-core/plan_clusters.mjs",
     "smoke-agents": "node --experimental-sqlite data-core/smoke_agents.mjs",
+    "smoke-vault": "node --experimental-sqlite data-core/smoke_vault.mjs",
+    "health-laws": "node --experimental-sqlite data-core/seed_health_data_laws.mjs",
     "doctor-outreach": "node --experimental-sqlite data-core/gen_doctor_outreach.mjs",
     "capture-payer": "node --experimental-sqlite data-core/capture_payer.mjs",
     "auto-loop": "node --experimental-sqlite data-core/auto_loop.mjs"

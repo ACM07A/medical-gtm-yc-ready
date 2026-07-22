@@ -12,6 +12,7 @@ import { mdToHtml } from "./md.mjs";
 import { renderHome } from "./landing_home.mjs";
 import { plugins as pluginList } from "../lib/plugins.mjs";
 import { nextAction } from "../lib/comms_machine.mjs";
+import { vaultBackend, openVault, accessLog } from "../lib/vault.mjs";
 import { renderStudio, studioQueue, studioApprove } from "./studio.mjs";
 import { renderSandbox, saveTemplate } from "./sandbox.mjs";
 import { renderDemo } from "./demo.mjs";
@@ -265,6 +266,43 @@ const server = createServer(async (req, res) => {
       const rows = ps.map((p) => `| ${p.ready ? "🟢 ready" : "⚪ needs key"} | **${p.name}** | ${p.purpose} | \`${p.envKeys.join("`, `")}\` | ${p.requirements} |`).join("\n");
       const body = `# Content Plugins — readiness\n\n> Every integration is wired to the correct API shape. **${ps.filter((p) => p.ready).length}/${ps.length} ready**; the rest are one API key away. Delivery is double-gated (needs \`POST_LIVE=1\` **and** per-post approval) — nothing auto-posts.\n\n| Status | Plugin | What it does | Env key(s) | Needs |\n|---|---|---|---|---|\n${rows}\n\nAdd keys to \`integrations/.env\`, restart, and the status flips to 🟢.`;
       return send(200, "text/html; charset=utf-8", docPage("Content Plugins", "Integration readiness — what's live vs one key away", mdToHtml(body)));
+    }
+    if (url.pathname === "/vault") {
+      // Medical-data architecture status: backend, per-market law register, access-log tail. Read-only.
+      const backend = vaultBackend();
+      const laws = db.prepare(`SELECT * FROM health_data_law ORDER BY CASE transfer_rule
+        WHEN 'in_country_only' THEN 0 WHEN 'localization_copy' THEN 1 WHEN 'adequacy_or_sccs' THEN 2
+        WHEN 'consent_based' THEN 3 ELSE 4 END, market_code`).all();
+      const RULE_TXT = { in_country_only: "⛔ in-country hosting required", localization_copy: "⚠ in-country replica required",
+        adequacy_or_sccs: "SCCs / adequacy + assessment", consent_based: "consent-based", no_comprehensive_law: "no law — GDPR floor applies" };
+      const lawRows = laws.map((l) => `| ${l.market_code} | ${RULE_TXT[l.transfer_rule] || l.transfer_rule} | ${l.law_name} | ${l.status} |`).join("\n");
+      let logRows = "_vault not initialised yet — first record creates it_";
+      try {
+        const v = openVault();
+        logRows = accessLog(v, { limit: 15 }).map((l) => `| ${l.ts} | ${l.action} | ${l.purpose || "—"} | ${l.note} |`).join("\n") || "_no access events yet_";
+        if (logRows.startsWith("|")) logRows = `| When | Action | Purpose | Note |\n|---|---|---|---|\n${logRows}`;
+        v.close();
+      } catch {}
+      const body = `# Medical Data Vault — architecture status
+
+> **Backend: \`${backend.kind}\`** — ${backend.note || backend.where}. Clinical payloads (prescriptions, treatment
+> methodologies, recommended tests, medical history) are **AES-256-GCM encrypted at rest** in a separate database,
+> never mingled with the GTM core. MedYatra's own read surface is the **facilitator envelope only**: treatment
+> name/protocol, treatment timelines, cost structure, surgeon details. Decryption exists solely for named relay
+> purposes (hospital→patient, patient→hospital, patient's own copy), every access — including refusals — is logged,
+> and erasure leaves an audit tombstone. GDPR is the backbone in every market, including those with no law of their own.
+> Verify with \`npm run smoke-vault\` (11 mechanical checks).
+
+## Per-market health-data law register (${laws.length} jurisdictions — ALL unverified until counsel signs off)
+
+| Market | Transfer rule | Law | Status |
+|---|---|---|---|
+${lawRows}
+
+## Access log (latest)
+
+${logRows}`;
+      return send(200, "text/html; charset=utf-8", docPage("Medical Data Vault", "GDPR-backbone clinical data architecture — encrypted, purpose-limited, audited", mdToHtml(body)));
     }
     if (url.pathname === "/comms") {
       const rows = db.prepare(`SELECT * FROM comms_template ORDER BY seq`).all();
