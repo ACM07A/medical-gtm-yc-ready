@@ -1,6 +1,6 @@
 # MedYatra — Business Status
 
-**As of 21 July 2026.** Written for people deciding whether to back, partner with, or join this — not for
+**As of 22 July 2026.** Written for people deciding whether to back, partner with, or join this — not for
 engineers. The technical walkthrough is [`PROJECT_CONTEXT.md`](./PROJECT_CONTEXT.md).
 
 Everything below distinguishes **what we know** from **what we assume**. Assumptions are labelled, because
@@ -137,36 +137,62 @@ five test cases.
 
 **What we have not yet secured:** any signed agreement, LOI, or preferred rate. That is the honest position.
 
-**A third acquisition channel worth naming: payers, not just hospitals or doctors.** Sachin cited a real
-precedent — Toyota routed its own insured employees through medical tourism for treatment. The pitch to an
-insurer, a TPA, or a large self-insured employer is different from the hospital or doctor pitch: it's
-financial (lower claims cost for treatment they're already going to pay for) applied to a whole population
-at once, not a clinical-trust pitch to one referring person. This exact pitch is already built, once — the
-`MedYatra × TruDoc` partnership document — and Toyota is independent evidence the underlying thesis holds
-beyond that one company. **Documented, not yet built out as a repeatable motion** (no scoring rubric or
-generalized outreach generator exists for it yet, unlike the hospital and doctor-affiliate tracks).
+**Two more acquisition motions now exist alongside hospitals.** The engine no longer treats a hospital as the
+only kind of partner:
+
+- **Doctor-affiliates.** Sachin Rai's own "next level" — recruit an individual clinician as a referral partner
+  (CME engagement, a revenue share, a local info-center around them), not just sign the institution they work
+  at. This is built as a distinct account type with its own fit-scoring and its own outreach generator, which
+  refuses to state a referral-fee number in any draft (physician anti-kickback rules vary sharply by country;
+  a compliance gate enforces this in code, not just a prompt). Zero real names are on the board yet — the
+  capability exists, waiting for a real introduction.
+- **Payers.** Sachin cited a real precedent — Toyota routed its own insured employees through medical tourism
+  for treatment. The pitch to an insurer, a TPA, or a large self-insured employer is financial (lower claims
+  cost for treatment they already fund) applied to a whole population at once, not a clinical-trust pitch to
+  one referrer. This exact pitch is already built once — the `MedYatra × TruDoc` partnership document — and
+  Toyota is independent evidence it generalizes. The **base is now built** (a payer account type and a fit
+  rubric scoring population × claims-exposure × decision authority); **the repeatable outreach motion is
+  deliberately parked for phase 2/3.**
 
 ---
 
 ## 5. What is built
 
-Operational today, without any API keys:
+Operational today in a sandbox, without any API keys:
 
-- **Patient journey** — a 22-stage WhatsApp sales-comms state machine with 21 approval-ready templates,
-  covering the diagnosis fork, hospital handoffs, and stress cases (visa denial, complication, going quiet).
-  Fully demonstrable in an interactive sandbox.
-- **Supply side** — 22 hospital accounts ranked by a fit score, with a research worklist for confirming
-  named decision-makers.
-- **Content engine** — 32 guide cells across categories, markets and four languages; 10 published;
-  demand-driver-aware generation; average trust score 100/100 across 30 pages after retrofit.
+- **Patient journey, pre-booking** — a 22-stage WhatsApp sales-comms state machine with 21 approval-ready
+  templates, covering the diagnosis fork, hospital handoffs, and stress cases (visa denial, complication,
+  going quiet). Fully demonstrable in an interactive sandbox.
+- **Concierge journey, post-booking — now built. This was the single biggest gap in the 21 July version of
+  this document, and it is closed.** Twelve agents carry a booked patient from intake through aftercare:
+  triage, document-KYC, visa documents, accommodation, flexible-date ticketing, airport logistics,
+  interpreter scheduling, family updates (on the family member's own separate consent), discharge-and-
+  medication relay, billing reconciliation, return-travel readiness, and payment routing. Each clears the
+  safety gate; several are deliberately deterministic — a visa rule, a medication instruction, a sum of money
+  — rather than model-generated, because a wrong answer there is worse than no answer. A **full-journey
+  orchestrator** runs one real lead through all twelve in the real chronological order, in a single click.
+  *Honest caveat:* several run on curated or clearly-labelled mock data (flights and hotels return curated
+  estimates; the interpreter roster is a placeholder) — a real flight, hotel, or interpreter vendor is one
+  API key away, not wired, and nothing books for real.
+- **Supply side** — 25 hospital accounts ranked by a fit score, with a research worklist for confirming
+  named decision-makers. Plus the two additional acquisition motions in §4: a doctor-affiliate account type
+  (built; zero real names yet) and the base of a payer channel (built; outreach parked for phase 2/3).
+- **Content engine** — guide cells across categories, markets and four languages; 10 published;
+  demand-driver-aware generation; trust-scored before publish.
+- **Empathy, now implemented in code, not just stated.** The §1 requirement runs through a single canonical
+  voice module that governs every patient- and family-facing message *and* every published guide, social
+  post, and SEO snippet — including closing a real gap where an emergency message returned only an internal
+  flag and no human reply, and rewriting content prompts that traded on "big savings" over someone's illness.
 - **Pricing** — a price ladder comparing the patient's best local option first, then other international
   options, then India. 72 rungs carry a citation; **312 are explicit, unfilled research gaps** — deliberately
   left empty rather than estimated.
 - **Human approval console** — nothing goes out without a person approving it.
+- **Resilience** — generation fails over across two model providers, and an auto-loop resumes work
+  automatically when a rate limit clears, so the factory keeps producing unattended (no human re-run needed).
 
-**Not built:** roughly two-thirds of the concierge (flights, ground logistics, interpreter scheduling,
-billing reconciliation, family updates, FRRO registration), the clinical pathway engine, and any live
-WhatsApp connection.
+**Still not built, or built-but-not-live:** a live WhatsApp Business connection; real vendor keys (flights,
+hotels, interpreters run on curated estimates until keyed); the condition-specific clinical-pathway engine;
+and the generalized payer-outreach motion (parked for phase 2/3).
 
 **Nothing is live.** No real patient has been contacted, no real outreach has been sent, and there is no
 revenue.
@@ -194,7 +220,7 @@ enforced mechanically, not by policy document.
 non-compliant and mostly unaware of it. Solving it requires in-country presence — which is a strong argument
 for an Abu Dhabi base.
 
-**Regulatory status:** 3 of 12 markets cleared, and those clearances are illustrative demo clearances, not
+**Regulatory status:** 3 of 17 markets cleared, and those clearances are illustrative demo clearances, not
 legal sign-off. Replacing them with counsel opinions is a prerequisite to going live anywhere.
 
 ---
@@ -222,9 +248,11 @@ Three constraints bind, and **none of them are engineering**:
 | WhatsApp Business API number + Meta template approval | 2–4 weeks | Us, in parallel |
 | One hospital agreement + clinical pathway sign-off | 4–8 weeks | Hospital governance |
 | One market cleared by counsel | 2–4 weeks | External counsel |
-| Remaining concierge build | 4–6 weeks | Us, in parallel |
+| Vendor keys + live wiring (WhatsApp, flights, stay) | days–2 weeks | Us — config, not a rebuild |
 
-**Realistic first treated patient: 8–12 weeks**, if the hospital relationships move at a normal pace.
+Note the concierge build no longer sits on this list: it is done (§5). What remains is not engineering
+so much as **relationships, counsel, and configuration** — plugging real keys into software that already
+runs. **Realistic first treated patient: 8–12 weeks**, if the hospital relationships move at a normal pace.
 
 ---
 
