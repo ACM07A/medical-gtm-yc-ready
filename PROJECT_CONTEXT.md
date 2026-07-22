@@ -395,6 +395,19 @@ quota ran out. The DB-backed paths (KYC, ledger billing, family channel, visa/st
 need a real lead row and are deliberately excluded from this test to keep it running before any seed exists —
 those are exercised live at `/agents` instead.
 
+### 5.9b Full journey orchestration ([`server/orchestrate.mjs`](./server/orchestrate.mjs), `/journey`)
+
+`/agents` demonstrates each agent one card at a time; `/journey` runs ONE real lead through all twelve, in the
+real chronological order (intake → before travel → arrival → during treatment → after treatment, derived from
+`AGENT_META`'s own `grp` field so the two pages can't drift apart), in a single click. It calls the exact same
+exported handler functions `/agents` uses — `runTriage`, `runKycInit`, `runVisaStart`, `runFlightSearch`, and
+so on — so there is no separate "demo" code path to keep in sync, and reuses the SAME per-action rendering
+logic (`RESULT_JS`, extracted out of `server/agents.mjs` into a shared constant) rather than duplicating
+twelve render branches across two pages. Deliberately resilient: one step's failure (an LLM timeout, a quota
+limit) is caught and shown, not fatal — the walkthrough continues to the next step, same as it should live.
+State discipline verified: only 2 of the 13 steps (KYC init, visa start) write to the DB, both idempotent —
+re-running the same lead's journey twice produces byte-identical row counts (tested).
+
 ### 5.10 The safety gate ([`lib/safety.mjs`](./lib/safety.mjs))
 
 MedYatra is a facilitator, not a provider — that's the legal basis for operating without a healthcare

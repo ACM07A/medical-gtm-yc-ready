@@ -62,9 +62,11 @@ npm run serve               # → http://localhost:5173  (open /demo)
 > `npm run demo` reproduces the full populated state on any machine from committed files — **no API keys required** (the optional social-repurpose step runs only if a generation key is present). For the minimal core, `npm run seed` still just builds the data core.
 
 **Showing someone the engine? Open [`/demo`](http://localhost:5173/demo)** — one page linking every capability
-(with live counts), framed as a safe sandbox. Two stops matter most: the **[patient-journey sandbox](http://localhost:5173/sandbox)**
-(a WhatsApp phone simulator playing every branch, templates editable live) and the **[concierge agents](http://localhost:5173/agents)**
-(click Run on any of the twelve — every response is a real model call through the real safety gate, not a transcript).
+(with live counts), framed as a safe sandbox. Three stops matter most: the **[patient-journey sandbox](http://localhost:5173/sandbox)**
+(a WhatsApp phone simulator playing every branch, templates editable live), the **[concierge agents](http://localhost:5173/agents)**
+(click Run on any of the twelve — every response is a real model call through the real safety gate, not a transcript),
+and the **[full journey orchestrator](http://localhost:5173/journey)** (one real lead through all twelve agents,
+in the real chronological order, in a single run — the same handlers `/agents` uses, not a separate demo path).
 Going live from here is just plugging in keys — see [`build-os/12_GO_LIVE.md`](./build-os/12_GO_LIVE.md) (which
 features need which keys) and [`build-os/13_DEPLOYMENT.md`](./build-os/13_DEPLOYMENT.md) (where the process
 actually runs and what it costs — SQLite + Litestream, not a managed Postgres, for roughly $5–10/month).

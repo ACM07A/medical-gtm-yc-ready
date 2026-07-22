@@ -19,7 +19,7 @@ import { stayPlan, searchStays, bookStay } from "../lib/stay.mjs";
 import { searchFlights, requestFlight } from "../lib/flights.mjs";
 import { logRun } from "../data-core/db.mjs";
 
-const CSS = `
+export const CSS = `
 :root{--bg:#eef3f9;--panel:#fff;--ink:#0c1b2e;--muted:#5a6b80;--line:#e2ecf7;--brand:#0b4a8b;--brand2:#1f6fd6;--green:#1c8b50;--amber:#e5a13a;--red:#b3261e;--shadow:0 18px 46px -28px rgba(11,74,139,.5)}
 @media(prefers-color-scheme:dark){:root{--bg:#0e1621;--panel:#152232;--ink:#e7eefb;--muted:#8ba0ba;--line:#22364d;--brand:#5aa0ee;--brand2:#7cb6f5;--red:#f0837a;--shadow:0 18px 46px -22px rgba(0,0,0,.6)}}
 :root[data-theme=dark]{--bg:#0e1621;--panel:#152232;--ink:#e7eefb;--muted:#8ba0ba;--line:#22364d;--brand:#5aa0ee;--brand2:#7cb6f5;--red:#f0837a}
@@ -62,7 +62,7 @@ table.cf td:first-child{width:120px;color:var(--muted);font-size:11.5px;text-tra
 .pill.rejected,.pill.needs_human_review{background:rgba(229,161,58,.2);color:#8a5c00}
 `;
 
-const AGENT_META = [
+export const AGENT_META = [
   { id: "triage", title: "Triage agent", grp: "Intake", desc: "The patient's own words → the structured case file a hospital reviews in three minutes (the unit we actually sell — BUSINESS_STATUS.md §3). Extracts only what was said; never infers a diagnosis." },
   { id: "family-update", title: "Family update — the routing layer", grp: "During treatment", desc: "The family member waiting at home is a DIFFERENT WhatsApp number that has never messaged us — so this needs its own consent and its own template-first-touch, exactly like the patient's own first touch. Add a contact (no consent) then run it, then opt them in and run it again — the routing itself is the demo." },
   { id: "document-kyc", title: "Document checklist — as a KYC workflow", grp: "Before travel", desc: "Not a static list: state persists per lead. One deterministic rule (passport expiry) runs automatically; everything else lands in needs_human_review and STAYS there until a person clears it — the agent never pretends to verify what it can't." },
@@ -229,6 +229,15 @@ async function runAgent(action, btn, cardId) {
   } catch (e) { out.innerHTML = '<span style="color:var(--red)">Request failed: ' + String(e) + '</span>'; }
   btn.disabled = false; btn.textContent = origLabel;
 }
+${RESULT_JS}
+</script>
+</body></html>`;
+}
+
+// RESULT_JS — the per-action-type rendering logic, shared verbatim between /agents (click-driven, one card
+// at a time) and /journey (the full orchestration timeline, server/orchestrate.mjs). Extracted once so a new
+// agent's render branch only has to be written here, not duplicated across two pages.
+export const RESULT_JS = `
 function badge(v) { return v ? '<span class="badge ' + v + '">' + v + '</span>' : ''; }
 function esc(s) { return String(s==null?'':s).replace(/</g,'&lt;'); }
 function renderResult(action, data) {
@@ -340,9 +349,7 @@ function renderResult(action, data) {
   }
   return badge(v) + method + '<p>' + esc(data.text||'') + '</p>';
 }
-</script>
-</body></html>`;
-}
+`;
 
 // ── API handlers — thin, no framework. Each mirrors the exact function real code (CLI/comms_run) would
 // call, so "clicked in the browser" and "run headlessly" are never two different code paths. ──────────

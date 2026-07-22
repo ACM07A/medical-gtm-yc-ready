@@ -22,6 +22,7 @@ import {
   runDischargeRelay, runGroundLogistics, runInterpreterScheduling, runTravelReadiness, runPaymentRouting,
   runVisaStart, runStayPlan, runStaySearch, runStayRequest, runFlightSearch, runFlightRequest,
 } from "./agents.mjs";
+import { renderJourney, runFullJourney } from "./orchestrate.mjs";
 import { ingestLeads } from "../data-core/ingest.mjs";
 import { benchmarks } from "../data-core/benchmarks.mjs";
 import { range } from "../lib/money.mjs";
@@ -198,6 +199,17 @@ const server = createServer(async (req, res) => {
       try {
         const result = await handler();
         logRun(db, "Agents", `${kind} run`, JSON.stringify(result).slice(0, 140), "/agents", result?.safety?.verdict === "block" ? "fail" : "ok");
+        return send(200, "application/json", JSON.stringify(result));
+      } catch (e) { return send(500, "application/json", JSON.stringify({ error: String(e.message || e) })); }
+    }
+    // FULL JOURNEY ORCHESTRATION — one real lead through every concierge agent in chronological order
+    // (server/orchestrate.mjs). Calls the exact same handlers /agents does; no separate demo code path.
+    if (url.pathname === "/journey")
+      return send(200, "text/html; charset=utf-8", renderJourney(db));
+    if (req.method === "POST" && url.pathname === "/api/journey/run") {
+      const body = await readBody(req);
+      try {
+        const result = await runFullJourney(db, body);
         return send(200, "application/json", JSON.stringify(result));
       } catch (e) { return send(500, "application/json", JSON.stringify({ error: String(e.message || e) })); }
     }
