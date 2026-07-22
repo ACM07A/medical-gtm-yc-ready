@@ -2,14 +2,15 @@
 // when it's still running on indicative ranges. Three things it makes explicit:
 //   1. For every CONFIRMED partner rate card (capture_partner_price.mjs), the per-case economics: what the
 //      patient pays, our fee at that partner's negotiated commission, what the hospital nets, and the net
-//      UPLIFT the hospital keeps vs a typical 18% aggregator (the value-exchange pitch).
+//      UPLIFT the hospital keeps vs incumbent agents at 25–33% (founder numbers, 2026-07-22) — computed
+//      conservatively against the 25% floor. Our structure: 20% entry, stepping down on revenue tiers.
 //   2. Where we're still on INDICATIVE category ranges (no confirmed card yet) — clearly labelled, never
 //      shown to a patient — so the model is never mistaken for real quotes.
 //   3. The RATE-CARD GAP: the partners we're actively pursuing (top pursuit_score) that have no confirmed
 //      card. This is the "design basis actual" worklist — the real numbers to collect on the next call.
 // Read-only except a run-log summary. FREE (no external calls).
 //   node --experimental-sqlite data-core/pricing_model.mjs
-import { open, logRun, commissionModel, CATEGORY_COMPARATOR } from "./db.mjs";
+import { open, logRun, commissionModel, CATEGORY_COMPARATOR, COMMISSION_TIERS, INCUMBENT_COMMISSION } from "./db.mjs";
 const db = open();
 const A = (s, ...p) => db.prepare(s).all(...p);
 const O = (s, ...p) => db.prepare(s).get(...p);
@@ -36,7 +37,7 @@ const confirmed = A(`SELECT pp.*, p.name, p.commission_target_pct FROM partner_p
   JOIN partner p ON p.id=pp.partner_id WHERE pp.status='confirmed' ORDER BY p.name, pp.category_id`);
 console.log(`CONFIRMED rate cards (actuals): ${confirmed.length}`);
 for (const r of confirmed) {
-  const fee = r.commission_target_pct ?? 12;
+  const fee = r.commission_target_pct ?? COMMISSION_TIERS[0].pct;
   const m = commissionModel({ low: r.low, high: r.high }, fee);
   console.log(`  ${r.name.slice(0, 28).padEnd(28)} ${r.category_id}/${r.procedure_key}  patient ${money(m.patient)}  our fee@${fee}% ${money(m.ourFee)}  hospital nets ${money(m.hospitalNet)}  (+${money(m.netUplift)} vs ${m.incumbentPct}%)`);
 }
@@ -47,7 +48,7 @@ let gaps = 0, filled = 0;
 console.log(`\nBY PURSUED PARTNER (indicative where no confirmed card — GO GET THESE):`);
 for (const p of PURSUED) {
   const cats = A(`SELECT category_id FROM partner_category WHERE partner_id=?`, p.id).map((r) => r.category_id);
-  const fee = p.commission_target_pct ?? 12;
+  const fee = p.commission_target_pct ?? COMMISSION_TIERS[0].pct;
   for (const catId of cats) {
     if (!CATEGORY_COMPARATOR[catId]) continue;               // only wedge categories with a comparator procedure
     const c = CATEGORY_COMPARATOR[catId];
@@ -62,6 +63,9 @@ for (const p of PURSUED) {
 }
 
 const denom = gaps + filled;
+console.log(`\nCOMMISSION STRUCTURE (opening proposal — negotiable per partner): incumbents charge ${INCUMBENT_COMMISSION.low}–${INCUMBENT_COMMISSION.high}%.`);
+for (const t of COMMISSION_TIERS) console.log(`  ${String(t.pct).padStart(2)}%  ${t.label}`);
+console.log(`  Uplift shown above is CONSERVATIVE (vs the ${INCUMBENT_COMMISSION.low}% incumbent floor); vs a ${INCUMBENT_COMMISSION.high}% incumbent it is larger still.`);
 console.log(`\nRATE-CARD GAP: ${filled}/${denom} pursued partner×category cells have a CONFIRMED rate. ${gaps} still indicative.`);
 console.log(`Capture a real card:  node --experimental-sqlite data-core/capture_partner_price.mjs <partner_id> <category> <procKey> <low> <high> confirmed "<includes>" "<source>"`);
 logRun(db, "Pricing", "Pricing-model review",

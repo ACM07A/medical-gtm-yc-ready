@@ -275,7 +275,11 @@ const server = createServer(async (req, res) => {
         WHEN 'consent_based' THEN 3 ELSE 4 END, market_code`).all();
       const RULE_TXT = { in_country_only: "⛔ in-country hosting required", localization_copy: "⚠ in-country replica required",
         adequacy_or_sccs: "SCCs / adequacy + assessment", consent_based: "consent-based", no_comprehensive_law: "no law — GDPR floor applies" };
-      const lawRows = laws.map((l) => `| ${l.market_code} | ${RULE_TXT[l.transfer_rule] || l.transfer_rule} | ${l.law_name} | ${l.status} |`).join("\n");
+      // Which markets are SKIPPED (regulatory_status='blocked') — the founder decision not to serve them yet.
+      const blocked = new Set(db.prepare(`SELECT code FROM market WHERE regulatory_status='blocked'`).all().map((r) => r.code));
+      const skipRows = db.prepare(`SELECT code, name, regulatory_note FROM market WHERE regulatory_status='blocked' ORDER BY code`).all();
+      const lawRows = laws.map((l) => `| ${l.market_code}${blocked.has(l.market_code) ? " 🚫" : ""} | ${RULE_TXT[l.transfer_rule] || l.transfer_rule} | ${l.law_name} | ${blocked.has(l.market_code) ? "**SKIPPED**" : l.status} |`).join("\n");
+      const skipBlock = skipRows.length ? `\n## 🚫 Skipped markets — not served at this juncture\n\nWe do **not** collect or process medical data for these markets until the required data-residency infrastructure exists; the vault hard-refuses any clinical write for them and the marketing gate blocks outreach.\n\n${skipRows.map((s) => `- **${s.name} (${s.code})** — ${s.regulatory_note}`).join("\n")}\n` : "";
       let logRows = "_vault not initialised yet — first record creates it_";
       try {
         const v = openVault();
@@ -291,9 +295,9 @@ const server = createServer(async (req, res) => {
 > name/protocol, treatment timelines, cost structure, surgeon details. Decryption exists solely for named relay
 > purposes (hospital→patient, patient→hospital, patient's own copy), every access — including refusals — is logged,
 > and erasure leaves an audit tombstone. GDPR is the backbone in every market, including those with no law of their own.
-> Verify with \`npm run smoke-vault\` (11 mechanical checks).
-
-## Per-market health-data law register (${laws.length} jurisdictions — ALL unverified until counsel signs off)
+> Verify with \`npm run smoke-vault\` (12 mechanical checks).
+${skipBlock}
+## Per-market health-data law register (${laws.length} jurisdictions — 🚫 = skipped; the rest unverified until counsel signs off)
 
 | Market | Transfer rule | Law | Status |
 |---|---|---|---|

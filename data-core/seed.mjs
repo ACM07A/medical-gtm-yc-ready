@@ -52,6 +52,22 @@ const mStmt = db.prepare(`INSERT INTO market (code,name,region,tier,languages,rt
 for (const [c,n,r,t,langs,rtl,cur,ch,visa,reg,intl,hubs,notes] of markets)
   mStmt.run(c,n,r,t,j(langs),rtl,cur,j(ch),visa,j(reg),j(intl),j(hubs),notes);
 
+// ---- DATA-RESIDENCY SKIP LIST (founder decision, 2026-07-22): markets whose health-data laws we cannot
+// meet at this juncture are SKIPPED — regulatory 'blocked', not 'unverified', so the whole engine (content
+// targeting, comms, vault writes) treats them as off-limits rather than merely un-checked. They come back
+// when the infrastructure exists, not before:
+//   AE       — Federal Law 2/2019: health data must stay in-country → needs UAE hosting (the Abu Dhabi base).
+//   UZ/KZ/ZM — data-localization laws → need an in-country replica we don't have yet.
+// The Aster GCC partner thread stays on the board (a future corridor); the AE patient market is what's skipped.
+const RESIDENCY_SKIP = {
+  AE: "SKIPPED 2026-07-22: UAE health data cannot leave the country (Federal Law 2/2019); we cannot host in-country at this juncture. Revisit with an Abu Dhabi presence.",
+  UZ: "SKIPPED 2026-07-22: Uzbek data-localization (ZRU-547) requires in-country servers we do not have. Revisit with an in-country replica.",
+  KZ: "SKIPPED 2026-07-22: Kazakh data-localization (Law 94-V) requires in-country storage we do not have. Revisit with an in-country replica.",
+  ZM: "SKIPPED 2026-07-22: Zambia DPA 2021 localization provisions for sensitive data cannot be met yet. Revisit with an in-country replica (and counsel scope check).",
+};
+const rsStmt = db.prepare(`UPDATE market SET regulatory_status='blocked', regulatory_note=? WHERE code=?`);
+for (const [code, note] of Object.entries(RESIDENCY_SKIP)) rsStmt.run(note, code);
+
 // ---- categories (factors 1-5 from /build-os/03; score computed by model weights) ----
 const cats = [
   ["cardiac","Cardiac","CABG · valve · angioplasty",{cost_arb:5,quality:5,ease:3,demand:5,margin:5,whitespace:2}],
@@ -168,9 +184,11 @@ for (const [cat,mkt,lang,title,file,cites] of content) coStmt.run(cat,mkt,lang,t
 
 // ---- proposal (the worked example) ----
 db.prepare(`INSERT INTO proposal (partner_id,category_id,market_code,fee_pct,status,file_ref,blockers)
-  VALUES ('apollo','cardiac','IQ',12,'review','outputs/02_proposal-template.md','named POC; live package sheet; legal on 12%/net-15')`).run();
+  VALUES ('apollo','cardiac','IQ',20,'review','outputs/02_proposal-template.md','named POC; live package sheet; legal on 20% entry / revenue-tiered')`).run();
 
 const n = (t) => db.prepare(`SELECT count(*) c FROM ${t}`).get().c;
 console.log("Seeded:", ["market","category","category_price","category_market","partner","partner_category","poc","content_asset","proposal"]
   .map(t => `${t}=${n(t)}`).join("  "));
+const skipped = db.prepare(`SELECT code FROM market WHERE regulatory_status='blocked' ORDER BY code`).all().map(r => r.code);
+console.log(`Data-residency SKIP list (not served at this juncture): ${skipped.join(", ")} — vault refuses their clinical data; marketing gate blocks outreach.`);
 db.close();

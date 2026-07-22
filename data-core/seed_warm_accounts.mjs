@@ -17,11 +17,13 @@ import { open, logRun, readiness, accessScore, speedScore, pursuitScore } from "
 
 const db = open();
 
-// The value-exchange line (Sachin, 2026-07-22): we charge a LOWER facilitation fee than incumbents, and in
-// return we ask the hospital for something extra — because we bring the volume that makes a thin fee worth it.
-// This is the standard "extra we want back for a lower fee" attached to every warm account below.
-const VALUE_ASK = "Below-market fee in exchange for: best-of-book package rates, priority admission/OT " +
-  "scheduling for our patients, a named international coordinator, and co-funded patient-education content.";
+// The value-exchange line (Sachin + founder numbers, 2026-07-22): incumbent agents charge 25–33%; we open at
+// 20% with a volume-based (revenue-routed) tier structure stepping down to 18%/16% — the hospital keeps more
+// per case from day one and progressively more as our volume proves out. In return we ask for something
+// extra, because we bring the volume that makes the lower fee worth it. Attached to every warm account below.
+const VALUE_ASK = "20% entry fee (vs incumbents' 25–33%) stepping down on revenue tiers, in exchange for: " +
+  "best-of-book package rates, priority admission/OT scheduling for our patients, a named international " +
+  "coordinator, and co-funded patient-education content.";
 
 const ACCOUNTS = [
   {
@@ -30,7 +32,7 @@ const ACCOUNTS = [
     ips_channel_public: "asterhospitals.in — international patient services desk",
     ips_source: "asterhospitals.in", fit: "High", stage: "Warm intro pending", priority: 1, type: "chain",
     mvt_presence: "established", opportunity: "High", fit_score: 74,
-    connection: "warm_group", commission_status: "in_discussion", commission_target_pct: 12, value_ask: VALUE_ASK,
+    connection: "warm_group", commission_status: "in_discussion", commission_target_pct: 20, value_ask: VALUE_ASK,
     fit_reason: "WARM GROUP-LEVEL INTRODUCTION via the owning family — access, not fit score, is why this ranks first. " +
       "Established international desk means the coordination pain we automate exists today at volume.",
     next_action: "Confirm which entity the introduction reaches (India, GCC, or both). Book the discovery call; ask the five priority questions. Bangalore first-approach unit: Aster Hebbal/Whitefield.",
@@ -58,7 +60,7 @@ const ACCOUNTS = [
     ips_channel_public: "manipalhospitals.com — international patient services",
     ips_source: "manipalhospitals.com", fit: "High", stage: "Warm intro pending", priority: 1, type: "chain",
     mvt_presence: "established", opportunity: "High", fit_score: 74,
-    connection: "warm_group", commission_status: "in_discussion", commission_target_pct: 12, value_ask: VALUE_ASK,
+    connection: "warm_group", commission_status: "in_discussion", commission_target_pct: 20, value_ask: VALUE_ASK,
     fit_reason: "WARM GROUP-LEVEL INTRODUCTION via the former group legal head — a route that understands exactly how the " +
       "existing facilitator agreements are written and where the commercial friction sits.",
     next_action: "Discovery call. Priority questions: inquiry→treated conversion, agent commission as a share of case, where they lose people.",
@@ -74,7 +76,7 @@ const ACCOUNTS = [
     ips_channel_public: "fortishealthcare.com — international patient desk", ips_source: "fortishealthcare.com",
     fit: "High", stage: "Intro expected", priority: 2, type: "unit", parent_id: "fortis",
     mvt_presence: "established", opportunity: "Med", fit_score: 70,
-    connection: "adviser_desk", commission_status: "in_discussion", commission_target_pct: 12, value_ask: VALUE_ASK,
+    connection: "adviser_desk", commission_status: "in_discussion", commission_target_pct: 20, value_ask: VALUE_ASK,
     fit_reason: "Unit-level rather than group-level, but JCI + NABH + NABL with strong oncology and cardiac programmes " +
       "and an existing medical-travel reputation. A single unit is an easier pilot than a group.",
     next_action: "Chase the introduction, but do not let it hold up the two group conversations.",

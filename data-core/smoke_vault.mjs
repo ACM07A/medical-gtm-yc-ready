@@ -3,7 +3,8 @@
 // direction discipline, GCM tamper detection, and Art.-17 erasure with a tombstone. Runs with no seed and
 // no key configured (generates the sandbox key), so CI can run it cold.
 //   node --experimental-sqlite data-core/smoke_vault.mjs
-import { openVault, putRecord, getEnvelopes, relayRecord, eraseLead, accessLog, vaultBackend } from "../lib/vault.mjs";
+import { openVault, putRecord, getEnvelopes, relayRecord, eraseLead, accessLog, vaultBackend, residencyCheck } from "../lib/vault.mjs";
+import { DatabaseSync } from "node:sqlite";
 import { unlinkSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -69,6 +70,17 @@ const log = accessLog(v, { limit: 50 });
 const actions = log.map((l) => l.action);
 check("access log holds put/envelope_read/relay/refused/erase", ["put", "envelope_read", "relay", "refused", "erase"].every((a) => actions.includes(a)),
   `${log.length} entries`);
+
+// 10) skip-list: a market marked regulatory_status='blocked' hard-refuses a clinical write, regardless of
+// backend. Build a tiny throwaway core DB with one blocked + one served market (keeps this test self-contained).
+const core = new DatabaseSync(":memory:");
+core.exec(`CREATE TABLE market (code TEXT PRIMARY KEY, regulatory_status TEXT, regulatory_note TEXT);
+  INSERT INTO market VALUES ('AE','blocked','UAE data cannot leave the country — skipped'), ('OM','unverified',NULL);`);
+const skip = putRecord(v, { leadRef: 902, marketCode: "AE", kind: "medical_history", direction: "patient_to_hospital", payload: { h: "x" }, coreDb: core });
+check("skip-list: clinical write refused for a blocked market", skip.refused === true);
+const served = residencyCheck(core, "OM");
+check("skip-list: a served market is not blocked", served.blocked !== true);
+core.close();
 
 v.close();
 unlinkSync(TEST_DB);

@@ -241,20 +241,32 @@ export function priceLadder(db, categoryId, marketCode) {
 // hospital package rates once we have them (capture_partner_price.mjs), falling back to the indicative range
 // only when we don't. The facilitator model: the hospital's package price is what the patient pays; the
 // hospital pays US a facilitation commission out of that price and nets the rest — we are NOT a patient
-// markup. The strategic point (Sachin, 2026-07-22): we charge the hospital a LOWER commission than incumbents
-// (they keep more per case) in exchange for the volume we bring and the "extra" we ask back (value_ask). This
-// function makes that trade legible: at our fee vs an incumbent's, how much more does the hospital net, and
-// what is our revenue per case. `pkg` is {low,high} from a confirmed partner_price (actual) or category range
-// (indicative); feePct is the partner's negotiated commission_target_pct (default 12). incumbentPct lets the
-// proposal show the hospital its net UPLIFT vs a typical 18% aggregator.
-export function commissionModel(pkg, feePct = 12, incumbentPct = 18) {
+// markup. The strategic point (Sachin + founder numbers, 2026-07-22): INCUMBENT agents charge 25–33%; we
+// START at 20% and step DOWN on a volume (revenue-routed) tier structure — the hospital keeps more per case
+// from day one and keeps progressively more as our volume proves out, in exchange for the "extra" we ask
+// back (value_ask). `pkg` is {low,high} from a confirmed partner_price (actual) or category range
+// (indicative); feePct defaults to the entry tier (20). incumbentPct defaults to the BOTTOM of the incumbent
+// range (25) so the uplift pitch is conservative — vs a 33% incumbent it's larger still.
+export const INCUMBENT_COMMISSION = { low: 25, high: 33 };   // what hospitals pay agents today (founder input)
+// Volume tiers on ANNUAL revenue routed to the partner. Entry 20%, stepping down as volume proves out.
+// Breakpoints are our OPENING proposal structure — negotiable per partner, not a published rate card.
+export const COMMISSION_TIERS = [
+  { uptoUSD: 250_000, pct: 20, label: "entry — first cases to $250k/yr routed" },
+  { uptoUSD: 1_000_000, pct: 18, label: "growth — $250k–1M/yr routed" },
+  { uptoUSD: Infinity, pct: 16, label: "scale — beyond $1M/yr routed" },
+];
+export function tierFor(annualRoutedUSD = 0) {
+  return COMMISSION_TIERS.find((t) => annualRoutedUSD < t.uptoUSD) ?? COMMISSION_TIERS.at(-1);
+}
+export function commissionModel(pkg, feePct = COMMISSION_TIERS[0].pct, incumbentPct = INCUMBENT_COMMISSION.low) {
   const lo = Number(pkg?.low) || 0, hi = Number(pkg?.high) || 0;
   const fee = Math.max(0, feePct) / 100, inc = Math.max(0, incumbentPct) / 100;
   const ourFee = { low: Math.round(lo * fee), high: Math.round(hi * fee) };
   const hospitalNet = { low: Math.round(lo * (1 - fee)), high: Math.round(hi * (1 - fee)) };
   // What the hospital nets ABOVE what an incumbent at incumbentPct would leave them — the pitch, per case.
+  // Conservative by default (vs the 25% floor); pass INCUMBENT_COMMISSION.high for the headline version.
   const netUplift = { low: Math.round(lo * (inc - fee)), high: Math.round(hi * (inc - fee)) };
-  return { patient: { low: lo, high: hi }, ourFee, hospitalNet, feePct, incumbentPct, netUplift };
+  return { patient: { low: lo, high: hi }, ourFee, hospitalNet, feePct, incumbentPct, netUplift, tiers: COMMISSION_TIERS };
 }
 
 // SALES-READINESS — deliberately SEPARATE from fit_score. Fit = "should we want them" (opportunity).

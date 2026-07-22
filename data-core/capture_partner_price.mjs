@@ -9,7 +9,7 @@
 //
 // Example (a real Fortis Bannerghatta CABG package sheet):
 //   ... fortis-bangalore cardiac bypass 6200 8500 confirmed "OT, 5-day stay, 1 follow-up" "package sheet 2026-07"
-import { open, logRun, commissionModel } from "./db.mjs";
+import { open, logRun, commissionModel, COMMISSION_TIERS } from "./db.mjs";
 
 const [, , partnerId, categoryId, procKey, lowS, highS, statusArg, includes, source] = process.argv;
 if (!partnerId || !categoryId || !procKey || !lowS || !highS) {
@@ -33,7 +33,7 @@ db.prepare(`INSERT INTO partner_price (partner_id,category_id,procedure_key,low,
     source_cite=excluded.source_cite, retrieved=excluded.retrieved`)
   .run(partnerId, categoryId, procKey, low, high, includes || null, status, source || null);
 
-const feePct = partner.commission_target_pct ?? 12;
+const feePct = partner.commission_target_pct ?? COMMISSION_TIERS[0].pct;
 const m = commissionModel({ low, high }, feePct);
 logRun(db, "Pricing", `Rate card · ${partnerId}/${categoryId}/${procKey}`,
   `${status} package $${low}-${high}; at ${feePct}% our fee $${m.ourFee.low}-${m.ourFee.high}, hospital nets $${m.hospitalNet.low}-${m.hospitalNet.high}`,
