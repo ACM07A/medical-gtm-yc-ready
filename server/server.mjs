@@ -20,6 +20,7 @@ import {
   runFamilyUpdateAdd, runFamilyUpdateOptin, runFamilyUpdateSend,
   runKycInit, runKycSubmit, runBillingLead, runBillingAdhoc,
   runDischargeRelay, runGroundLogistics, runInterpreterScheduling, runTravelReadiness, runPaymentRouting,
+  runVisaStart, runStayPlan, runStaySearch, runStayRequest, runFlightSearch, runFlightRequest,
 } from "./agents.mjs";
 import { ingestLeads } from "../data-core/ingest.mjs";
 import { benchmarks } from "../data-core/benchmarks.mjs";
@@ -186,6 +187,12 @@ const server = createServer(async (req, res) => {
         "interpreter-scheduling": () => runInterpreterScheduling(body),
         "travel-readiness": () => runTravelReadiness(body),
         "payment-routing": () => runPaymentRouting(body),
+        "visa-start": () => runVisaStart(db, body),
+        "stay-plan": () => runStayPlan(body),
+        "stay-search": () => runStaySearch(body),
+        "stay-request": () => runStayRequest(db, body),
+        "flight-search": () => runFlightSearch(body),
+        "flight-request": () => runFlightRequest(db, body),
       }[kind];
       if (!handler) return send(404, "application/json", JSON.stringify({ error: "unknown agent action: " + kind }));
       try {

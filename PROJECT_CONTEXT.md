@@ -210,6 +210,19 @@ equalizer**, reframing "lesser-known" as a **focused-specialist** advantage, nam
 radical transparency, and MedYatra's vetting promise. Every unsupplied stat is emitted as a `[VERIFY: …]`
 placeholder — never fabricated. See [`build-os/05`](./build-os/05_CONTENT_BRAND_CAMPAIGN.md).
 
+### 5.2d Doctor-affiliate accounts — a second GTM motion ([`data-core/capture_doctor.mjs`](./data-core/capture_doctor.mjs))
+
+A hospital isn't the only account worth recruiting. A 2026-07-22 interview with a 9.5-year MVT desk veteran
+(Sachin Rai, Fortis Bangalore) surfaced a distinct "next level": recruit an individual clinician directly —
+CME engagement, a revenue share, eventually a local info-center around them — rather than only the
+institution they work at. This reuses the partner pipeline (`type='doctor'`) but scores on a different
+rubric (`doctorFit()`/`doctorReadiness()`, `data-core/db.mjs`) since a person has no accreditation or
+`mvt_presence` to assess: specialty relevance to the wedge categories × target-market presence × estimated
+referral reach, with readiness dominated by whether there's a real warm introduction. No bulk-sourcing step
+exists on purpose — `capture_doctor.mjs` is the only entry point, same "a human is vouching for this" rule as
+`capture_poc.mjs`, one level up. Full rubric and rationale: [`PARTNER_AGENT.md §11`](./PARTNER_AGENT.md).
+Status: the capability exists, the board has zero rows — no real name to add yet.
+
 ### 5.3 The Content Engine — *demand*
 
 A **content grid** = every (category × target-market × language) cell that should exist. Status:
@@ -319,9 +332,9 @@ content engine (§5.7) is load-bearing, not decorative.
 
 ### 5.9 The concierge agents — turning "booked" into "treated" ([`lib/agents/`](./lib/agents/), `/agents`)
 
-Nine agents cover the post-booking journey, live and clickable at `/agents` — every run is a real call
+Twelve agents cover the post-booking journey, live and clickable at `/agents` — every run is a real call
 through the same failover chain and the same safety gate as everything else, not a scripted transcript.
-Three are deliberately **deterministic, never LLM-generated**, because a wrong answer on a visa rule, a
+Several are deliberately **deterministic, never LLM-generated**, because a wrong answer on a visa rule, a
 medication instruction, or a sum of money is worse than no answer at all:
 
 - **Triage** ([`triage.mjs`](./lib/agents/triage.mjs)) — the patient's own words → the structured case file
@@ -352,12 +365,35 @@ medication instruction, or a sum of money is worse than no answer at all:
   from real arrivals-buffer math; interpreter matching over a roster explicitly labelled mock (same
   "one key away" honesty as `lib/plugins.mjs`); return-travel timing that never itself clears a patient to
   fly (mirrors the `FITNESS_CALL` guardrail below); and self-pay / insured-GOP / government-sponsored
-  routing, encoding real constraints found by research (Kenya SHA's ~$3,900 cap and 3-hospital list).
+  routing, encoding real constraints found by research (Kenya SHA's ~$3,900 cap and 3-hospital list, plus
+  named institutional corridors — Uzbekistan's government-backed channel, Zambia/Tanzania embassy referral,
+  Iraq NGO-mediated, NNPC Nigeria — from the Sachin Rai interview, 2026-07-22).
+- **Visa & travel documents** ([`lib/visa.mjs`](./lib/visa.mjs)) — deliberately narrow scope: MedYatra
+  orchestrates the hospital's Medical Invitation Letter (mandatory since 1 Apr 2025, the actual gate on the
+  whole visa process) and hands over a country-correct document checklist; the patient still applies on the
+  government portal themselves — that line hasn't moved. Idempotent per lead (`service` table), so re-running
+  the workflow doesn't duplicate the visa/attendant-visa rows.
+- **Accommodation** ([`lib/stay.mjs`](./lib/stay.mjs)) — pre-op (1-2 nights, walkable to hospital) and
+  post-op (a category-sized recovery window: 12 nights for cardiac, 4 for fertility) are genuinely different
+  stays. Curated near-hospital sample until a real inventory provider (Booking.com Demand API / Hotelbeds /
+  RateHawk) is keyed; "requesting" a stay is a human-gated dry-run — nothing books for real without a
+  provider key, `POST_LIVE=1`, and an explicit confirm, same posture as `lib/publishers.mjs`.
+- **Ticketing** ([`lib/flights.mjs`](./lib/flights.mjs)) — the scope line above did move: MedYatra now
+  searches and recommends flight dates (the patient still completes the actual purchase). The real idea:
+  arrival has a hard constraint (the pre-op buffer before admission, reused directly from `stay.mjs`'s own
+  `stayPlan()` so the two agents can never disagree about what "arrive in time" means) while departure
+  doesn't — so it sweeps a flexible window around the patient's preferred date and ranks it cheapest-first,
+  clipped to whatever still clears the arrival deadline. Curated fare estimate (an off-peak band plus a
+  generic weekday/weekend pattern, clearly labelled as an estimate, not a live quote) until a real provider
+  (Amadeus/Duffel/Kiwi) is keyed; "requesting" a date is a human-gated dry-run, same posture as accommodation.
 
 `data-core/seed_agent_state.mjs` seeds real rows (a KYC in progress, a consented family contact, a quote
 with a deliberate variance) so the stateful agents have something real to run against out of the box.
-`data-core/smoke_agents.mjs` (`npm run smoke-agents`) is a headless check that all nine return usable output
-with or without an LLM key — a demo must not break live because a free-tier quota ran out.
+`data-core/smoke_agents.mjs` (`npm run smoke-agents`) headlessly checks every PURE agent function (21
+assertions across all 12 agents) with or without an LLM key — a demo must not break live because a free-tier
+quota ran out. The DB-backed paths (KYC, ledger billing, family channel, visa/stay/flights' actual DB writes)
+need a real lead row and are deliberately excluded from this test to keep it running before any seed exists —
+those are exercised live at `/agents` instead.
 
 ### 5.10 The safety gate ([`lib/safety.mjs`](./lib/safety.mjs))
 

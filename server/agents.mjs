@@ -14,6 +14,9 @@ import { planPickup } from "../lib/agents/ground_logistics.mjs";
 import { scheduleInterpreter } from "../lib/agents/interpreter_scheduling.mjs";
 import { returnReadiness } from "../lib/agents/travel_readiness.mjs";
 import { routePayment } from "../lib/agents/payment_routing.mjs";
+import { startVisa, visaStatus } from "../lib/visa.mjs";
+import { stayPlan, searchStays, bookStay } from "../lib/stay.mjs";
+import { searchFlights, requestFlight } from "../lib/flights.mjs";
 import { logRun } from "../data-core/db.mjs";
 
 const CSS = `
@@ -69,6 +72,9 @@ const AGENT_META = [
   { id: "interpreter-scheduling", title: "Interpreter scheduling", grp: "During treatment", desc: "Matches a consult time to language coverage on the roster. No real vendor is wired yet — clearly labelled mock, same pattern as /plugins." },
   { id: "travel-readiness", title: "Return-travel readiness", grp: "After treatment", desc: "Tracks WHEN to raise return travel. Never itself clears a patient to fly — that's the hospital's call, always (mirrors the FITNESS_CALL guardrail in lib/safety.mjs)." },
   { id: "payment-routing", title: "Payment routing", grp: "Before travel", desc: "Self-pay, insured (GOP/pre-auth), or government-sponsored — each is a genuinely different document set and timeline. Encodes the real constraints found in this session's research (Kenya SHA's $3,900 cap and 3-hospital list)." },
+  { id: "visa-documents", title: "Visa & travel documents", grp: "Before travel", desc: "Deliberately narrow: MedYatra orchestrates the hospital's Medical Invitation Letter (mandatory since 1 Apr 2025) and hands over a country-correct checklist — the patient applies and books their own tickets, we don't touch the government portal or claim to. Idempotent per lead; re-running doesn't duplicate the visa/attendant-visa rows." },
+  { id: "accommodation", title: "Accommodation", grp: "Before travel", desc: "Pre-op (1-2 nights, walkable to hospital) and post-op (a longer, category-sized recovery window — 12 nights for cardiac, 4 for fertility) are genuinely different stays. Curated near-hospital sample until a real inventory provider (Booking.com/Hotelbeds/RateHawk) is keyed; any 'request' is a dry-run — nothing books for real without a provider key and an explicit human confirm." },
+  { id: "ticketing", title: "Ticketing — flexible-date flight search", grp: "Before travel", desc: "Arrival has a real constraint (the pre-op buffer before admission, reused from the accommodation agent's own stayPlan() so the two never disagree); departure doesn't. Sweeps a window around the patient's preferred date and ranks it cheapest-first. Curated fare estimate until a real provider (Amadeus/Duffel/Kiwi) is keyed; requesting a date is a human-gated dry-run, same posture as accommodation." },
 ];
 
 function cardBody(id) {
@@ -138,11 +144,53 @@ function cardBody(id) {
         <label>Package estimate ($)<input data-f="packageEstimateLow" type="number" value="3200"></label>
         <label>Insurer<input data-f="insurer" value="Jubilee"></label>
       </div>`,
+    "visa-documents": `<div class="row">
+        <label>Lead ID<input data-f="leadId" value="40"></label>
+        <label>Country<select data-f="countryCode"><option value="OM" selected>Oman</option><option value="KE">Kenya</option><option value="PK">Pakistan (1 attendant only)</option><option value="BD">Bangladesh</option><option value="NG">Nigeria</option></select></label>
+        <label>Attendants<input data-f="attendants" type="number" value="1"></label>
+      </div>
+      <button class="run" onclick="runAgent('visa-start', this, 'visa-documents')">Start / view visa workflow</button>`,
+    "accommodation": `<div class="row">
+        <label>Lead ID<input data-f="leadId" value="42"></label>
+        <label>Category<select data-f="categoryId"><option value="cardiac" selected>cardiac</option><option value="ortho">ortho</option><option value="oncology">oncology</option><option value="fertility">fertility</option><option value="dental">dental</option></select></label>
+        <label>Admission date<input data-f="admissionDate" value="2026-08-15"></label>
+        <label>Attendants<input data-f="attendants" type="number" value="1"></label>
+      </div>
+      <button class="run sec" onclick="runAgent('stay-plan', this, 'accommodation')">1. Compute stay windows</button>
+      <div class="row" style="margin-top:10px">
+        <label>City (hospital cluster)<select data-f="city"><option value="Bengaluru" selected>Bengaluru</option><option value="Chennai">Chennai</option><option value="Delhi NCR">Delhi NCR</option><option value="Mumbai">Mumbai</option><option value="Hyderabad">Hyderabad</option><option value="Gurugram">Gurugram</option></select></label>
+        <label>Check-in<input data-f="checkIn" value="2026-08-13"></label>
+        <label>Check-out<input data-f="checkOut" value="2026-08-27"></label>
+        <label>Guests<input data-f="guests" type="number" value="2"></label>
+      </div>
+      <button class="run sec" onclick="runAgent('stay-search', this, 'accommodation')">2. Search near-hospital options</button>
+      <div class="row">
+        <label style="flex:2">Request which option — <span style="color:var(--red)">run step 2 first, this fills in from the real search results</span>
+          <select data-f="optionName"><option value="">— run step 2 —</option></select></label>
+      </div>
+      <button class="run" onclick="runAgent('stay-request', this, 'accommodation')">3. Request this stay (dry-run)</button>`,
+    "ticketing": `<div class="row">
+        <label>Lead ID<input data-f="leadId" value="42"></label>
+        <label>Category<select data-f="categoryId"><option value="cardiac" selected>cardiac</option><option value="ortho">ortho</option><option value="oncology">oncology</option><option value="fertility">fertility</option><option value="dental">dental</option></select></label>
+        <label>Admission date<input data-f="admissionDate" value="2026-08-15"></label>
+      </div>
+      <div class="row">
+        <label>Preferred departure<input data-f="targetDepartureDate" value="2026-08-12"></label>
+        <label>Flex (± days)<input data-f="flexDays" type="number" value="4"></label>
+        <label>Origin region<select data-f="region"><option value="middle_east" selected>Middle East</option><option value="africa">Africa</option><option value="se_asia">South-East Asia</option><option value="europe">Europe</option></select></label>
+        <label>Hospital city<select data-f="city"><option value="Bengaluru" selected>Bengaluru</option><option value="Chennai">Chennai</option><option value="Delhi NCR">Delhi NCR</option><option value="Mumbai">Mumbai</option><option value="Hyderabad">Hyderabad</option><option value="Gurugram">Gurugram</option></select></label>
+      </div>
+      <button class="run sec" onclick="runAgent('flight-search', this, 'ticketing')">1. Search the flexible-date window</button>
+      <div class="row">
+        <label style="flex:2">Request which date — <span style="color:var(--red)">run step 1 first, this fills in from the real search results</span>
+          <select data-f="departureDate"><option value="">— run step 1 —</option></select></label>
+      </div>
+      <button class="run" onclick="runAgent('flight-request', this, 'ticketing')">2. Request this date (dry-run)</button>`,
   })[id] || "";
 }
 
 function agentCard(a) {
-  const runButton = ["family-update", "document-kyc", "billing-reconciliation"].includes(a.id) ? "" :
+  const runButton = ["family-update", "document-kyc", "billing-reconciliation", "visa-documents", "accommodation", "ticketing"].includes(a.id) ? "" :
     `<button class="run" onclick="runAgent('${a.id}', this)">Run — real output, not a transcript</button>`;
   return `<div class="agent" data-agent="${a.id}">
     <h2>${a.title}</h2><div class="desc">${a.desc}</div>
@@ -160,8 +208,8 @@ export function renderAgentsDemo() {
 <div class="wrap">
   <div class="eyebrow">Post-booking journey · build-os/09</div>
   <h1>The agents that get a booked patient actually treated</h1>
-  <p class="lede">Nine agents covering intake through aftercare, wired to the real failover chain and the real
-  safety gate (<code>lib/safety.mjs</code>). Three are deliberately deterministic — never LLM-generated — because
+  <p class="lede">Twelve agents covering intake through aftercare, wired to the real failover chain and the real
+  safety gate (<code>lib/safety.mjs</code>). Several are deliberately deterministic — never LLM-generated — because
   a wrong answer there (a visa document rule, a medication dose, a sum of money) is worse than no answer.</p>
   ${groups.map((g) => `<div class="section-h">${g}</div>${AGENT_META.filter((a) => a.grp === g).map(agentCard).join("")}`).join("")}
 </div>
@@ -244,6 +292,52 @@ function renderResult(action, data) {
       (data.docsNeeded ? '<ul>' + data.docsNeeded.map(d=>'<li>'+esc(d)+'</li>').join('') + '</ul>' : '') +
       (data.warning ? '<p style="color:var(--red)">' + esc(data.warning) + '</p>' : '');
   }
+  if (action === 'visa-start') {
+    const svc = (data.services||[]).map(s => '<tr><td>' + esc(s.kind) + '</td><td><span class="pill ' +
+      (s.status==='awaiting_hospital_letter'?'missing':'verified') + '">' + esc(String(s.status).replace(/_/g,' ')) + '</span></td>' +
+      '<td style="font-size:11.5px;color:var(--muted)">' + esc(s.provider||'') + '</td></tr>').join('');
+    return '<table class="cf"><tr><td>Country</td><td>' + esc(data.country) + '</td></tr>' +
+      '<tr><td>Attendants</td><td>' + data.attendantsRequested + ' of ' + data.attendantsAllowed + ' allowed</td></tr>' +
+      '<tr><td>Provider</td><td>' + esc(data.provider) + '</td></tr>' +
+      '<tr><td>Blocked on</td><td>' + esc(data.blocked_on) + '</td></tr></table>' +
+      '<table class="chk" style="margin-top:8px">' + svc + '</table>' +
+      '<details><summary>visa facts (portal, timing, FRRO)</summary><pre>' + esc(JSON.stringify(data.facts,null,2)) + '</pre></details>';
+  }
+  if (action === 'stay-plan') {
+    return '<table class="cf"><tr><td>Guests</td><td>' + data.guests + '</td></tr>' +
+      '<tr><td>Pre-op</td><td>' + data.preop.nights + ' nights, ' + esc(data.preop.when) + ' — ' + esc(data.preop.need) + '</td></tr>' +
+      '<tr><td>Post-op</td><td>' + data.postop.nights + ' nights, ' + esc(data.postop.when) + ' — ' + esc(data.postop.need) + '</td></tr></table>';
+  }
+  if (action === 'stay-search') {
+    const sel = document.querySelector('[data-agent="accommodation"] select[data-f="optionName"]');
+    if (sel && data.options) sel.innerHTML = data.options.map(o => '<option value="' + esc(o.name) + '">' +
+      esc(o.name) + ' — $' + o.nightlyUSD[0] + '-' + o.nightlyUSD[1] + '/night</option>').join('');
+    const rows = (data.options||[]).map(o => '<tr><td>' + esc(o.name) + '</td><td>' + esc(o.type) + '</td><td>' +
+      o.distanceKm + 'km</td><td>$' + o.nightlyUSD[0] + '-' + o.nightlyUSD[1] + '</td></tr>').join('');
+    return (data.live ? '' : '<div style="font-size:11px;color:var(--muted);margin-bottom:6px">' + esc(data.note) + '</div>') +
+      '<table class="chk"><tr><td><b>Name</b></td><td><b>Type</b></td><td><b>Dist.</b></td><td><b>$/night</b></td></tr>' + rows + '</table>';
+  }
+  if (action === 'stay-request') {
+    return badge(data.status==='booked'?'pass':'review') + '<p>' + esc(data.note) + '</p>' +
+      '<div style="font-size:11px;color:var(--muted)">service #' + data.serviceId + ' · provider: ' + esc(data.provider) + '</div>';
+  }
+  if (action === 'flight-search') {
+    if (data.feasible === false) return '<span class="badge review">infeasible</span><p>' + esc((data.window && data.window.note) || 'No date in this window satisfies the pre-op arrival deadline.') + '</p>';
+    const sel = document.querySelector('[data-agent="ticketing"] select[data-f="departureDate"]');
+    if (sel && data.options) sel.innerHTML = data.options.map(o => '<option value="' + esc(o.departureDate) + '">' +
+      esc(o.departureDate) + (o.weekend ? ' (weekend)' : ' (weekday)') + ' — est. $' + o.estUSD + '</option>').join('');
+    const rows = (data.options||[]).map(o => '<tr><td>' + esc(o.departureDate) + '</td><td>' + (o.weekend?'weekend':'weekday') +
+      '</td><td>$' + o.estUSD + '</td></tr>').join('');
+    return (data.live ? '' : '<div style="font-size:11px;color:var(--muted);margin-bottom:6px">' + esc(data.note) + '</div>') +
+      '<p style="font-size:12px;color:var(--muted)">Must arrive by <b>' + esc(data.window.latestArrivalRequired) + '</b> (' +
+      data.window.preopBufferNights + '-night pre-op buffer) · hub ' + esc(data.hub) + '</p>' +
+      '<table class="chk"><tr><td><b>Depart</b></td><td><b>Day</b></td><td><b>Est. fare</b></td></tr>' + rows + '</table>' +
+      (data.cheapest ? '<p style="margin-top:8px"><b>Cheapest: ' + esc(data.cheapest.departureDate) + ' — $' + data.cheapest.estUSD + '</b></p>' : '');
+  }
+  if (action === 'flight-request') {
+    return badge(data.status==='booked'?'pass':'review') + '<p>' + esc(data.note) + '</p>' +
+      '<div style="font-size:11px;color:var(--muted)">service #' + data.serviceId + ' · provider: ' + esc(data.provider) + '</div>';
+  }
   return badge(v) + method + '<p>' + esc(data.text||'') + '</p>';
 }
 </script>
@@ -301,4 +395,46 @@ export function runTravelReadiness(body) {
 }
 export function runPaymentRouting(body) {
   return routePayment({ method: body.method, countryCode: body.countryCode, packageEstimateLow: body.packageEstimateLow ? Number(body.packageEstimateLow) : null, insurer: body.insurer, hasGOP: !!body.hasGOP });
+}
+
+export function runVisaStart(db, body) {
+  const leadId = Number(body.leadId);
+  if (!db.prepare(`SELECT id FROM lead WHERE id=?`).get(leadId)) return { error: `no lead ${leadId} on file — seed leads first (npm run seed-leads)` };
+  const started = startVisa(db, { id: leadId, market_code: body.countryCode }, { attendants: Number(body.attendants) || 1 });
+  return { ...started, services: visaStatus(db, leadId) };
+}
+
+export function runStayPlan(body) {
+  return stayPlan({ categoryId: body.categoryId, admissionDate: body.admissionDate, attendants: Number(body.attendants) || 1 });
+}
+export async function runStaySearch(body) {
+  return searchStays({ city: body.city, checkIn: body.checkIn, checkOut: body.checkOut, guests: Number(body.guests) || 2 });
+}
+export async function runStayRequest(db, body) {
+  const leadId = Number(body.leadId);
+  const lead = db.prepare(`SELECT id FROM lead WHERE id=?`).get(leadId);
+  if (!lead) return { error: `no lead ${leadId} on file — seed leads first (npm run seed-leads)` };
+  const search = await searchStays({ city: body.city, guests: Number(body.guests) || 2 });
+  const option = (search.options || []).find((o) => o.name === body.optionName);
+  if (!option) return { error: "run step 2 and pick a real option first — none matched" };
+  return bookStay(db, lead, option, { kind: "stay_postop" });
+}
+
+export async function runFlightSearch(body) {
+  return searchFlights({
+    categoryId: body.categoryId, admissionDate: body.admissionDate, targetDepartureDate: body.targetDepartureDate,
+    flexDays: Number(body.flexDays) || 4, region: body.region, city: body.city,
+  });
+}
+export async function runFlightRequest(db, body) {
+  const leadId = Number(body.leadId);
+  const lead = db.prepare(`SELECT id FROM lead WHERE id=?`).get(leadId);
+  if (!lead) return { error: `no lead ${leadId} on file — seed leads first (npm run seed-leads)` };
+  const search = await searchFlights({
+    categoryId: body.categoryId, admissionDate: body.admissionDate, targetDepartureDate: body.targetDepartureDate,
+    flexDays: Number(body.flexDays) || 4, region: body.region, city: body.city,
+  });
+  const option = (search.options || []).find((o) => o.departureDate === body.departureDate);
+  if (!option) return { error: "run step 1 and pick a real date from the results first — none matched" };
+  return requestFlight(db, lead, option, {});
 }

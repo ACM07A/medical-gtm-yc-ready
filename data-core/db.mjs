@@ -70,9 +70,9 @@ export function open(path = DB_PATH) {
     try { db.exec(`ALTER TABLE lead ADD COLUMN ${c}`); } catch {}
   }
   // Ancillary SERVICES per lead — the wrap-around that makes a medical TRIP work (not just a procedure):
-  // visa + attendant visas, accommodation (pre/post-op, patient + relatives), transfers. Delivered by
-  // adapters (lib/visa, lib/stay); human-gated. status walks a per-kind lifecycle.
-  //  kind   : visa | attendant_visa | stay_preop | stay_postop | transfer
+  // visa + attendant visas, accommodation (pre/post-op, patient + relatives), flights, transfers. Delivered
+  // by adapters (lib/visa, lib/stay, lib/flights); human-gated. status walks a per-kind lifecycle.
+  //  kind   : visa | attendant_visa | stay_preop | stay_postop | flight | transfer
   //  status : requested | awaiting_hospital_letter | letter_ready | applied | approved | booked | complete | failed
   db.exec(`CREATE TABLE IF NOT EXISTS service (
     id INTEGER PRIMARY KEY AUTOINCREMENT, lead_id INTEGER REFERENCES lead(id), kind TEXT, provider TEXT,
