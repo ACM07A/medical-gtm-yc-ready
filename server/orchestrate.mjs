@@ -7,16 +7,17 @@
 // Deliberately resilient: one step's failure (an LLM timeout, a quota limit) does NOT stop the walkthrough —
 // it's caught, shown as failed, and the next step still runs. A demo must not die because one call was slow.
 //
-// State discipline: only two of the twelve steps below write to the DB (KYC init, visa start), and both are
-// idempotent — re-running the full journey against the same lead never accumulates junk rows. Everything
-// else (payment routing, stay/flight search, ground logistics, interpreter matching, family update text,
-// discharge relay, travel readiness) is a pure read/compute, and billing reconciliation only reads.
+// State discipline: only three of the steps below write to the DB (KYC init, visa start, video-consult
+// schedule), and all are idempotent — re-running the full journey against the same lead never accumulates
+// junk rows. Everything else (payment routing, stay/flight search, ground logistics, interpreter matching,
+// family update text, discharge relay, travel readiness) is a pure read/compute, and billing only reads.
 import { open, logRun } from "../data-core/db.mjs";
 import { CSS, RESULT_JS, AGENT_META } from "./agents.mjs";
 import {
   runTriage, runKycInit, runVisaStart, runPaymentRouting,
   runStayPlan, runStaySearch, runFlightSearch, runGroundLogistics,
   runInterpreterScheduling, runDischargeRelay, runBillingLead, runBillingAdhoc, runTravelReadiness,
+  runVideoConsultSchedule,
 } from "./agents.mjs";
 import { familyUpdate } from "../lib/agents/family_update.mjs";
 
@@ -74,6 +75,12 @@ export async function runFullJourney(db, body) {
   await step("Before travel", "document-kyc", "kyc-init", () => runKycInit(db, { leadId, countryCode: lead.market_code, attendants }));
   await step("Before travel", "visa-documents", "visa-start", () => runVisaStart(db, { leadId, countryCode: lead.market_code, attendants }));
   await step("Before travel", "payment-routing", "payment-routing", () => runPaymentRouting({ method, countryCode: lead.market_code, packageEstimateLow: pkg?.lo || null }));
+  // Post quote finalization, before anyone buys a ticket: the patient meets their surgeon by video. If this
+  // lead has no finalized quote yet, the step shows the GATE rather than a consult — that refusal IS the
+  // demo (the discipline that the consult confirms a concrete plan, not a maybe).
+  await step("Before travel", "video-consult", "video-consult-schedule", () => runVideoConsultSchedule(db, {
+    leadId, preferredDateTimeIST: `${addDays(admissionDate, -10)}T11:00`, language,
+  }));
 
   let stayWindow = null;
   await step("Before travel", "accommodation", "stay-plan", async () => { const r = runStayPlan({ categoryId: lead.category_id, admissionDate, attendants }); stayWindow = r; return r; });
@@ -122,7 +129,7 @@ export function renderJourney(db) {
 <div class="wrap">
   <div class="eyebrow">Post-booking journey, end to end · build-os/09</div>
   <h1>Watch one patient go through the entire journey</h1>
-  <p class="lede">Twelve real agent calls, in order — intake through aftercare — for a single lead. Each step
+  <p class="lede">Thirteen real agent calls, in order — intake through aftercare — for a single lead. Each step
   below is the exact same function <a href="/agents">/agents</a> calls; nothing here is a separate "demo" path.
   A step that fails (a model timeout, a quota limit) doesn't stop the rest — you'll see it marked and the
   walkthrough continues, same as it would live.</p>

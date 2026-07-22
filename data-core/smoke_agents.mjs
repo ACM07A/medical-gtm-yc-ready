@@ -16,6 +16,7 @@ import { routePayment } from "../lib/agents/payment_routing.mjs";
 import { visaChecklist, attendantsAllowed } from "../lib/visa.mjs";
 import { stayPlan, searchStays } from "../lib/stay.mjs";
 import { travelWindow, searchFlights } from "../lib/flights.mjs";
+import { consultWindow } from "../lib/agents/video_consult.mjs";
 
 let pass = 0, fail = 0;
 function check(name, ok, detail = "") { console.log(`  ${ok ? "✓" : "✗"} ${name}${detail ? " — " + detail : ""}`); ok ? pass++ : fail++; }
@@ -75,6 +76,18 @@ check("ticketing: a departure window entirely after admission is flagged infeasi
 const fs = await searchFlights({ categoryId: "cardiac", admissionDate: "2026-08-15", targetDepartureDate: "2026-08-12", flexDays: 4, region: "africa", city: "Bengaluru" });
 check("ticketing: curated fallback ranks candidate dates cheapest-first", fs.provider === "curated" && fs.options.length > 0 &&
   fs.options[0].estUSD === Math.min(...fs.options.map((o) => o.estUSD)));
+
+// Video consult: the timezone-overlap arithmetic is the part that must never be wrong. Nigeria is UTC+1,
+// 4.5h behind IST — a 10:00 IST surgeon slot is 05:30 in Lagos, so the workable window must start later.
+const vwNG = consultWindow({ marketCode: "NG" });
+check("video-consult: Nigeria window shifts so the patient is never called before 08:00 local",
+  vwNG.feasible === true && vwNG.localWindow[0] >= "08:00" && vwNG.istWindow[0] > "10:00");
+const vwOM = consultWindow({ marketCode: "OM" });
+check("video-consult: Oman (UTC+4, 1.5h behind IST) keeps the full surgeon window",
+  vwOM.feasible === true && vwOM.istWindow[0] === "10:00" && vwOM.istWindow[1] === "17:00");
+const vwXX = consultWindow({ marketCode: "XX" });
+check("video-consult: unknown market falls back honestly (assumed flag set, still feasible)",
+  vwXX.feasible === true && vwXX.tzAssumed === true);
 
 console.log(`\n  ${pass} passed, ${fail} failed.\n`);
 process.exit(fail ? 1 : 0);

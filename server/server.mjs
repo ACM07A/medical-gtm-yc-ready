@@ -21,6 +21,7 @@ import {
   runKycInit, runKycSubmit, runBillingLead, runBillingAdhoc,
   runDischargeRelay, runGroundLogistics, runInterpreterScheduling, runTravelReadiness, runPaymentRouting,
   runVisaStart, runStayPlan, runStaySearch, runStayRequest, runFlightSearch, runFlightRequest,
+  runVideoConsultSchedule, runVideoConsultOutcome,
 } from "./agents.mjs";
 import { renderJourney, runFullJourney } from "./orchestrate.mjs";
 import { ingestLeads } from "../data-core/ingest.mjs";
@@ -197,6 +198,8 @@ const server = createServer(async (req, res) => {
         "stay-request": () => runStayRequest(db, body),
         "flight-search": () => runFlightSearch(body),
         "flight-request": () => runFlightRequest(db, body),
+        "video-consult-schedule": () => runVideoConsultSchedule(db, body),
+        "video-consult-outcome": () => runVideoConsultOutcome(db, body),
       }[kind];
       if (!handler) return send(404, "application/json", JSON.stringify({ error: "unknown agent action: " + kind }));
       try {

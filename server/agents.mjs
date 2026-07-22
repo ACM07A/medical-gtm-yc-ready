@@ -17,6 +17,7 @@ import { routePayment } from "../lib/agents/payment_routing.mjs";
 import { startVisa, visaStatus } from "../lib/visa.mjs";
 import { stayPlan, searchStays, bookStay } from "../lib/stay.mjs";
 import { searchFlights, requestFlight } from "../lib/flights.mjs";
+import { scheduleVideoConsult, recordConsultOutcome } from "../lib/agents/video_consult.mjs";
 import { logRun } from "../data-core/db.mjs";
 
 export const CSS = `
@@ -72,6 +73,7 @@ export const AGENT_META = [
   { id: "interpreter-scheduling", title: "Interpreter scheduling", grp: "During treatment", desc: "Matches a consult time to language coverage on the roster. No real vendor is wired yet — clearly labelled mock, same pattern as /plugins." },
   { id: "travel-readiness", title: "Return-travel readiness", grp: "After treatment", desc: "Tracks WHEN to raise return travel. Never itself clears a patient to fly — that's the hospital's call, always (mirrors the FITNESS_CALL guardrail in lib/safety.mjs)." },
   { id: "payment-routing", title: "Payment routing", grp: "Before travel", desc: "Self-pay, insured (GOP/pre-auth), or government-sponsored — each is a genuinely different document set and timeline. Encodes the real constraints found in this session's research (Kenya SHA's $3,900 cap and 3-hospital list)." },
+  { id: "video-consult", title: "Patient–doctor video consult", grp: "Before travel", desc: "The step between 'quote finalized' and 'book travel': the patient meets their treating surgeon by video before anyone buys a ticket. GATED on a finalized quote (no quote, no consult). Deterministic timezone-overlap math between the surgeon's IST hours and the patient's waking hours; interpreter attached for non-English consults. MedYatra schedules the call and is NOT a party to it — no joining, no recording, no storing of the clinical conversation; we keep scheduling metadata and a non-clinical outcome (proceed / revise quote / not suitable) only." },
   { id: "visa-documents", title: "Visa & travel documents", grp: "Before travel", desc: "Deliberately narrow: MedYatra orchestrates the hospital's Medical Invitation Letter (mandatory since 1 Apr 2025) and hands over a country-correct checklist — the patient applies and books their own tickets, we don't touch the government portal or claim to. Idempotent per lead; re-running doesn't duplicate the visa/attendant-visa rows." },
   { id: "accommodation", title: "Accommodation", grp: "Before travel", desc: "Pre-op (1-2 nights, walkable to hospital) and post-op (a longer, category-sized recovery window — 12 nights for cardiac, 4 for fertility) are genuinely different stays. Curated near-hospital sample until a real inventory provider (Booking.com/Hotelbeds/RateHawk) is keyed; any 'request' is a dry-run — nothing books for real without a provider key and an explicit human confirm." },
   { id: "ticketing", title: "Ticketing — flexible-date flight search", grp: "Before travel", desc: "Arrival has a real constraint (the pre-op buffer before admission, reused from the accommodation agent's own stayPlan() so the two never disagree); departure doesn't. Sweeps a window around the patient's preferred date and ranks it cheapest-first. Curated fare estimate until a real provider (Amadeus/Duffel/Kiwi) is keyed; requesting a date is a human-gated dry-run, same posture as accommodation." },
@@ -144,6 +146,19 @@ function cardBody(id) {
         <label>Package estimate ($)<input data-f="packageEstimateLow" type="number" value="3200"></label>
         <label>Insurer<input data-f="insurer" value="Jubilee"></label>
       </div>`,
+    "video-consult": `<div class="row">
+        <label>Lead ID (needs a finalized quote on file — a lead without one shows the gate)<input data-f="leadId" value="42"></label>
+        <label>Preferred slot (IST)<input data-f="preferredDateTimeIST" value="2026-08-10T11:00"></label>
+        <label>Language<select data-f="language"><option value="en" selected>English</option><option value="ar">Arabic</option><option value="sw">Swahili</option><option value="am">Amharic</option><option value="ru">Russian</option></select></label>
+      </div>
+      <button class="run sec" onclick="runAgent('video-consult-schedule', this, 'video-consult')">1. Schedule the consult (dry-run)</button>
+      <div class="row" style="margin-top:10px">
+        <label>Outcome after the call (non-clinical only)<select data-f="outcome">
+          <option value="proceed" selected>proceed — book travel</option><option value="revise_quote">revise quote</option>
+          <option value="follow_up">follow-up needed</option><option value="not_suitable">not suitable</option></select></label>
+        <label style="flex:2">Note (try typing something clinical to see the refusal)<input data-f="note" value="patient comfortable, wants to proceed"></label>
+      </div>
+      <button class="run" onclick="runAgent('video-consult-outcome', this, 'video-consult')">2. Record the outcome</button>`,
     "visa-documents": `<div class="row">
         <label>Lead ID<input data-f="leadId" value="40"></label>
         <label>Country<select data-f="countryCode"><option value="OM" selected>Oman</option><option value="KE">Kenya</option><option value="PK">Pakistan (1 attendant only)</option><option value="BD">Bangladesh</option><option value="NG">Nigeria</option></select></label>
@@ -190,7 +205,7 @@ function cardBody(id) {
 }
 
 function agentCard(a) {
-  const runButton = ["family-update", "document-kyc", "billing-reconciliation", "visa-documents", "accommodation", "ticketing"].includes(a.id) ? "" :
+  const runButton = ["family-update", "document-kyc", "billing-reconciliation", "visa-documents", "accommodation", "ticketing", "video-consult"].includes(a.id) ? "" :
     `<button class="run" onclick="runAgent('${a.id}', this)">Run — real output, not a transcript</button>`;
   return `<div class="agent" data-agent="${a.id}">
     <h2>${a.title}</h2><div class="desc">${a.desc}</div>
@@ -208,7 +223,7 @@ export function renderAgentsDemo() {
 <div class="wrap">
   <div class="eyebrow">Post-booking journey · build-os/09</div>
   <h1>The agents that get a booked patient actually treated</h1>
-  <p class="lede">Twelve agents covering intake through aftercare, wired to the real failover chain and the real
+  <p class="lede">Thirteen agents covering intake through aftercare, wired to the real failover chain and the real
   safety gate (<code>lib/safety.mjs</code>). Several are deliberately deterministic — never LLM-generated — because
   a wrong answer there (a visa document rule, a medication dose, a sum of money) is worse than no answer.</p>
   ${groups.map((g) => `<div class="section-h">${g}</div>${AGENT_META.filter((a) => a.grp === g).map(agentCard).join("")}`).join("")}
@@ -349,6 +364,19 @@ function renderResult(action, data) {
     return badge(data.status==='booked'?'pass':'review') + '<p>' + esc(data.note) + '</p>' +
       '<div style="font-size:11px;color:var(--muted)">service #' + data.serviceId + ' · provider: ' + esc(data.provider) + '</div>';
   }
+  if (action === 'video-consult-schedule') {
+    if (data.gated) return '<span class="badge review">gated</span><p>' + esc(data.reason) + '</p>';
+    if (data.feasible === false) return '<span class="badge review">no workable window</span><p>' + esc(data.reason) + '</p>';
+    return badge(v) + '<p>' + esc(data.confirmText) + '</p>' +
+      (data.slotNote ? '<p style="color:var(--red);font-size:12px">' + esc(data.slotNote) + '</p>' : '') +
+      (data.interpreter ? '<div style="font-size:12px;margin-top:6px">' + (data.interpreter.matched ? 'Interpreter attached: ' + esc(data.interpreter.interpreterId) : 'Interpreter: ' + esc(data.interpreter.reason)) + '</div>' : '') +
+      '<div style="font-size:11px;color:var(--muted);margin-top:8px">' + esc(data.window.note) + ' · quote on file: $' + (data.quoteTotal||0).toLocaleString() +
+      '<br>' + esc(data.dataScope) + '<br>platform: ' + esc(data.platformSource) + ' · ' + esc(data.humanGate) + '</div>';
+  }
+  if (action === 'video-consult-outcome') {
+    if (data.refused) return '<span class="badge block">refused</span><p>' + esc(data.reason) + '</p>';
+    return '<span class="badge pass">' + esc(data.outcome) + '</span><p><b>Next:</b> ' + esc(data.next) + '</p>';
+  }
   return badge(v) + method + '<p>' + esc(data.text||'') + '</p>';
 }
 `;
@@ -429,6 +457,12 @@ export async function runStayRequest(db, body) {
   return bookStay(db, lead, option, { kind: "stay_postop" });
 }
 
+export function runVideoConsultSchedule(db, body) {
+  return scheduleVideoConsult(db, { leadId: body.leadId, preferredDateTimeIST: body.preferredDateTimeIST, language: body.language || "en", logRun });
+}
+export function runVideoConsultOutcome(db, body) {
+  return recordConsultOutcome(db, { leadId: body.leadId, outcome: body.outcome, note: body.note || "", logRun });
+}
 export async function runFlightSearch(body) {
   return searchFlights({
     categoryId: body.categoryId, admissionDate: body.admissionDate, targetDepartureDate: body.targetDepartureDate,
