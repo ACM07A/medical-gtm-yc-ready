@@ -420,6 +420,23 @@ limit) is caught and shown, not fatal — the walkthrough continues to the next 
 State discipline verified: only 2 of the 13 steps (KYC init, visa start) write to the DB, both idempotent —
 re-running the same lead's journey twice produces byte-identical row counts (tested).
 
+### 5.9c The voice: empathy, hardcoded ([`lib/voice.mjs`](./lib/voice.mjs))
+
+Empathy is a stated product requirement here, not a marketing nicety — the patient is, by definition, making
+a frightening decision under real pressure, often far from home, and the facilitator relationship only works
+if every touchpoint reads that way. So it lives in one place: `lib/voice.mjs` exports an `EMPATHY` guidance
+block and a `withEmpathy(system)` composer, and every patient-/family-facing generator builds its system
+prompt from it rather than reinventing a warm tone that drifts over time (grep `EMPATHY` to see every surface
+it governs). It is applied thoughtfully, not blanket-stamped: the **discharge/medication relay is deliberately
+excluded** (warmth must never soften a dose — its whole job is faithful, unaltered relay), and the long-form
+content engine keeps its own empathy-calibrated prompt because the shared block's "short is kinder" guidance
+would fight a 1,000-word guide. Concrete edits made against this standard: the WhatsApp templates at the
+hardest moments (a hoped-for trip that isn't advisable, a visa refusal, a complication) now acknowledge the
+human moment before the logistics; the family-update opener; and — the biggest gap closed — the triage
+emergency path, which previously returned only an internal escalation flag and now also carries a calm,
+pre-reviewed, patient-facing reply (no diagnosis, no dosage; smoke-tested to stay in scope) so a terrified
+person typing "chest pain, can't breathe" gets a human answer, not silence.
+
 ### 5.10 The safety gate ([`lib/safety.mjs`](./lib/safety.mjs))
 
 MedYatra is a facilitator, not a provider — that's the legal basis for operating without a healthcare

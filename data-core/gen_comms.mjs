@@ -47,7 +47,7 @@ const WELCOME = rel(welcomeImg), HOW = rel(howImg), EST = estImg[flagship] || re
 // clinical:true marks a HOSPITAL handoff (their medical team owns the content). marketing = needs opt-in+STOP.
 const SEQ = [
   { stage: "first_touch", seq: 1, msg_type: "template", category: "utility", header: WELCOME,
-    body: "Hi {{1}}, thanks for reaching out to MedYatra about {{2}} in India. A care coordinator will share accredited-hospital options shortly. Reply YES to continue.",
+    body: "Hi {{1}}, thank you for reaching out to MedYatra about {{2}} — we know looking into this isn't easy. A real care coordinator will personally help you find the right accredited hospital. Reply YES whenever you're ready and we'll take it from there.",
     variables: { "1": "first name", "2": "treatment" }, buttons: QR("Yes, tell me more", "Not now") },
   { stage: "nudge", seq: 2, msg_type: "template", category: "utility", header: EST,
     body: "Hi {{1}}, still exploring {{2}} in India? Accredited hospitals, no waiting list, English-speaking care. Options whenever you're ready.",
@@ -60,13 +60,13 @@ const SEQ = [
     body: "To tailor your options, could you share your recent medical reports, your preferred timing, and the city you'll travel from?",
     variables: {}, buttons: QR("Send reports", "Ask a question") },
   { stage: "collect_reports", seq: 5, msg_type: "session", category: "utility", header: null,
-    body: "Thanks {{1}}. Please share your latest reports or scans (or a doctor's summary). An accredited hospital's specialist will review and recommend the right path.",
+    body: "Thank you, {{1}}. Whenever you're ready, share your latest reports, scans, or even a doctor's summary — a clear photo is enough to start. An accredited hospital's specialist will review it and recommend the right path. No rush; start with whatever you've got.",
     variables: { "1": "first name" }, buttons: QR("Uploaded", "Need help") },
   { stage: "opinion_pending", seq: 6, msg_type: "session", category: "utility", header: null, clinical: true,
-    body: "Your reports are with the hospital's specialist for review. You'll have their opinion and recommended options within {{1}}. We'll message you the moment it's back.",
+    body: "Your reports are with the hospital's specialist now — the waiting is often the hardest part, and we understand that. You'll have their opinion and options within {{1}}, and we'll message you the moment it's back. Anything on your mind meanwhile, just ask.",
     variables: { "1": "turnaround, e.g. 2–3 days" }, buttons: QR("Okay", "Ask a question") },
   { stage: "off_ramp", seq: 7, msg_type: "session", category: "utility", header: null, clinical: true,
-    body: "Hi {{1}}, based on the doctor's review, travelling for surgery isn't the right step now — this is better managed locally. We've summarised their guidance for you, no charge. We're here if things change.",
+    body: "Hi {{1}}, we know this may not be the answer you were hoping for. Based on the doctor's review, travelling for surgery isn't the right step right now — this is better cared for closer to home. We've written up their guidance for you to keep, at no charge, and we're here if anything changes.",
     variables: { "1": "first name" }, buttons: QR("Thank you") },
 
   { stage: "estimate", seq: 8, msg_type: "template", category: "utility", header: EST,
@@ -115,11 +115,11 @@ const SEQ = [
 
   // Edge states (stress-hardening) — see lib/comms_machine.mjs.
   { stage: "cant_travel", seq: 20, msg_type: "session", category: "utility", header: null,
-    body: "Hi {{1}}, sorry the visa or travel didn't work out this time. No problem — we'll hold everything and pick up whenever you're ready to try again. Just message us.",
+    body: "Hi {{1}}, we're sorry the visa or travel didn't come through this time — we know how disheartening that is after all your preparation. Nothing is lost: we'll hold everything exactly as it is and pick up the moment you're ready to try again. We're not going anywhere.",
     variables: { "1": "first name" }, buttons: QR("Try again later", "Ask a question"),
     note: "Reached when a visa is denied or the patient isn't fit to fly — honest hold, not a loss." },
   { stage: "complication", seq: 21, msg_type: "session", category: "utility", header: null, clinical: true,
-    body: "Hi {{1}}, your care is with the hospital's medical team and they are on it. We're keeping your family updated and are here for anything non-medical. Please follow the doctors' guidance.",
+    body: "Hi {{1}}, we know this is frightening. Your care is fully in the hands of the hospital's medical team and they are on it. We're staying close, keeping your family updated, and here for anything you need that isn't medical. Please follow the doctors' guidance — you are not alone in this.",
     variables: { "1": "first name" }, buttons: QR("Thank you"),
     note: "Clinical escalation — hospital-led. MedYatra never advises clinically; family-comms + logistics only." },
 ];

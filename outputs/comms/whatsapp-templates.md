@@ -5,7 +5,7 @@
 ## 1. first_touch — `medyatra_first_touch`
 - **Type:** template · **Category:** utility
 - **Image header:** `outputs/comms/img/welcome.png`
-- **Body:** Hi {{1}}, thanks for reaching out to MedYatra about {{2}} in India. A care coordinator will share accredited-hospital options shortly. Reply YES to continue.
+- **Body:** Hi {{1}}, thank you for reaching out to MedYatra about {{2}} — we know looking into this isn't easy. A real care coordinator will personally help you find the right accredited hospital. Reply YES whenever you're ready and we'll take it from there.
 - **Buttons:** [Yes, tell me more] [Not now]
 
 ## 2. nudge — `medyatra_nudge`
@@ -29,19 +29,19 @@
 ## 5. collect_reports — `medyatra_collect_reports`
 - **Type:** session · **Category:** utility
 - **Image header:** `null`
-- **Body:** Thanks {{1}}. Please share your latest reports or scans (or a doctor's summary). An accredited hospital's specialist will review and recommend the right path.
+- **Body:** Thank you, {{1}}. Whenever you're ready, share your latest reports, scans, or even a doctor's summary — a clear photo is enough to start. An accredited hospital's specialist will review it and recommend the right path. No rush; send what you have.
 - **Buttons:** [Uploaded] [Need help]
 
 ## 6. opinion_pending — `medyatra_opinion_pending`
 - **Type:** session · **Category:** utility
 - **Image header:** `null`
-- **Body:** Your reports are with the hospital's specialist for review. You'll have their opinion and recommended options within {{1}}. We'll message you the moment it's back.
+- **Body:** Your reports are with the hospital's specialist now — the waiting is often the hardest part, and we understand that. You'll have their opinion and options within {{1}}, and we'll message you the moment it's back. Anything on your mind meanwhile, just ask.
 - **Buttons:** [Okay] [Ask a question]
 
 ## 7. off_ramp — `medyatra_off_ramp`
 - **Type:** session · **Category:** utility
 - **Image header:** `null`
-- **Body:** Hi {{1}}, based on the doctor's review, travelling for surgery isn't the right step now — this is better managed locally. We've summarised their guidance for you, no charge. We're here if things change.
+- **Body:** Hi {{1}}, we know this may not be the answer you were hoping for. Based on the doctor's review, travelling for surgery isn't the right step right now — this is better cared for closer to home. We've written up their guidance for you to keep, at no charge, and we're here if anything changes.
 - **Buttons:** [Thank you]
 
 ## 8. estimate — `medyatra_estimate`
@@ -124,14 +124,14 @@
 ## 20. cant_travel — `medyatra_cant_travel`
 - **Type:** session · **Category:** utility
 - **Image header:** `null`
-- **Body:** Hi {{1}}, sorry the visa or travel didn't work out this time. No problem — we'll hold everything and pick up whenever you're ready to try again. Just message us.
+- **Body:** Hi {{1}}, we're sorry the visa or travel didn't come through this time — we know how disheartening that is after all your preparation. Nothing is lost: we'll hold everything exactly as it is and pick up the moment you're ready to try again. We're not going anywhere.
 - **Buttons:** [Try again later] [Ask a question]
 - _Reached when a visa is denied or the patient isn't fit to fly — honest hold, not a loss._
 
 ## 21. complication — `medyatra_complication`
 - **Type:** session · **Category:** utility
 - **Image header:** `null`
-- **Body:** Hi {{1}}, your care is with the hospital's medical team and they are on it. We're keeping your family updated and are here for anything non-medical. Please follow the doctors' guidance.
+- **Body:** Hi {{1}}, we know this is frightening. Your care is fully in the hands of the hospital's medical team and they are on it. We're staying close, keeping your family updated, and here for anything you need that isn't medical. Please follow the doctors' guidance — you are not alone in this.
 - **Buttons:** [Thank you]
 - _Clinical escalation — hospital-led. MedYatra never advises clinically; family-comms + logistics only._
 

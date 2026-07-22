@@ -248,7 +248,9 @@ function renderResult(action, data) {
   if (action === 'triage') {
     const facts = (data.key_facts||[]).map(f=>'<li>'+esc(f)+'</li>').join('');
     const missing = (data.missing||[]).map(f=>'<li>'+esc(f)+'</li>').join('');
-    return badge(v) + method +
+    // Emergency path carries a calm, human reply for the frightened person — show it first, prominently.
+    const pm = data.patient_message ? '<div style="background:rgba(179,38,30,.1);border:1px solid var(--red);border-radius:10px;padding:11px 13px;margin-bottom:10px"><div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--red);margin-bottom:4px">Reply sent to the patient</div>' + esc(data.patient_message) + '</div>' : '';
+    return badge(v) + method + pm +
       '<table class="cf"><tr><td>Category guess</td><td>' + esc(data.category_guess||'—') + '</td></tr>' +
       '<tr><td>Urgency</td><td>' + esc(data.urgency||'—') + (data.action?' — <b>'+esc(data.action)+'</b>':'') + '</td></tr>' +
       '<tr><td>Key facts</td><td><ul style="margin:0;padding-left:18px">' + (facts||'<li style=\"color:var(--muted)\">none extracted</li>') + '</ul></td></tr>' +

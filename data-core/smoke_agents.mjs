@@ -28,6 +28,8 @@ check("triage: safety verdict present", !!t.safety?.verdict);
 
 const emergency = await triage("crushing chest pain, can't breathe");
 check("triage: emergency escalates (not a quote)", emergency.urgency === "possible_emergency" && emergency.safety.verdict === "escalate");
+check("triage: emergency carries a calm patient-facing reply (empathy, not just an internal flag)",
+  typeof emergency.patient_message === "string" && emergency.patient_message.length > 40 && !/\b\d+\s?(mg|ml)\b|diagnos/i.test(emergency.patient_message));
 
 const fu = await familyUpdate({ stage: "post_op", patientFirstName: "Fatima", note: "first walk today" });
 check("family-update: non-empty, not truncated mid-word", fu.text.length > 40 && /[.!]\s*$/.test(fu.text.trim()), `"${fu.text.slice(0, 60)}…"`);
