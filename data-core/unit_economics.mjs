@@ -62,9 +62,9 @@ const cat = db.prepare(
   || db.prepare(`SELECT c.id, c.name, AVG((p.india_low + p.india_high)/2.0) AS pkg FROM category c
                  JOIN category_price p ON p.category_id=c.id GROUP BY c.id ORDER BY pkg DESC LIMIT 1`).get();
 
-// ANCHORED (not just ASSUMED anymore) — Sachin Rai interview 2026-07-22: 20-25% is the range that gets an
-// established facilitator an instant yes from a hospital desk; 15% is compassionate-case territory, the
-// floor, not the norm. Still one desk's real range, not Aster's/Manipal's specifically — ASK them directly.
+// ANCHORED (not just ASSUMED anymore) — founder + Sachin Rai numbers, 2026-07-22: INCUMBENT agents charge
+// hospitals 25–33%. Our OPENING fee is 20% (revenue-tiered down to 16%), so we model our own economics at the
+// 20% entry — below incumbents on purpose, a deliberately conservative take on our own revenue per case.
 const COMMISSION = num("commission", 0.20);
 const AGENCY_CAC = num("agencycac", 1400);             // ASSUMED — coordinator time + media + sub-agent cut
 
@@ -123,7 +123,7 @@ console.log(`     • what an inquiry costs them through their current agent pan
 console.log(`\n  PROVENANCE (channel: ${CHANNEL})`);
 for (const s of STAGES) console.log(`     ${s.key.padEnd(10)} ${s.src}`);
 console.log(`     package    CITED — data-core category_price rows`);
-console.log(`     commission ANCHORED ${Math.round(COMMISSION * 100)}% — Sachin Rai interview 2026-07-22: 20-25% is an instant-yes range for an established facilitator, 15% is compassionate-case not norm; still ask each partner`);
+console.log(`     commission ANCHORED ${Math.round(COMMISSION * 100)}% — founder + Sachin 2026-07-22: incumbents charge 25-33%, we open at 20% (revenue-tiered to 16%); modelled at our 20% entry`);
 const cited = STAGES.filter((s) => s.src.startsWith("CITED")).length;
 console.log(`\n  ${cited} of ${STAGES.length} funnel stages rest on a published benchmark. The rest are ours.`);
 console.log(`  Treat every figure above as a range, not a number, until a real cohort replaces it.`);

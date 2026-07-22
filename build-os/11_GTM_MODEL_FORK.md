@@ -14,7 +14,7 @@ own DPA, own WhatsApp Business verification, own coordinators, own demand genera
 | | |
 |---|---|
 | **Build** | Everything — Tiers 0/1/2 yourself (legal, supply, ops), on top of the built Tier-3 software. |
-| **Economics** | Keep 100% of the 10–15% facilitation margin. Highest upside per case. |
+| **Economics** | Keep 100% of the facilitation margin (20% entry, revenue-tiered to 16%). Highest upside per case. |
 | **Time to first paid patient** | Months — cold-start on *both* sides (supply + demand) at once. |
 | **Capital** | Meaningful — legal, hiring, working capital, demand-gen spend. |
 | **Risk** | Marketplace chicken-and-egg; you carry the full compliance + clinical-liability-adjacent stack. |

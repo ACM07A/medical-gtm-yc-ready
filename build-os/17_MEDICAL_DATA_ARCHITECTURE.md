@@ -7,7 +7,7 @@ access; and **MedYatra's own interaction with it is limited to what a non-clinic
 treatment name/protocol, treatment timelines, cost structures, and surgeon details.**
 
 This document describes how that is implemented — as code, not policy. The implementation is
-[`lib/vault.mjs`](../lib/vault.mjs); the mechanical proof is `npm run smoke-vault` (11 checks); the live
+[`lib/vault.mjs`](../lib/vault.mjs); the mechanical proof is `npm run smoke-vault` (12 checks); the live
 status page is `/vault`.
 
 ---
@@ -79,9 +79,16 @@ The strictest findings, which shape the go-live plan:
 | SCCs/adequacy | UK, Ireland, Nigeria, Kenya, Oman, Saudi, Tanzania, Zimbabwe, Ethiopia, Cameroon | Standard contractual clauses + transfer assessment, counsel-signed. |
 | No comprehensive law | Iraq, Yemen, Sudan, Namibia, Myanmar | GDPR floor applies by our own rule. |
 
-`residencyCheck()` consults this register on every vault write. In the sandbox (local storage), hard rules
-surface as **warnings**; at the live-backend swap they become **blocking** — because that's the moment data
-would actually move.
+`residencyCheck()` consults this register on every vault write. For markets we *do* serve, hard rules surface
+as **warnings** in the sandbox and become **blocking** at the live-backend swap (the moment data would move).
+
+**Skipped markets (founder decision, 2026-07-22).** The four strictest — **UAE, Uzbekistan, Kazakhstan,
+Zambia** — are ones we cannot serve compliantly at this juncture (no in-country hosting or replica). Rather
+than run them in a grey zone, they are marked `regulatory_status='blocked'` in `seed.mjs` — a deliberate
+*not-serve*. `residencyCheck()` treats `blocked` as a **hard refusal of any clinical write, regardless of
+backend or sandbox**: skipping the market skips its data, full stop. The existing marketing/publish/comms
+gates already treat `blocked` as not-cleared, so outreach and publishing were blocked too. They return when
+the infrastructure exists (for the UAE, that's the Abu Dhabi base the residency law itself argues for).
 
 ## 5. What this architecture deliberately does NOT do
 
@@ -94,7 +101,7 @@ would actually move.
 
 ## 6. Verification
 
-- `npm run smoke-vault` — 11 mechanical checks: encryption at rest (ciphertext contains no plaintext),
+- `npm run smoke-vault` — 12 mechanical checks: encryption at rest (ciphertext contains no plaintext),
   envelope scope (no clinical content in any envelope field), purpose refusal, direction refusal, legitimate
   relay, GCM tamper detection, erasure + tombstone, audit completeness.
 - `/vault` — live status: backend, the full law register (strictest first), access-log tail.

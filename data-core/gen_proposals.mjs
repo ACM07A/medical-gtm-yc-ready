@@ -1,7 +1,7 @@
 // Partner Sourcing agent — full PARTNERSHIP PROPOSAL per top account (deeper than first-touch outreach).
 // Tailored to the account's fit reason + the differentiated angle (latent=margin/demand · established=scale),
 // grounded in data-core pricing (indicative, cited) and the credibility framing for lesser-known brands.
-// Facilitator terms only (10-15% fee, non-exclusive, pilot). No invented prices/outcomes. Human-gated (review).
+// Facilitator terms only (20% entry fee, revenue-tiered, non-exclusive, pilot). No invented prices/outcomes. Human-gated (review).
 //   node --experimental-sqlite data-core/gen_proposals.mjs [limit]
 import { generateWithModel } from "../integrations/glm_generate.mjs";
 import { open, logRun, isFresh } from "./db.mjs";
@@ -67,7 +67,7 @@ Structure the proposal with these sections:
 1. Introduction & who we are (facilitator, not a provider)
 2. Why patients from ${market.name} travel for ${cat.name} — the case (cost gap, quality). Do NOT claim a demand number you weren't given; if you reference volume, write "[VERIFY: cite a figure]".
 3. What MedYatra brings — be precise and modest: demand generation in the source market, pre-qualified patients who arrive with their documents in order, and coordination of the enquiry plus supporting documents (for example, helping the patient obtain your invitation letter). ${latent ? "Also credibility marketing that builds your name in that market. " : ""}Do NOT claim interpreters, flights, hotels or on-ground logistics as ours — if relevant, note they are arranged by the patient or a local partner.
-4. Commercial model — facilitation fee ~10–15%, pay ONLY on delivered patients, patient never double-charged, transparent. ${latent ? "NON-exclusive to start; note a path to preferred/exclusive terms in this market once the pilot proves volume." : "Non-exclusive."}
+4. Commercial model — facilitation fee starting at 20% (below the 25–33% incumbent agents typically charge), stepping down on a revenue-based tier as volume grows; pay ONLY on delivered patients, patient never double-charged, transparent. ${latent ? "NON-exclusive to start; note a path to preferred/exclusive terms in this market once the pilot proves volume." : "Non-exclusive."}
 5. Proposed pilot — a small, time-boxed founding-partner cohort with clear success metrics; zero upfront
 6. Compliance & trust — facilitator disclosure, accredited-partners-only, data protection (DPDP/GDPR), no clinical claims by us
 7. Next steps — ask for a package sheet + a named coordinator + a 30-minute intro call (not a commitment)

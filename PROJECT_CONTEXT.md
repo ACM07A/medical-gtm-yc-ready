@@ -10,7 +10,8 @@ it, and its honest limits. Written so you can understand — and speak to — ev
 ## 1. The one-paragraph version
 
 MedYatra is an **agentic go-to-market (GTM) engine** for a medical-tourism *facilitator* — a business that
-connects international patients to accredited Indian hospitals and takes a 10–15% facilitation fee (it is
+connects international patients to accredited Indian hospitals and takes a facilitation fee — 20% entry,
+stepping down on revenue tiers, deliberately below incumbent agents' 25–33% (it is
 **not** a hospital and provides no care). The engine is a fleet of AI agents that autonomously (1) decide
 which treatments to sell, (2) build the hospital-partner supply side down to the named decision-maker and a
 tailored proposal, (3) run a multilingual content/brand campaign and repurpose it into platform-ready social
@@ -238,7 +239,7 @@ automated scraping — a human does the searching (manual use, no anti-bot circu
 **Tailored proposals** ([`data-core/gen_proposals.mjs`](./data-core/gen_proposals.mjs)): a 7-section
 partnership proposal per top account, **addressed to the named POC**, grounded in that account's fit reason,
 categories, and cited pricing, with the differentiated angle (margin/demand for latent brands, scale for
-established chains) and the credibility framing (§5.2c). Facilitator terms only (10–15% fee, non-exclusive,
+established chains) and the credibility framing (§5.2c). Facilitator terms only (20% entry fee stepping down on revenue tiers, non-exclusive,
 pilot), no invented prices/outcomes, human-gated at `review`. Generated via the failover chain — Gemini
 already produces the best of these.
 
@@ -266,9 +267,11 @@ Status: the capability exists, the board has zero rows — no real name to add y
 ### 5.2e The pricing/commission model — designed to run on actuals ([`data-core/pricing_model.mjs`](./data-core/pricing_model.mjs))
 
 The facilitator economics, made explicit (`commissionModel()`, `db.mjs`): the patient pays the hospital's
-package price; the hospital pays our commission out of it; at our *lower* fee vs a typical 18% incumbent, the
-hospital **nets an uplift per case** — the value-exchange pitch, quantified (a $6,200–8,500 CABG package at
-12% → hospital keeps $372–510 more per case than under an aggregator). The model is designed to run on
+package price; the hospital pays our commission out of it. Incumbent agents charge **25–33%** (founder
+numbers); we **open at 20% and step down on revenue tiers** (20% to $250k/yr routed, 18% to $1M, 16% beyond)
+— so the hospital **nets an uplift per case** from day one and progressively more as our volume proves out.
+Quantified conservatively (vs the 25% floor): a $6,200–8,500 CABG package at 20% leaves the hospital
+$310–425 more per case than a 25% incumbent, and $806–1,105 more than a 33% one. The model is designed to run on
 **actual hospital rate cards**: `capture_partner_price.mjs` is the only entry point (human-vouched;
 `confirmed` only when explicitly flagged, because a confirmed rate replaces the indicative rung on the
 patient-facing price ladder). `npm run pricing` reports per-case economics on actuals where they exist,
@@ -313,6 +316,13 @@ fit-matrix cells, fare bands and partner targeting without an engine-code change
 globalization. The same pass surfaced a genuine channel gap the config *doesn't* hide: this bloc (and
 Francophone Cameroon) is **Telegram-first, not WhatsApp**, so the comms engine needs a Telegram channel before
 spend goes there — a market added is not a market served.
+
+**Four of the 22 are deliberately skipped** (founder decision, 2026-07-22), for a compliance reason the config
+makes enforceable: **UAE** (health data may not leave the country) and **Uzbekistan / Kazakhstan / Zambia**
+(data-localization laws) require in-country hosting or a replica we don't have yet. They are set
+`regulatory_status='blocked'` in `seed.mjs` — a *not-serve*, not merely un-checked — so the medical-data vault
+hard-refuses their clinical data (§5.11) and the marketing/publish gates block outreach. They return when the
+infrastructure exists, not before. Effective servable set today: ~18 markets.
 
 ### 5.5 The Operator Console — *tangible visibility*
 
@@ -546,8 +556,10 @@ tamper detection (Art. 32). A **per-market health-data law register**
 ([`data-core/seed_health_data_laws.mjs`](./data-core/seed_health_data_laws.mjs), all 22 source markets +
 India, every row `unverified` pending counsel) drives `residencyCheck()` on every write — the sharp edges:
 UAE health data may not leave the country (in-country hosting required), Uzbekistan/Kazakhstan/Zambia require
-in-country replicas. GDPR is the floor in every market, including the five with no data-protection law of
-their own. Mechanically verified by `npm run smoke-vault` (11 checks); full architecture:
+in-country replicas. Those four are **skipped** for now (§5.4) — `residencyCheck()` **hard-refuses** a clinical
+write for any market marked `blocked`, regardless of backend, so "skip the market" means "skip its data,
+full stop." GDPR is the floor in every market we *do* serve, including the ones with no data-protection law of
+their own. Mechanically verified by `npm run smoke-vault` (12 checks); full architecture:
 [`build-os/17_MEDICAL_DATA_ARCHITECTURE.md`](./build-os/17_MEDICAL_DATA_ARCHITECTURE.md).
 
 ---
@@ -619,7 +631,7 @@ Requires **Node ≥ 22.5**. All data-core scripts need the `--experimental-sqlit
 | `npm run price-ladder` / `npm run price-gaps` | Seed the price ladder / list what's still an unpriced gap (§5.7) |
 | `npm run eval-safety` | The 20-case adversarial safety suite (§5.10) — also runs in CI on every push |
 | `npm run smoke-agents` | Headless check across all 13 concierge agents' pure functions (25 assertions), with or without a key |
-| `npm run smoke-vault` | The medical-data vault's 11 mechanical checks (encryption, scope, refusals, tamper, erasure) |
+| `npm run smoke-vault` | The medical-data vault's 12 mechanical checks (encryption, scope, refusals, tamper, erasure) |
 | `npm run health-laws` | Seed/report the per-market health-data law register (23 jurisdictions, all pending counsel) |
 | `npm run pricing` | Commission economics on actual rate cards where present; the rate-card gap for pursued partners |
 | `npm run capture-partner-price` | Log a real hospital rate card (only entry point; `confirmed` replaces the ladder rung) |

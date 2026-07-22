@@ -8,7 +8,7 @@ An AI-run go-to-market engine that launches and scales a medical-tourism facilit
 
 Medical Value Travel (MVT) to India. India is a top-3 global destination: JCI/NABH-accredited hospitals delivering US/UK-equivalent clinical quality at **60–90% lower cost**. The government "Heal in India" initiative + e-Medical Visa reduce friction. ~2M+ international patients/year pre-pandemic, growing double digits.
 
-**Our role:** facilitator / aggregator (like Vaidam, MediGence, Medtripz, Lyfboat). We connect international patients to accredited hospitals and earn a **facilitation fee / referral commission (typ. 10–15%)** from the hospital, plus optional ancillary revenue (visa, travel, accommodation, interpreter, post-op). We are **not** a clinical provider.
+**Our role:** facilitator / aggregator (like Vaidam, MediGence, Medtripz, Lyfboat). We connect international patients to accredited hospitals and earn a **facilitation fee / referral commission (20% entry, revenue-tiered down to 16%, vs incumbents' 25–33%)** from the hospital, plus optional ancillary revenue (visa, travel, accommodation, interpreter, post-op). We are **not** a clinical provider.
 
 ## Why an *agentic* engine (not just a website + BD team)
 

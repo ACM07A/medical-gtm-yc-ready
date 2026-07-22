@@ -8,7 +8,7 @@ P. D. Hinduja Hospital holds recognised clinical quality and a strong domestic r
 
 We are a medical-value-travel facilitator, not a provider. We generate pre-qualified patient leads through targeted Arabic and English content and a dedicated WhatsApp funnel, handling the outreach and demand generation you are not currently doing.
 
-We propose a flexible, low-risk pilot. Commercial terms are transparent: a facilitation fee of 10-15%, structured on a non-exclusive basis, with the patient never double-charged.
+We propose a flexible, low-risk pilot. Commercial terms are transparent: a facilitation fee starting at 20% (below incumbents' 25–33%), revenue-tiered, structured on a non-exclusive basis, with the patient never double-charged.
 
 We would appreciate a 20-30 minute introductory call to explore this fit.
 

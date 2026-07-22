@@ -116,8 +116,10 @@ band    = ≥70 "work now" · ≥45 "warm up" · else "park / build path"
 | **speed** (0.25) | `speedScore()` | Time-to-signed-pilot. Sachin's read: partnering is **fast once the commission number is agreed** — so speed = `commission_status` (`agreed 60` / `in_discussion 35` / `unknown 20`) + 30% of desk readiness (§2b). |
 
 Three companion fields carry the terms conversation on the account itself: `commission_target_pct` (the
-number that unblocks a fast close — 12% on the warm accounts), `commission_status`, and **`value_ask`** — the
-extra we ask the hospital for in exchange for a *lower* fee than incumbents, because we bring the volume:
+number that unblocks a fast close — **20% entry on the warm accounts**, vs incumbent agents' **25–33%**, with
+a revenue-tiered step-down to 18%/16% as volume proves out — `COMMISSION_TIERS` in `db.mjs`),
+`commission_status`, and **`value_ask`** — the extra we ask the hospital for in exchange for the *lower* fee,
+because we bring the volume:
 best-of-book package rates, priority admission/OT scheduling, a named international coordinator, co-funded
 patient education. The next-action generator leads with the commission close whenever status is
 `in_discussion`. Real-board result: Fortis Bannerghatta 82 › Aster India 75 › Manipal 74 › Aster GCC 71,
@@ -125,7 +127,7 @@ with Ganga Ram (fit 96, cold) correctly at pursuit 40.
 
 Once terms are agreed, the **actual rate card** goes in through `capture_partner_price.mjs` (the only entry
 point; `confirmed` only when a signed package sheet exists) and `npm run pricing` turns it into per-case
-commission economics — including the hospital's net uplift vs an 18% incumbent, which *is* the pitch deck
+commission economics — including the hospital's net uplift vs a 25–33% incumbent, which *is* the pitch deck
 number for the next partner.
 
 ---
@@ -234,7 +236,8 @@ dental(1) < cosmetic(2) < fertility(3) < ortho(4) < oncology(5) < cardiac(6)
 (2) the case for travelling for this treatment — cost gap, quality, no unsupported demand numbers,
 (3) what MedYatra brings — precise and modest: demand generation, pre-qualified patients, coordination of
 the enquiry and *supporting documents* (never interpreters, flights, hotels, or on-ground logistics — those
-are explicitly **not** claimed), (4) commercial model — facilitation fee **~10–15%**, pay only on delivered
+are explicitly **not** claimed), (4) commercial model — facilitation fee **20% entry, revenue-tiered down to
+16%** (vs incumbents' 25–33%), pay only on delivered
 patients, non-exclusive, (5) a small time-boxed pilot cohort, zero upfront, (6) compliance & trust —
 facilitator disclosure, accredited-partners-only, DPDP/GDPR, no clinical claims, (7) next steps — ask for a
 package sheet, a named coordinator, and a 30-minute call. **Never asks for a commitment in the first ask.**

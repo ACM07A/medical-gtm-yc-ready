@@ -70,7 +70,8 @@ corridor into India — fertility/IVF, oncology and cardiac lead the outflow. **
 flagging now:** the bloc is Russian-speaking and **Telegram/Instagram-first, not WhatsApp** — the same gap as
 Cameroon. Our comms engine is WhatsApp-only today, so serving Central Asia (or Francophone Cameroon) means
 adding a Telegram channel before, not after, spend goes there. This takes the source map to **22 markets across
-five regions** — Middle East, Africa, Central Asia, SE Asia and Europe.
+five regions** — Middle East, Africa, Central Asia, SE Asia and Europe — of which **four are deliberately
+skipped on data-compliance grounds** (below), leaving ~18 servable today.
 
 ---
 
@@ -153,13 +154,15 @@ matters, and *speed* because — per Sachin — partnering is **fast once the co
 fee is the real gate, not process. The board's next-action for every warm account is now literally "close the
 commission number." Ganga Ram (fit 96 but no path in) correctly drops below all four warm accounts.
 
-**What we are asking for — and the value exchange.** Not exclusivity and not volume promises. We charge the
-hospital a *lower* facilitation fee than incumbent aggregators — and in exchange we ask for something extra,
-because we bring the volume that makes a thin fee worth it: **best-of-book package rates, priority
-admission/OT scheduling for our patients, a named international coordinator, and co-funded patient-education
-content.** This value-ask is recorded per account. The commission model quantifies the pitch: at 12% vs a
-typical 18% incumbent, the hospital nets a real per-case uplift — on a cardiac package, a few hundred dollars
-more per case, on their existing rate card. First step remains: permission to send three to five test cases.
+**What we are asking for — and the value exchange.** Not exclusivity and not volume promises. Incumbent
+agents charge hospitals **25–33%**; we **open at 20% and step down on a revenue-based tier** (20% → 18% → 16%
+as annual routed revenue crosses $250k and $1M) — the hospital keeps more per case from day one, and more as
+our volume proves out. In exchange we ask for something extra, because we bring the volume that makes the
+lower fee worth it: **best-of-book package rates, priority admission/OT scheduling for our patients, a named
+international coordinator, and co-funded patient-education content.** This value-ask is recorded per account.
+The commission model quantifies the pitch: on a $6,200–8,500 cardiac package at 20%, the hospital nets
+**$310–425 more per case** than under a 25% incumbent — and **$806–1,105 more** than a 33% one — on their
+existing rate card. First step remains: permission to send three to five test cases.
 
 **Pricing is designed to run on actuals.** The commission economics (`npm run pricing`) run on real hospital
 rate cards wherever one exists and clearly-labelled indicative ranges where none does — and the report's
@@ -264,16 +267,23 @@ enforced mechanically, not by policy document.
   into an AI prompt, which is a transfer.
 - **Medical data has its own architecture now** (2026-07-22, §5): encrypted vault, facilitator-scope read
   surface, purpose-limited decryption, full audit trail, erasure with tombstone — GDPR applied as the floor
-  in all 22 markets, including the five with no data-protection law of their own. A 23-jurisdiction
+  in every market we serve, including those with no data-protection law of their own. A 23-jurisdiction
   health-data law register backs it; **every entry is marked unverified until counsel signs it off** — the
   register is a counsel work-list, not a legal opinion.
+- **Markets we cannot serve compliantly are skipped, not fudged** (founder decision, 2026-07-22): the **UAE**
+  (health data may not leave the country) and **Uzbekistan / Kazakhstan / Zambia** (data-localization laws)
+  require in-country hosting or a replica we don't have yet. They are marked `blocked` — the vault
+  hard-refuses their clinical data and the marketing gate blocks outreach — and return only when the
+  infrastructure exists. This narrows the near-term map on purpose; the Gulf via UAE waits for the Abu Dhabi
+  base that the residency law itself argues for.
 
 **That last point is also a moat.** Competitors running a Bangalore-hosted WhatsApp funnel into the Gulf are
 non-compliant and mostly unaware of it. Solving it requires in-country presence — which is a strong argument
 for an Abu Dhabi base.
 
-**Regulatory status:** 3 of 22 markets cleared, and those clearances are illustrative demo clearances, not
-legal sign-off. Replacing them with counsel opinions is a prerequisite to going live anywhere.
+**Regulatory status:** of 22 markets, **4 are blocked on data-residency grounds** (UAE, Uzbekistan,
+Kazakhstan, Zambia — skipped until the hosting exists), and 3 carry *illustrative demo* clearances, not legal
+sign-off. Replacing those demo clearances with counsel opinions is a prerequisite to going live anywhere.
 
 ---
 
