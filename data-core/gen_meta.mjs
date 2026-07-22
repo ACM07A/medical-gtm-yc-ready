@@ -3,6 +3,7 @@
 //   MINIMAX_API_KEY=... node --experimental-sqlite data-core/gen_meta.mjs   (or NVIDIA_API_KEY for fallback)
 import { open, logRun } from "./db.mjs";
 import { smallTask } from "../lib/small.mjs";
+import { withEmpathyContent } from "../lib/voice.mjs";
 import { basename } from "node:path";
 const db = open();
 
@@ -12,8 +13,10 @@ const rows = db.prepare(`SELECT ca.*, c.name cat, mk.name mname FROM content_ass
 let model = "n/a", done = 0;
 for (const a of rows) {
   const prompt = `SEO meta for a page: "${a.cat} treatment cost in India for patients from ${a.mname}". ` +
-    `Return EXACTLY two lines:\nTITLE: <=60 chars\nDESC: <=155 chars, compelling, mention India + big savings + accredited hospitals, no quotes`;
-  let res; try { res = await smallTask(prompt, { maxTokens: 180, temperature: 0.4, system: "You are a concise medical-travel SEO copywriter. No hype, no guarantees." }); }
+    `Return EXACTLY two lines:\nTITLE: <=60 chars\nDESC: <=155 chars — speak to the reader's real concern ` +
+    `(what it costs, and getting safe care at accredited hospitals), calm and honest. NO clickbait, NO "huge ` +
+    `savings" hype over someone's illness, no quotes.`;
+  let res; try { res = await smallTask(prompt, { maxTokens: 180, temperature: 0.4, system: withEmpathyContent("You are a concise medical-travel SEO copywriter for a facilitator (not a hospital). No hype, no guarantees. A meta description is the first thing a frightened person searching for treatment reads — make it honest and human, not a sales shout.") }); }
   catch (e) { logRun(db, "Small Tasks", `meta ${a.category_id}×${a.market_code}`, String(e).slice(0, 60), null, "fail"); continue; }
   model = res.model;
   const title = (res.text.match(/TITLE:\s*(.+)/i)?.[1] || `${a.cat} Cost in India — ${a.mname}`).trim().replace(/^["']|["']$/g, "").slice(0, 65);

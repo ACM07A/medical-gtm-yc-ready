@@ -7,6 +7,7 @@
 import { open, logRun, isFresh, comparator } from "./db.mjs";
 import { generateWithModel } from "../integrations/glm_generate.mjs";
 import { renderMedia, renderCostComparison } from "../lib/media.mjs";
+import { withEmpathyContent } from "../lib/voice.mjs";
 const FORCE = process.env.FORCE === "1";   // idempotency override
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -31,6 +32,13 @@ function facts(md) {
 }
 
 const DISCLAIMER = "MedYatra is a medical-travel facilitator, not a hospital; prices are indicative package ranges.";
+
+// Social posts are read by the same frightened person as the guides — the empathy principle governs them too,
+// not just the WhatsApp channel. Facts stay injected; the SYSTEM carries the voice.
+const REPURPOSE_SYSTEM = withEmpathyContent("You write patient-facing social content for MedYatra, a " +
+  "medical-travel FACILITATOR (not a hospital). Use ONLY the facts given — never invent a number, a price, " +
+  "an outcome, or an accreditation. Facilitator voice, no cure or outcome guarantees, honour the platform's " +
+  "own norms (Reddit hates ads; LinkedIn is professional). Cost is part of the story but never the shout.");
 
 // Platform prompt builders. Each enforces facilitator voice + injected facts + no cure claims.
 function prompt(channel, f, market, category) {
@@ -65,7 +73,7 @@ for (const p of pages) {
   db.prepare(`DELETE FROM channel_post WHERE content_asset_id=?`).run(p.id);
   for (const [channel, format] of CHANNELS) {
     try {
-      const r = await generateWithModel(prompt(channel, f, p.mname, p.cat), { maxTokens: 700, temperature: 0.7 });
+      const r = await generateWithModel(prompt(channel, f, p.mname, p.cat), { system: REPURPOSE_SYSTEM, maxTokens: 700, temperature: 0.7 });
       const stub = `${p.category_id}-${p.market_code}-${channel}`;
       const file = join("outputs", "social", `${stub}.md`);
       writeFileSync(join(ROOT, file), `# ${channel.toUpperCase()} · ${p.cat} × ${p.mname}\n<!-- DRAFT — human review before posting. model:${r.model} -->\n\n${r.text}\n`);

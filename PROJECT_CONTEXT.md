@@ -424,18 +424,28 @@ re-running the same lead's journey twice produces byte-identical row counts (tes
 
 Empathy is a stated product requirement here, not a marketing nicety — the patient is, by definition, making
 a frightening decision under real pressure, often far from home, and the facilitator relationship only works
-if every touchpoint reads that way. So it lives in one place: `lib/voice.mjs` exports an `EMPATHY` guidance
-block and a `withEmpathy(system)` composer, and every patient-/family-facing generator builds its system
-prompt from it rather than reinventing a warm tone that drifts over time (grep `EMPATHY` to see every surface
-it governs). It is applied thoughtfully, not blanket-stamped: the **discharge/medication relay is deliberately
-excluded** (warmth must never soften a dose — its whole job is faithful, unaltered relay), and the long-form
-content engine keeps its own empathy-calibrated prompt because the shared block's "short is kinder" guidance
-would fight a 1,000-word guide. Concrete edits made against this standard: the WhatsApp templates at the
-hardest moments (a hoped-for trip that isn't advisable, a visa refusal, a complication) now acknowledge the
-human moment before the logistics; the family-update opener; and — the biggest gap closed — the triage
-emergency path, which previously returned only an internal escalation flag and now also carries a calm,
-pre-reviewed, patient-facing reply (no diagnosis, no dosage; smoke-tested to stay in scope) so a terrified
-person typing "chest pain, can't breathe" gets a human answer, not silence.
+if every touchpoint reads that way. **And it is not only the messaging — it is the published content too.** So
+it lives in one place: `lib/voice.mjs` holds a shared `EMPATHY_CORE` and two composers that adapt it to the
+two surfaces where the register genuinely differs — `withEmpathy()` for short 1:1 messages (where brevity is
+itself a kindness) and `withEmpathyContent()` for anything a patient reads alone, often at 2am (a guide, a
+social post, an SEO snippet — where thoroughness *is* the kindness and there's a hard moral line against
+trading on fear to sell). Every patient-/family-facing generator composes its prompt from here rather than
+reinventing a warm tone that drifts (grep `EMPATHY` for every surface it governs).
+
+It is applied thoughtfully, not blanket-stamped: the **discharge/medication relay is deliberately excluded**
+(warmth must never soften a dose — its whole job is faithful, unaltered relay). Concrete edits made against
+this standard:
+- **Messaging** — the WhatsApp templates at the hardest moments (a hoped-for trip that isn't advisable, a visa
+  refusal, a complication, the anxious wait) now acknowledge the human moment before the logistics; the
+  family-update opener; and — the biggest gap closed — the triage emergency path, which previously returned
+  only an internal escalation flag and now also carries a calm, pre-reviewed, patient-facing reply (no
+  diagnosis, no dosage; smoke-tested to stay in scope) so a terrified person typing "chest pain, can't
+  breathe" gets a human answer, not silence.
+- **Published content** — the long-form guide engine (`gen_content.mjs`), the social repurposing
+  (`repurpose_content.mjs`, previously warm only on its WhatsApp channel), the credibility narratives
+  (`gen_credibility.mjs`), and the SEO meta (`gen_meta.mjs`, whose prompt used to literally ask for "big
+  savings" — a crass frame over someone's illness, now rewritten to speak to the reader's real concern
+  honestly) all compose from `withEmpathyContent()`. These take effect on the next content (re)generation.
 
 ### 5.10 The safety gate ([`lib/safety.mjs`](./lib/safety.mjs))
 

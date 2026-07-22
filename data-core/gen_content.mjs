@@ -6,6 +6,7 @@ import { generate } from "../integrations/glm_generate.mjs";
 import { open, logRun, priceLadder } from "./db.mjs";
 import { trustBlock } from "../lib/eeat.mjs";
 import { lintClaims } from "../lib/claims.mjs";
+import { withEmpathyContent } from "../lib/voice.mjs";
 import { writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -24,13 +25,13 @@ const BATCH = db.prepare(`
     AND NOT EXISTS (SELECT 1 FROM content_asset ca WHERE ca.category_id=cm.category_id AND ca.market_code=cm.market_code)
   ORDER BY m.tier, cm.category_id`).all().map(r => [r.catId, r.mk]);
 
-const SYSTEM = "You are a DIRECTOR OF COPYWRITING producing public, consumer-facing content for people weighing medical treatment abroad — anxious, intelligent, doing real research. You write for a medical-travel FACILITATOR (not a hospital). " +
+const SYSTEM = withEmpathyContent("You are a DIRECTOR OF COPYWRITING producing public, consumer-facing content for people weighing medical treatment abroad — anxious, intelligent, doing real research. You write for a medical-travel FACILITATOR (not a hospital). " +
   "Aim for genuinely excellent long-form: the page a top-1% editor would rate 9/10. Human, calm, specific, credible — never a sales note, never keyword-stuffed. " +
   "Write TO the reader about their care and their decision — NEVER about the business, its funnel, margins, or strategy. Words like 'product', 'sell', 'basket size', 'conversion', 'lead', 'first sale', 'up-sell', 'seeds the relationship' must never appear; that is internal-memo language and it is banned. " +
   "Voice: plain, warm, authoritative. Vary sentence length. Use concrete specifics and real numbers. Explain trade-offs honestly — including what can go wrong and what a price does NOT include. Earn trust by being useful and candid, not with adjectives. " +
   "BANNED filler and AI tells: 'world-class', 'seamless', 'state-of-the-art', 'peace of mind', 'rest assured', 'in today's world', 'when it comes to', 'look no further', 'in conclusion', 'nestled', 'unlock', rhetorical questions, and exclamation marks. Do not open with a preamble — open with the most useful sentence. " +
   "Hold this exact standard in EVERY language you are asked to write in — Arabic, Amharic, Burmese, Swahili — not only English; write like a native professional copywriter in that language, not a translation. " +
-  "Absolute rules: never invent prices/outcomes/accreditations; use ONLY the prices provided, as indicative package ranges (not quotes); no cure or outcome guarantees. Be clear MedYatra is a facilitator that coordinates and provides supporting documents, while the patient books their own travel and applies for their own visa. Output GitHub-flavoured Markdown only.";
+  "Absolute rules: never invent prices/outcomes/accreditations; use ONLY the prices provided, as indicative package ranges (not quotes); no cure or outcome guarantees. Be clear MedYatra is a facilitator that coordinates and provides supporting documents, while the patient books their own travel and applies for their own visa. Output GitHub-flavoured Markdown only.");
 
 const slug = (c, mk, lang) => `${c}-cost-india-${mk.toLowerCase()}${lang !== "en" ? "-" + lang : ""}.md`;
 

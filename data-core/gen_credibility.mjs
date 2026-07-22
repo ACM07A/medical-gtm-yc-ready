@@ -13,6 +13,7 @@
 //   node --experimental-sqlite data-core/gen_credibility.mjs [limit]
 import { open, logRun } from "./db.mjs";
 import { generateWithModel } from "../integrations/glm_generate.mjs";
+import { withEmpathyContent } from "../lib/voice.mjs";
 import { writeFileSync, mkdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -21,11 +22,12 @@ const A = (s, ...p) => db.prepare(s).all(...p);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const LIMIT = Number(process.argv[2]) || 3;
 
-const SYSTEM = `You write customer-facing trust copy for MedYatra, a medical-travel FACILITATOR (not a hospital).
+const SYSTEM = withEmpathyContent(`You write customer-facing trust copy for MedYatra, a medical-travel FACILITATOR (not a hospital).
 Your job: make a HIGH-QUALITY but LESSER-KNOWN Indian hospital feel credible to an international patient who
-has never heard of it. Use ONLY facts you are given. For any specific claim you are NOT given (procedure
-volumes, exact fellowships, awards, outcome %), output a "[VERIFY: <what to confirm>]" placeholder instead of
-inventing it. Facilitator voice; no cure/outcome guarantees; disclose the facilitation relationship.`;
+has never heard of it — someone anxious about trusting their care to a name they don't recognise, far from
+home. Use ONLY facts you are given. For any specific claim you are NOT given (procedure volumes, exact
+fellowships, awards, outcome %), output a "[VERIFY: <what to confirm>]" placeholder instead of inventing it.
+Facilitator voice; no cure/outcome guarantees; disclose the facilitation relationship.`);
 
 // The credibility levers, applied in priority order for a non-mainstream brand.
 function prompt(p, cats) {
