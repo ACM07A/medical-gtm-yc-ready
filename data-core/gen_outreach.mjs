@@ -50,7 +50,7 @@ First line must be: Subject: ...`;
 
   process.stdout.write(`GLM-5.2 outreach → ${p.name} (${angle}) … `);
   let md; try { md = await generate(prompt, { system: SYSTEM, maxTokens: 700, temperature: 0.5 }); }
-  catch (e) { console.log("FAIL"); logRun(db, "Partner Sourcing", `outreach ${t.id}`, "GLM error", null, "fail"); continue; }
+  catch (e) { console.log("FAIL:", String(e.message || e).slice(0, 50)); logRun(db, "Partner Sourcing", `outreach ${t.id}`, `gen error: ${String(e.message || e).slice(0, 150)}`, null, "fail"); continue; }
 
   const subject = (md.match(/Subject:\s*(.+)/i) || [, `${cat.name} partnership — MedYatra`])[1].trim();
   const file = join("outputs", "outreach", `${t.id}-${t.cat}-${t.mk.toLowerCase()}.md`);

@@ -75,7 +75,7 @@ for (const d of doctors) {
 
   process.stdout.write(`outreach → ${d.name} (${d.warmth}) … `);
   let r; try { r = await generateWithModel(prompt(d, cat, market), { system: SYSTEM, maxTokens: 2048, temperature: 0.5 }); }
-  catch (e) { console.log("FAIL:", String(e.message || e).slice(0, 50)); logRun(db, "Partner Sourcing", `doctor outreach ${d.id}`, "gen error", null, "fail"); continue; }
+  catch (e) { console.log("FAIL:", String(e.message || e).slice(0, 50)); logRun(db, "Partner Sourcing", `doctor outreach ${d.id}`, `gen error: ${String(e.message || e).slice(0, 150)}`, null, "fail"); continue; }
 
   const lint = lintClaims(r.text);
   // HARD GATE, not just a lint flag: refuse to write out a draft that leaked a percentage or currency figure

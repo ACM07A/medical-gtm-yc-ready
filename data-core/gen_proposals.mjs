@@ -84,7 +84,7 @@ Rules: NO invented prices/outcomes/volumes (reference the indicative range only,
   // maxTokens high on purpose: gemini-2.5-flash spends tokens on internal reasoning, so a low cap truncates
   // the visible output. 4096 leaves room for the reasoning AND a full ~500-word proposal.
   let r; try { r = await generateWithModel(prompt, { system: SYSTEM, maxTokens: 4096, temperature: 0.5 }); }
-  catch (e) { console.log("FAIL:", String(e.message || e).slice(0, 50)); logRun(db, "Partner Sourcing", `proposal ${p.id}`, "gen error", null, "fail"); continue; }
+  catch (e) { console.log("FAIL:", String(e.message || e).slice(0, 50)); logRun(db, "Partner Sourcing", `proposal ${p.id}`, `gen error: ${String(e.message || e).slice(0, 150)}`, null, "fail"); continue; }
 
   // QA the prose: tag vague magnitude claims [VERIFY] (the "significant demand" leak) + flag AI-filler.
   const lint = lintClaims(clean(r.text));

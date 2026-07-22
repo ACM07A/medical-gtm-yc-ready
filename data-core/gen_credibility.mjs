@@ -52,7 +52,7 @@ for (const p of partners) {
     made++;
     logRun(db, "Content Engine", `Credibility profile · ${p.id}`, `${p.name} — trust narrative (${verifyCount} [VERIFY] items to confirm)`, null, "pending");
     console.log(`  ✓ ${p.name.slice(0, 30).padEnd(30)} (${r.model}${r.failedOver ? " failover" : ""}) · ${verifyCount} [VERIFY] flags`);
-  } catch (e) { console.log(`  ✗ ${p.name}: ${String(e.message || e).slice(0, 50)}`); }
+  } catch (e) { console.log(`  ✗ ${p.name}: ${String(e.message || e).slice(0, 50)}`); logRun(db, "Content Engine", `Credibility profile · ${p.id}`, `gen error: ${String(e.message || e).slice(0, 150)}`, null, "fail"); }
 }
 logRun(db, "Content Engine", "Partner credibility narratives", `${made} lesser-known partners → trust profiles (accreditation-led, [VERIFY]-flagged)`, null, made ? "ok" : "pending");
 console.log(`\n${made} credibility profiles → outputs/credibility/. Fill [VERIFY] items with cited facts before publish.`);

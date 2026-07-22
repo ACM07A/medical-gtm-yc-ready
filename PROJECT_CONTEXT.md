@@ -94,6 +94,18 @@ This is the resilience layer. It solves two real problems at once:
    keeps producing **without Claude in the loop**. This is wired for real: a Windows Scheduled Task
    (`scripts/run_factory.bat`) runs the full cycle every 6 hours; a zero-dep `.env` loader (`lib/env.mjs`)
    gives the headless scripts their keys.
+3. **BOTH tier-2 models are rate-limited/down at once** (a real event this session hit twice:
+   `z-ai/glm-5.2: timeout | gemini:gemini-2.5-flash HTTP 429: quota exceeded`) — before now, a human had to
+   notice the failure and re-run the command once the quota reset. [`data-core/auto_loop.mjs`](./data-core/auto_loop.mjs)
+   wraps any script that uses this repo's `logRun(...,'fail')` convention and keeps retrying with exponential
+   backoff (capped) — generic on purpose, not tied to one generator, and correct with no extra state because
+   every `gen_*.mjs` script here is already idempotent (a failed item never writes an output, so a re-run
+   naturally retries only what's still missing). It also **classifies** the failure first: a real signature
+   (timeout/429/quota/rate-limit) backs off and retries; anything else (a missing key, a real bug, a
+   compliance block like the doctor-outreach fee-leak gate) stops immediately — looping against a broken
+   config for hours is worse than doing nothing and saying so. `scripts/auto_loop.bat` registers it as an
+   "at startup" Windows Scheduled Task so this survives a reboot with no terminal needed:
+   `npm run auto-loop -- gen_doctor_outreach.mjs` / `npm run auto-loop -- run_loop.mjs`.
 
 Fully env-tunable, no code changes: `GLM_MODEL`, `GLM_FALLBACKS`, `TIER2_TIMEOUT`, and `GEMINI_API_KEY`
 (appends Gemini as the backup automatically when present).
@@ -505,17 +517,21 @@ Requires **Node ≥ 22.5**. All data-core scripts need the `--experimental-sqlit
 | `npm run economics` | Unit economics: cost to acquire + fulfil one treated patient (§5.8), cited vs. assumed |
 | `npm run price-ladder` / `npm run price-gaps` | Seed the price ladder / list what's still an unpriced gap (§5.7) |
 | `npm run eval-safety` | The 20-case adversarial safety suite (§5.10) — also runs in CI on every push |
-| `npm run smoke-agents` | Headless check that all 9 concierge agents return usable output, with or without a key |
+| `npm run smoke-agents` | Headless check across all 12 concierge agents' pure functions (21 assertions), with or without a key |
 | `npm run warm-accounts` | Seed the partner board's warm, access-ranked accounts (Aster, Manipal, Fortis Bangalore) |
+| `npm run doctor-outreach` | Outreach drafts for doctor-affiliate accounts (§11 of PARTNER_AGENT.md — referral-fee terms never auto-filled) |
+| `npm run auto-loop -- <script.mjs>` | Keep retrying a generation script with backoff when a rate limit clears — no human needed to re-run it |
 
 Also available (run with `node --experimental-sqlite data-core/<script>`):
 `repurpose_content.mjs` (→ social posts + visuals · `/distribution`) · `gen_proposals.mjs` (tailored
 proposals) · `gen_credibility.mjs` (trust narratives) · `plan_clusters.mjs` (the organic content-cluster plan)
-· `seed_agent_state.mjs` (real demo rows for the concierge agents). Server routes: **`/demo`** (the showable
-hub — every capability with live counts), `/console`, `/studio` (approve-and-deploy), `/sandbox` (editable
-patient-journey demo), **`/agents`** (the nine concierge agents, live), `/comms` (template list), `/benchmarks`
-(de-identified aggregate), `/plugins` (integration readiness), `/distribution`, `/worklist`. **Going live is
-keys-only — see [`build-os/12_GO_LIVE.md`](./build-os/12_GO_LIVE.md)** (which features need which keys) **and
+· `seed_agent_state.mjs` (real demo rows for the concierge agents) · `capture_doctor.mjs` (log a
+human-confirmed doctor-affiliate). Server routes: **`/demo`** (the showable hub — every capability with live
+counts), `/console`, `/studio` (approve-and-deploy), `/sandbox` (editable patient-journey demo), **`/agents`**
+(the twelve concierge agents, live), **`/journey`** (one real lead through all twelve, in chronological order,
+one run), `/comms` (template list), `/benchmarks` (de-identified aggregate), `/plugins` (integration
+readiness), `/distribution`, `/worklist`. **Going live is keys-only — see
+[`build-os/12_GO_LIVE.md`](./build-os/12_GO_LIVE.md)** (which features need which keys) **and
 [`build-os/13_DEPLOYMENT.md`](./build-os/13_DEPLOYMENT.md)** (where the process runs and what it costs).
 Capture a confirmed contact:
 `node --experimental-sqlite data-core/capture_poc.mjs <partner_id> "Full Name" "Role" "<email|linkedin-url>"`

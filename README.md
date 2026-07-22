@@ -79,6 +79,7 @@ npm run partner-layer       # rebuild the fit-ranked account board
 npm run worklist            # generate the human research worklist (/worklist)
 STEALTH=1 npm run discover  # find named decision-makers via Google→LinkedIn (real browser)
 npm run loop                # one unattended factory cycle (runs without Claude)
+npm run auto-loop -- gen_doctor_outreach.mjs   # keep retrying a generation script when a rate limit clears — no human needed to re-run it
 npm run economics           # unit economics: cost to acquire + fulfil one treated patient, cited vs assumed
 npm run eval-safety         # the adversarial safety suite (20 cases; also runs in CI)
 npm run smoke-agents        # headless check across all 12 concierge agents' pure functions (21 assertions)
