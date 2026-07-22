@@ -117,7 +117,8 @@ band    = ≥70 "work now" · ≥45 "warm up" · else "park / build path"
 
 Three companion fields carry the terms conversation on the account itself: `commission_target_pct` (the
 number that unblocks a fast close — **20% entry on the warm accounts**, vs incumbent agents' **25–33%**, with
-a revenue-tiered step-down to 18%/16% as volume proves out — `COMMISSION_TIERS` in `db.mjs`),
+a revenue-tiered step-**up** to 22.5%/25% (₹0–20L / 20–50L / 50L+ routed) as volume proves out — always at or
+below the incumbent floor; `COMMISSION_TIERS` in `db.mjs`),
 `commission_status`, and **`value_ask`** — the extra we ask the hospital for in exchange for the *lower* fee,
 because we bring the volume:
 best-of-book package rates, priority admission/OT scheduling, a named international coordinator, co-funded
@@ -236,8 +237,8 @@ dental(1) < cosmetic(2) < fertility(3) < ortho(4) < oncology(5) < cardiac(6)
 (2) the case for travelling for this treatment — cost gap, quality, no unsupported demand numbers,
 (3) what MedYatra brings — precise and modest: demand generation, pre-qualified patients, coordination of
 the enquiry and *supporting documents* (never interpreters, flights, hotels, or on-ground logistics — those
-are explicitly **not** claimed), (4) commercial model — facilitation fee **20% entry, revenue-tiered down to
-16%** (vs incumbents' 25–33%), pay only on delivered
+are explicitly **not** claimed), (4) commercial model — facilitation fee **20% entry rising to 25% across
+three revenue tiers** (₹0–20L / 20–50L / 50L+; always ≤ the 25–33% incumbents charge), pay only on delivered
 patients, non-exclusive, (5) a small time-boxed pilot cohort, zero upfront, (6) compliance & trust —
 facilitator disclosure, accredited-partners-only, DPDP/GDPR, no clinical claims, (7) next steps — ask for a
 package sheet, a named coordinator, and a 30-minute call. **Never asks for a commitment in the first ask.**

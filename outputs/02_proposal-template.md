@@ -39,7 +39,7 @@ Two parts: (A) the reusable variable-driven template, (B) a filled worked exampl
 
 **2. Demand we bring.** Target 40–70 qualified cardiac leads/month from Iraq/Gulf by month 6, pre-screened for procedure (CABG vs. valve vs. angioplasty), clinical urgency, budget band, and report-readiness. You receive treatment-ready patients with reports in hand.
 
-**3. Commercial model.** Facilitation fee **starting at 20%** of package value (below the 25–33% incumbent agents charge), stepping down on a revenue-based tier as volume grows, billed to Apollo, never charged to the patient. Terms: net-15 post-discharge. Non-exclusive.
+**3. Commercial model.** Facilitation fee **starting at 20%** of package value (below the 25–33% incumbent agents charge), rising in three revenue tiers to a 25% cap — their floor — only as volume proves out, so you never pay more than your cheapest current agent; billed to Apollo, never charged to the patient. Terms: net-15 post-discharge. Non-exclusive.
 
 **4. Service-level asks.** Cardiac quote turnaround ≤ 48h · named coordinator for our patients · CABG/valve/angioplasty package sheet · pre-arrival cardiologist teleconsult · priority OT scheduling.
 

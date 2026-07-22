@@ -18,12 +18,12 @@ import { open, logRun, readiness, accessScore, speedScore, pursuitScore } from "
 const db = open();
 
 // The value-exchange line (Sachin + founder numbers, 2026-07-22): incumbent agents charge 25–33%; we open at
-// 20% with a volume-based (revenue-routed) tier structure stepping down to 18%/16% — the hospital keeps more
-// per case from day one and progressively more as our volume proves out. In return we ask for something
-// extra, because we bring the volume that makes the lower fee worth it. Attached to every warm account below.
-const VALUE_ASK = "20% entry fee (vs incumbents' 25–33%) stepping down on revenue tiers, in exchange for: " +
-  "best-of-book package rates, priority admission/OT scheduling for our patients, a named international " +
-  "coordinator, and co-funded patient-education content.";
+// 20% (below their floor) with a volume ramp that steps UP to 25% across three tiers of routed revenue
+// (₹0–20L / 20–50L / 50L+) — cheaper than any incumbent early, at parity with their cheapest at scale, never
+// above. In return we ask for something extra, strongest in the early undercut phase. Attached to every warm account.
+const VALUE_ASK = "20% entry fee — below incumbents' 25–33% — rising to 25% across three revenue tiers " +
+  "(₹0–20L / 20–50L / 50L+ routed), in exchange for: best-of-book package rates, priority admission/OT " +
+  "scheduling for our patients, a named international coordinator, and co-funded patient-education content.";
 
 const ACCOUNTS = [
   {

@@ -155,14 +155,17 @@ fee is the real gate, not process. The board's next-action for every warm accoun
 commission number." Ganga Ram (fit 96 but no path in) correctly drops below all four warm accounts.
 
 **What we are asking for — and the value exchange.** Not exclusivity and not volume promises. Incumbent
-agents charge hospitals **25–33%**; we **open at 20% and step down on a revenue-based tier** (20% → 18% → 16%
-as annual routed revenue crosses $250k and $1M) — the hospital keeps more per case from day one, and more as
-our volume proves out. In exchange we ask for something extra, because we bring the volume that makes the
-lower fee worth it: **best-of-book package rates, priority admission/OT scheduling for our patients, a named
-international coordinator, and co-funded patient-education content.** This value-ask is recorded per account.
-The commission model quantifies the pitch: on a $6,200–8,500 cardiac package at 20%, the hospital nets
-**$310–425 more per case** than under a 25% incumbent — and **$806–1,105 more** than a 33% one — on their
-existing rate card. First step remains: permission to send three to five test cases.
+agents charge hospitals **25–33%**; we use a **volume ramp that steps up** — **20% → 22.5% → 25%** as
+cumulative annual routed revenue crosses **₹20L and ₹50L**. We deliberately **start below the market floor**
+(20% vs 25%) to win the pilot and prove the channel, and rise only to the incumbent **floor** (25%) — **never
+above** — once we're demonstrably driving volume. So we're cheaper than any incumbent early and at parity with
+their cheapest at scale, with our upside tied to the volume we deliver. In exchange we ask for something extra,
+strongest in the early undercut phase: **best-of-book package rates, priority admission/OT scheduling for our
+patients, a named international coordinator, and co-funded patient-education content.** This value-ask is
+recorded per account. The pitch, quantified at the **20% entry** tier: on a $6,200–8,500 cardiac package the
+hospital nets **$310–425 more per case** than under a 25% incumbent — and **$806–1,105 more** than a 33% one —
+narrowing to parity only once we've earned the 25% scale tier. First step remains: permission to send three to
+five test cases.
 
 **Pricing is designed to run on actuals.** The commission economics (`npm run pricing`) run on real hospital
 rate cards wherever one exists and clearly-labelled indicative ranges where none does — and the report's

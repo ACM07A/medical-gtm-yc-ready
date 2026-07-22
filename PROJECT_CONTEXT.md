@@ -10,8 +10,9 @@ it, and its honest limits. Written so you can understand — and speak to — ev
 ## 1. The one-paragraph version
 
 MedYatra is an **agentic go-to-market (GTM) engine** for a medical-tourism *facilitator* — a business that
-connects international patients to accredited Indian hospitals and takes a facilitation fee — 20% entry,
-stepping down on revenue tiers, deliberately below incumbent agents' 25–33% (it is
+connects international patients to accredited Indian hospitals and takes a facilitation fee — a volume ramp
+that steps up 20% → 22.5% → 25% (₹0–20L / 20–50L / 50L+ routed), opening below incumbent agents' 25–33% and
+rising only to their floor (it is
 **not** a hospital and provides no care). The engine is a fleet of AI agents that autonomously (1) decide
 which treatments to sell, (2) build the hospital-partner supply side down to the named decision-maker and a
 tailored proposal, (3) run a multilingual content/brand campaign and repurpose it into platform-ready social
@@ -239,7 +240,7 @@ automated scraping — a human does the searching (manual use, no anti-bot circu
 **Tailored proposals** ([`data-core/gen_proposals.mjs`](./data-core/gen_proposals.mjs)): a 7-section
 partnership proposal per top account, **addressed to the named POC**, grounded in that account's fit reason,
 categories, and cited pricing, with the differentiated angle (margin/demand for latent brands, scale for
-established chains) and the credibility framing (§5.2c). Facilitator terms only (20% entry fee stepping down on revenue tiers, non-exclusive,
+established chains) and the credibility framing (§5.2c). Facilitator terms only (20% entry fee rising to 25% across revenue tiers, non-exclusive,
 pilot), no invented prices/outcomes, human-gated at `review`. Generated via the failover chain — Gemini
 already produces the best of these.
 
@@ -268,10 +269,12 @@ Status: the capability exists, the board has zero rows — no real name to add y
 
 The facilitator economics, made explicit (`commissionModel()`, `db.mjs`): the patient pays the hospital's
 package price; the hospital pays our commission out of it. Incumbent agents charge **25–33%** (founder
-numbers); we **open at 20% and step down on revenue tiers** (20% to $250k/yr routed, 18% to $1M, 16% beyond)
-— so the hospital **nets an uplift per case** from day one and progressively more as our volume proves out.
-Quantified conservatively (vs the 25% floor): a $6,200–8,500 CABG package at 20% leaves the hospital
-$310–425 more per case than a 25% incumbent, and $806–1,105 more than a 33% one. The model is designed to run on
+numbers); we use a **volume ramp that steps up** — **20% → 22.5% → 25%** as cumulative annual routed revenue
+crosses ₹20L and ₹50L (marginal brackets). We open **below** the market floor to win the pilot and rise only
+to the incumbent **floor** (25%), never above — so the hospital **nets an uplift per case** early and reaches
+parity only once we've earned the scale tier. Quantified at the 20% entry tier (vs the 25% floor): a
+$6,200–8,500 CABG package leaves the hospital $310–425 more per case than a 25% incumbent, and $806–1,105 more
+than a 33% one. The model is designed to run on
 **actual hospital rate cards**: `capture_partner_price.mjs` is the only entry point (human-vouched;
 `confirmed` only when explicitly flagged, because a confirmed rate replaces the indicative rung on the
 patient-facing price ladder). `npm run pricing` reports per-case economics on actuals where they exist,

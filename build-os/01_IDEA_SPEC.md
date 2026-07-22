@@ -19,7 +19,7 @@ Category scoring live · 5+ scored hospitals/category with POCs · proposal gene
 Add remaining Africa + SE Asia source markets · feeder network automation · paid-acquisition loop · European dental/cosmetic/fertility corridor · second destination country · analytics + attribution · self-serve partner portal.
 
 ## Monetization
-Facilitation fee 20% entry (revenue-tiered to 16%, vs incumbents' 25–33%) from hospitals (primary) · ancillary (visa/travel/stay/interpreter) · feeder-network commission share · later: premium concierge tier.
+Facilitation fee 20% entry rising to a 25% cap across three revenue tiers (₹0–20L / 20–50L / 50L+; always ≤ incumbents' 25–33%) from hospitals (primary) · ancillary (visa/travel/stay/interpreter) · feeder-network commission share · later: premium concierge tier.
 
 ## Risks
 Trust/brand in a scam-prone category · compliance missteps · hospital commercial resistance · content quality vs. clinical accuracy · platform ad-policy bans on health · over-automation eroding the human empathy the category needs.

@@ -3,7 +3,7 @@
 //   1. For every CONFIRMED partner rate card (capture_partner_price.mjs), the per-case economics: what the
 //      patient pays, our fee at that partner's negotiated commission, what the hospital nets, and the net
 //      UPLIFT the hospital keeps vs incumbent agents at 25–33% (founder numbers, 2026-07-22) — computed
-//      conservatively against the 25% floor. Our structure: 20% entry, stepping down on revenue tiers.
+//      conservatively against the 25% floor. Our structure: 20% entry, stepping UP to 25% across revenue tiers.
 //   2. Where we're still on INDICATIVE category ranges (no confirmed card yet) — clearly labelled, never
 //      shown to a patient — so the model is never mistaken for real quotes.
 //   3. The RATE-CARD GAP: the partners we're actively pursuing (top pursuit_score) that have no confirmed
@@ -63,9 +63,9 @@ for (const p of PURSUED) {
 }
 
 const denom = gaps + filled;
-console.log(`\nCOMMISSION STRUCTURE (opening proposal — negotiable per partner): incumbents charge ${INCUMBENT_COMMISSION.low}–${INCUMBENT_COMMISSION.high}%.`);
-for (const t of COMMISSION_TIERS) console.log(`  ${String(t.pct).padStart(2)}%  ${t.label}`);
-console.log(`  Uplift shown above is CONSERVATIVE (vs the ${INCUMBENT_COMMISSION.low}% incumbent floor); vs a ${INCUMBENT_COMMISSION.high}% incumbent it is larger still.`);
+console.log(`\nCOMMISSION STRUCTURE — volume ramp, steps UP (opening proposal, negotiable). Incumbents charge ${INCUMBENT_COMMISSION.low}–${INCUMBENT_COMMISSION.high}%:`);
+for (const t of COMMISSION_TIERS) console.log(`  ${String(t.pct).padStart(4)}%  ${t.label}`);
+console.log(`  We start BELOW the incumbent floor and rise only to it (${INCUMBENT_COMMISSION.high}% ceiling never reached). Per-case uplift above is at the 20% ENTRY tier vs the ${INCUMBENT_COMMISSION.low}% floor; vs a ${INCUMBENT_COMMISSION.high}% incumbent it is larger, and it narrows to parity as we reach the ${COMMISSION_TIERS.at(-1).pct}% scale tier.`);
 console.log(`\nRATE-CARD GAP: ${filled}/${denom} pursued partner×category cells have a CONFIRMED rate. ${gaps} still indicative.`);
 console.log(`Capture a real card:  node --experimental-sqlite data-core/capture_partner_price.mjs <partner_id> <category> <procKey> <low> <high> confirmed "<includes>" "<source>"`);
 logRun(db, "Pricing", "Pricing-model review",

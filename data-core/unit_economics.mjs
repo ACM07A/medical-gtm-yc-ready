@@ -63,8 +63,9 @@ const cat = db.prepare(
                  JOIN category_price p ON p.category_id=c.id GROUP BY c.id ORDER BY pkg DESC LIMIT 1`).get();
 
 // ANCHORED (not just ASSUMED anymore) — founder + Sachin Rai numbers, 2026-07-22: INCUMBENT agents charge
-// hospitals 25–33%. Our OPENING fee is 20% (revenue-tiered down to 16%), so we model our own economics at the
-// 20% entry — below incumbents on purpose, a deliberately conservative take on our own revenue per case.
+// hospitals 25–33%. Our fee is a volume ramp that STEPS UP from 20% to 25% (₹0–20L / 20–50L / 50L+ routed),
+// so we model our own economics at the 20% ENTRY tier — below incumbents on purpose, and a deliberately
+// conservative take on our own revenue per case (it rises toward 25% only once volume proves out).
 const COMMISSION = num("commission", 0.20);
 const AGENCY_CAC = num("agencycac", 1400);             // ASSUMED — coordinator time + media + sub-agent cut
 
@@ -123,7 +124,7 @@ console.log(`     • what an inquiry costs them through their current agent pan
 console.log(`\n  PROVENANCE (channel: ${CHANNEL})`);
 for (const s of STAGES) console.log(`     ${s.key.padEnd(10)} ${s.src}`);
 console.log(`     package    CITED — data-core category_price rows`);
-console.log(`     commission ANCHORED ${Math.round(COMMISSION * 100)}% — founder + Sachin 2026-07-22: incumbents charge 25-33%, we open at 20% (revenue-tiered to 16%); modelled at our 20% entry`);
+console.log(`     commission ANCHORED ${Math.round(COMMISSION * 100)}% — founder + Sachin 2026-07-22: incumbents charge 25-33%, we ramp 20%→22.5%→25% (₹0-20L/20-50L/50L+); modelled at our 20% entry`);
 const cited = STAGES.filter((s) => s.src.startsWith("CITED")).length;
 console.log(`\n  ${cited} of ${STAGES.length} funnel stages rest on a published benchmark. The rest are ours.`);
 console.log(`  Treat every figure above as a range, not a number, until a real cohort replaces it.`);

@@ -241,22 +241,31 @@ export function priceLadder(db, categoryId, marketCode) {
 // hospital package rates once we have them (capture_partner_price.mjs), falling back to the indicative range
 // only when we don't. The facilitator model: the hospital's package price is what the patient pays; the
 // hospital pays US a facilitation commission out of that price and nets the rest — we are NOT a patient
-// markup. The strategic point (Sachin + founder numbers, 2026-07-22): INCUMBENT agents charge 25–33%; we
-// START at 20% and step DOWN on a volume (revenue-routed) tier structure — the hospital keeps more per case
-// from day one and keeps progressively more as our volume proves out, in exchange for the "extra" we ask
-// back (value_ask). `pkg` is {low,high} from a confirmed partner_price (actual) or category range
-// (indicative); feePct defaults to the entry tier (20). incumbentPct defaults to the BOTTOM of the incumbent
-// range (25) so the uplift pitch is conservative — vs a 33% incumbent it's larger still.
-export const INCUMBENT_COMMISSION = { low: 25, high: 33 };   // what hospitals pay agents today (founder input)
-// Volume tiers on ANNUAL revenue routed to the partner. Entry 20%, stepping down as volume proves out.
-// Breakpoints are our OPENING proposal structure — negotiable per partner, not a published rate card.
+// markup. The strategic point (Sachin + founder numbers, 2026-07-22): INCUMBENT agents charge 25–33%. We use
+// a volume RAMP that STEPS UP from 20% to 25% across three tiers of cumulative annual revenue routed to the
+// partner — we deliberately START BELOW the incumbent floor (20% vs 25%) to win the pilot and prove the
+// channel, and rise only to the incumbent FLOOR (25%), never above, once we are demonstrably driving volume.
+// So we're cheaper than any incumbent early and at parity with their cheapest at scale, with our upside tied
+// to the volume we deliver (and the "extra" we ask back, value_ask, strongest in the early undercut phase).
+// `pkg` is {low,high} from a confirmed partner_price (actual) or category range (indicative); feePct defaults
+// to the entry tier (20). incumbentPct defaults to the BOTTOM of the incumbent range (25) so the uplift pitch
+// is conservative — vs a 33% incumbent it's larger still.
+export const INCUMBENT_COMMISSION = { low: 25, high: 33 };   // what hospitals pay incumbent agents today (founder input)
+export const USD_INR = 83;   // indicative FX to bucket INR revenue tiers against USD package data — refresh before contracting
+// Volume-based commission that STEPS UP as cumulative annual revenue ROUTED TO THE PARTNER grows (marginal
+// brackets, like tax: each band of routed revenue is billed at that band's rate). Thresholds in INR (₹Lakh)
+// per the founder's structure. OPENING proposal — negotiable per partner, not a published rate card.
 export const COMMISSION_TIERS = [
-  { uptoUSD: 250_000, pct: 20, label: "entry — first cases to $250k/yr routed" },
-  { uptoUSD: 1_000_000, pct: 18, label: "growth — $250k–1M/yr routed" },
-  { uptoUSD: Infinity, pct: 16, label: "scale — beyond $1M/yr routed" },
+  { uptoINR: 20_00_000, pct: 20,   label: "entry · ₹0–20L/yr routed (below the incumbent floor)" },
+  { uptoINR: 50_00_000, pct: 22.5, label: "growth · ₹20L–50L/yr routed" },
+  { uptoINR: Infinity,  pct: 25,   label: "scale · ₹50L+/yr routed (incumbent floor, never above)" },
 ];
-export function tierFor(annualRoutedUSD = 0) {
-  return COMMISSION_TIERS.find((t) => annualRoutedUSD < t.uptoUSD) ?? COMMISSION_TIERS.at(-1);
+// Which tier applies at a given cumulative routed revenue. tierFor takes INR; tierForUSD converts USD package data.
+export function tierFor(cumulativeRoutedINR = 0) {
+  return COMMISSION_TIERS.find((t) => cumulativeRoutedINR < t.uptoINR) ?? COMMISSION_TIERS.at(-1);
+}
+export function tierForUSD(cumulativeRoutedUSD = 0) {
+  return tierFor(cumulativeRoutedUSD * USD_INR);
 }
 export function commissionModel(pkg, feePct = COMMISSION_TIERS[0].pct, incumbentPct = INCUMBENT_COMMISSION.low) {
   const lo = Number(pkg?.low) || 0, hi = Number(pkg?.high) || 0;

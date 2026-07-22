@@ -73,7 +73,7 @@ A partnership proposal must contain these sections, tailored to the hospital's s
 
 1. **Who we are** — facilitator, source-market reach, languages, digital demand engine.
 2. **Qualified demand we bring** — projected MQLs by category + source market, our lead-qualification standard (so they get pre-screened, treatment-ready patients, not tire-kickers).
-3. **Commercial model** — transparent facilitation fee **20% entry, revenue-tiered down to 16%** (vs incumbent agents' 25–33%) of package value OR fixed per-case coordination fee; net-package or gross model; payment terms; no double-charging the patient.
+3. **Commercial model** — transparent facilitation fee **20% entry rising to a 25% cap across three revenue tiers** (₹0–20L / 20–50L / 50L+; always ≤ the 25–33% incumbents charge) of package value OR fixed per-case coordination fee; net-package or gross model; payment terms; no double-charging the patient.
 4. **Service-level asks** — quote turnaround SLA (≤ 48h), dedicated coordinator, package pricing sheet, teleconsult slots for pre-arrival, priority scheduling.
 5. **Patient-experience commitments** — interpreter, airport pickup, accommodation coordination, post-op telefollow-up — who does what.
 6. **Co-marketing** — hospital doctor features in our content, verified patient stories (with consent), listing in category pages.

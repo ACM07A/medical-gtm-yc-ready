@@ -184,7 +184,7 @@ for (const [cat,mkt,lang,title,file,cites] of content) coStmt.run(cat,mkt,lang,t
 
 // ---- proposal (the worked example) ----
 db.prepare(`INSERT INTO proposal (partner_id,category_id,market_code,fee_pct,status,file_ref,blockers)
-  VALUES ('apollo','cardiac','IQ',20,'review','outputs/02_proposal-template.md','named POC; live package sheet; legal on 20% entry / revenue-tiered')`).run();
+  VALUES ('apollo','cardiac','IQ',20,'review','outputs/02_proposal-template.md','named POC; live package sheet; legal on 20% entry → 25% cap revenue-tiered')`).run();
 
 const n = (t) => db.prepare(`SELECT count(*) c FROM ${t}`).get().c;
 console.log("Seeded:", ["market","category","category_price","category_market","partner","partner_category","poc","content_asset","proposal"]
