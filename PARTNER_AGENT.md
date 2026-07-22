@@ -366,3 +366,33 @@ dollar-figure leak; both are caught). Every draft's compensation section is inst
 `[VERIFY: confirm local permissibility + structure of any referral arrangement with counsel before discussing
 terms]` placeholder. `warmth` decides the opening: a `warm` account may reference the real introduction on
 file (`doctor_affiliate.source`); a `cold` one must not imply a relationship that doesn't exist.
+
+---
+
+## 12. A third GTM motion, documented but not built: the payer channel
+
+Hospital partnerships (§2–§8) and doctor-affiliates (§11) both work by finding a person who refers patients
+one at a time. Sachin named a structurally different motion, with a real precedent: **Toyota routed its own
+insured employees through medical tourism for treatment.** The user separately proposed the general version —
+for new-market entry or fast volume in an open market, partner with an insurer, a TPA, or a large
+self-insured employer, and pitch reducing THEIR claims payout by redirecting a procedure to MedYatra's
+curated hospital network instead of a costlier local or third-country route.
+
+**Why this doesn't fit the existing rubric.** `partnerFit()` scores an institution's quality × whitespace;
+`doctorFit()` scores a clinician's specialty × market × reach. A payer isn't scored on either axis — the
+pitch is pure claims-cost arithmetic applied to a population, not a trust relationship with an individual.
+It needs its own logic if it's ever built out, not a forced fit into either existing rubric.
+
+**This is not theoretical — it's already been pitched once.** The `MedYatra × TruDoc` partnership document
+(built earlier this session) is exactly this motion, worked out in full for one company: TruDoc (a UAE
+chronic-care manager, 4.4M members) gets a claims-cost-reduction pitch, a tenant-isolation guarantee ("your
+members' data stays yours"), and a performance-based commercial model — no retainer, paid on delivered
+patients. Toyota is independent evidence the underlying thesis holds beyond TruDoc specifically: any large
+payer or self-insured employer with a population and a claims budget is a candidate.
+
+**Status: documented, not built.** Generalizing this into a repeatable motion — the way `capture_doctor.mjs`
++ `doctorFit()` + `gen_doctor_outreach.mjs` generalized the doctor-affiliate idea from a single conversation
+into a scored, repeatable account type — would mean: a `type='payer'` partner row, a scoring rubric (likely:
+population size × claims-cost-reduction potential × how self-insured/decision-authority-concentrated they
+are), and an outreach generator that mirrors the TruDoc pitch structure for a new prospect. None of this
+exists yet. Whether to build it is an open question for the user to decide, not something built unprompted.

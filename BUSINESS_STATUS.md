@@ -25,6 +25,12 @@ price, restored hospital margin, or our take.
 across time zones and languages, mostly over WhatsApp — became automatable in the last eighteen months.
 It is also the entire cost structure of a facilitator.
 
+**Empathy is a hardcoded requirement, not a value statement.** A patient in this funnel is, by definition,
+making a frightening decision — a parent's heart surgery, a diagnosis received abroad — under real financial
+and emotional pressure. The facilitator relationship only works if every touchpoint feels like it's on their
+side. This is meant to shape agent prompts, WhatsApp copy, and the product itself, not just marketing —
+a standing filter to apply going forward, not a one-time pass.
+
 ---
 
 ## 2. Market
@@ -46,6 +52,17 @@ country, because it changes the entire proposition:
 different competitor set (Türkiye and Poland are closer and cheaper to reach), and a materially harder
 regulatory position — GDPR requires standard contractual clauses and a transfer risk assessment before a
 UK or Irish patient's data can be processed in India at all. It is a later corridor, not part of the wedge.
+
+**Sachin Rai's ranked top-5 target markets** (9.5-year MVT desk veteran, interviewed 2026-07-22, re-confirmed
+same day): **1. Ethiopia · 2. Nigeria · 3. Kenya · 4. Tanzania · 5. Zambia/Zimbabwe/Namibia** (a cluster, not
+individually ranked). Cameroon and Sudan named as possible extensions, not core. This is one experienced
+operator's real desk read on where MedYatra could actually win — agent-supply saturation, category fit, and
+relationship access in each market — not aggregate industry volume; it's a different, complementary signal
+to the cited 2025 figures above (which rank Oman ahead of Kenya at the country level). All five markets are
+now in the data core (`market` table); Tanzania, Zambia, Zimbabwe, Namibia, Cameroon were newly added
+2026-07-22. **Genuinely unresolved**: the existing build still treats Iraq/Oman/Yemen as the lead corridor
+(Tier A) with all of Africa at Tier B — whether Ethiopia-led Africa should outrank that is a real open
+decision, not yet made.
 
 ---
 
@@ -119,6 +136,15 @@ That is the single highest-value thread we have.
 five test cases.
 
 **What we have not yet secured:** any signed agreement, LOI, or preferred rate. That is the honest position.
+
+**A third acquisition channel worth naming: payers, not just hospitals or doctors.** Sachin cited a real
+precedent — Toyota routed its own insured employees through medical tourism for treatment. The pitch to an
+insurer, a TPA, or a large self-insured employer is different from the hospital or doctor pitch: it's
+financial (lower claims cost for treatment they're already going to pay for) applied to a whole population
+at once, not a clinical-trust pitch to one referring person. This exact pitch is already built, once — the
+`MedYatra × TruDoc` partnership document — and Toyota is independent evidence the underlying thesis holds
+beyond that one company. **Documented, not yet built out as a repeatable motion** (no scoring rubric or
+generalized outreach generator exists for it yet, unlike the hospital and doctor-affiliate tracks).
 
 ---
 
