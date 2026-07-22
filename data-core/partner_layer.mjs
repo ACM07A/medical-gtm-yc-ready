@@ -3,7 +3,7 @@
 // model (desk vs named vs inferred + confidence), (3) a concrete NEXT ACTION + owner per account so the
 // pipeline actually moves. Idempotent — safe to re-run. FREE (no external calls).
 //   node --experimental-sqlite data-core/partner_layer.mjs
-import { open, logRun, partnerFit } from "./db.mjs";
+import { open, logRun, partnerFit, readiness, accessScore, speedScore, pursuitScore } from "./db.mjs";
 const db = open();
 const A = (s, ...p) => db.prepare(s).all(...p);
 const O = (s, ...p) => db.prepare(s).get(...p);
@@ -36,15 +36,26 @@ for (const p of A(`SELECT * FROM partner`)) {
   const named = O(`SELECT count(*) c FROM poc WHERE partner_id=? AND person_name IS NOT NULL AND person_name<>''`, p.id).c;
   const desk = O(`SELECT count(*) c FROM poc WHERE partner_id=?`, p.id).c;
 
-  // Next action follows the real state of the account, not a guess.
+  // The three-axis score: fit (worth it?) + access (can we get in?) + speed (how fast?). pursuit_score is what
+  // the board ranks on now — see db.mjs. Access/speed read the partner's connection + commission_status fields
+  // (set by the seeds); they default to cold/unknown, so a partner nobody has touched scores low on pursuit
+  // even if its fit is high, which is exactly the point.
+  const rd = readiness(p);
+  const acc = accessScore(p);
+  const spd = speedScore(p, rd);
+  const pur = pursuitScore({ fit: score, access: acc.score, speed: spd.score });
+
+  // Next action follows the real state of the account, not a guess — and leads with access when there's a path.
   let next, owner = "Partner Sourcing";
   if (p.stage === "Outreach queued" || p.stage === "Outreach sent") next = "Follow up in 4 days; log response";
+  else if (p.commission_status === "in_discussion") next = `Close the commission number (${p.commission_target_pct ? p.commission_target_pct + "%" : "target %"}); it's the gate on a fast signing`;
+  else if (/warm|adviser/.test(p.connection || "")) next = `Use the warm intro (${acc.label}); open with terms + the extra we want back for a lower fee`;
   else if (named > 0) next = `Verify direct contact for named POC, then send ${p.mvt_presence === "latent" ? "margin/demand" : "scale"} outreach`;
   else if (desk > 0) next = `Resolve named ${TARGET_ROLES[0]} (public-DM discovery / enrichment), then draft outreach`;
   else next = "Add IPS channel + open a POC row";
 
-  db.prepare(`UPDATE partner SET fit_score=?, fit_reason=?, next_action=?, owner=? WHERE id=?`)
-    .run(score, reason, next, owner, p.id);
+  db.prepare(`UPDATE partner SET fit_score=?, fit_reason=?, next_action=?, owner=?, access_score=?, speed_score=?, pursuit_score=? WHERE id=?`)
+    .run(score, reason, next, owner, acc.score, spd.score, pur.score, p.id);
   fits++; actions++;
 }
 
@@ -69,10 +80,12 @@ logRun(db, "Partner Sourcing", "Partner layer rebuilt (CRM backbone)",
   `${fits} accounts scored + next-action set; ${pocs} POCs normalized; target-role slots opened for star accounts`, null, "ok");
 
 // --- report ---------------------------------------------------------------------------------------
-console.log("ACCOUNT BOARD (fit-ranked):");
-for (const p of A(`SELECT * FROM partner ORDER BY fit_score DESC LIMIT 12`)) {
-  const named = O(`SELECT count(*) c FROM poc WHERE partner_id=? AND person_name IS NOT NULL AND person_name<>''`, p.id).c;
-  console.log(` ${String(p.fit_score).padStart(3)} | ${p.name.slice(0, 30).padEnd(30)} | ${(p.mvt_presence || "").padEnd(11)} | POC:${named ? "named" : "desk "} | ${p.next_action.slice(0, 46)}`);
+// Ranked by PURSUIT now (access + fit + speed), not fit alone — who to work first, warm intros on top.
+console.log("ACCOUNT BOARD (pursuit-ranked — who to work first):");
+console.log(" pur | fit | acc | spd | account                        | connection            | next");
+for (const p of A(`SELECT * FROM partner ORDER BY pursuit_score DESC, fit_score DESC LIMIT 12`)) {
+  const cell = (n) => String(n ?? 0).padStart(3);
+  console.log(` ${cell(p.pursuit_score)} | ${cell(p.fit_score)} | ${cell(p.access_score)} | ${cell(p.speed_score)} | ${p.name.slice(0, 30).padEnd(30)} | ${(p.connection || "cold").padEnd(21)} | ${(p.next_action || "").slice(0, 40)}`);
 }
-console.log(`\nTarget roles hunted: ${TARGET_ROLES[0]} (+${TARGET_ROLES.length - 1} more)`);
+console.log(`\nRanking key: pursuit = 0.45·access + 0.30·fit + 0.25·speed. Target roles hunted: ${TARGET_ROLES[0]} (+${TARGET_ROLES.length - 1} more)`);
 db.close();

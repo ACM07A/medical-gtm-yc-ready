@@ -80,13 +80,16 @@ function buildState(db) {
     candidates, named,
     // Account Board — the partner layer as a working CRM: fit-ranked, why-this-account, best POC + how
     // sure we are of the contact path, and the concrete next action. This is the GTM engine's spine.
-    accounts: A(`SELECT * FROM partner ORDER BY fit_score DESC, name`).map((p) => {
+    accounts: A(`SELECT * FROM partner ORDER BY pursuit_score DESC, fit_score DESC, name`).map((p) => {
       const poc = O(`SELECT person_name, role, title_target, contact_type, contact_value, confidence FROM poc
         WHERE partner_id=? ORDER BY CASE contact_type WHEN 'named-verified' THEN 0 WHEN 'named-public' THEN 1
         WHEN 'inferred' THEN 2 ELSE 3 END, confidence DESC LIMIT 1`, p.id);
       return {
         id: p.id, name: p.name, city: p.city, presence: p.mvt_presence, opp: p.opportunity,
         fit: p.fit_score, reason: p.fit_reason, stage: p.stage, next: p.next_action, owner: p.owner,
+        // the three-axis ranking: pursuit is the board order (who first), fit/access/speed are the why.
+        pursuit: p.pursuit_score, access: p.access_score, speed: p.speed_score,
+        connection: p.connection, commission: p.commission_status, valueAsk: p.value_ask,
         outcome: p.outcome && p.outcome !== "none" ? p.outcome : null,
         readiness: readiness(p),   // execution risk, kept SEPARATE from fit (opportunity)
         poc: poc && poc.person_name ? poc.person_name : null,

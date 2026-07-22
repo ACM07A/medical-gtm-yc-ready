@@ -13,9 +13,15 @@
 //
 // So these carry a real fit_score AND an explicit note that access, not score, is why they rank first.
 //   node --experimental-sqlite data-core/seed_warm_accounts.mjs
-import { open, logRun } from "./db.mjs";
+import { open, logRun, readiness, accessScore, speedScore, pursuitScore } from "./db.mjs";
 
 const db = open();
+
+// The value-exchange line (Sachin, 2026-07-22): we charge a LOWER facilitation fee than incumbents, and in
+// return we ask the hospital for something extra — because we bring the volume that makes a thin fee worth it.
+// This is the standard "extra we want back for a lower fee" attached to every warm account below.
+const VALUE_ASK = "Below-market fee in exchange for: best-of-book package rates, priority admission/OT " +
+  "scheduling for our patients, a named international coordinator, and co-funded patient-education content.";
 
 const ACCOUNTS = [
   {
@@ -24,6 +30,7 @@ const ACCOUNTS = [
     ips_channel_public: "asterhospitals.in — international patient services desk",
     ips_source: "asterhospitals.in", fit: "High", stage: "Warm intro pending", priority: 1, type: "chain",
     mvt_presence: "established", opportunity: "High", fit_score: 74,
+    connection: "warm_group", commission_status: "in_discussion", commission_target_pct: 12, value_ask: VALUE_ASK,
     fit_reason: "WARM GROUP-LEVEL INTRODUCTION via the owning family — access, not fit score, is why this ranks first. " +
       "Established international desk means the coordination pain we automate exists today at volume.",
     next_action: "Confirm which entity the introduction reaches (India, GCC, or both). Book the discovery call; ask the five priority questions. Bangalore first-approach unit: Aster Hebbal/Whitefield.",
@@ -37,6 +44,7 @@ const ACCOUNTS = [
     accreditation: "VERIFY — JCI/DoH per facility", ips_channel_public: "asterdmhealthcare.com (GCC entity)",
     ips_source: "asterdmhealthcare.com", fit: "High", stage: "Warm intro pending", priority: 1, type: "chain",
     mvt_presence: "established", opportunity: "High", fit_score: 70,
+    connection: "warm_group", commission_status: "unknown", value_ask: null,
     fit_reason: "DEMAND-SIDE, not supply-side: a GCC clinic network sits at the TOP of our funnel, in a target market. " +
       "Same corporate family as Aster India — a patient seen in Dubai treated in Bengaluru inside one brand removes the trust gap.",
     next_action: "Establish whether the family introduction extends to the GCC entity (65% held by a Fajr Capital consortium since 2024).",
@@ -50,6 +58,7 @@ const ACCOUNTS = [
     ips_channel_public: "manipalhospitals.com — international patient services",
     ips_source: "manipalhospitals.com", fit: "High", stage: "Warm intro pending", priority: 1, type: "chain",
     mvt_presence: "established", opportunity: "High", fit_score: 74,
+    connection: "warm_group", commission_status: "in_discussion", commission_target_pct: 12, value_ask: VALUE_ASK,
     fit_reason: "WARM GROUP-LEVEL INTRODUCTION via the former group legal head — a route that understands exactly how the " +
       "existing facilitator agreements are written and where the commercial friction sits.",
     next_action: "Discovery call. Priority questions: inquiry→treated conversion, agent commission as a share of case, where they lose people.",
@@ -65,6 +74,7 @@ const ACCOUNTS = [
     ips_channel_public: "fortishealthcare.com — international patient desk", ips_source: "fortishealthcare.com",
     fit: "High", stage: "Intro expected", priority: 2, type: "unit", parent_id: "fortis",
     mvt_presence: "established", opportunity: "Med", fit_score: 70,
+    connection: "adviser_desk", commission_status: "in_discussion", commission_target_pct: 12, value_ask: VALUE_ASK,
     fit_reason: "Unit-level rather than group-level, but JCI + NABH + NABL with strong oncology and cardiac programmes " +
       "and an existing medical-travel reputation. A single unit is an easier pilot than a group.",
     next_action: "Chase the introduction, but do not let it hold up the two group conversations.",
@@ -75,11 +85,14 @@ const ACCOUNTS = [
 ];
 
 const cols = ["id","name","network","city","accreditation","ips_channel_public","ips_source","fit","stage",
-  "priority","type","parent_id","mvt_presence","opportunity","notes","next_action","owner","fit_reason","fit_score"];
+  "priority","type","parent_id","mvt_presence","opportunity","notes","next_action","owner","fit_reason","fit_score",
+  "connection","commission_status","commission_target_pct","value_ask"];
 const stmt = db.prepare(
   `INSERT INTO partner (${cols.join(",")}) VALUES (${cols.map(() => "?").join(",")})
    ON CONFLICT(id) DO UPDATE SET stage=excluded.stage, next_action=excluded.next_action,
-     fit_reason=excluded.fit_reason, fit_score=excluded.fit_score, notes=excluded.notes, priority=excluded.priority`);
+     fit_reason=excluded.fit_reason, fit_score=excluded.fit_score, notes=excluded.notes, priority=excluded.priority,
+     connection=excluded.connection, commission_status=excluded.commission_status,
+     commission_target_pct=excluded.commission_target_pct, value_ask=excluded.value_ask`);
 
 for (const a of ACCOUNTS) {
   stmt.run(...cols.map((c) => (c === "owner" ? "Founders" : a[c] ?? null)));
@@ -88,10 +101,19 @@ for (const a of ACCOUNTS) {
   for (const c of cats) {
     try { db.prepare(`INSERT OR IGNORE INTO partner_category (partner_id, category_id) VALUES (?,?)`).run(a.id, c); } catch {}
   }
+  // Compute + store the three-axis scores now, so `npm run warm-accounts` alone produces a correct
+  // pursuit-ranked board without needing partner_layer.mjs to run after it.
+  const p = db.prepare(`SELECT * FROM partner WHERE id=?`).get(a.id);
+  const rd = readiness(p), acc = accessScore(p), spd = speedScore(p, rd);
+  const pur = pursuitScore({ fit: p.fit_score ?? 0, access: acc.score, speed: spd.score });
+  db.prepare(`UPDATE partner SET access_score=?, speed_score=?, pursuit_score=? WHERE id=?`).run(acc.score, spd.score, pur.score, a.id);
 }
 
-logRun(db, "Partner Sourcing", "seed-warm-accounts", `${ACCOUNTS.length} warm accounts — access-ranked, not score-ranked`);
-console.log(`\n✓ ${ACCOUNTS.length} warm accounts on the board:`);
-for (const a of ACCOUNTS) console.log(`   ${a.fit_score}  ${a.stage.padEnd(20)} ${a.name}`);
-console.log(`\n  These rank on ACCESS, not fit score. The score ranks a cold funnel; a warm group-level`);
-console.log(`  introduction is scarcer than good terms — and an established desk has the pain today.\n`);
+logRun(db, "Partner Sourcing", "seed-warm-accounts", `${ACCOUNTS.length} warm accounts — pursuit-ranked (access + fit + speed)`);
+console.log(`\n✓ ${ACCOUNTS.length} warm accounts on the board (pursuit = 0.45·access + 0.30·fit + 0.25·speed):`);
+for (const a of ACCOUNTS) {
+  const p = db.prepare(`SELECT pursuit_score, access_score, speed_score FROM partner WHERE id=?`).get(a.id);
+  console.log(`   pursuit ${String(p.pursuit_score).padStart(3)} (acc ${p.access_score}/spd ${p.speed_score})  ${a.stage.padEnd(20)} ${a.name}`);
+}
+console.log(`\n  Ranked on ACCESS + speed-to-signing, not fit alone: a warm intro + an agreed fee closes`);
+console.log(`  faster than a better-fit cold account, and speed-to-first-patient is the thing that matters now.\n`);

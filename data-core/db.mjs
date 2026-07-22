@@ -31,6 +31,20 @@ export function open(path = DB_PATH) {
   for (const c of ["next_action TEXT", "owner TEXT", "fit_reason TEXT", "fit_score REAL"]) {
     try { db.exec(`ALTER TABLE partner ADD COLUMN ${c}`); } catch {}
   }
+  // ACCESS + SPEED + PURSUIT — the warm-intro re-think (2026-07-22). fit_score answers "is this account
+  // commercially worth it" (margin thesis); it does NOT answer "can we actually get in, and how fast". With a
+  // real set of warm introductions on the table, *access* and *time-to-market* now drive who we work first, so
+  // they are first-class scored inputs, not a note. See pursuitScore()/accessScore()/speedScore() in this file.
+  //  connection        = adviser_desk | warm_group | warm_individual | named_public | desk | cold  (how we get in)
+  //  commission_status = agreed | in_discussion | unknown  (Sachin: agree the % and partnering is fast)
+  //  commission_target_pct = the fee number that, once agreed, unblocks a fast close
+  //  value_ask         = what we ask the hospital to give back for a LOWER fee (we bring the volume) — a terms note
+  //  access/speed/pursuit_score = computed 0-100 (partner_layer.mjs / the warm-account seed store them)
+  for (const c of ["connection TEXT DEFAULT 'cold'", "commission_status TEXT DEFAULT 'unknown'",
+                   "commission_target_pct REAL", "value_ask TEXT",
+                   "access_score REAL", "speed_score REAL", "pursuit_score REAL"]) {
+    try { db.exec(`ALTER TABLE partner ADD COLUMN ${c}`); } catch {}
+  }
   // outcome feedback loop (ground truth) + idempotency stamps.
   //  outcome: none|contacted|replied|meeting|pilot|signed|lost  — the ONLY real validation of the fit model.
   //  last_discovery_at / *_generated_at: so re-runs skip already-done work instead of duplicating it.
@@ -365,4 +379,50 @@ export function partnerFit(p, catNames = []) {
     reason = `Established IPS desk${ac} (${cats}); compete on our source-market demand + service depth. Thinner margin — pursue for volume/brand, not terms.`;
   }
   return { score, reason };
+}
+
+// ACCESS SCORE — "how do we actually get in the door", as a 0-100. The warm-intro re-think: a set of real
+// introductions (Sachin's own desk at Fortis Bangalore; the Aster family; the ex-Manipal legal head) changes
+// who we work first far more than fit does. A great account we can't reach is a worse *next move* than a good
+// account a trusted person will introduce us into tomorrow. Purely about reachability, not value.
+export const CONNECTION_W = {
+  adviser_desk: 100,     // our own adviser's desk — the warmest path that exists (Fortis Bannerghatta / Sachin)
+  warm_group: 85,        // a real group/board-level introduction (owning family, former group officer)
+  warm_individual: 65,   // a named warm contact inside the org, below board level
+  named_public: 35,      // we know the named decision-maker (public), but have no warm path to them
+  desk: 15,              // only a generic international-desk inbox
+  cold: 5,               // no path yet
+};
+export function accessScore(p) {
+  const score = CONNECTION_W[p.connection] ?? CONNECTION_W.cold;
+  const label = { adviser_desk: "adviser's own desk", warm_group: "warm group-level intro",
+    warm_individual: "warm individual contact", named_public: "named but no warm path",
+    desk: "generic desk only", cold: "no path yet" }[p.connection] ?? "no path yet";
+  return { score, label };
+}
+
+// SPEED SCORE — time-to-market, as a 0-100 (higher = faster to a signed pilot). Sachin's read, 2026-07-22:
+// with an established international desk, partnering is *fast once the commission number is agreed* — the fee
+// is the real gate, not process. So speed is driven by (a) how settled the commission conversation is and
+// (b) how ready the desk already is to take an international patient (readiness()) — a latent brand with no
+// int'l desk is slow to switch on even if it says yes tomorrow. Pass the same readiness() object.
+const COMMISSION_BASE = { agreed: 60, in_discussion: 35, unknown: 20 };
+export function speedScore(p, rd) {
+  const base = COMMISSION_BASE[p.commission_status] ?? COMMISSION_BASE.unknown;
+  const readyLift = Math.round((rd?.score ?? 40) * 0.3);   // an already-live desk onboards in weeks, not months
+  const score = Math.min(100, base + readyLift);
+  const months = score >= 75 ? "weeks" : score >= 50 ? "1–2 months" : "3–6 months";
+  const commTxt = { agreed: "fee agreed", in_discussion: "fee in discussion", unknown: "fee not yet raised" }[p.commission_status] ?? "fee not yet raised";
+  return { score, months, label: commTxt };
+}
+
+// PURSUIT SCORE — the single number the account board now ranks on: WHO DO WE WORK FIRST. It blends the three
+// axes deliberately, access-weighted, because the warm intros are the change that prompted this. fit still
+// matters (a warm intro into a low-value account isn't a priority) and speed breaks ties toward what closes
+// this quarter, but reach leads. Weights: access .45 · fit .30 · speed .25. Kept SEPARATE from fit_score so
+// the margin thesis stays legible on its own and we never again hand-hack fit_score to force warm accounts up.
+export function pursuitScore({ fit, access, speed }) {
+  const score = Math.round(0.45 * access + 0.30 * fit + 0.25 * speed);
+  const band = score >= 70 ? "work now" : score >= 45 ? "warm up" : "park / build path";
+  return { score, band };
 }
