@@ -26,6 +26,7 @@ outputs/comms/outbox/
 
 # Generated drafts that can contain DISCOVERED individual names/emails (privacy — keep local only)
 outputs/proposals/
+outputs/doctor-outreach/
 
 # OS / editor
 .DS_Store

@@ -269,6 +269,8 @@ node --experimental-sqlite data-core/capture_poc.mjs <id> "Name" "Role" "<email|
 node --experimental-sqlite data-core/infer_contacts.mjs            # guess emails for named-but-unemailed POCs
 node --experimental-sqlite data-core/gen_proposals.mjs [limit]     # tailored proposals → outputs/proposals/, review
 node --experimental-sqlite data-core/gen_credibility.mjs [limit]   # trust narratives for lesser-known brands
+node --experimental-sqlite data-core/capture_doctor.mjs "Name" <specialty> <country> "Hospital" <reach> <warmth> "source"   # §11 — capture a doctor-affiliate
+npm run doctor-outreach                      # §11 — outreach drafts for doctor-affiliate accounts (compensation never auto-filled)
 node --experimental-sqlite data-core/log_outcome.mjs <id> <contacted|replied|meeting|pilot|signed|lost> ["note"]
 npm run calibration                          # is the rubric actually right? fit-score bucket vs. real outcome
 ```
@@ -352,3 +354,15 @@ hospital-specific UI (`console.html`'s `mvt_presence`/accreditation columns) —
 `SELECT * FROM partner ORDER BY fit_score DESC` account list already surfaces it adequately for a
 zero-to-few-record stage; a doctor-specific view is a "build it when there's something to show" item, not a
 gap today.
+
+**Outreach generation** (`data-core/gen_doctor_outreach.mjs`, `npm run doctor-outreach`) mirrors
+`gen_proposals.mjs`'s pattern — same failover chain, same `lib/claims.mjs` lint, same human-gated `review`
+status on the `proposal` table — but for `type='doctor'` rows, and with one addition that is **not**
+optional: physician self-referral / anti-kickback rules vary sharply and unpredictably by country, and
+several jurisdictions restrict or ban direct payment to a referring clinician outright. So the system prompt
+forbids the model from ever stating a referral-fee number, and a **hard regex gate** — not just a lint flag —
+refuses to write a draft to disk at all if one leaks through anyway (tested against both a percentage and a
+dollar-figure leak; both are caught). Every draft's compensation section is instead a required
+`[VERIFY: confirm local permissibility + structure of any referral arrangement with counsel before discussing
+terms]` placeholder. `warmth` decides the opening: a `warm` account may reference the real introduction on
+file (`doctor_affiliate.source`); a `cold` one must not imply a relationship that doesn't exist.
