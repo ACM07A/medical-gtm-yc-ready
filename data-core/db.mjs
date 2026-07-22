@@ -126,6 +126,12 @@ export function open(path = DB_PATH) {
     specialty TEXT, country_code TEXT, current_hospital TEXT,
     reach_est TEXT DEFAULT 'unknown', warmth TEXT DEFAULT 'cold',
     contact_channel TEXT, cme_notes TEXT, source TEXT)`);
+  // PAYER — the third account type, base only (channel parked for phase 2/3). See schema.sql / PARTNER_AGENT.md §12.
+  db.exec(`CREATE TABLE IF NOT EXISTS payer (
+    partner_id TEXT PRIMARY KEY REFERENCES partner(id),
+    payer_type TEXT, country_code TEXT, population_est TEXT,
+    claims_pain TEXT DEFAULT 'unknown', decision_authority TEXT DEFAULT 'unknown',
+    warmth TEXT DEFAULT 'cold', contact_channel TEXT, source TEXT)`);
   return db;
 }
 
@@ -251,6 +257,42 @@ export function doctorReadiness(d) {
   const base = d.warmth === "warm" ? 70 : 30;
   const routed = d.hasExistingPartnerHospital ? 15 : 0;       // their own hospital is already one of ours — no new institutional relationship needed
   const score = Math.min(100, base + routed);
+  const label = score >= 70 ? "ready to approach" : score >= 40 ? "needs a warm path" : "cold — relationship-build only";
+  return { score, label };
+}
+
+// PAYER FIT — the base of a third account type (type='payer'), channel parked for phase 2/3. A payer
+// (insurer / TPA / self-insured employer / government office) is scored on none of the hospital or doctor
+// axes: the pitch is claims-cost math applied to a POPULATION, so fit ≈ how many lives they cover × how much
+// those lives are costing them on treatments we could redirect × whether one deal can actually move volume.
+// Deliberately minimal — a real-but-simple prior, not a validated model, matching the "base only" scope.
+const REACH_POP_W = { high: 1.0, med: 0.6, low: 0.3, unknown: 0.3 };
+const PAIN_W = { high: 1.0, med: 0.6, low: 0.3, unknown: 0.3 };
+const AUTHORITY_W = { concentrated: 1.0, distributed: 0.4, unknown: 0.4 };
+// population_est is free text ("4.4M", "50k employees", "unknown") — bucket it coarsely, never invent a number.
+function popBucket(popEst) {
+  const s = String(popEst || "").toLowerCase();
+  if (/\bunknown\b|^$/.test(s)) return "unknown";
+  const m = s.match(/([\d.]+)\s*([mk])?/);
+  if (!m) return "unknown";
+  const n = parseFloat(m[1]) * (m[2] === "m" ? 1e6 : m[2] === "k" ? 1e3 : 1);
+  return n >= 1e6 ? "high" : n >= 5e4 ? "med" : "low";
+}
+export function payerFit(p) {
+  const popTier = popBucket(p.population_est);
+  const population = REACH_POP_W[popTier];
+  const pain = PAIN_W[p.claims_pain] ?? PAIN_W.unknown;
+  const authority = AUTHORITY_W[p.decision_authority] ?? AUTHORITY_W.unknown;
+  const market = p.inTargetMarket ? 1.0 : 0.6;                // payers in a target market rank higher, but a big payer anywhere is still worth it
+  const score = Math.round(100 * (0.35 * population + 0.30 * pain + 0.20 * authority + 0.15 * market));
+  const popTxt = { high: "covers a large population (1M+)", med: "covers a mid-size population", low: "covers a small population", unknown: "covered population not yet established" }[popTier];
+  const painTxt = { high: "high claims exposure on redirectable treatments", med: "moderate claims exposure", low: "low claims exposure", unknown: "claims exposure not yet estimated" }[p.claims_pain] ?? "claims exposure not yet estimated";
+  const authTxt = p.decision_authority === "concentrated" ? "one deal can move real volume" : p.decision_authority === "distributed" ? "decision-making is fragmented — slower to move volume" : "decision authority not yet mapped";
+  return { score, reason: `${popTxt}; ${painTxt}; ${authTxt}.` };
+}
+// Readiness is warmth-dominated, same thesis as hospitals and doctors: a real introduction beats a cold pitch.
+export function payerReadiness(p) {
+  const score = Math.min(100, (p.warmth === "warm" ? 70 : 30) + (p.decision_authority === "concentrated" ? 15 : 0));
   const label = score >= 70 ? "ready to approach" : score >= 40 ? "needs a warm path" : "cold — relationship-build only";
   return { score, label };
 }

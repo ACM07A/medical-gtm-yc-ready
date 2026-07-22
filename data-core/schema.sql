@@ -105,6 +105,24 @@ CREATE TABLE IF NOT EXISTS doctor_affiliate (
   source TEXT                        -- how we were introduced / who is vouching for this
 );
 
+-- PAYER — a THIRD account type (type='payer'), the base of a channel deliberately parked for phase 2/3.
+-- An insurer / TPA / self-insured employer / government health office redirects a POPULATION at once, and
+-- the pitch is financial (lower claims cost for treatment they already fund), not a clinical-trust pitch to
+-- one referring person. Precedent: Sachin Rai's Toyota example; already prototyped once as the MedYatra ×
+-- TruDoc partnership. Base only for now: table + fit rubric + a human-vouched capture path. No outreach
+-- generator, no console UI yet — see PARTNER_AGENT.md §12.
+CREATE TABLE IF NOT EXISTS payer (
+  partner_id TEXT PRIMARY KEY REFERENCES partner(id),
+  payer_type TEXT,                   -- insurer | tpa | employer | government
+  country_code TEXT,                 -- ISO, cross-referenced against market(code) for target-market fit
+  population_est TEXT,               -- rough covered lives / member count as GIVEN — free text, never invented ("4.4M", "unknown")
+  claims_pain TEXT DEFAULT 'unknown',-- low | med | high | unknown — how much they bleed on treatments we could redirect
+  decision_authority TEXT DEFAULT 'unknown', -- concentrated | distributed | unknown — can one deal actually move volume
+  warmth TEXT DEFAULT 'cold',        -- cold | warm — is there a real introduction
+  contact_channel TEXT,              -- PUBLIC business channel only (no personal PII)
+  source TEXT                        -- how we were introduced / who is vouching for this
+);
+
 -- Points of contact (public business roles/channels; person_name null until resolved).
 CREATE TABLE IF NOT EXISTS poc (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

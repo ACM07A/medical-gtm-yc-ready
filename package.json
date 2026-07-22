@@ -41,6 +41,7 @@
     "plan-clusters": "node --experimental-sqlite data-core/plan_clusters.mjs",
     "smoke-agents": "node --experimental-sqlite data-core/smoke_agents.mjs",
     "doctor-outreach": "node --experimental-sqlite data-core/gen_doctor_outreach.mjs",
+    "capture-payer": "node --experimental-sqlite data-core/capture_payer.mjs",
     "auto-loop": "node --experimental-sqlite data-core/auto_loop.mjs"
   },
   "keywords": [

@@ -271,6 +271,7 @@ node --experimental-sqlite data-core/gen_proposals.mjs [limit]     # tailored pr
 node --experimental-sqlite data-core/gen_credibility.mjs [limit]   # trust narratives for lesser-known brands
 node --experimental-sqlite data-core/capture_doctor.mjs "Name" <specialty> <country> "Hospital" <reach> <warmth> "source"   # §11 — capture a doctor-affiliate
 npm run doctor-outreach                      # §11 — outreach drafts for doctor-affiliate accounts (compensation never auto-filled)
+npm run capture-payer -- "Name" <insurer|tpa|employer|government> <country> "<population|unknown>" <claims_pain> <authority> <warmth> "source"   # §12 — capture a payer (base only; outreach parked for phase 2/3)
 node --experimental-sqlite data-core/log_outcome.mjs <id> <contacted|replied|meeting|pilot|signed|lost> ["note"]
 npm run calibration                          # is the rubric actually right? fit-score bucket vs. real outcome
 ```
@@ -286,6 +287,7 @@ Live board: `/console` (fit-ranked account board, contact path, next action) · 
 | `poc` | `role`, `seniority`, `contact_type`, `contact_value`, `confidence`, `source`, `resolved`, `verified_at` |
 | `proposal` | `partner_id`, `category_id`, `market_code`, `fee_pct`, `status`, `file_ref`, `blockers`, `generated_at`, `outcome` |
 | `doctor_affiliate` | `specialty`, `country_code`, `current_hospital`, `reach_est`, `warmth`, `contact_channel`, `cme_notes`, `source` — §11 |
+| `payer` | `payer_type`, `country_code`, `population_est`, `claims_pain`, `decision_authority`, `warmth`, `contact_channel`, `source` — §12 (base only) |
 
 ## 10. Honest limitations of this specific agent
 
@@ -390,9 +392,28 @@ members' data stays yours"), and a performance-based commercial model — no ret
 patients. Toyota is independent evidence the underlying thesis holds beyond TruDoc specifically: any large
 payer or self-insured employer with a population and a claims budget is a candidate.
 
-**Status: documented, not built.** Generalizing this into a repeatable motion — the way `capture_doctor.mjs`
-+ `doctorFit()` + `gen_doctor_outreach.mjs` generalized the doctor-affiliate idea from a single conversation
-into a scored, repeatable account type — would mean: a `type='payer'` partner row, a scoring rubric (likely:
-population size × claims-cost-reduction potential × how self-insured/decision-authority-concentrated they
-are), and an outreach generator that mirrors the TruDoc pitch structure for a new prospect. None of this
-exists yet. Whether to build it is an open question for the user to decide, not something built unprompted.
+**Status: the BASE is built; the channel is parked for phase 2/3 by decision (2026-07-22).** What exists now,
+mirroring the doctor-affiliate pattern exactly:
+
+- a `payer` companion table (`schema.sql` + `db.mjs` migration) with the fields a hospital/doctor doesn't
+  have: `payer_type` (insurer / tpa / employer / government), `population_est`, `claims_pain`,
+  `decision_authority`, `warmth`;
+- a scoring pair in `data-core/db.mjs` — the pitch is claims-cost math on a population, so fit is scored on
+  none of the hospital or doctor axes:
+
+```
+payerFit(p)       = round(100 × (0.35 × population + 0.30 × claims_pain + 0.20 × decision_authority + 0.15 × market))
+payerReadiness(p) = min(100, (warmth==='warm' ? 70 : 30) + (decision_authority==='concentrated' ? 15 : 0))
+```
+
+  `population_est` is free text ("4.4M", "50k employees", "unknown") bucketed coarsely by `popBucket()`,
+  never invented; `decision_authority=concentrated` (one deal moves volume) beats `distributed`; readiness is
+  warmth-dominated, same thesis as the other two account types.
+- `data-core/capture_payer.mjs` (`npm run capture-payer`) — the only entry point, same "a human vouches for a
+  real relationship" rule as `capture_doctor.mjs`/`capture_poc.mjs`.
+
+**What is deliberately NOT built, and is parked for phase 2/3**: an outreach generator (the TruDoc pitch
+generalized into a per-prospect template, the way `gen_doctor_outreach.mjs` generalized proposals), and any
+console/board UI beyond the generic fit-ranked account list. Zero payer rows are seeded — no real name to add
+yet, and inventing one would break §1's no-fabrication rule. The base exists so that when a real payer
+conversation starts, there's a scored place for it to land instead of a scramble; the rest waits.
