@@ -2,7 +2,7 @@
 
 > The single prompt another autonomous coding/ops agent can use to build and run this engine.
 
-You are the lead build agent for **MedYatra**, an agentic GTM engine for a medical-tourism facilitation business launching in India. Focus regions: Middle East, Africa, Europe, South East Asia (no Bangladesh). Lead proving corridor: India × Arabic Middle East (Iraq + Oman/Gulf), with a parallel English Africa track (Nigeria/Kenya). Designed to re-point to any market via config.
+You are the lead build agent for **MedYatra**, an agentic GTM engine for a medical-tourism facilitation business launching in India. Focus regions: Middle East, Africa, Central Asia, Europe, South East Asia (no Bangladesh). Lead proving corridor: India × Arabic Middle East (Iraq + Oman/Gulf), with a parallel English Africa track (Nigeria/Kenya). Designed to re-point to any market via config.
 
 **Source of truth (read first):**
 - `/build-os/00_PROJECT_BRIEF.md`, `03_TREATMENT_CATEGORY_STRATEGY.md`, `04_PARTNER_ACQUISITION_STRATEGY.md`, `05_CONTENT_BRAND_CAMPAIGN.md`, `06_GLOBALIZATION_PLAYBOOK.md`, `07_SYSTEM_DESIGN.md`, `08_DATA_SOURCES.md`, `10_SECURITY_COMPLIANCE.md`, `14_ACCEPTANCE_TESTS.md`

@@ -35,6 +35,15 @@ const markets = [
   ["NA","Namibia","africa","B",["en"],0,"NAD",["whatsapp","facebook"],"e-medical-visa",["DPDP_IN"],["en"],["Windhoek"],"Sachin Rai ranking, 2026-07-22: part of the #5 Zambia/Zimbabwe/Namibia cluster"],
   ["CM","Cameroon","africa","C",["fr","en"],0,"XAF",["whatsapp","facebook"],"e-medical-visa",["DPDP_IN"],["fr"],["Yaounde","Douala"],"Sachin Rai, 2026-07-22: possible extension, not core top-5 — Francophone, Telegram-first per the same interview, not yet reflected in the WhatsApp-only comms engine"],
   ["MM","Myanmar","se_asia","C",["my","en"],0,"MMK",["facebook","whatsapp"],"e-medical-visa",["DPDP_IN"],["my"],["Yangon"],"SE Asia diversification"],
+  // ---- Central Asia (added 2026-07-22, user-directed). Russian-speaking feeder bloc; TELEGRAM/Instagram-first,
+  // NOT WhatsApp — same comms-engine caveat as Cameroon (the WhatsApp-only engine does not yet cover this bloc).
+  // Uzbekistan + Kazakhstan are the real feeders (Tier B); the smaller republics are extensions (Tier C).
+  // India e-medical visa applies across the bloc. Fertility/IVF, oncology and cardiac are the strongest drivers. ----
+  ["UZ","Uzbekistan","central_asia","B",["uz","ru"],0,"UZS",["telegram","instagram","youtube"],"e-medical-visa",["DPDP_IN"],["ru","uz"],["Tashkent","Samarkand"],"Central Asia core feeder; strong IVF/oncology/cardiac outflow. Russian lingua franca; Telegram-first — not yet reflected in the WhatsApp-only comms engine"],
+  ["KZ","Kazakhstan","central_asia","B",["kk","ru"],0,"KZT",["instagram","youtube","telegram"],"e-medical-visa",["DPDP_IN"],["ru","kk"],["Almaty","Astana"],"Central Asia core feeder; higher-income, elective + oncology/cardiac. Russian/Kazakh; Telegram + Instagram, not WhatsApp"],
+  ["TJ","Tajikistan","central_asia","C",["tg","ru"],0,"TJS",["telegram","facebook"],"e-medical-visa",["DPDP_IN"],["ru","tg"],["Dushanbe"],"Central Asia extension; Russian; Telegram-first"],
+  ["KG","Kyrgyzstan","central_asia","C",["ky","ru"],0,"KGS",["telegram","instagram"],"e-medical-visa",["DPDP_IN"],["ru","ky"],["Bishkek"],"Central Asia extension; Russian; Telegram-first"],
+  ["TM","Turkmenistan","central_asia","C",["tk","ru"],0,"TMT",["telegram"],"e-medical-visa",["DPDP_IN"],["ru","tk"],["Ashgabat"],"Central Asia extension; restrictive info environment; Russian; Telegram"],
   ["GB","United Kingdom","europe","D",["en"],0,"GBP",["seo","youtube","instagram"],"e-medical-visa",["DPDP_IN","UK_GDPR"],["en"],["London"],"high-margin electives"],
   ["IE","Ireland","europe","D",["en"],0,"EUR",["seo","instagram"],"e-medical-visa",["DPDP_IN","GDPR"],["en"],["Dublin"],"high-margin electives"],
 ];
@@ -84,8 +93,8 @@ for (const [cat,proc,lo,hi,cmp] of prices) pStmt.run(cat,proc,lo,hi,cmp,CITE,RET
 
 // ---- category <-> market fit matrix ----
 const fit = {
-  cardiac:["IQ","OM","YE","NG","KE","ET"], ortho:["OM","KE","NG","MM","GB"],
-  oncology:["IQ","ET","SD","KE","MM"], fertility:["OM","AE","SA","NG","GB"],
+  cardiac:["IQ","OM","YE","NG","KE","ET","UZ","KZ"], ortho:["OM","KE","NG","MM","GB","KZ"],
+  oncology:["IQ","ET","SD","KE","MM","UZ","KZ"], fertility:["OM","AE","SA","NG","GB","UZ","KZ"],
   cosmetic:["AE","SA","GB","NG","KE"], dental:["GB","IE","AE","KE"],
 };
 const cmStmt = db.prepare(`INSERT INTO category_market (category_id,market_code,priority) VALUES (?,?,1)`);
@@ -103,7 +112,7 @@ const partners = [
   {id:"medanta",name:"Medanta (chain IPS)",network:"Medanta",city:"Gurugram",acc:"NABH/JCI",ch:MEDANTA,src:"medanta.org/international-patient-help-desk",fit:"High",pri:1,type:"chain",presence:"established",cats:["cardiac","ortho","oncology"]},
   {id:"max",name:"Max Healthcare (chain IPS)",network:"Max",city:"Delhi NCR",acc:"NABH",ch:"IPS Saket · +91-11-26515050",src:"maxhealthcare.in/international",fit:"Med",pri:0,type:"chain",presence:"established",cats:["ortho","cardiac","oncology"]},
   {id:"narayana",name:"Narayana Health",network:"Narayana",city:"Bengaluru +",acc:"JCI Enterprise + NABH",ch:"via network IPS",src:"narayanahealth.org",fit:"High",pri:0,type:"chain",presence:"established",cats:["cardiac","oncology","ortho"]},
-  {id:"manipal",name:"Manipal Hospitals",network:"Manipal",city:"Bengaluru +",acc:"NABH",ch:"via network IPS",src:"manipalhospitals.com",fit:"Med",pri:0,type:"chain",presence:"established",cats:["cardiac","ortho","oncology"]},
+  {id:"manipal",name:"Manipal Hospitals",network:"Manipal",city:"Bengaluru +",acc:"NABH",ch:"via network IPS",src:"manipalhospitals.com",fit:"High",pri:1,type:"chain",presence:"established",cats:["cardiac","ortho","oncology"],notes:"FIRST PARTNER SET (Bangalore cluster, 2026-07-22) — HQ Bengaluru, Old Airport Road flagship"},
   {id:"hcg",name:"HCG Oncology",network:"HCG",city:"Bengaluru/Mumbai +",acc:"NABH (specialist)",ch:"via network IPS",src:"hcgoncology.com",fit:"High",pri:1,type:"chain",presence:"established",cats:["oncology"]},
   {id:"kokilaben",name:"Kokilaben Dhirubhai Ambani",network:"Independent",city:"Mumbai",acc:"JCI + NABH",ch:"via IPS",src:"kokilabenhospital.com",fit:"Med",pri:0,type:"standalone",presence:"established",cats:["oncology","cosmetic"]},
   {id:"nova-ivf",name:"Nova IVF Fertility",network:"Nova",city:"Pan-India",acc:"NABH clinics",ch:"via chain IPS",src:"novaivffertility.com",fit:"High",pri:1,type:"chain",presence:"established",cats:["fertility"]},
@@ -124,6 +133,14 @@ const partners = [
   {id:"sakra-world",name:"Sakra World Hospital",network:"Sakra",city:"Bengaluru",acc:"NABH (verify)",ch:"resolve IPS",src:"est — verify",fit:"High",pri:0,type:"standalone",presence:"emerging",cats:["cardiac","ortho","oncology"],notes:"Toyota/Secom JV; quality brand — est/verify"},
   {id:"frontier-lifeline",name:"Frontier Lifeline Hospital",network:"Frontier",city:"Chennai",acc:"cardiac specialty (verify)",ch:"resolve IPS",src:"est — verify",fit:"High",pri:0,type:"standalone",presence:"latent",cats:["cardiac"],notes:"cardiac specialty (Dr K M Cherian) — est/verify"},
   {id:"cytecare",name:"Cytecare Cancer Hospital",network:"Cytecare",city:"Bengaluru",acc:"oncology specialty (verify)",ch:"resolve IPS",src:"est — verify",fit:"High",pri:0,type:"standalone",presence:"latent",cats:["oncology"],notes:"dedicated onco brand — est/verify"},
+
+  // -- FIRST PARTNER SET (Bangalore cluster, 2026-07-22, user-directed): the five chains/units to approach FIRST,
+  // all Bengaluru-based — the same city as Sachin Rai's Fortis desk. THREE of the five (Fortis Bannerghatta, Aster,
+  // Manipal) live on the WARM board in seed_warm_accounts.mjs because a real introduction exists there; do NOT
+  // duplicate them here. The two below are the new, lesser-known names with NO warm route yet — cold targets where
+  // the credibility engine and better margin terms both matter most. Accreditation marked (verify) until confirmed. --
+  {id:"sparsh",name:"SPARSH Hospital (Bengaluru)",network:"Sparsh",city:"Bengaluru",acc:"NABH (verify)",ch:"resolve IPS",src:"sparshhospital.com",fit:"High",pri:1,type:"standalone",presence:"emerging",cats:["ortho","cardiac"],notes:"FIRST PARTNER SET (Bangalore) — ortho/trauma + cardiac focus; lesser-known brand, likely stronger margin terms; no warm route yet"},
+  {id:"kims-bangalore",name:"KIMS Hospital (Bengaluru)",network:"KIMS",city:"Bengaluru",acc:"NABH (verify)",ch:"resolve IPS",src:"kimshospitals.com — verify Bangalore entity vs Hyderabad chain",fit:"High",pri:1,type:"standalone",presence:"emerging",cats:["cardiac","ortho","oncology"],notes:"FIRST PARTNER SET (Bangalore) — verify entity (KIMS Bangalore vs KIMS Hyderabad chain); no warm route yet"},
 ];
 const paStmt = db.prepare(`INSERT INTO partner (id,name,network,city,accreditation,ips_channel_public,ips_source,fit,stage,priority,type,parent_id,mvt_presence,opportunity,notes)
   VALUES (?,?,?,?,?,?,?,?, 'Enriched', ?,?,?,?,?,?)`);

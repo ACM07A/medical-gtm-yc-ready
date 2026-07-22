@@ -61,7 +61,7 @@ Representative **international-patient package** ranges, cross-checked across mu
 
 ## Category → source-market fit matrix
 
-Focus regions: **Middle East, Africa, Europe, South East Asia** (no Bangladesh). Grounded in India's 2024 MVT arrivals (Iraq, Oman, Somalia, Nigeria, Yemen, Sudan, Kenya lead ex-Bangladesh) and the industry's active diversification from Middle-East concentration into Africa + SE Asia. This drives content language + partner targeting.
+Focus regions: **Middle East, Africa, Central Asia, Europe, South East Asia** (no Bangladesh). Grounded in India's 2024 MVT arrivals (Iraq, Oman, Somalia, Nigeria, Yemen, Sudan, Kenya lead ex-Bangladesh) and the industry's active diversification from Middle-East concentration into Africa + SE Asia. This drives content language + partner targeting.
 
 | Category | Best-fit source markets |
 |---|---|

@@ -32,7 +32,10 @@ compliance, privacy, and honesty about limits.
 **Medical Value Travel (MVT)** — patients from countries with expensive, slow, or limited healthcare travel
 to India for world-class treatment at 60–90% lower cost. Example: a heart bypass (CABG) is ~$5,000 in India
 vs ~$90,000 in the US. India received record MVT arrivals in 2024, led (post-Bangladesh) by Iraq, Oman,
-Somalia, Nigeria, Yemen — which is why this engine targets the **Middle East, Africa, Europe, and SE Asia**.
+Somalia, Nigeria, Yemen — which is why this engine targets the **Middle East, Africa, Central Asia, Europe, and
+SE Asia**. Central Asia (Uzbekistan + Kazakhstan core; Tajikistan/Kyrgyzstan/Turkmenistan extensions) was added
+2026-07-22 — a strong IVF/oncology/cardiac corridor, but Russian-speaking and **Telegram-first**, so it needs a
+Telegram channel the WhatsApp-only comms engine does not yet have (same caveat as Francophone Cameroon).
 
 **The facilitator model:** we are the trusted intermediary — we don't own hospitals, we route qualified
 patients to them and earn a facilitation fee. That single fact drives the whole compliance posture: no

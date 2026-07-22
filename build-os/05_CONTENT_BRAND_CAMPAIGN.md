@@ -17,8 +17,9 @@ Visual identity (from the Nuvica reference): clinical blue `#0B4A8B` + trust-gre
 | **SEO / blog** | Highest-intent, compounding, cheapest long-run CAC. "Cost of [procedure] in India", "best [X] hospital in India for [nationality]" | ALL |
 | **YouTube** | High-intent search + patient-story trust. Procedure explainers, hospital tours, patient journeys | Middle East, Africa, SE Asia, UK |
 | **WhatsApp** | The conversion channel in target markets. Broadcast + 1:1 coordination + status updates | Middle East, Africa, SE Asia |
+| **Telegram** | The conversion channel where WhatsApp is *not* dominant. Same broadcast + 1:1 role WhatsApp plays elsewhere | **Central Asia** (Uzbekistan, Kazakhstan, Tajikistan, Kyrgyzstan, Turkmenistan), Cameroon |
 | **Facebook** | Discovery + community + retargeting | Nigeria, Kenya, Iraq, Myanmar |
-| **Instagram / TikTok** | Cosmetic, dental, fertility, wellness; Western + urban | UAE, UK, US, urban India-diaspora |
+| **Instagram / TikTok** | Cosmetic, dental, fertility, wellness; Western + urban | UAE, UK, US, urban India-diaspora, **Kazakhstan** |
 | **LinkedIn** | B2B — hospital & feeder partnerships, thought leadership | Global partner side |
 
 ## Content engine — what the agent produces (proactively, on a calendar)

@@ -30,7 +30,7 @@ The human team supervises, closes high-value deals, and handles the empathy-crit
 
 ## Target source markets (India launch, priority order)
 
-Focus regions: **Middle East · Africa · Europe · South East Asia** (Bangladesh explicitly excluded). Grounded in India's 2024 MVT arrivals — ex-Bangladesh, the largest sources are Iraq (~32k), Oman, Somalia, Nigeria, Yemen, Sudan, Kenya — and in the industry's active shift to *diversify away from Middle-East concentration* into Africa and SE Asia (a hedge against regional instability). Our tiering mirrors that reality:
+Focus regions: **Middle East · Africa · Central Asia · Europe · South East Asia** (Bangladesh explicitly excluded). Grounded in India's 2024 MVT arrivals — ex-Bangladesh, the largest sources are Iraq (~32k), Oman, Somalia, Nigeria, Yemen, Sudan, Kenya — and in the industry's active shift to *diversify away from Middle-East concentration* into Africa and SE Asia (a hedge against regional instability). Our tiering mirrors that reality:
 
 - **Tier A — Middle East (largest MVT revenue):** Iraq, Oman, Yemen, plus Gulf value markets UAE, Saudi Arabia, Kuwait. Arabic-first. This is where real deal value concentrates.
 - **Tier B — Africa (diversification + volume, English-efficient content):** Nigeria, Kenya, Ethiopia, Sudan, Tanzania, Ghana.

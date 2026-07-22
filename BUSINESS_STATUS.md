@@ -64,6 +64,14 @@ now in the data core (`market` table); Tanzania, Zambia, Zimbabwe, Namibia, Came
 (Tier A) with all of Africa at Tier B — whether Ethiopia-led Africa should outrank that is a real open
 decision, not yet made.
 
+**Central Asia added as a third source bloc** (2026-07-22): Uzbekistan and Kazakhstan as core feeders (Tier B),
+with Tajikistan, Kyrgyzstan and Turkmenistan as extensions (Tier C). It is a genuinely strong medical-travel
+corridor into India — fertility/IVF, oncology and cardiac lead the outflow. **One operational caveat worth
+flagging now:** the bloc is Russian-speaking and **Telegram/Instagram-first, not WhatsApp** — the same gap as
+Cameroon. Our comms engine is WhatsApp-only today, so serving Central Asia (or Francophone Cameroon) means
+adding a Telegram channel before, not after, spend goes there. This takes the source map to **22 markets across
+three regions plus Europe.**
+
 ---
 
 ## 3. Unit economics
@@ -115,15 +123,22 @@ and their real inquiry-to-treated conversion.
 
 The supply side is where a facilitator is won or lost, and it is our strongest current asset.
 
-| Group | Status | Route |
-|---|---|---|
-| **Aster** | Warm intro pending, group level | Via the owning family |
-| **Manipal** | Warm intro pending, group level | Via the former group legal head |
-| **Fortis Bangalore** | Expected | — |
+The **first partner set is a deliberate Bangalore cluster** — five chains/units in one city, which is also the
+city of our medical-value-travel adviser (Sachin Rai, Fortis Bangalore). Clustering the first outreach in one
+city makes site visits, warm introductions and a repeatable pitch cheap; it is a beachhead, not the whole map.
 
-All three are strong in our target categories — oncology, cardiac, orthopaedics — and Manipal adds a
+| Hospital (first set) | Status | Route |
+|---|---|---|
+| **Fortis, Bannerghatta Road** | Warmest path — adviser's own desk | Via Sachin Rai |
+| **Aster (Hebbal)** | Warm intro pending, group level | Via the owning family |
+| **Manipal** | Warm intro pending, group level | Via the former group legal head |
+| **SPARSH** | To approach — no warm route yet | Direct IPS |
+| **KIMS (Bangalore)** | To approach — verify entity first | Direct IPS |
+
+All are strong in our target categories — oncology, cardiac, orthopaedics — and Manipal adds a
 transplant programme of 2,000+ procedures, the highest-ticket category in medical travel and one we do not
-yet model.
+yet model. SPARSH and KIMS are the lesser-known names in the set, where the credibility engine and better
+margin terms both matter most.
 
 **One structural note on Aster:** the India and GCC businesses separated in April 2024 into two companies
 (a Fajr Capital consortium holds 65% of the GCC entity; the Moopen family holds 35% there with operational
@@ -174,7 +189,7 @@ Operational today in a sandbox, without any API keys:
   *Honest caveat:* several run on curated or clearly-labelled mock data (flights and hotels return curated
   estimates; the interpreter roster is a placeholder) — a real flight, hotel, or interpreter vendor is one
   API key away, not wired, and nothing books for real.
-- **Supply side** — 25 hospital accounts ranked by a fit score, with a research worklist for confirming
+- **Supply side** — 27 hospital accounts ranked by a fit score, with a research worklist for confirming
   named decision-makers. Plus the two additional acquisition motions in §4: a doctor-affiliate account type
   (built; zero real names yet) and the base of a payer channel (built; outreach parked for phase 2/3).
 - **Content engine** — guide cells across categories, markets and four languages; 10 published;
@@ -220,7 +235,7 @@ enforced mechanically, not by policy document.
 non-compliant and mostly unaware of it. Solving it requires in-country presence — which is a strong argument
 for an Abu Dhabi base.
 
-**Regulatory status:** 3 of 17 markets cleared, and those clearances are illustrative demo clearances, not
+**Regulatory status:** 3 of 22 markets cleared, and those clearances are illustrative demo clearances, not
 legal sign-off. Replacing them with counsel opinions is a prerequisite to going live anywhere.
 
 ---

@@ -1,6 +1,6 @@
 // WARM ACCOUNTS — the three groups where an introduction actually exists.
 //
-// Until now the account board held 22 cold, model-ranked targets and none of the groups we can actually
+// Until now the account board held only cold, model-ranked targets and none of the groups we can actually
 // reach. That made the console a simulation of a pipeline rather than a picture of one, and anyone opening
 // it during diligence would have seen fixtures.
 //
@@ -26,8 +26,9 @@ const ACCOUNTS = [
     mvt_presence: "established", opportunity: "High", fit_score: 74,
     fit_reason: "WARM GROUP-LEVEL INTRODUCTION via the owning family — access, not fit score, is why this ranks first. " +
       "Established international desk means the coordination pain we automate exists today at volume.",
-    next_action: "Confirm which entity the introduction reaches (India, GCC, or both). Book the discovery call; ask the five priority questions.",
-    notes: "India and GCC separated April 2024 into two companies. Moopen family holds 41.88% of the India entity " +
+    next_action: "Confirm which entity the introduction reaches (India, GCC, or both). Book the discovery call; ask the five priority questions. Bangalore first-approach unit: Aster Hebbal/Whitefield.",
+    notes: "FIRST PARTNER SET (Bangalore cluster, 2026-07-22) — the specific unit to pilot is Aster Hebbal. " +
+      "India and GCC separated April 2024 into two companies. Moopen family holds 41.88% of the India entity " +
       "and 35% of Aster GCC with operational rights — so a family introduction may reach BOTH ends of a corridor. " +
       "Highest-value thread we have. GCC side is governed by UAE Federal Law 2/2019 (health data may not leave the UAE).",
   },
@@ -52,7 +53,8 @@ const ACCOUNTS = [
     fit_reason: "WARM GROUP-LEVEL INTRODUCTION via the former group legal head — a route that understands exactly how the " +
       "existing facilitator agreements are written and where the commercial friction sits.",
     next_action: "Discovery call. Priority questions: inquiry→treated conversion, agent commission as a share of case, where they lose people.",
-    notes: "Strengths align with our top categories: oncology, cardiac surgery, orthopaedics, neuro, nephrology. " +
+    notes: "FIRST PARTNER SET (Bangalore cluster, 2026-07-22). " +
+      "Strengths align with our top categories: oncology, cardiac surgery, orthopaedics, neuro, nephrology. " +
       "Transplant programme of 2,000+ procedures — the highest-ticket category in medical travel and one we do not " +
       "yet model. Transplant for foreign nationals runs under THOTA (near-relative donor, authorisation committee) — " +
       "genuine regulatory weight, and a moat precisely because it is hard.",
@@ -66,7 +68,8 @@ const ACCOUNTS = [
     fit_reason: "Unit-level rather than group-level, but JCI + NABH + NABL with strong oncology and cardiac programmes " +
       "and an existing medical-travel reputation. A single unit is an easier pilot than a group.",
     next_action: "Chase the introduction, but do not let it hold up the two group conversations.",
-    notes: "Parent chain already on the board at fit 68 (established presence, thinner terms). The Bangalore unit is the " +
+    notes: "FIRST PARTNER SET (Bangalore cluster, 2026-07-22) — Sachin Rai's own desk, the warmest intro path we have. " +
+      "Parent chain already on the board at fit 68 (established presence, thinner terms). The Bangalore unit is the " +
       "specific opportunity, not Fortis nationally.",
   },
 ];

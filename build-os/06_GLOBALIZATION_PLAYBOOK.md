@@ -5,7 +5,7 @@
 
 ## Principle
 
-The engine is **destination-agnostic and source-agnostic**. India is the first *destination*; the Middle East, Africa, Europe and SE Asia are the first *source regions*. Nothing hard-codes either. To relaunch, you set a config — you don't rewrite the engine.
+The engine is **destination-agnostic and source-agnostic**. India is the first *destination*; the Middle East, Africa, Central Asia, Europe and SE Asia are the first *source regions*. Nothing hard-codes either. To relaunch, you set a config — you don't rewrite the engine.
 
 ## The market config (single source of truth per market)
 

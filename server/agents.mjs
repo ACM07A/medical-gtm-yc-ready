@@ -177,7 +177,7 @@ function cardBody(id) {
       <div class="row">
         <label>Preferred departure<input data-f="targetDepartureDate" value="2026-08-12"></label>
         <label>Flex (± days)<input data-f="flexDays" type="number" value="4"></label>
-        <label>Origin region<select data-f="region"><option value="middle_east" selected>Middle East</option><option value="africa">Africa</option><option value="se_asia">South-East Asia</option><option value="europe">Europe</option></select></label>
+        <label>Origin region<select data-f="region"><option value="middle_east" selected>Middle East</option><option value="central_asia">Central Asia</option><option value="africa">Africa</option><option value="se_asia">South-East Asia</option><option value="europe">Europe</option></select></label>
         <label>Hospital city<select data-f="city"><option value="Bengaluru" selected>Bengaluru</option><option value="Chennai">Chennai</option><option value="Delhi NCR">Delhi NCR</option><option value="Mumbai">Mumbai</option><option value="Hyderabad">Hyderabad</option><option value="Gurugram">Gurugram</option></select></label>
       </div>
       <button class="run sec" onclick="runAgent('flight-search', this, 'ticketing')">1. Search the flexible-date window</button>
