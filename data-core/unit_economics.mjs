@@ -46,8 +46,11 @@ const STAGES = [
     src: "ASSUMED — no public benchmark found; cost = ~15 min clinically-literate review (generous vs Indian coordinator rates)" },
   { key: "quoted", label: "Hospital returns opinion + estimate", rate: num("qt", 0.70), cost: 0.60,
     src: "ASSUMED — no public benchmark found" },
-  { key: "booked", label: "Accepts · deposit paid", rate: num("conv", 0.30), cost: 2.10,
-    src: "PARTLY CITED — industry target is 10% inquiry→conversion end-to-end; this rate is back-solved toward it" },
+  { key: "booked", label: "Accepts · pays 80-100% upfront (not a light deposit)", rate: num("conv", 0.30), cost: 2.10,
+    src: "PARTLY CITED — 10% inquiry→conversion end-to-end is the industry target this rate is back-solved toward; " +
+         "the 80-100%-upfront framing is CITED — Sachin Rai interview 2026-07-22: hospitals require most or all of " +
+         "the package before surgery, not a token deposit. That single payment is a real cliff, not a formality — " +
+         "likely a large share of why this stage's drop is the steepest in the funnel." },
   { key: "treated", label: "Travels and is treated", rate: num("show", 0.85), cost: 40.00,
     src: "ASSUMED — no published no-show/visa-denial data exists for India medical visas; 85% is optimistic" },
 ];
@@ -59,7 +62,10 @@ const cat = db.prepare(
   || db.prepare(`SELECT c.id, c.name, AVG((p.india_low + p.india_high)/2.0) AS pkg FROM category c
                  JOIN category_price p ON p.category_id=c.id GROUP BY c.id ORDER BY pkg DESC LIMIT 1`).get();
 
-const COMMISSION = num("commission", 0.20);            // ASK — the real rate Aster/Manipal pay today
+// ANCHORED (not just ASSUMED anymore) — Sachin Rai interview 2026-07-22: 20-25% is the range that gets an
+// established facilitator an instant yes from a hospital desk; 15% is compassionate-case territory, the
+// floor, not the norm. Still one desk's real range, not Aster's/Manipal's specifically — ASK them directly.
+const COMMISSION = num("commission", 0.20);
 const AGENCY_CAC = num("agencycac", 1400);             // ASSUMED — coordinator time + media + sub-agent cut
 
 // ── Walk the funnel ──────────────────────────────────────────────────────────────────────────────────
@@ -110,14 +116,14 @@ console.log(`     Contribution                   ${$(fee - treated.per).padStart
 console.log(`     A traditional agency, same fee ${$(fee - AGENCY_CAC).padStart(10)}   (${Math.round(((fee - AGENCY_CAC) / fee) * 100)}% — coordinator time scales with leads)`);
 
 console.log(`\n  ⚠ NEEDS A REAL NUMBER — ask Aster / Manipal / Fortis:`);
-console.log(`     • the commission rate they actually pay a facilitator today   (using ${Math.round(COMMISSION * 100)}%)`);
+console.log(`     • THEIR commission rate (anchored to a real 20-25% desk range, not guessed — still theirs to confirm, using ${Math.round(COMMISSION * 100)}%)`);
 console.log(`     • what share of their international inquiries convert          (using ${Math.round(STAGES[5].rate * 100)}% quote→book)`);
 console.log(`     • what an inquiry costs them through their current agent panel (using ${$(AGENCY_CAC)})`);
 // Where every number came from — printed every run, so nobody quotes this model without its foundations.
 console.log(`\n  PROVENANCE (channel: ${CHANNEL})`);
 for (const s of STAGES) console.log(`     ${s.key.padEnd(10)} ${s.src}`);
 console.log(`     package    CITED — data-core category_price rows`);
-console.log(`     commission ASSUMED ${Math.round(COMMISSION * 100)}% — reported facilitator range is 15–25%`);
+console.log(`     commission ANCHORED ${Math.round(COMMISSION * 100)}% — Sachin Rai interview 2026-07-22: 20-25% is an instant-yes range for an established facilitator, 15% is compassionate-case not norm; still ask each partner`);
 const cited = STAGES.filter((s) => s.src.startsWith("CITED")).length;
 console.log(`\n  ${cited} of ${STAGES.length} funnel stages rest on a published benchmark. The rest are ours.`);
 console.log(`  Treat every figure above as a range, not a number, until a real cohort replaces it.`);

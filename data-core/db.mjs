@@ -118,6 +118,14 @@ export function open(path = DB_PATH) {
     id INTEGER PRIMARY KEY AUTOINCREMENT, lead_id INTEGER REFERENCES lead(id),
     kind TEXT, label TEXT, amount REAL, currency TEXT DEFAULT 'USD',
     created TEXT DEFAULT (datetime('now')))`);
+
+  // DOCTOR AFFILIATE — see schema.sql for the full rationale. Migration mirror for DBs created before this
+  // table existed.
+  db.exec(`CREATE TABLE IF NOT EXISTS doctor_affiliate (
+    partner_id TEXT PRIMARY KEY REFERENCES partner(id),
+    specialty TEXT, country_code TEXT, current_hospital TEXT,
+    reach_est TEXT DEFAULT 'unknown', warmth TEXT DEFAULT 'cold',
+    contact_channel TEXT, cme_notes TEXT, source TEXT)`);
   return db;
 }
 
@@ -211,6 +219,40 @@ export function readiness(p) {
   const months = score >= 75 ? "0–2" : score >= 50 ? "3–6" : "6–12";   // rough time-to-first-bookable
   const label = score >= 75 ? "ready" : score >= 50 ? "ramping" : "needs setup";
   return { score, label, months };
+}
+
+// DOCTOR-AFFILIATE FIT — a different rubric for a different account type (see doctor_affiliate in
+// schema.sql). A hospital is scored on quality x whitespace x proof; a doctor is scored on whether
+// recruiting them would actually move patients toward our wedge categories from our actual markets — the
+// accreditation/mvt_presence inputs partnerFit() uses don't mean anything for a person.
+const SPECIALTY_W = { priority: 1.0, general: 0.6, unrelated: 0.3 };
+const REACH_W = { high: 1.0, med: 0.6, low: 0.3, unknown: 0.3 };
+// Sachin Rai named these unprompted, by real volume, as his own top categories. Cardiac is included only
+// because it's the flagship override (T013) — his numbers don't support it; see PARTNER_AGENT.md.
+export const DOCTOR_PRIORITY_SPECIALTIES = ["oncology", "ortho", "fertility", "cardiac"];
+export function doctorFit(d) {
+  const tier = DOCTOR_PRIORITY_SPECIALTIES.includes(d.specialty) ? "priority" : d.specialty ? "general" : "unrelated";
+  const specialty = SPECIALTY_W[tier];
+  const market = d.inTargetMarket ? 1.0 : 0.4;                // Africa / Middle East / SE Asia = the actual GTM markets
+  const reach = REACH_W[d.reach_est] ?? REACH_W.unknown;
+  const score = Math.round(100 * (0.35 * specialty + 0.35 * market + 0.30 * reach));
+  const specTxt = tier === "priority" ? `${d.specialty} is a category a live desk actually moves real volume in`
+    : tier === "general" ? `${d.specialty} is adjacent, not a core wedge category` : "specialty not recorded";
+  const marketTxt = d.inTargetMarket ? "based in a target market" : "outside the current target markets — lower priority regardless of specialty";
+  const reachTxt = { high: "high referral volume", med: "moderate referral volume", low: "low referral volume", unknown: "referral volume not yet estimated" }[d.reach_est] ?? "referral volume not yet estimated";
+  return { score, reason: `${specTxt}; ${marketTxt}; ${reachTxt}.` };
+}
+
+// Readiness answers "can this become a live referral channel soon" — separate from fit for the same reason
+// partner readiness() is separate from partnerFit(). warmth is the dominant lever on purpose: Sachin's
+// account is that relationship tenure and trust decide flow, not a pitch — the same warm-intro thesis
+// already applied to Aster/Manipal/Fortis (seed_warm_accounts.mjs), one level down to an individual.
+export function doctorReadiness(d) {
+  const base = d.warmth === "warm" ? 70 : 30;
+  const routed = d.hasExistingPartnerHospital ? 15 : 0;       // their own hospital is already one of ours — no new institutional relationship needed
+  const score = Math.min(100, base + routed);
+  const label = score >= 70 ? "ready to approach" : score >= 40 ? "needs a warm path" : "cold — relationship-build only";
+  return { score, label };
 }
 
 // Weighted category score (/build-os/03 weights). Factors are 1-5.

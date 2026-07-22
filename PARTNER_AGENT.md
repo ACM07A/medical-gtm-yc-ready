@@ -283,6 +283,7 @@ Live board: `/console` (fit-ranked account board, contact path, next action) · 
 | `partner` | `fit_score`, `fit_reason`, `next_action`, `owner`, `stage`, `outcome`, `outcome_at`, `outcome_note`, `last_discovery_at` |
 | `poc` | `role`, `seniority`, `contact_type`, `contact_value`, `confidence`, `source`, `resolved`, `verified_at` |
 | `proposal` | `partner_id`, `category_id`, `market_code`, `fee_pct`, `status`, `file_ref`, `blockers`, `generated_at`, `outcome` |
+| `doctor_affiliate` | `specialty`, `country_code`, `current_hospital`, `reach_est`, `warmth`, `contact_channel`, `cme_notes`, `source` — §11 |
 
 ## 10. Honest limitations of this specific agent
 
@@ -301,3 +302,53 @@ Live board: `/console` (fit-ranked account board, contact path, next action) · 
 - **Proposal generation runs on the same failover chain as everything else** (GLM → Gemini) — quality and
   voice can vary slightly by which model actually served a given draft (recorded in the file header as
   `model:`).
+
+---
+
+## 11. A second account type: doctor-affiliate
+
+Sachin Rai (9.5–10 years running the international desk at two hospital groups, interviewed 2026-07-22)
+described a "next level" beyond the hospital-partner motion this agent was built for: recruit an individual
+clinician directly — engage them via CME, offer a revenue share, eventually stand up a local info-center
+around them — rather than only signing the institution they work at. This is a genuinely different account,
+not a variant of the hospital one: a doctor has no accreditation, no `mvt_presence`, no international desk to
+assess. Scoring them on `partnerFit()` would silently misrepresent the account.
+
+**How it's wired in, and what deliberately reuses the existing machinery**: a doctor is a `partner` row with
+`type='doctor'` — so the pipeline stage machine, `next_action`, `outreach`, and `proposal` tables all work
+unchanged. What's different is a companion `doctor_affiliate` table (schema.sql) holding the fields a
+hospital doesn't have (`specialty`, `country_code`, `current_hospital`, `reach_est`, `warmth`), and its own
+scoring pair in `data-core/db.mjs`:
+
+```
+doctorFit(d)       = round(100 × (0.35 × specialty + 0.35 × market + 0.30 × reach))
+doctorReadiness(d) = min(100, (warmth==='warm' ? 70 : 30) + (routes to an existing partner hospital ? 15 : 0))
+```
+
+- **specialty** — `1.0` if the specialty is one Sachin named as real, unprompted volume (`DOCTOR_PRIORITY_SPECIALTIES
+  = oncology, ortho, fertility, cardiac` — cardiac is in the list only because it's the flagship override,
+  T013, not because his numbers support it), `0.6` if adjacent, `0.3` if unrelated.
+- **market** — `1.0` if their country is in Africa / Middle East / SE Asia (the actual target markets, per
+  `market.region`), `0.4` otherwise.
+- **reach** — `1.0`/`0.6`/`0.3` for a self-reported/estimated high/med/low referral volume, never invented.
+- **readiness is dominated by warmth on purpose** — Sachin's account is that tenure and trust decide flow,
+  not a pitch. This is the same warm-intro thesis already applied to Aster/Manipal/Fortis
+  (`seed_warm_accounts.mjs`), one level down to an individual.
+
+**There is no bulk-sourcing step for this account type, and there shouldn't be.** Hospitals get sourced into
+a directory and scored cold; a doctor only becomes real through an actual introduction — so
+`data-core/capture_doctor.mjs` is the only entry point, mirroring `capture_poc.mjs`'s "a human is vouching
+for this" rule one level up:
+
+```bash
+node --experimental-sqlite data-core/capture_doctor.mjs "Dr Full Name" <specialty> <country_code> "Current Hospital" <reach:low|med|high> <warmth:cold|warm> "source note"
+```
+
+**Status: the capability exists, the board is empty.** Zero doctor-affiliate rows are seeded — there is no
+real name to put here yet, and inventing one would violate §1's no-fabrication rule. This section exists so
+that the moment a real introduction shows up (through Sachin or otherwise), it has a scoring model and a
+place to land instead of a scramble to build one. It is explicitly **not** wired into the console board's
+hospital-specific UI (`console.html`'s `mvt_presence`/accreditation columns) — the generic
+`SELECT * FROM partner ORDER BY fit_score DESC` account list already surfaces it adequately for a
+zero-to-few-record stage; a doctor-specific view is a "build it when there's something to show" item, not a
+gap today.

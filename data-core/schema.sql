@@ -75,9 +75,9 @@ CREATE TABLE IF NOT EXISTS partner (
   fit TEXT,                          -- quality benchmark: High | Med (must clear the bar; /build-os/04)
   stage TEXT DEFAULT 'Sourced',      -- Sourced->Enriched->POC found->Outreach sent->Responded->Pilot proposed->Pilot live->Signed->Active
   priority INTEGER DEFAULT 0,        -- 1 = first-wave target
-  type TEXT DEFAULT 'chain',         -- chain | unit | standalone | emerging
+  type TEXT DEFAULT 'chain',         -- chain | unit | standalone | emerging | doctor
   parent_id TEXT REFERENCES partner(id),  -- unit -> its chain
-  mvt_presence TEXT DEFAULT 'established', -- established | emerging | latent | none
+  mvt_presence TEXT DEFAULT 'established', -- established | emerging | latent | none (NULL for type='doctor')
   opportunity TEXT,                  -- High | Med | Low  (computed: quality x inverse-presence = margin/terms upside)
   notes TEXT
 );
@@ -86,6 +86,23 @@ CREATE TABLE IF NOT EXISTS partner_category (
   partner_id TEXT NOT NULL REFERENCES partner(id),
   category_id TEXT NOT NULL REFERENCES category(id),
   PRIMARY KEY (partner_id, category_id)
+);
+
+-- DOCTOR AFFILIATE — a second account type on the same partner/pipeline machinery (stage, fit_score,
+-- next_action, outreach, proposal all reused via type='doctor') but scored on a different rubric: an
+-- individual clinician recruited as a referral/training partner — Sachin Rai's own "next level" playbook
+-- (CME engagement, a revenue share, a local info-center) — not an institution being sold a pilot.
+-- A hospital's fields (accreditation, mvt_presence, JCI/NABH) don't apply to a person; these do instead.
+CREATE TABLE IF NOT EXISTS doctor_affiliate (
+  partner_id TEXT PRIMARY KEY REFERENCES partner(id),
+  specialty TEXT,                    -- a category id (cardiac, ortho, oncology, fertility, cosmetic, dental)
+  country_code TEXT,                 -- ISO, cross-referenced against market(code) for target-market fit
+  current_hospital TEXT,             -- their home institution today (public info; not necessarily a partner of ours)
+  reach_est TEXT DEFAULT 'unknown',  -- low | med | high | unknown — estimated referral volume, never invented
+  warmth TEXT DEFAULT 'cold',        -- cold | warm — is there a real introduction (same concept as the warm hospital accounts)
+  contact_channel TEXT,              -- PUBLIC business channel only (no personal PII) — same rule as ips_channel_public
+  cme_notes TEXT,
+  source TEXT                        -- how we were introduced / who is vouching for this
 );
 
 -- Points of contact (public business roles/channels; person_name null until resolved).
