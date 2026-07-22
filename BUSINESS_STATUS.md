@@ -70,7 +70,7 @@ corridor into India — fertility/IVF, oncology and cardiac lead the outflow. **
 flagging now:** the bloc is Russian-speaking and **Telegram/Instagram-first, not WhatsApp** — the same gap as
 Cameroon. Our comms engine is WhatsApp-only today, so serving Central Asia (or Francophone Cameroon) means
 adding a Telegram channel before, not after, spend goes there. This takes the source map to **22 markets across
-three regions plus Europe.**
+five regions** — Middle East, Africa, Central Asia, SE Asia and Europe.
 
 ---
 

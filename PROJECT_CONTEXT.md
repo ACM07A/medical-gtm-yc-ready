@@ -178,6 +178,18 @@ each partner is a real CRM account, not a directory row —
   › `open` (target-role slot to fill).
 - **A next action + owner + stage** so the pipeline actually moves.
 
+**The board has two layers, and the split is deliberate.** The *cold* board (`data-core/seed.mjs`) is the
+fit-ranked funnel — model-scored targets, latent brands on top. The *warm* board
+([`data-core/seed_warm_accounts.mjs`](./data-core/seed_warm_accounts.mjs)) holds the handful of groups where a
+real introduction actually exists, ranked on **access, not fit score** — because a warm group-level intro is
+scarcer than good terms, and an established international desk is the customer whose coordination pain we
+automate *today*. The concrete **first partner set (user-directed 2026-07-22) is a deliberate Bangalore
+cluster**: Fortis Bannerghatta Road, Aster (Hebbal unit), Manipal, SPARSH and KIMS — five hospitals in one
+city, which is also the city of our MVT adviser (Sachin Rai, Fortis Bangalore), so the whole set is a cheap,
+warm-intro beachhead. Three sit on the warm board (Fortis Bannerghatta = the adviser's own desk; Aster = the
+owning family; Manipal = the former group legal head); SPARSH and KIMS are the lesser-known names with no warm
+route yet, where the credibility engine (§5.2c) and better margin terms both matter most.
+
 **Finding the named decision-maker** ([`data-core/discover_pocs.mjs`](./data-core/discover_pocs.mjs)):
 the hard part. The right person (Head–International Patient Services / GM–International Business) is almost
 never on a hospital website. The engine:
@@ -267,10 +279,14 @@ auto-posts (real posting needs a platform key + `POST_LIVE=1` + approval, per [`
 
 ### 5.4 Globalization — *re-tailorable*
 
-Markets are **config, not code** (the `market` table + `category_market` fit matrix). 12 markets across 4
-regions carry their own languages, RTL flag, currency, channels, visa regime. Adding a market (e.g. Myanmar)
-derives its content grid and partner targeting without touching engine code — the acceptance test for true
-globalization.
+Markets are **config, not code** (the `market` table + `category_market` fit matrix). 22 markets across 5
+regions (Middle East, Africa, Central Asia, Europe, SE Asia) carry their own languages, RTL flag, currency,
+channels, visa regime. This was just exercised for real: **Central Asia** (Uzbekistan + Kazakhstan core,
+Tajikistan/Kyrgyzstan/Turkmenistan extensions) was added 2026-07-22 as pure config — it derived its own
+fit-matrix cells, fare bands and partner targeting without an engine-code change, the acceptance test for true
+globalization. The same pass surfaced a genuine channel gap the config *doesn't* hide: this bloc (and
+Francophone Cameroon) is **Telegram-first, not WhatsApp**, so the comms engine needs a Telegram channel before
+spend goes there — a market added is not a market served.
 
 ### 5.5 The Operator Console — *tangible visibility*
 
