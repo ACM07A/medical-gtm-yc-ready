@@ -7,7 +7,8 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { loadEnv } from "../lib/env.mjs";
 loadEnv();   // so /plugins reflects configured keys
-import { open, getState, readiness, marketCleared, logRun } from "../data-core/db.mjs";
+import { open, getState, readiness, marketCleared, logRun,
+  COMMISSION_TIERS, INCUMBENT_COMMISSION, USD_INR, commissionModel } from "../data-core/db.mjs";
 import { mdToHtml } from "./md.mjs";
 import { renderHome } from "./landing_home.mjs";
 import { plugins as pluginList } from "../lib/plugins.mjs";
@@ -380,6 +381,60 @@ ${rows.map(card).join("")}</main></body></html>`;
       return send(200, "application/json", JSON.stringify(buildState(db)));
     if (url.pathname === "/api/runs")
       return send(200, "application/json", JSON.stringify(db.prepare(`SELECT * FROM run ORDER BY id DESC LIMIT 80`).all()));
+    // MARKETS — the servable/skipped footprint as JSON, so an external front-end (e.g. the YC demo landing
+    // page) reflects the live register: reseed or flip a market's regulatory_status and this changes.
+    // status derives from regulatory_status ('blocked' → skipped); telegramFirst is inferred from the
+    // channel mix / notes (Central Asia + Cameroon), the markets the WhatsApp-only comms engine can't reach yet.
+    if (url.pathname === "/api/markets") {
+      const rows = db.prepare(`SELECT code,name,region,tier,regulatory_status,regulatory_note,primary_channels,notes FROM market
+        ORDER BY CASE tier WHEN 'A' THEN 0 WHEN 'B' THEN 1 WHEN 'C' THEN 2 ELSE 3 END, name`).all();
+      return send(200, "application/json", JSON.stringify(rows.map((m) => {
+        const blocked = m.regulatory_status === "blocked";
+        return {
+          code: m.code, name: m.name, region: m.region, tier: m.tier,
+          status: blocked ? "skipped" : "servable",
+          reason: blocked ? m.regulatory_note : null,
+          telegramFirst: /telegram/i.test(`${m.primary_channels || ""} ${m.notes || ""}`),
+        };
+      })));
+    }
+    // VAULT — the medical-data architecture status as JSON (same source as the /vault HTML page): backend,
+    // per-market law register strictest-first, the skip list, and the access-log tail. Read-only.
+    if (url.pathname === "/api/vault") {
+      const backend = vaultBackend();
+      let laws = [];
+      try {
+        laws = db.prepare(`SELECT market_code, transfer_rule, law_name, status FROM health_data_law ORDER BY CASE transfer_rule
+          WHEN 'in_country_only' THEN 0 WHEN 'localization_copy' THEN 1 WHEN 'adequacy_or_sccs' THEN 2
+          WHEN 'consent_based' THEN 3 ELSE 4 END, market_code`).all();
+      } catch { /* health_data_law not seeded yet — npm run health-laws */ }
+      const blocked = new Set(db.prepare(`SELECT code FROM market WHERE regulatory_status='blocked'`).all().map((r) => r.code));
+      const skipped = db.prepare(`SELECT code, name, regulatory_note AS note FROM market WHERE regulatory_status='blocked' ORDER BY code`).all();
+      let accessLogRows = [];
+      try { const v = openVault(); accessLogRows = accessLog(v, { limit: 15 }); v.close(); } catch { /* vault not initialised yet */ }
+      return send(200, "application/json", JSON.stringify({
+        backend, laws: laws.map((l) => ({ ...l, blocked: blocked.has(l.market_code) })), skipped, accessLog: accessLogRows,
+      }));
+    }
+    // ECONOMICS — the commission model as JSON so the demo's investor panel reads the live tier ladder:
+    // change COMMISSION_TIERS in db.mjs and this (and the landing page) update. The worked per-case example
+    // uses the live cardiac package band, computed at the 20% entry tier vs the conservative 25% incumbent floor.
+    if (url.pathname === "/api/economics") {
+      const pkg = db.prepare(`SELECT min(india_low) low, max(india_high) high FROM category_price WHERE category_id='cardiac'`).get();
+      const band = pkg && pkg.low ? { low: pkg.low, high: pkg.high } : { low: 5000, high: 9000 };
+      const model = commissionModel(band, COMMISSION_TIERS[0].pct, INCUMBENT_COMMISSION.low);
+      return send(200, "application/json", JSON.stringify({
+        incumbent: INCUMBENT_COMMISSION, usdInr: USD_INR, tiers: COMMISSION_TIERS,
+        paidBy: "the hospital, never the patient",
+        entryPct: COMMISSION_TIERS[0].pct, capPct: COMMISSION_TIERS.at(-1).pct,
+        example: {
+          category: "cardiac", packageUSD: band, ourFeeUSD: model.ourFee,
+          hospitalNetUSD: model.hospitalNet, netUpliftVsIncumbentFloorUSD: model.netUplift,
+        },
+        line: "Open below every incumbent (20% vs their 25% floor) to win the pilot; step up only to their " +
+          "cheapest rate (25%) as volume proves out — the hospital never pays more than its current cheapest agent.",
+      }));
+    }
     const m = url.pathname.match(/^\/draft\/(\d+)$/);
     if (m) {
       const a = db.prepare(`SELECT ca.*, c.name cat, mk.name mname FROM content_asset ca
