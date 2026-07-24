@@ -28,12 +28,13 @@ const checks = [
   ["GET", "/integrations"],
   ["GET", "/audit"],
   ["GET", "/docs/YC_REVIEWER_GUIDE.md"],
+  ["GET", "/docs/VENDOR_DEPLOYMENT_READINESS.md"],
 ];
 
 let failed = 0;
 for (const [method, path] of checks) {
   try {
-    const res = await fetch(base + path, { method, headers: { "x-demo-user": "admin@medyatra.demo" } });
+    const res = await fetch(base + path, { method, headers: { "x-demo-user": "admin@canopuscare.demo" } });
     const ok = res.status >= 200 && res.status < 400;
     console.log(`${ok ? "✓" : "✗"} ${method} ${path} -> ${res.status}`);
     if (!ok) failed++;
@@ -54,7 +55,7 @@ if (ingest.status !== 401) failed++;
 const login = await fetch(base + "/api/auth/login", {
   method: "POST",
   headers: { "content-type": "application/json" },
-  body: JSON.stringify({ email: "admin@medyatra.demo", password: "medyatra-demo" }),
+  body: JSON.stringify({ email: "admin@canopuscare.demo", password: "canopuscare-demo" }),
 });
 console.log(`${login.status === 200 ? "✓" : "✗"} POST /api/auth/login demo credentials -> ${login.status}`);
 if (login.status !== 200) failed++;

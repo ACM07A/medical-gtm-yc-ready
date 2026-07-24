@@ -23,4 +23,4 @@ Docker:
 docker compose up --build
 ```
 
-Demo users all use `medyatra-demo`. The demo uses synthetic data and disables live outbound actions.
+Demo users all use `canopuscare-demo`. The demo uses synthetic data and disables live outbound actions.

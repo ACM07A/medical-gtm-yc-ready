@@ -2,7 +2,7 @@
 
 1. Clone: `git clone https://github.com/hussainbombaywala/medical-tourism-gtm.git`
 2. Start: `cp .env.example .env && npm ci && npm run yc-demo`
-3. Login credentials: all demo users use `medyatra-demo`.
+3. Login credentials: all demo users use `canopuscare-demo`.
 4. Ten-minute walkthrough: follow `DEMO_SCRIPT.md`.
 5. Architecture: see `ARCHITECTURE.md`.
 6. Autonomous agent model: `/agents` shows deterministic runs, evidence, provider, confidence, cost and approval flags.

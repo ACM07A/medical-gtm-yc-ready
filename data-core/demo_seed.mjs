@@ -23,7 +23,7 @@ const STEPS = [
   { s: "seed_reference_prices.mjs", fatal: false, note: "price-ladder rungs (local → international → India)" },
   { s: "seed_tenants.mjs", fatal: false, note: "own-brand + demo operator (dual-mode)" },
   { s: "seed_leads.mjs", fatal: false, note: "demo patient leads for the journey" },
-  { s: "seed_os.mjs", fatal: true, note: "MedYatra OS roles, cases, vendors, approvals, audit and agent runs" },
+  { s: "seed_os.mjs", fatal: true, note: "CanopusCare OS roles, cases, vendors, approvals, audit and agent runs" },
   { s: "gen_comms.mjs", fatal: false, note: "21 WhatsApp templates (+ infographic headers, needs a browser)" },
   { s: "gen_header_datauris.mjs", fatal: false, note: "inline headers for the shareable sandbox artifact (browser)" },
   // Regulatory: illustrative demo clearances so guides can publish (NG left gated to show the gate working).
@@ -36,7 +36,7 @@ const STEPS = [
 // Optional: seed the distribution queue (needs a generation key).
 if (hasGenKey) STEPS.push({ s: "repurpose_content.mjs", args: ["2"], env: { FORCE: "1" }, fatal: false, note: "seed /distribution: 2 pages → social posts" });
 
-console.log(`\n▶ MedYatra demo bootstrap — ${STEPS.length} steps ${hasGenKey ? "(incl. social repurpose — key found)" : "(key-free; social repurpose skipped — no generation key)"}\n`);
+console.log(`\n▶ CanopusCare demo bootstrap — ${STEPS.length} steps ${hasGenKey ? "(incl. social repurpose — key found)" : "(key-free; social repurpose skipped — no generation key)"}\n`);
 
 let ok = 0, failed = 0;
 for (const step of STEPS) {

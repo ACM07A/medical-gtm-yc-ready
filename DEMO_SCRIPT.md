@@ -1,7 +1,7 @@
 # 10-12 Minute Demo Script
 
 1. Problem: medical tourism is run through WhatsApp, spreadsheets, unverified middlemen and slow hospital responses.
-2. Product: MedYatra coordinates agents, hospitals, patients and vendors while humans approve clinical, regulatory, commercial and outbound actions.
+2. Product: CanopusCare coordinates agents, hospitals, patients and vendors while humans approve clinical, regulatory, commercial and outbound actions.
 3. Open `/demo`: show synthetic-data banner, live status, seeded counts and major surfaces.
 4. Open `/agent`: show Lagos Health Travel Partners, API ingestion instructions, consent handling and commission forecast.
 5. Open `/cases/case_ibrahim_musa`: show Ibrahim Musa, Nigeria, cardiac bypass evaluation, consent captured, documents, hospital matches, estimates, vendors, compliance and audit.

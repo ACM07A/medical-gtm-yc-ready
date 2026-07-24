@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: medyatra-demo
+    name: canopuscare-demo
     env: docker
     plan: starter
     dockerfilePath: ./Dockerfile

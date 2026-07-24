@@ -4,14 +4,14 @@ import { dirname, join } from "node:path";
 import { DB_PATH, logRun } from "./db.mjs";
 
 export const APP_MODES = new Set(["demo", "development", "production", "test"]);
-export const DEMO_PASSWORD = "medyatra-demo";
+export const DEMO_PASSWORD = "canopuscare-demo";
 
 export function appMode() {
   const mode = process.env.APP_MODE || "demo";
   return APP_MODES.has(mode) ? mode : "demo";
 }
 
-export function passwordHash(password, salt = "medyatra-demo-salt") {
+export function passwordHash(password, salt = "canopuscare-demo-salt") {
   return `sha256:${salt}:${createHash("sha256").update(`${salt}:${password}`).digest("hex")}`;
 }
 
@@ -127,22 +127,22 @@ export function seedDemoOs(db) {
   }
 
   const orgs = [
-    ["org_platform", "MedYatra Platform", "platform", "IN"],
+    ["org_platform", "CanopusCare Platform", "platform", "IN"],
     ["org_agent_lagos", "Lagos Health Travel Partners", "agent", "NG"],
     ["org_hospital_apollo", "Apollo International Cardiac Centre", "hospital", "IN"],
     ["org_hospital_fortis", "Fortis International Patient Desk", "hospital", "IN"],
     ["org_vendor_blr", "Bangalore Arrival Care Network", "vendor", "IN"],
   ];
   for (const o of orgs) put(db, `INSERT INTO organization (id,name,type,country,demo) VALUES (?,?,?,?,1)`, o);
-  put(db, `INSERT OR REPLACE INTO tenant (id,name,mode,token,rev_share,active) VALUES (?,?,?,?,?,1)`, ["medyatra", "MedYatra (own acquisition)", "own", null, 1.0]);
+  put(db, `INSERT OR REPLACE INTO tenant (id,name,mode,token,rev_share,active) VALUES (?,?,?,?,?,1)`, ["medyatra", "CanopusCare (own acquisition)", "own", null, 1.0]);
   put(db, `INSERT OR REPLACE INTO tenant (id,name,mode,token,rev_share,active) VALUES (?,?,?,?,?,1)`, ["trudoc-demo", "Trudoc (demo operator)", "operator", "demo-ingest-trudoc", 0.5]);
 
   const users = [
-    ["user_admin", "admin@medyatra.demo", "Asha Platform Admin", "platform_admin", "org_platform"],
-    ["user_hospital", "hospital@medyatra.demo", "Ravi Hospital Admin", "hospital_admin", "org_hospital_apollo"],
-    ["user_agent", "agent@medyatra.demo", "Zainab Agent Admin", "agent_admin", "org_agent_lagos"],
-    ["user_vendor", "vendor@medyatra.demo", "Meera Vendor Operator", "vendor_operator", "org_vendor_blr"],
-    ["user_viewer", "viewer@medyatra.demo", "Read Only Reviewer", "read_only", "org_platform"],
+    ["user_admin", "admin@canopuscare.demo", "Asha Platform Admin", "platform_admin", "org_platform"],
+    ["user_hospital", "hospital@canopuscare.demo", "Ravi Hospital Admin", "hospital_admin", "org_hospital_apollo"],
+    ["user_agent", "agent@canopuscare.demo", "Zainab Agent Admin", "agent_admin", "org_agent_lagos"],
+    ["user_vendor", "vendor@canopuscare.demo", "Meera Vendor Operator", "vendor_operator", "org_vendor_blr"],
+    ["user_viewer", "viewer@canopuscare.demo", "Read Only Reviewer", "read_only", "org_platform"],
   ];
   for (const [id, email, name, role, org] of users) {
     put(db, `INSERT INTO app_user (id,email,name,password_hash,demo_password_hint) VALUES (?,?,?,?,?)`, [id, email, name, passwordHash(DEMO_PASSWORD), "synthetic demo only"]);
@@ -178,7 +178,7 @@ export function seedDemoOs(db) {
     ["review_fortis_ibrahim", "case_ibrahim_musa", "org_hospital_fortis", "hospital_clinical_reviewer", "Additional investigations requested", "Recent echo report requested before estimate.", "Hospital clinician"]);
 
   put(db, `INSERT INTO estimate (id,case_id,hospital_org_id,status,procedure,currency,indicative_total,validity,caveats,approved_by,released_at) VALUES (?,?,?,?,?,?,?,?,?,?,datetime('now'))`,
-    ["estimate_apollo_ibrahim", "case_ibrahim_musa", "org_hospital_apollo", "Released", "CABG evaluation package", "USD", 10850, "14 days", "Illustrative demo estimate; excludes complications, implants beyond listed line items, and clinical changes.", "hospital@medyatra.demo"]);
+    ["estimate_apollo_ibrahim", "case_ibrahim_musa", "org_hospital_apollo", "Released", "CABG evaluation package", "USD", 10850, "14 days", "Illustrative demo estimate; excludes complications, implants beyond listed line items, and clinical changes.", "hospital@canopuscare.demo"]);
   for (const [label, amount, note] of [["Procedure and surgeon fees", 5200, ""],["Hospital stay - private room", 2200, "5 days indicative"],["Investigations", 900, ""],["Consumables and medications", 1200, "Indicative"],["Companion stay support", 550, "Non-clinical"],["Exclusions", 800, "Shown as contingency placeholder"]]) {
     put(db, `INSERT INTO estimate_item (id,estimate_id,label,amount,note) VALUES (?,?,?,?,?)`, [gid("ei"), "estimate_apollo_ibrahim", label, amount, note]);
   }
@@ -213,7 +213,7 @@ export function seedDemoOs(db) {
   }
 
   const approvals = [
-    ["approval_estimate_release","Approve estimate release","estimate_apollo_ibrahim","Approved","Release Apollo synthetic estimate to the agent portal","agent@medyatra.demo","Indicative estimate rows and caveats","Consent, hospital reviewer status, demo watermark","PASS: consent captured; PASS: no clinical recommendation","", "hospital@medyatra.demo", "Prepared", "Released"],
+    ["approval_estimate_release","Approve estimate release","estimate_apollo_ibrahim","Approved","Release Apollo synthetic estimate to the agent portal","agent@canopuscare.demo","Indicative estimate rows and caveats","Consent, hospital reviewer status, demo watermark","PASS: consent captured; PASS: no clinical recommendation","", "hospital@canopuscare.demo", "Prepared", "Released"],
     ["approval_blocked_consent","Approve patient communication","case_amina_okoro","Blocked","Would send WhatsApp follow-up","Synthetic patient contact handle","Treatment request and source market","Consent gate","BLOCKED: CONSENT_REQUIRED","Consent missing", "", "Draft", "Blocked"],
   ];
   for (const a of approvals) put(db, `INSERT INTO approval (id,type,subject_ref,status,what_will_happen,recipient,data_exposed,evidence_checked,compliance_checks,blocking_reasons,reviewer,before_state,after_state,organization_id,decided_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,'org_platform',datetime('now'))`, a);
@@ -260,7 +260,7 @@ export function readinessReport(db) {
     missing,
     external_actions: mode === "demo" ? "DISABLED" : (process.env.POST_LIVE === "1" ? "CONFIGURED" : "DISABLED"),
     integrations,
-    demo_credentials: mode === "demo" ? { password: DEMO_PASSWORD, users: ["admin@medyatra.demo","hospital@medyatra.demo","agent@medyatra.demo","vendor@medyatra.demo","viewer@medyatra.demo"] } : undefined,
+    demo_credentials: mode === "demo" ? { password: DEMO_PASSWORD, users: ["admin@canopuscare.demo","hospital@canopuscare.demo","agent@canopuscare.demo","vendor@canopuscare.demo","viewer@canopuscare.demo"] } : undefined,
   };
 }
 

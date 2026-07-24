@@ -1,4 +1,4 @@
-# MedYatra — an agentic Go-To-Market engine
+# CanopusCare - medical tourism operations platform
 
 An **autonomous, multi-agent go-to-market engine** for a medical-tourism *facilitator* launching in India — and re-tailorable to any market. It decides what to sell, builds the hospital-partner supply side (down to the named decision-maker and a tailored proposal), runs a multilingual content/brand campaign, turns each page into platform-ready social posts with real infographics and stock photos, and shows all of it moving on a live operator console — continuing on a schedule even when Claude is offline.
 
@@ -18,7 +18,7 @@ An **autonomous, multi-agent go-to-market engine** for a medical-tourism *facili
 | 4 | **Distributes it** | Each page is repurposed into platform-native posts (LinkedIn / Instagram / Reddit / WhatsApp / X). Visuals pick the right source per slide: **data infographics** (real numbers, crisp text), **stock photos** for people, AI only for abstract graphics. Human-gated at post. |
 | 5 | **Globalizes** | Every artifact is market-parameterized (config, not code) across the Middle East, Africa, Central Asia, Europe, SE Asia. |
 | 6 | **Runs itself** | A scheduled task drives the whole factory **without Claude** (generation fails over across providers); a live console renders the account board, content heatmap, competitor pricing, a plugin-readiness board, and a real-time run feed. |
-| 7 | **Sells & onboards patients** | A **dual-mode funnel**: leads enter from the engine's *own acquisition* **or** an *external lead DB plugged in* by a partner operator (`POST /api/lead/ingest` — normalises, masks PII, dedupes, tags `source_type`). A WhatsApp sales-comms **state machine** — template/session-aware, with a **diagnosis fork** and explicit **hospital handoffs** — drives first touch → booked patient. Everything is approved in **MedYatra Studio** (`/studio`), a live approve-and-deploy console that writes back to the DB. The whole journey is demoable in a **deployment-ready sandbox** (`/sandbox`): a WhatsApp phone simulator plays every branch, and all 21 templates are **clickable + editable live** (human-gated — an edit routes back to *review* before it can send), with a white-label tenant switch for showing an operator their own front. |
+| 7 | **Sells & onboards patients** | A **dual-mode funnel**: leads enter from the engine's *own acquisition* **or** an *external lead DB plugged in* by a partner operator (`POST /api/lead/ingest` — normalises, masks PII, dedupes, tags `source_type`). A WhatsApp sales-comms **state machine** — template/session-aware, with a **diagnosis fork** and explicit **hospital handoffs** — drives first touch → booked patient. Everything is approved in **CanopusCare Studio** (`/studio`), a live approve-and-deploy console that writes back to the DB. The whole journey is demoable in a **deployment-ready sandbox** (`/sandbox`): a WhatsApp phone simulator plays every branch, and all 21 templates are **clickable + editable live** (human-gated — an edit routes back to *review* before it can send), with a white-label tenant switch for showing an operator their own front. |
 | 8 | **Runs the concierge, post-booking** | **Nine live agents** at **`/agents`** turn "booked" into "actually treated": triage (patient's own words → the structured case file a hospital reviews in three minutes), a family-update channel with its own consent + WhatsApp session rule, a stateful document-KYC workflow (one deterministic rule auto-verifies, the rest stay `needs_human_review` until a person clears them), DB-backed billing reconciliation, a discharge/medication relay that only ever relays the hospital's own words, ground logistics, interpreter scheduling, return-travel readiness, and payment routing (self-pay / insured-GOP / government-sponsored). Every agent clears the same safety gate as every other outbound message; three are deliberately deterministic, never LLM-generated, because a wrong answer on a visa rule, a dose, or a sum of money is worse than no answer. |
 | 9 | **Prices honestly** | A **price ladder** (`priceLadder()`, `data-core/db.mjs`) compares a reader's *best local option* first, then other international destinations, then India — never a US/UK strawman a patient never asked about. Unpriced rungs are explicit, visible research gaps, never guessed (`npm run price-gaps`). Content is written to a **demand driver** — *capability* (can't get it at home), *queue* (available but too slow), or *cost* (available but unaffordable) — because those are three different readers, not one. |
 | 10 | **Won't let an agent say something dangerous** | Every outbound message clears `lib/safety.mjs` before it can reach a human's approval queue: diagnosis, treatment advice, dosage, prognosis, fitness-to-fly and outcome guarantees are **blocked**; an emergency in the patient's own words **escalates** out of the funnel to local emergency care; PII is blocked from leaving the patient perimeter; data residency is enforced per source market (the UAE's Federal Law 2/2019 is the sharp edge — health data can't leave the country, including into a model prompt). A language with no native-validated coverage **fails closed** rather than silently passing. Verified by a 20-case adversarial suite (`npm run eval-safety`) that runs in CI on every push. |
@@ -115,11 +115,11 @@ This is a **first-draft engine**, and it says so where it matters:
 **Want the deep version?** See [`PROJECT_CONTEXT.md`](./PROJECT_CONTEXT.md) — a full walkthrough of every capability, design decision, nuance, and limitation.
 
 **Want the business version?** See [`BUSINESS_STATUS.md`](./BUSINESS_STATUS.md) — market, unit economics (with every input labelled cited or assumed), partnership status, and an honest risk register. Written for a partner or investor conversation, not an engineer.
-# MedYatra - autonomous medical-tourism operating system demo
+# CanopusCare - autonomous medical-tourism operating system demo
 
 [![CI](https://github.com/hussainbombaywala/medical-tourism-gtm/actions/workflows/ci.yml/badge.svg)](https://github.com/hussainbombaywala/medical-tourism-gtm/actions/workflows/ci.yml)
 
-MedYatra is an AI-assisted operating system demo for cross-border healthcare coordination. It connects source-market agents, hospitals, patients, non-clinical vendors, approvals, audit, and autonomous operational agents around a deterministic synthetic Nigerian cardiac case.
+CanopusCare is an AI-assisted operating system demo for cross-border healthcare coordination. It connects source-market agents, hospitals, patients, non-clinical vendors, approvals, audit, and autonomous operational agents around a deterministic synthetic Nigerian cardiac case.
 
 Run it locally with no paid API key:
 
@@ -147,11 +147,11 @@ docker compose up --build
 Demo credentials are synthetic only:
 
 ```text
-admin@medyatra.demo / medyatra-demo
-hospital@medyatra.demo / medyatra-demo
-agent@medyatra.demo / medyatra-demo
-vendor@medyatra.demo / medyatra-demo
-viewer@medyatra.demo / medyatra-demo
+admin@canopuscare.demo / canopuscare-demo
+hospital@canopuscare.demo / canopuscare-demo
+agent@canopuscare.demo / canopuscare-demo
+vendor@canopuscare.demo / canopuscare-demo
+viewer@canopuscare.demo / canopuscare-demo
 ```
 
 Start at `/demo`, then use `/agent`, `/cases/case_ibrahim_musa`, `/hospital`, `/vendors`, `/agents`, `/studio`, `/integrations`, and `/audit`.

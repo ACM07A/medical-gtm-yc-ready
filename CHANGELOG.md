@@ -2,6 +2,9 @@
 
 ## 2026-07-24
 
+- Rebranded the operating experience to CanopusCare with a new icon-led dashboard shell and responsive visual system.
+- Added vendor-scoped service-request quote and status updates with audit logging.
+- Added a production vendor deployment gate and controlled pilot checklist.
 - Reworked `/demo` into an executive OS demo hub with network diagram, status, golden path, current scenario, local-run instructions, credentials and reset action.
 - Added demo auth, approvals, tasks, vendors, service-request and demo-reset APIs.
 - Added role-scoped case-resource, agent-run, integration and audit APIs.

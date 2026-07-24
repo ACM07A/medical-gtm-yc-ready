@@ -6,7 +6,7 @@ import { tmpdir } from "node:os";
 import { open } from "../data-core/db.mjs";
 import { ensureOsSchema, seedDemoOs } from "../data-core/os_core.mjs";
 import { ingestLeads, parseLeadCsv, previewLeadCsv } from "../data-core/ingest.mjs";
-import { apiAgentRuns, apiAudit, apiCase, apiCaseResource, apiServiceRequests } from "../server/os_pages.mjs";
+import { apiAgentRuns, apiAudit, apiCase, apiCaseResource, apiServiceRequests, updateServiceRequest } from "../server/os_pages.mjs";
 
 function seededDb() {
   const dir = mkdtempSync(join(tmpdir(), "medyatra-integration-"));
@@ -77,5 +77,18 @@ test("CSV lead preview maps columns and reports invalid and duplicate rows witho
   assert.equal(preview.rows[0].ref, "***0111");
   assert.equal(db.prepare(`SELECT count(*) c FROM lead`).get().c, before);
   assert.equal(parseLeadCsv("country,treatment\nNG,cardiac").ok, false);
+  db.close(); rmSync(dir, { recursive: true, force: true });
+});
+
+test("vendor can update only service requests assigned to its organization", () => {
+  const { db, dir } = seededDb();
+  const vendor = { role: "vendor_operator", organization_id: "org_vendor_blr", user: { id: "user_vendor", email: "vendor@canopuscare.demo" } };
+  const requestId = db.prepare(`SELECT id FROM service_request WHERE vendor_id='vendor_interpreter'`).get().id;
+  const updated = updateServiceRequest(db, vendor, requestId, { status: "Quoted", mock_quote: "USD 95 mock quote" });
+  assert.equal(updated.ok, true);
+  assert.equal(updated.service_request.status, "Quoted");
+  assert.match(updated.service_request.audit_note, /vendor@canopuscare\.demo/);
+  const forbidden = updateServiceRequest(db, { ...vendor, organization_id: "org_other" }, requestId, { status: "Completed" });
+  assert.equal(forbidden.error.code, "FORBIDDEN");
   db.close(); rmSync(dir, { recursive: true, force: true });
 });

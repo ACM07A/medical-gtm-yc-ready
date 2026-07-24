@@ -1,11 +1,11 @@
 # Architecture
 
-MedYatra is a zero-dependency Node HTTP server backed by SQLite through `node:sqlite`.
+CanopusCare is a lightweight Node HTTP server backed by SQLite through `node:sqlite`.
 
 Core layers:
 
 - `data-core/db.mjs`: legacy GTM schema, migrations and scoring helpers.
-- `data-core/os_core.mjs`: MedYatra OS schema, deterministic seed, readiness and backup helpers.
+- `data-core/os_core.mjs`: CanopusCare OS schema, deterministic seed, readiness and backup helpers.
 - `server/server.mjs`: HTTP router and API surface.
 - `server/os_pages.mjs`: hospital, agent, case, vendor, integration, audit and metrics views.
 - `server/studio.mjs`: human approval studio with server-side gates.

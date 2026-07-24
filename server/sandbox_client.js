@@ -1,4 +1,4 @@
-/* MedYatra patient-journey sandbox — client SPA.
+/* CanopusCare patient-journey sandbox — client SPA.
    Reads window.__SANDBOX__ (data) + window.__LIVE__ (bool). No build step, no deps.
    Same file powers the live /sandbox route (LIVE=true, edits POST to the DB) and the
    self-contained customer artifact (LIVE=false, edits persist to localStorage). */
@@ -24,7 +24,7 @@
     stageId: "intake",
     log: [{ dir: "out", stage: "intake" }],
     editing: null,
-    brand: D.tenants[0] || { id: "medyatra", name: "MedYatra", mode: "own" },
+    brand: D.tenants[0] || { id: "medyatra", name: "CanopusCare", mode: "own" },
     auto: false
   };
 
@@ -182,7 +182,7 @@
     var btnRows = (t.buttons || []).map(function (b, i) {
       return '<div class="btn-edit"><input class="b-in" data-bi="' + i + '" value="' + esc(b.text) + '"><button class="b-del" data-bdel="' + i + '">✕</button></div>';
     }).join("");
-    var clin = s.clinical ? '<div class="warn">Hospital handoff — the wording here is the hospital medical team’s responsibility; MedYatra never advises clinically.</div>' : "";
+    var clin = s.clinical ? '<div class="warn">Hospital handoff — the wording here is the hospital medical team’s responsibility; CanopusCare never advises clinically.</div>' : "";
     var d = document.getElementById("drawer");
     d.innerHTML = '<div class="dr-head"><div><div class="dr-title">' + t.seq + ". " + esc(stage.replace(/_/g, " ")) + "</div>"
       + '<div class="dr-sub">' + badges(s, t) + '<code>' + esc(t.name) + "</code></div></div>"
@@ -281,8 +281,8 @@
   sel.onchange = function () {
     state.brand = D.tenants.filter(function (x) { return x.id === sel.value; })[0] || state.brand;
     document.getElementById("wl-note").textContent = state.brand.mode === "operator"
-      ? "White-labelled — patients see " + state.brand.name.replace(/\s*\(.*\)/, "") + "’s brand; MedYatra runs the engine underneath."
-      : "MedYatra’s own acquisition brand.";
+      ? "White-labelled — patients see " + state.brand.name.replace(/\s*\(.*\)/, "") + "’s brand; CanopusCare runs the engine underneath."
+      : "CanopusCare’s own acquisition brand.";
     renderPhone();
   };
 

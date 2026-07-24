@@ -1,4 +1,4 @@
-// MedYatra local backend — zero external deps. Serves a LIVE operator console that reads the
+// CanopusCare local backend — zero external deps. Serves a LIVE operator console that reads the
 // data core, a runs/activity feed, and renders content drafts as patient landing pages.
 //   node --experimental-sqlite server/server.mjs   ->   http://localhost:5173
 import { createServer } from "node:http";
@@ -23,7 +23,7 @@ import {
   getSession, apiCases, apiCase, renderCases, renderCase, renderHospital, renderAgent,
   renderVendors, renderOsAgents, renderTasks, renderIntegrations, renderAudit, metrics,
   apiApprovals, decideApproval, apiTasks, updateTask, apiVendors, createServiceRequest,
-  apiCaseResource, apiAgentRuns, apiAudit, apiIntegrations, apiServiceRequests,
+  apiCaseResource, apiAgentRuns, apiAudit, apiIntegrations, apiServiceRequests, updateServiceRequest,
 } from "./os_pages.mjs";
 import {
   renderAgentsDemo, runTriage, runDocumentChecklist,
@@ -175,7 +175,7 @@ const server = createServer(async (req, res) => {
     const pass = auth.startsWith("Basic ") ? Buffer.from(auth.slice(6), "base64").toString().split(":").slice(1).join(":") : "";
     if (pass !== process.env.CONSOLE_TOKEN) {
       db.close();
-      res.writeHead(401, { "WWW-Authenticate": 'Basic realm="MedYatra console"', "content-type": "text/plain" });
+      res.writeHead(401, { "WWW-Authenticate": 'Basic realm="CanopusCare console"', "content-type": "text/plain" });
       return res.end("authentication required");
     }
   }
@@ -233,6 +233,13 @@ const server = createServer(async (req, res) => {
       return send(200, "application/json", JSON.stringify({ ok: true, ...apiVendors(db) }));
     if (req.method === "GET" && url.pathname === "/api/service-requests")
       return send(200, "application/json", JSON.stringify({ ok: true, service_requests: apiServiceRequests(db, session) }));
+    const serviceRequestPatch = url.pathname.match(/^\/api\/service-requests\/([^/]+)$/);
+    if (req.method === "PATCH" && serviceRequestPatch) {
+      const body = await readBody(req);
+      const result = updateServiceRequest(db, session, serviceRequestPatch[1], body);
+      const status = result.ok ? 200 : result.error?.code === "NOT_FOUND" ? 404 : result.error?.code === "FORBIDDEN" || result.error?.code === "READ_ONLY" ? 403 : 400;
+      return send(status, "application/json", JSON.stringify(result));
+    }
     if (req.method === "POST" && url.pathname === "/api/service-requests") {
       const body = await readBody(req);
       return send(200, "application/json", JSON.stringify(createServiceRequest(db, session, body)));
@@ -253,13 +260,13 @@ const server = createServer(async (req, res) => {
     if (caseMatch)
       return send(200, "text/html; charset=utf-8", renderCase(db, session, caseMatch[1]));
     if (url.pathname === "/vendors" || url.pathname === "/vendor" || url.pathname === "/service-requests")
-      return send(200, "text/html; charset=utf-8", renderVendors(db));
+      return send(200, "text/html; charset=utf-8", renderVendors(db, session));
     if (url.pathname === "/tasks")
-      return send(200, "text/html; charset=utf-8", renderTasks(db));
+      return send(200, "text/html; charset=utf-8", renderTasks(db, session));
     if (url.pathname === "/integrations")
-      return send(200, "text/html; charset=utf-8", renderIntegrations(db));
+      return send(200, "text/html; charset=utf-8", renderIntegrations(db, session));
     if (url.pathname === "/audit")
-      return send(200, "text/html; charset=utf-8", renderAudit(db));
+      return send(200, "text/html; charset=utf-8", renderAudit(db, session));
     // STUDIO — the live approve-and-deploy console (real data + write-back actions).
     if (req.method === "POST" && url.pathname === "/api/studio/approve") {
       const body = await readBody(req);
@@ -276,7 +283,7 @@ const server = createServer(async (req, res) => {
     // CONCIERGE AGENTS — post-booking journey, live and clickable (server/agents.mjs). Real model calls
     // through the same failover chain and safety gate as everything else; deterministic fallback if no key.
     if (url.pathname === "/agents")
-      return send(200, "text/html; charset=utf-8", url.searchParams.get("legacy") === "1" ? renderAgentsDemo() : renderOsAgents(db));
+      return send(200, "text/html; charset=utf-8", url.searchParams.get("legacy") === "1" ? renderAgentsDemo() : renderOsAgents(db, session));
     if (req.method === "POST" && url.pathname.startsWith("/api/agents/")) {
       const body = await readBody(req);
       const kind = url.pathname.slice("/api/agents/".length);
@@ -418,7 +425,7 @@ const server = createServer(async (req, res) => {
 
 > **Backend: \`${backend.kind}\`** — ${backend.note || backend.where}. Clinical payloads (prescriptions, treatment
 > methodologies, recommended tests, medical history) are **AES-256-GCM encrypted at rest** in a separate database,
-> never mingled with the GTM core. MedYatra's own read surface is the **facilitator envelope only**: treatment
+> never mingled with the GTM core. CanopusCare's own read surface is the **facilitator envelope only**: treatment
 > name/protocol, treatment timelines, cost structure, surgeon details. Decryption exists solely for named relay
 > purposes (hospital→patient, patient→hospital, patient's own copy), every access — including refusals — is logged,
 > and erasure leaves an audit tombstone. GDPR is the backbone in every market, including those with no law of their own.
@@ -584,4 +591,4 @@ ${rows.map(card).join("")}</main></body></html>`;
   } catch (e) { send(500, "text/plain", String(e && e.stack || e)); }
   finally { db.close(); }
 });
-server.listen(PORT, () => console.log(`MedYatra console  ->  http://localhost:${PORT}`));
+server.listen(PORT, () => console.log(`CanopusCare console  ->  http://localhost:${PORT}`));

@@ -116,7 +116,7 @@ export function renderJourney(db) {
     ORDER BY l.id LIMIT 30`).all();
   const options = leads.map((l) => `<option value="${l.id}">#${l.id} — ${l.catName || l.category_id} · ${l.mktName || l.market_code} (${l.status})</option>`).join("");
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MedYatra — Full Journey Orchestrator</title><style>${CSS}
+<title>CanopusCare — Full Journey Orchestrator</title><style>${CSS}
 .timeline{border-left:2px solid var(--line);margin-left:8px;padding-left:22px}
 .tstep{position:relative;margin-bottom:18px}
 .tstep::before{content:'';position:absolute;left:-28px;top:4px;width:11px;height:11px;border-radius:50%;background:var(--brand2);border:2px solid var(--bg)}

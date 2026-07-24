@@ -7,7 +7,7 @@ const db = open();
 
 // [id, name, mode, ingest_token, rev_share]
 const tenants = [
-  ["medyatra", "MedYatra (own acquisition)", "own", null, 1.0],
+  ["medyatra", "CanopusCare (own acquisition)", "own", null, 1.0],
   ["trudoc-demo", "Trudoc (demo operator)", "operator", "demo-ingest-trudoc", 0.5],
 ];
 const ins = db.prepare(`INSERT OR REPLACE INTO tenant (id,name,mode,token,rev_share,active) VALUES (?,?,?,?,?,1)`);

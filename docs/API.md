@@ -25,6 +25,7 @@ Core demo APIs:
 - `GET /api/vendors`
 - `GET /api/service-requests`
 - `POST /api/service-requests`
+- `PATCH /api/service-requests/:id`
 - `GET /api/agent-runs`
 - `GET /api/integrations`
 - `GET /api/audit`
@@ -49,6 +50,6 @@ Errors use:
 }
 ```
 
-Demo role selection for API testing can be simulated with `X-Demo-User`, for example `hospital@medyatra.demo`.
+Demo role selection for API testing can be simulated with `X-Demo-User`, for example `hospital@canopuscare.demo`.
 Case resources, agent runs, audit events and service requests are scoped to that user's organization and role.
 Every server response includes `X-Request-Id`; callers may supply their own value in the same header for correlation.

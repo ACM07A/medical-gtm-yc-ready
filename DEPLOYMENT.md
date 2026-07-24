@@ -22,8 +22,10 @@ Set:
 ## Generic Docker
 
 ```bash
-docker build -t medyatra-demo .
-docker run -p 5173:5173 -e APP_MODE=demo -e POST_LIVE=0 -v medyatra-runtime:/app/runtime medyatra-demo
+docker build -t canopuscare-demo .
+docker run -p 5173:5173 -e APP_MODE=demo -e POST_LIVE=0 -v canopuscare-runtime:/app/runtime canopuscare-demo
 ```
 
 Production must use HTTPS, a persistent database volume, strong console/auth credentials, managed secrets and real provider credentials before any outbound action is armed.
+
+The Render blueprint is a demo deployment, not a production vendor configuration. Complete every gate in `docs/VENDOR_DEPLOYMENT_READINESS.md` before processing real vendor or patient data.

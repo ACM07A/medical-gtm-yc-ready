@@ -53,7 +53,7 @@ try {
   console.log(`Hospital:     http://localhost:${port}/hospital`);
   console.log(`Agent portal: http://localhost:${port}/agent`);
   console.log(`Case:         http://localhost:${port}/cases/case_ibrahim_musa`);
-  console.log(`Credentials:  admin@medyatra.demo / ${ready.demo_credentials?.password || "configured password"}`);
+  console.log(`Credentials:  admin@canopuscare.demo / ${ready.demo_credentials?.password || "configured password"}`);
   console.log(`Integrations: ${ready.integrations.map((i) => `${i.provider}=${i.status}`).join(", ")}`);
   console.log("\nPress Ctrl+C to stop.");
 } catch (e) {

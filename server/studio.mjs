@@ -1,4 +1,4 @@
-// MedYatra STUDIO — the human approve-and-deploy console, wired to the LIVE data core (not the prototype).
+// CanopusCare STUDIO — the human approve-and-deploy console, wired to the LIVE data core (not the prototype).
 // Pulls the real approval queue (content, proposals, social posts, comms drafts), enforces the same gates as
 // the engine (regulatory clearance, verified contact, consent), and an Approve action that WRITES BACK:
 // publishes a page, marks a proposal sent, approves a post, or releases a comms draft + advances the lead.
@@ -14,7 +14,7 @@ export function studioQueue(db, { tenant } = {}) {
   const items = [];
 
   // CONTENT — cost-guide pages awaiting publish. Gate: the source market must be regulatory-cleared.
-  // MedYatra-internal pipeline — hidden in a tenant-scoped operator view (which sees only its own leads).
+  // CanopusCare-internal pipeline — hidden in a tenant-scoped operator view (which sees only its own leads).
   if (!tenant) for (const a of db.prepare(`SELECT ca.*, c.name cat, mk.name mname FROM content_asset ca
       JOIN category c ON c.id=ca.category_id JOIN market mk ON mk.code=ca.market_code
       WHERE ca.status='review' ORDER BY ca.id`).all()) {
@@ -169,7 +169,7 @@ export function renderStudio(db, { tenant } = {}) {
       </div></div>`;
   };
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MedYatra Studio</title><style>
+<title>CanopusCare Studio</title><style>
 :root{--bg:#eef4fa;--panel:#fff;--ink:#0c1b2e;--soft:#3f556e;--muted:#6c8199;--line:#d7e3f0;--accent:#1f6fd6;--deep:#0b4a8b;
 --good:#1f9d57;--goodw:#e3f5ea;--warn:#c9862a;--stop:#c8503f;--stopw:#fae5e1;--warnw:#faf0dd;}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:"Segoe UI",Roboto,system-ui,Arial,sans-serif;line-height:1.5}

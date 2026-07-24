@@ -20,7 +20,7 @@ test("browser-rendered golden path pages include required demo surfaces", () => 
     renderVendors(db),
     renderIntegrations(db),
   ].join("\n");
-  for (const text of ["DEMO ENVIRONMENT", "Ibrahim Musa", "Apollo International Cardiac Centre", "Mock quote", "Integration readiness"]) {
+  for (const text of ["CanopusCare", "DEMO ENVIRONMENT", "Ibrahim Musa", "Apollo International Cardiac Centre", "Mock quote", "Integration readiness"]) {
     assert.match(html, new RegExp(text));
   }
   assert.match(html, /<span class="badge forecast">Forecast<\/span>/);

@@ -2,7 +2,7 @@
 
 Legacy GTM tables remain in `data-core/schema.sql`.
 
-MedYatra OS demo tables are created idempotently in `data-core/os_core.mjs`:
+CanopusCare OS demo tables are created idempotently in `data-core/os_core.mjs`:
 
 - `organization`, `app_user`, `membership`
 - `patient_case`, `case_document`, `hospital_match`, `hospital_review`

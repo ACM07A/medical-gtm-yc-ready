@@ -24,9 +24,9 @@
     "test:unit": "node --test tests/unit.test.mjs",
     "test:integration": "node --test tests/integration.test.mjs",
     "test:e2e": "node --test tests/e2e.test.mjs",
-    "lint": "node --check server/server.mjs && node --check server/demo.mjs && node --check server/os_pages.mjs && node --check data-core/os_core.mjs",
+    "lint": "node --check server/server.mjs && node --check server/demo.mjs && node --check server/os_pages.mjs && node --check server/canopus_ui.mjs && node --check data-core/os_core.mjs",
     "check": "npm run lint && npm run test",
-    "docker:build": "docker build -t medyatra-demo .",
+    "docker:build": "docker build -t canopuscare-demo .",
     "docker:smoke": "docker compose up --build --abort-on-container-exit",
     "query": "node --experimental-sqlite data-core/query.mjs",
     "partner-layer": "node --experimental-sqlite data-core/partner_layer.mjs",
@@ -79,6 +79,7 @@
   "license": "MIT",
   "dependencies": {
     "csv-parse": "^6.2.1",
+    "lucide": "^1.26.0",
     "puppeteer-core": "^25.3.0"
   }
 }

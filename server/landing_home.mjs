@@ -27,7 +27,7 @@ export function renderHome({ cats, guides }) {
   const guideItem = (g) => `<a class="glink" href="${guideHref(g)}"><span>${g.cat}</span> cost in India — ${g.mname} <em>→</em></a>`;
 
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>MedYatra — World-class treatment in India, honest prices</title>
+<title>CanopusCare — World-class treatment in India, honest prices</title>
 <svg width="0" height="0" style="position:absolute"><defs><linearGradient id="og" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1f6fd6"/><stop offset="1" stop-color="#33d17a"/></linearGradient></defs></svg>
 <style>
 :root{--blue-900:#072a52;--blue-700:#0b4a8b;--blue-500:#1f6fd6;--green:#25a862;--green-br:#33d17a;
@@ -107,7 +107,7 @@ footer a{color:var(--blue-500);font-weight:600}
 </style></head><body>
 <div class="wrap">
   <nav class="nav">
-    <div class="brand"><span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M3 12h4l2-6 4 12 2-6h6" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>MedYatra</div>
+    <div class="brand"><span class="mark"><svg viewBox="0 0 24 24" fill="none"><path d="M3 12h4l2-6 4 12 2-6h6" stroke="#fff" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg></span>CanopusCare</div>
     <div class="navlinks"><a class="on" href="/">Home</a><a href="#treatments">Treatments</a><a href="#guides">Cost guides</a><a href="#about">About</a><a href="/console">Console</a></div>
     <a class="contact" href="#contact">Contact Us <span class="go"><svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
   </nav>
@@ -116,7 +116,7 @@ footer a{color:var(--blue-500);font-weight:600}
     <div>
       <span class="eyebrow">✚ Accredited care · fast treatment</span>
       <h1>World-class care.<br><span class="g">Honest prices.</span></h1>
-      <p class="lede">MedYatra connects you to India's JCI &amp; NABH-accredited hospitals for treatment at <b>60–90% less</b> than the US or UK — with a coordinator, interpreter, and a hand to hold the whole way.</p>
+      <p class="lede">CanopusCare connects you to India's JCI &amp; NABH-accredited hospitals for treatment at <b>60–90% less</b> than the US or UK — with a coordinator, interpreter, and a hand to hold the whole way.</p>
       <div class="cta"><a class="btn pri" href="#treatments">Explore treatments <span class="go"><svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a><a class="btn sec" href="#guides">See real costs</a></div>
     </div>
     <div class="hviz">
@@ -142,7 +142,7 @@ footer a{color:var(--blue-500);font-weight:600}
   </section>
 
   <section id="about">
-    <div class="shead"><div><h2>Your medical journey, handled</h2><p>We are a facilitator — not a hospital. We make the whole trip simple, safe, and clear.</p></div><span class="tag">Why MedYatra</span></div>
+    <div class="shead"><div><h2>Your medical journey, handled</h2><p>We are a facilitator — not a hospital. We make the whole trip simple, safe, and clear.</p></div><span class="tag">Why CanopusCare</span></div>
     <div class="pillars">
       <div class="pill"><div class="pi"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3l7 3v6c0 4-3 7-7 9-4-2-7-5-7-9V6Z" stroke="currentColor" stroke-width="1.8"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>Quality</h3><p>Only JCI/NABH-accredited hospitals and verified, experienced surgeons.</p></div>
       <div class="pill"><div class="pi"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 19V9m5 10V5m5 14v-8m5 8V4" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg></div><h3>Transparency</h3><p>Real, cited package prices up front. No hidden fees — you pay the hospital directly.</p></div>
@@ -161,7 +161,7 @@ footer a{color:var(--blue-500);font-weight:600}
   </div>
 
   <footer>
-    MedYatra is a medical-value-travel <b>facilitator</b>, not a healthcare provider. No medical advice; prices indicative pending assessment. Consent-based, DPDP/GDPR-aware.<br>
+    CanopusCare is a medical-value-travel <b>facilitator</b>, not a healthcare provider. No medical advice; prices indicative pending assessment. Consent-based, DPDP/GDPR-aware.<br>
     Operators: <a href="/console">open the console →</a>
   </footer>
 </div></body></html>`;

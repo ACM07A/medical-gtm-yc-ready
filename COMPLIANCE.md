@@ -1,6 +1,6 @@
 # Compliance
 
-MedYatra is positioned as a facilitator workflow system, not a healthcare provider.
+CanopusCare is positioned as a facilitator workflow system, not a healthcare provider.
 
 Hard boundaries:
 

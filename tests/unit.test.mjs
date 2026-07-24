@@ -17,7 +17,7 @@ function seededDb() {
 
 test("demo users use deterministic non-production password hash", () => {
   const { db, dir } = seededDb();
-  const user = db.prepare(`SELECT * FROM app_user WHERE email='admin@medyatra.demo'`).get();
+  const user = db.prepare(`SELECT * FROM app_user WHERE email='admin@canopuscare.demo'`).get();
   assert.equal(user.password_hash, passwordHash(DEMO_PASSWORD));
   db.close(); rmSync(dir, { recursive: true, force: true });
 });
