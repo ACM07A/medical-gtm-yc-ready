@@ -6,7 +6,7 @@ import { tmpdir } from "node:os";
 import { open } from "../data-core/db.mjs";
 import { ensureOsSchema, seedDemoOs } from "../data-core/os_core.mjs";
 import { ingestLeads } from "../data-core/ingest.mjs";
-import { apiCase } from "../server/os_pages.mjs";
+import { apiAgentRuns, apiAudit, apiCase, apiCaseResource, apiServiceRequests } from "../server/os_pages.mjs";
 
 function seededDb() {
   const dir = mkdtempSync(join(tmpdir(), "medyatra-integration-"));
@@ -40,5 +40,17 @@ test("lead ingestion validates token, category, market and consent", () => {
   assert.equal(good.ok, true);
   assert.equal(good.accepted, 1);
   assert.equal(good.rejected.length, 2);
+  db.close(); rmSync(dir, { recursive: true, force: true });
+});
+
+test("operational API readers enforce case and organization scope", () => {
+  const { db, dir } = seededDb();
+  const hospital = { role: "hospital_ops", organization_id: "org_hospital_apollo" };
+  const vendor = { role: "vendor_ops", organization_id: "org_vendor_blr" };
+  assert.ok(apiCaseResource(db, hospital, "case_ibrahim_musa", "documents").length > 0);
+  assert.equal(apiCaseResource(db, hospital, "case_amina_okoro", "documents"), null);
+  assert.ok(apiAgentRuns(db, hospital).every((r) => r.organization_id === "org_hospital_apollo"));
+  assert.ok(apiAudit(db, hospital).every((r) => r.organization_id === "org_hospital_apollo"));
+  assert.ok(apiServiceRequests(db, vendor).every((r) => r.vendor_organization_id === "org_vendor_blr"));
   db.close(); rmSync(dir, { recursive: true, force: true });
 });

@@ -61,6 +61,52 @@ export function apiCase(db, session, id) {
   };
 }
 
+export function apiCaseResource(db, session, id, resource) {
+  const c = apiCase(db, session, id);
+  if (!c) return null;
+  const resources = {
+    documents: c.documents,
+    matches: c.matches,
+    reviews: c.reviews,
+    estimates: c.estimates,
+    services: c.services,
+    tasks: c.tasks,
+    approvals: c.approvals,
+    audit: c.audit,
+    messages: db.prepare(`SELECT * FROM message WHERE case_id=? ORDER BY created DESC`).all(id),
+  };
+  return Object.hasOwn(resources, resource) ? resources[resource] : undefined;
+}
+
+export function apiAgentRuns(db, session) {
+  const sql = `SELECT ar.*,ad.name agent_name,o.name organization_name
+    FROM agent_run ar JOIN agent_definition ad ON ad.id=ar.agent_id
+    LEFT JOIN organization o ON o.id=ar.organization_id`;
+  if (session.role === "platform_admin" || session.role === "read_only")
+    return db.prepare(`${sql} ORDER BY ar.created DESC`).all();
+  return db.prepare(`${sql} WHERE ar.organization_id=? ORDER BY ar.created DESC`).all(session.organization_id);
+}
+
+export function apiAudit(db, session) {
+  if (session.role === "platform_admin" || session.role === "read_only")
+    return db.prepare(`SELECT * FROM audit_event ORDER BY created DESC LIMIT 250`).all();
+  return db.prepare(`SELECT * FROM audit_event WHERE organization_id=? ORDER BY created DESC LIMIT 250`).all(session.organization_id);
+}
+
+export function apiIntegrations(db) {
+  return readinessReport(db).integrations;
+}
+
+export function apiServiceRequests(db, session) {
+  const requests = db.prepare(`SELECT sr.*,v.organization_id vendor_organization_id,v.service_categories
+    FROM service_request sr LEFT JOIN vendor v ON v.id=sr.vendor_id ORDER BY sr.created DESC`).all();
+  if (session.role === "platform_admin" || session.role === "read_only") return requests;
+  if (session.role.startsWith("vendor"))
+    return requests.filter((r) => r.vendor_organization_id === session.organization_id);
+  const caseIds = new Set(apiCases(db, session).map((c) => c.id));
+  return requests.filter((r) => caseIds.has(r.case_id));
+}
+
 export function apiHospital(db, session) {
   const cases = apiCases(db, session);
   const tasks = db.prepare(`SELECT * FROM ops_task WHERE organization_id=? OR ?='platform_admin' ORDER BY due_date`).all(session.organization_id, session.role);

@@ -2,6 +2,7 @@
 // data core, a runs/activity feed, and renders content drafts as patient landing pages.
 //   node --experimental-sqlite server/server.mjs   ->   http://localhost:5173
 import { createServer } from "node:http";
+import { randomUUID } from "node:crypto";
 import { readFileSync, readdirSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -22,6 +23,7 @@ import {
   getSession, apiCases, apiCase, renderCases, renderCase, renderHospital, renderAgent,
   renderVendors, renderOsAgents, renderTasks, renderIntegrations, renderAudit, metrics,
   apiApprovals, decideApproval, apiTasks, updateTask, apiVendors, createServiceRequest,
+  apiCaseResource, apiAgentRuns, apiAudit, apiIntegrations, apiServiceRequests,
 } from "./os_pages.mjs";
 import {
   renderAgentsDemo, runTriage, runDocumentChecklist,
@@ -147,14 +149,27 @@ const readBody = (req) => new Promise((resolve) => {
 
 const server = createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
+  const requestId = req.headers["x-request-id"] || randomUUID();
   const db = open();
   ensureOsSchema(db);
   const session = getSession(db, req);
-  const send = (code, type, body) => { res.writeHead(code, { "content-type": type, "cache-control": "no-store" }); res.end(body); };
+  const send = (code, type, body) => {
+    res.writeHead(code, {
+      "content-type": type,
+      "cache-control": "no-store",
+      "x-content-type-options": "nosniff",
+      "x-frame-options": "DENY",
+      "referrer-policy": "no-referrer",
+      "permissions-policy": "camera=(), microphone=(), geolocation=()",
+      "content-security-policy": "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'",
+      "x-request-id": requestId,
+    });
+    res.end(body);
+  };
   // ACCESS CONTROL: the console + APIs expose named partner contacts and pipeline. If CONSOLE_TOKEN is set,
   // gate everything except the public patient site (/, /site, /outputs) and the health probe. REQUIRED
   // before exposing this beyond localhost. (No token set = open, for localhost dev.)
-  const PROTECTED = /^\/(console|studio|sandbox|demo|agents|hospital|agent|cases|vendors|vendor|service-requests|tasks|integrations|audit|benchmarks|api\/(state|runs|studio|benchmarks|comms|agents|cases|readiness|session|metrics|auth|approvals|tasks|vendors|service-requests|demo)|draft|outreach|worklist|comms|distribution|plugins|docs)/;
+  const PROTECTED = /^\/(console|studio|sandbox|demo|agents|hospital|agent|cases|vendors|vendor|service-requests|tasks|integrations|audit|benchmarks|api\/(state|runs|studio|benchmarks|comms|agents|agent-runs|cases|readiness|session|metrics|auth|approvals|tasks|vendors|service-requests|integrations|audit|demo)|draft|outreach|worklist|comms|distribution|plugins|docs)/;
   if (process.env.CONSOLE_TOKEN && PROTECTED.test(url.pathname)) {
     const auth = req.headers.authorization || "";
     const pass = auth.startsWith("Basic ") ? Buffer.from(auth.slice(6), "base64").toString().split(":").slice(1).join(":") : "";
@@ -188,6 +203,20 @@ const server = createServer(async (req, res) => {
       const c = apiCase(db, session, apiCaseMatch[1]);
       return send(c ? 200 : 404, "application/json", JSON.stringify(c ? { ok: true, case: c } : { ok: false, error: { code: "NOT_FOUND", message: "Case not found or not authorized", details: {} }, request_id: "local" }));
     }
+    const apiCaseResourceMatch = url.pathname.match(/^\/api\/cases\/([^/]+)\/(documents|matches|reviews|estimates|messages|tasks|services|approvals|audit)$/);
+    if (apiCaseResourceMatch) {
+      const [, caseId, resource] = apiCaseResourceMatch;
+      const value = apiCaseResource(db, session, caseId, resource);
+      return send(value ? 200 : 404, "application/json", JSON.stringify(value
+        ? { ok: true, case_id: caseId, [resource]: value }
+        : { ok: false, error: { code: "NOT_FOUND", message: "Case not found or not authorized", details: {} }, request_id: requestId }));
+    }
+    if (url.pathname === "/api/agent-runs")
+      return send(200, "application/json", JSON.stringify({ ok: true, agent_runs: apiAgentRuns(db, session) }));
+    if (url.pathname === "/api/audit")
+      return send(200, "application/json", JSON.stringify({ ok: true, audit_events: apiAudit(db, session) }));
+    if (url.pathname === "/api/integrations")
+      return send(200, "application/json", JSON.stringify({ ok: true, integrations: apiIntegrations(db) }));
     if (url.pathname === "/api/approvals")
       return send(200, "application/json", JSON.stringify({ ok: true, approvals: apiApprovals(db, session) }));
     const approvalAction = url.pathname.match(/^\/api\/approvals\/([^/]+)\/(approve|reject)$/);
@@ -202,6 +231,8 @@ const server = createServer(async (req, res) => {
     }
     if (url.pathname === "/api/vendors")
       return send(200, "application/json", JSON.stringify({ ok: true, ...apiVendors(db) }));
+    if (req.method === "GET" && url.pathname === "/api/service-requests")
+      return send(200, "application/json", JSON.stringify({ ok: true, service_requests: apiServiceRequests(db, session) }));
     if (req.method === "POST" && url.pathname === "/api/service-requests") {
       const body = await readBody(req);
       return send(200, "application/json", JSON.stringify(createServiceRequest(db, session, body)));
@@ -448,8 +479,11 @@ ${rows.map(card).join("")}</main></body></html>`;
       const done = getState(db, "loop_completed");
       const ageH = done ? (Date.now() - Date.parse(done.v)) / 36e5 : null;
       const staleAfter = Number(process.env.LOOP_STALE_HOURS) || 8;   // 6h schedule + grace
+      const os = readinessReport(db);
+      const loopHealthy = ageH != null && ageH < staleAfter;
       return send(200, "application/json", JSON.stringify({
-        ok: ageH != null && ageH < staleAfter,
+        ok: os.ok && (appMode() === "demo" || loopHealthy),
+        app_mode: appMode(), os_ready: os.ok, legacy_loop_healthy: loopHealthy,
         last_loop_completed: done?.v || null, hours_since: ageH == null ? null : +ageH.toFixed(1),
         stale: ageH == null || ageH >= staleAfter, last_backup: getState(db, "last_backup")?.v || null,
         runs: db.prepare(`SELECT count(*) c FROM run`).get().c,
