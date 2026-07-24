@@ -194,7 +194,7 @@ h1{font-size:22px;margin:0 0 2px;letter-spacing:-.01em;color:var(--deep)}.sub{co
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;opacity:0;transition:.25s;box-shadow:0 16px 40px -12px rgba(0,0,0,.5)}
 #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style></head><body>
-<div class="ribbon">MEDYATRA STUDIO · live approve-and-deploy · nothing goes out until you approve it here — <a href="/console">console</a> · <a href="/comms">comms</a></div>
+<div class="ribbon">CANOPUSCARE STUDIO · live approve-and-deploy · nothing goes out until you approve it here — <a href="/console">console</a> · <a href="/comms">comms</a></div>
 <main>
   <h1>Approvals</h1><div class="sub">Real items from the data core. Deploy buttons are physically disabled until the gate (regulatory · verified contact · consent) is green.${tenant ? ` <b style="color:var(--deep)">Scoped to operator: ${esc(tenant)}</b> — isolated view, only this operator's leads.` : ""}</div>
   <div class="bar"><div><b id="n-ready">${cnt.ready}</b> ready</div><div><b id="n-blocked">${cnt.blocked}</b> blocked</div></div>

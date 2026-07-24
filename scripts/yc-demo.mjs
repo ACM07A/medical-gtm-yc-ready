@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const nodeMajor = Number(process.versions.node.split(".")[0]);
 if (nodeMajor < 22) {
-  console.error(`Node ${process.versions.node} found. MedYatra requires Node >=22.5 for node:sqlite.`);
+  console.error(`Node ${process.versions.node} found. CanopusCare requires Node >=22.5 for node:sqlite.`);
   process.exit(1);
 }
 
@@ -48,7 +48,7 @@ try {
   await waitHealth();
   await run("npm", ["run", "smoke"]);
   const ready = await (await fetch(`http://localhost:${port}/api/readiness`)).json();
-  console.log("\nMedYatra YC demo is running");
+  console.log("\nCanopusCare YC demo is running");
   console.log(`Demo hub:     http://localhost:${port}/demo`);
   console.log(`Hospital:     http://localhost:${port}/hospital`);
   console.log(`Agent portal: http://localhost:${port}/agent`);

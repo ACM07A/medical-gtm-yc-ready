@@ -1,4 +1,4 @@
-# MedYatra backend + console
+# CanopusCare backend + console
 
 A zero-dependency local app (Node built-ins only) that makes the engine **tangible**: a live operator console, a runs/activity feed, and draft→landing rendering — all reading the live data core.
 

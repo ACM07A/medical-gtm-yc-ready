@@ -20,6 +20,7 @@
     "db:backup": "node --experimental-sqlite data-core/backup_os.mjs",
     "db:check": "node --experimental-sqlite data-core/check_db.mjs",
     "smoke": "node scripts/smoke-test.mjs",
+    "smoke:hermetic": "node scripts/hermetic-smoke.mjs",
     "test": "node --test tests/*.test.mjs",
     "test:unit": "node --test tests/unit.test.mjs",
     "test:integration": "node --test tests/integration.test.mjs",
@@ -78,8 +79,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "csv-parse": "^6.2.1",
-    "lucide": "^1.26.0",
     "puppeteer-core": "^25.3.0"
   }
 }

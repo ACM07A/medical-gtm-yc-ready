@@ -1,25 +1,44 @@
-import { icons } from "lucide";
-
 const esc = (value) => String(value ?? "")
   .replace(/&/g, "&amp;")
   .replace(/</g, "&lt;")
   .replace(/>/g, "&gt;")
   .replace(/"/g, "&quot;");
 
-function attrsToHtml(attrs = {}) {
-  return Object.entries(attrs).map(([key, value]) => {
-    const name = key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
-    return ` ${name}="${esc(value)}"`;
-  }).join("");
-}
-
-function nodeToHtml([tag, attrs, children]) {
-  return `<${tag}${attrsToHtml(attrs)}>${(children || []).map(nodeToHtml).join("")}</${tag}>`;
-}
+// Repository-local Lucide-style subset. Icons must never make the HTTP server depend on npm at boot.
+const ICONS = {
+  circleHelp: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9a2.7 2.7 0 1 1 4.8 1.7c-1 .8-2.3 1-2.3 2.8"/><path d="M12 17.5h.01"/>',
+  house: '<path d="m3 11 9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/>',
+  briefcase: '<rect width="20" height="14" x="2" y="7" rx="2"/><path d="M8 7V4h8v3M12 11v5M9.5 13.5h5"/>',
+  building: '<path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18M2 22h20M10 6h4M10 10h4M10 14h4M10 18h4"/>',
+  users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+  handshake: '<path d="m8 12 3 3a1.4 1.4 0 0 1-2 2l-5-5 4-4 3 3 2-2a3 3 0 0 1 4 0l4 4-3 3-4-4"/><path d="m2 11 6-6 3 3M22 11l-5-5-2 2"/>',
+  list: '<path d="M10 6h11M10 12h11M10 18h11"/><path d="m3 6 1 1 2-2M3 12h3M3 18h3"/>',
+  shield: '<path d="M20 13c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V5l8-3 8 3z"/><path d="m9 12 2 2 4-4"/>',
+  bot: '<rect width="18" height="10" x="3" y="11" rx="2"/><circle cx="9" cy="16" r="1"/><circle cx="15" cy="16" r="1"/><path d="M12 2v4M8 7h8"/>',
+  plug: '<path d="M12 22v-5M9 8V2M15 8V2"/><path d="M18 8v4a6 6 0 0 1-12 0V8z"/>',
+  document: '<path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6M9 13h6M9 17h6"/>',
+  search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.6v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1z"/>',
+  bell: '<path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/>',
+  pin: '<path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="2"/>',
+  send: '<path d="m22 2-7 20-4-9-9-4zM22 2 11 13"/>',
+  save: '<path d="M5 3h12l4 4v14H3V5a2 2 0 0 1 2-2zM7 3v6h9V3M7 21v-8h10v8"/>',
+  rotate: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/>',
+  sparkles: '<path d="m12 3-1.8 4.2L6 9l4.2 1.8L12 15l1.8-4.2L18 9l-4.2-1.8zM5 16l-1 2-2 1 2 1 1 2 1-2 2-1-2-1z"/>',
+};
+const ICON_ALIAS = {
+  House: "house", BriefcaseMedical: "briefcase", Building2: "building", Users: "users",
+  Handshake: "handshake", ListTodo: "list", ShieldCheck: "shield", Bot: "bot", Plug: "plug",
+  ScrollText: "document", Code2: "document", FileUp: "document", ClipboardCheck: "document",
+  BookOpenText: "document", Search: "search", ScanSearch: "search", Settings: "settings",
+  Bell: "bell", MapPin: "pin", Send: "send", Save: "save", RotateCcw: "rotate",
+  Sparkles: "sparkles", CircleHelp: "circleHelp", MessageCircleQuestion: "circleHelp",
+  KeyRound: "circleHelp",
+};
 
 export function icon(name, size = 18, className = "") {
-  const node = icons[name] || icons.CircleHelp;
-  return `<svg class="icon ${esc(className)}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${node.map(nodeToHtml).join("")}</svg>`;
+  const body = ICONS[ICON_ALIAS[name]] || ICONS.circleHelp;
+  return `<svg class="icon ${esc(className)}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
 }
 
 const NAV = [
@@ -105,12 +124,13 @@ textarea,input,select{width:100%;border:1px solid var(--line-strong);border-radi
 .metric-row{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:14px 0}.metric-tile{border-radius:8px;padding:13px;border:1px solid var(--line);background:#fff}.metric-tile:nth-child(1){background:var(--lime)}.metric-tile:nth-child(2){background:var(--mint)}.metric-tile:nth-child(3){background:var(--coral-soft)}.metric-tile:nth-child(4){background:var(--violet-soft)}
 .surface-link{text-decoration:none;transition:transform .15s ease,border-color .15s ease}.surface-link:hover{transform:translateY(-2px);border-color:#b8bbb3}
 .network{display:grid;grid-template-columns:1fr 1fr;gap:8px}.node{border:1px solid var(--line);border-radius:7px;padding:11px;background:#fff}.node.center{grid-column:1/3;background:var(--violet);color:#fff}.node.center .label{color:#ddd5ff}
+.case-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.case-fact{border-bottom:1px solid var(--line);padding:7px 0;min-width:0}.case-fact b{display:block;font-size:10px;color:var(--muted);margin-bottom:2px}.case-fact span{font-size:12px;overflow-wrap:anywhere}
 .path{padding-left:20px}.path li{margin:7px 0;font-size:12px}.foot{font-size:11px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px;margin-top:22px}
 .mobile-brand{display:none}
 @media(max-width:1180px){.app-frame{grid-template-columns:82px minmax(0,1fr)}.context-rail{display:none}}
 @media(max-width:760px){
   html,body{background:var(--app)}.app-frame{width:100%;min-height:100vh;margin:0;border:0;display:block;padding-bottom:72px}.demo-strip{font-size:9px}.rail{position:fixed;left:0;right:0;bottom:0;z-index:30;min-height:0;height:68px;padding:8px 10px;display:block;border:0;border-top:1px solid var(--line)}.brand-mark,.rail-foot{display:none}.rail-nav{height:100%;flex-direction:row;justify-content:space-around;gap:2px}.rail-link{width:42px;height:42px}.rail-link:nth-child(n+7){display:none}.rail-link::after{display:none}.workspace{padding:12px 15px 36px}.topbar{height:46px;margin-bottom:12px}.wordmark{font-size:19px}.search{display:none}.context-rail{display:none}.head{display:block}.split{grid-template-columns:1fr}.metric-row{grid-template-columns:1fr 1fr}.field-grid{grid-template-columns:1fr 1fr}table{display:block;overflow-x:auto}h1{font-size:25px}.grid{grid-template-columns:1fr}}
-@media(max-width:440px){.field-grid{grid-template-columns:1fr}.metric-row{grid-template-columns:1fr 1fr}.top-tools .icon-btn:first-of-type{display:none}}
+@media(max-width:440px){.field-grid,.case-facts{grid-template-columns:1fr}.metric-row{grid-template-columns:1fr 1fr}.top-tools .icon-btn:first-of-type{display:none}}
 `;
 
 export function appShell(title, inner, options = {}) {

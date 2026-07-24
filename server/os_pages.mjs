@@ -1,4 +1,4 @@
-import { readinessReport } from "../data-core/os_core.mjs";
+import { appMode, readinessReport } from "../data-core/os_core.mjs";
 import { appShell, icon } from "./canopus_ui.mjs";
 
 const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -23,6 +23,8 @@ function viewOptions(active, session, metrics) {
 }
 
 export function getSession(db, req) {
+  if (appMode() !== "demo")
+    return { user: null, memberships: [], role: "unauthenticated", organization_id: null };
   const email = req.headers["x-demo-user"] || "admin@canopuscare.demo";
   const user = db.prepare(`SELECT * FROM app_user WHERE email=? AND active=1`).get(email) || db.prepare(`SELECT * FROM app_user WHERE email='admin@canopuscare.demo'`).get();
   const memberships = user ? db.prepare(`SELECT m.role,o.* FROM membership m JOIN organization o ON o.id=m.organization_id WHERE m.user_id=?`).all(user.id) : [];
@@ -45,8 +47,12 @@ export function apiCases(db, session) {
 export function apiCase(db, session, id) {
   const c = apiCases(db, session).find((x) => x.id === id);
   if (!c) return null;
+  const sourceLead = c.source_lead_id
+    ? db.prepare(`SELECT id,market_code,category_id,channel,ref,consent,status,journey_stage FROM lead WHERE id=?`).get(c.source_lead_id)
+    : null;
   return {
     ...c,
+    source_lead: sourceLead,
     documents: db.prepare(`SELECT * FROM case_document WHERE case_id=? ORDER BY doc_type`).all(id),
     matches: db.prepare(`SELECT * FROM hospital_match WHERE case_id=? ORDER BY confidence`).all(id),
     reviews: db.prepare(`SELECT * FROM hospital_review WHERE case_id=?`).all(id),
@@ -147,8 +153,13 @@ export function renderCase(db, session, id) {
   const c = apiCase(db, session, id);
   if (!c) return shell("Not found", `<h1>Case not found</h1><p class="lede">This role cannot access that case.</p>`, viewOptions("cases", session));
   return shell(c.synthetic_name, `<div class="head"><div><div class="eyebrow">${esc(c.synthetic_identifier)}</div><h1>${esc(c.synthetic_name)}</h1><p class="lede">${esc(c.treatment_request)}. ${esc(c.warnings)}</p></div><div>${badge(c.current_stage)} ${badge(c.consent_status)}</div></div>
+  <div class="callout">Illustrative synthetic organizations and rates only. No affiliation, accreditation or partnership is implied.${c.source_lead ? ` Linked GTM lead #${esc(c.source_lead.id)} (${esc(c.source_lead.journey_stage || "intake")}). <a href="/journey">Open journey orchestrator</a>.` : ""}</div>
   <div class="tabs">${["Overview","Documents","Hospital Matches","Estimates","Messages","Tasks","Travel Support","Vendors","Timeline","Compliance","Audit Log"].map((t)=>`<span class="tab">${t}</span>`).join("")}</div>
-  <section class="split"><div class="panel"><h2>Overview</h2><table><tbody>${rows([c],[["source_market",(x)=>`Source market: ${x.source_market}`],["preferred_language",(x)=>`Language: ${x.preferred_language}`],["urgency",(x)=>`Urgency: ${x.urgency}`],["budget_band",(x)=>`Budget: ${x.budget_band}`],["travel_window",(x)=>`Travel window: ${x.travel_window}`],["assigned_coordinator",(x)=>`Coordinator: ${x.assigned_coordinator}`],["next_best_action",(x)=>`Next best operational action: ${x.next_best_action}`],["blockers",(x)=>`Blockers: ${x.blockers || "none"}`]] )}</tbody></table></div>
+  <section class="split"><div class="panel"><h2>Overview</h2><div class="case-facts">${[
+    ["Source market", c.source_market], ["Language", c.preferred_language], ["Urgency", c.urgency],
+    ["Budget", c.budget_band], ["Travel window", c.travel_window], ["Coordinator", c.assigned_coordinator],
+    ["Next operational action", c.next_best_action], ["Blockers", c.blockers || "none"],
+  ].map(([label, value]) => `<div class="case-fact"><b>${esc(label)}</b><span>${esc(value)}</span></div>`).join("")}</div></div>
   <div class="panel"><h2>Compliance</h2><div class="callout">${esc(c.blockers || "No blocking compliance issue on this synthetic path.")}</div><p class="label">AI may classify documents and prepare operational checklists. It must not diagnose, interpret scans, choose treatment, promise outcomes, or declare fitness to fly.</p></div></section>
   <h2>Documents</h2><table><thead><tr><th>Type</th><th>Status</th><th>Watermark</th></tr></thead><tbody>${rows(c.documents,[["doc_type"],["status",(r)=>badge(r.status)],["demo_watermark"]])}</tbody></table>
   <h2>Hospital Matches</h2><table><thead><tr><th>Hospital</th><th>Operational Fit</th><th>Clinical Acceptance</th><th>Commercial Disclosure</th><th>Confidence</th></tr></thead><tbody>${rows(c.matches,[["hospital_name"],["operational_fit"],["clinical_acceptance"],["commercial_disclosure"],["confidence",(r)=>badge(r.confidence)]])}</tbody></table>
@@ -255,7 +266,7 @@ export function renderVendors(db, session) {
   }).join("");
   return shell("Vendor Coordination", `<div class="head"><div><div class="eyebrow">Vendor Coordination Network</div><h1>Non-clinical service operations</h1><p class="lede">Manage assigned interpreter, airport transfer and accommodation requests. Demo mode records workflow changes without performing real bookings.</p></div><div class="actions">${badge("Demo only")}<a class="btn" href="/docs/VENDOR_DEPLOYMENT_READINESS.md">${icon("ClipboardCheck", 14)} Go-live checklist</a></div></div>
   <div class="metric-row"><div class="metric-tile"><div class="k">${vendors.length}</div><div class="label">verified demo vendors</div></div><div class="metric-tile"><div class="k">${reqs.length}</div><div class="label">assigned requests</div></div><div class="metric-tile"><div class="k">${active}</div><div class="label">active coordination items</div></div><div class="metric-tile"><div class="k">0</div><div class="label">live bookings</div></div></div>
-  <h2>Vendors</h2><table><thead><tr><th>Service</th><th>Cities</th><th>Languages</th><th>Availability</th><th>Indicative price</th><th>SLA</th><th>Status</th><th>Rating</th></tr></thead><tbody>${rows(vendors,[["service_categories"],["cities"],["languages"],["availability"],["indicative_price"],["sla"],["verification_status",(r)=>badge(r.verification_status)],["rating"]])}</tbody></table>
+  <h2>Vendors</h2><table><thead><tr><th>Service</th><th>Cities</th><th>Languages</th><th>Availability</th><th>Indicative price</th><th>SLA</th><th>Status</th></tr></thead><tbody>${rows(vendors,[["service_categories"],["cities"],["languages"],["availability"],["indicative_price"],["sla"],["verification_status",(r)=>badge(r.verification_status)]])}</tbody></table>
   <h2>Service Requests</h2><table><thead><tr><th>Case</th><th>Category</th><th>Status</th><th>Structured quote</th><th>Service</th><th>Owner</th><th>${canEdit ? "Update" : "Audit"}</th></tr></thead><tbody>${requestRows}</tbody></table>
   ${canEdit ? `<script>
   for (const button of document.querySelectorAll("[data-save]")) button.addEventListener("click", async () => {

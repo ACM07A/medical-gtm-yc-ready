@@ -5,7 +5,7 @@ Legacy GTM tables remain in `data-core/schema.sql`.
 CanopusCare OS demo tables are created idempotently in `data-core/os_core.mjs`:
 
 - `organization`, `app_user`, `membership`
-- `patient_case`, `case_document`, `hospital_match`, `hospital_review`
+- `patient_case` (operational projection of `lead` via `source_lead_id`), `case_document`, `hospital_match`, `hospital_review`
 - `estimate`, `estimate_item`
 - `vendor`, `service_request`
 - `ops_task`

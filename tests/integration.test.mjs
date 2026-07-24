@@ -7,6 +7,7 @@ import { open } from "../data-core/db.mjs";
 import { ensureOsSchema, seedDemoOs } from "../data-core/os_core.mjs";
 import { ingestLeads, parseLeadCsv, previewLeadCsv } from "../data-core/ingest.mjs";
 import { apiAgentRuns, apiAudit, apiCase, apiCaseResource, apiServiceRequests, updateServiceRequest } from "../server/os_pages.mjs";
+import { runFullJourney } from "../server/orchestrate.mjs";
 
 function seededDb() {
   const dir = mkdtempSync(join(tmpdir(), "medyatra-integration-"));
@@ -125,5 +126,47 @@ test("service request lifecycle rejects skipped states, expired quotes and unexp
   const cancelled = updateServiceRequest(db, vendor, requestId, { status: "Cancelled", cancellation_reason: "Patient changed travel dates" });
   assert.equal(cancelled.ok, true);
   assert.ok(cancelled.service_request.cancelled_at);
+  db.close(); rmSync(dir, { recursive: true, force: true });
+});
+
+test("journey orchestration updates the linked operational case", async () => {
+  const { db, dir } = seededDb();
+  const c = db.prepare(`SELECT source_lead_id FROM patient_case WHERE id='case_ibrahim_musa'`).get();
+  const result = await runFullJourney(db, {
+    leadId: c.source_lead_id,
+    admissionDate: "2026-08-24",
+    targetDepartureDate: "2026-08-21",
+    dischargeDate: "2026-08-29",
+  }, {
+    familyUpdateFn: async () => ({ ok: true, text: "Synthetic family update preview" }),
+    triageFn: async () => ({ key_facts: ["Synthetic intake"], method: "test" }),
+    dischargeFn: async () => ({ text: "Synthetic discharge relay", method: "test" }),
+    billingAdhocFn: async () => ({ text: "Synthetic variance explanation", method: "test" }),
+  });
+  assert.equal(result.leadId, c.source_lead_id);
+  assert.ok(result.steps.length >= 10);
+  const updated = db.prepare(`SELECT * FROM patient_case WHERE id='case_ibrahim_musa'`).get();
+  assert.equal(updated.current_stage, "Journey orchestrated");
+  assert.match(updated.next_best_action, /orchestration steps/);
+  const audit = db.prepare(`SELECT * FROM audit_event WHERE action='journey_sync' AND subject_id='case_ibrahim_musa'`).get();
+  assert.ok(audit);
+  db.close(); rmSync(dir, { recursive: true, force: true });
+});
+
+test("existing synthetic demo rows are hardened without resetting the database", () => {
+  const { db, dir } = seededDb();
+  db.prepare(`UPDATE patient_case SET source_lead_id=NULL,synthetic_identifier='MYT-NG-CABG-001' WHERE id='case_ibrahim_musa'`).run();
+  db.prepare(`UPDATE organization SET name='Apollo International Cardiac Centre' WHERE id='org_hospital_apollo'`).run();
+  db.prepare(`UPDATE vendor SET rating=4.7 WHERE id='vendor_interpreter'`).run();
+  db.prepare(`UPDATE commission SET expected_amount=1627.5,commercial_disclosure='Synthetic 15% facilitation share' WHERE id='commission_ibrahim'`).run();
+
+  ensureOsSchema(db);
+
+  const c = db.prepare(`SELECT * FROM patient_case WHERE id='case_ibrahim_musa'`).get();
+  assert.ok(c.source_lead_id);
+  assert.equal(c.synthetic_identifier, "CNP-NG-CABG-001");
+  assert.equal(db.prepare(`SELECT name FROM organization WHERE id='org_hospital_apollo'`).get().name, "Demo Cardiac Centre A");
+  assert.equal(db.prepare(`SELECT rating FROM vendor WHERE id='vendor_interpreter'`).get().rating, null);
+  assert.equal(db.prepare(`SELECT expected_amount FROM commission WHERE id='commission_ibrahim'`).get().expected_amount, 2170);
   db.close(); rmSync(dir, { recursive: true, force: true });
 });

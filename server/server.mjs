@@ -18,7 +18,7 @@ import { vaultBackend, openVault, accessLog } from "../lib/vault.mjs";
 import { renderStudio, studioQueue, studioApprove } from "./studio.mjs";
 import { renderSandbox, saveTemplate } from "./sandbox.mjs";
 import { renderDemo } from "./demo.mjs";
-import { DEMO_PASSWORD, appMode, ensureOsSchema, readinessReport, seedDemoOs } from "../data-core/os_core.mjs";
+import { appMode, authenticateDemoUser, ensureOsSchema, readinessReport, seedDemoOs } from "../data-core/os_core.mjs";
 import {
   getSession, apiCases, apiCase, renderCases, renderCase, renderHospital, renderAgent,
   renderVendors, renderOsAgents, renderTasks, renderIntegrations, renderAudit, metrics,
@@ -182,8 +182,8 @@ const server = createServer(async (req, res) => {
   try {
     if (req.method === "POST" && url.pathname === "/api/auth/login") {
       const body = await readBody(req);
-      const user = db.prepare(`SELECT * FROM app_user WHERE email=? AND active=1`).get(body.email || "");
-      const ok = !!user && appMode() === "demo" && body.password === DEMO_PASSWORD;
+      const user = authenticateDemoUser(db, body.email, body.password);
+      const ok = !!user;
       if (ok) db.prepare(`INSERT INTO audit_event (id,actor_user_id,organization_id,action,subject_type,subject_id,outcome,request_id,detail)
         VALUES (lower(hex(randomblob(8))),?,?,?,?,?,?,?,?)`).run(user.id, session.organization_id, "login", "user", user.id, "ok", "api-auth", "Demo login");
       return send(ok ? 200 : 401, "application/json", JSON.stringify(ok ? { ok: true, user: { email: user.email, name: user.name } } : { ok: false, error: { code: "AUTH_FAILED", message: "Invalid demo credentials.", details: {} }, request_id: "api-auth" }));
@@ -591,4 +591,10 @@ ${rows.map(card).join("")}</main></body></html>`;
   } catch (e) { send(500, "text/plain", String(e && e.stack || e)); }
   finally { db.close(); }
 });
+if (appMode() === "demo") {
+  const bootstrapDb = open();
+  ensureOsSchema(bootstrapDb);
+  if (bootstrapDb.prepare(`SELECT count(*) count FROM app_user`).get().count === 0) seedDemoOs(bootstrapDb);
+  bootstrapDb.close();
+}
 server.listen(PORT, () => console.log(`CanopusCare console  ->  http://localhost:${PORT}`));
