@@ -1,8 +1,12 @@
 import { readinessReport } from "../data-core/os_core.mjs";
 
 const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-const rows = (items, cols) => items.map((r) => `<tr>${cols.map(([k, f]) => `<td>${esc(f ? f(r) : r[k])}</td>`).join("")}</tr>`).join("");
-const badge = (s) => `<span class="badge ${String(s || "").toLowerCase().replace(/[^a-z0-9]+/g,"-")}">${esc(s)}</span>`;
+class SafeHtml extends String {}
+const rows = (items, cols) => items.map((r) => `<tr>${cols.map(([k, f]) => {
+  const value = f ? f(r) : r[k];
+  return `<td>${value instanceof SafeHtml ? value : esc(value)}</td>`;
+}).join("")}</tr>`).join("");
+const badge = (s) => new SafeHtml(`<span class="badge ${String(s || "").toLowerCase().replace(/[^a-z0-9]+/g,"-")}">${esc(s)}</span>`);
 
 const CSS = `
 :root{--bg:#f3f7fb;--panel:#fff;--ink:#102033;--muted:#62748a;--line:#dce7f2;--brand:#0b4a8b;--blue:#1f6fd6;--green:#1c8b50;--amber:#b7791f;--red:#b84a3d}
@@ -10,12 +14,14 @@ const CSS = `
 .demo{background:#e5a13a;color:#342100;text-align:center;font-weight:800;font-size:12px;padding:8px 12px}.nav{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:12px 18px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:2}
 .nav b{color:var(--brand);margin-right:10px}.nav a{color:var(--muted);text-decoration:none;font-weight:650;font-size:13px;padding:6px 8px;border-radius:7px}.nav a:hover{background:#edf4fb;color:var(--brand)}
 main{max-width:1180px;margin:0 auto;padding:22px 18px 70px}.head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;margin-bottom:16px}.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);font-weight:800}
-h1{font-size:25px;margin:2px 0 4px;color:var(--brand)}.lede{color:var(--muted);max-width:760px;margin:0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:12px}.card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;box-shadow:0 12px 30px -24px rgba(11,74,139,.45)}
+h1{font-size:25px;margin:2px 0 4px;color:var(--brand)}.lede{color:var(--muted);max-width:760px;margin:0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:12px}.card,.panel{min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px;box-shadow:0 12px 30px -24px rgba(11,74,139,.45)}
 .k{font-size:24px;color:var(--brand);font-weight:800}.label{font-size:12px;color:var(--muted)}h2{font-size:16px;margin:22px 0 9px;color:var(--brand)}h3{font-size:14px;margin:0 0 8px;color:var(--ink)}
 table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;font-size:13px;vertical-align:top}th{background:#edf4fb;color:#40556d;font-size:11px;text-transform:uppercase;letter-spacing:.06em}
 .badge{display:inline-block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;border-radius:999px;padding:3px 8px;background:#e9eef5;color:#4d6075}.badge.completed,.badge.released,.badge.approved,.badge.ready,.badge.verified-demo-docs{background:#e3f5ea;color:var(--green)}.badge.blocked,.badge.missing,.badge.disabled{background:#fae5e1;color:var(--red)}.badge.waiting-for-input,.badge.needs-review,.badge.requested,.badge.mock{background:#faf0dd;color:var(--amber)}
-.split{display:grid;grid-template-columns:1.35fr .9fr;gap:12px}.tabs{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}.tab{background:#fff;border:1px solid var(--line);border-radius:7px;padding:6px 9px;font-size:12px;font-weight:700;color:#51657b}.callout{border-left:4px solid var(--amber);background:#fff8ea;padding:10px 12px;border-radius:6px;color:#553600}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#fff;color:var(--brand);border-radius:7px;padding:7px 10px;font-weight:750;text-decoration:none;font-size:13px}.danger{color:var(--red)}
-@media(max-width:800px){.split{grid-template-columns:1fr}.head{display:block}.nav{position:static}}
+.split{display:grid;grid-template-columns:1.35fr .9fr;gap:12px}.split>*{min-width:0}.tabs{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}.tab{background:#fff;border:1px solid var(--line);border-radius:7px;padding:6px 9px;font-size:12px;font-weight:700;color:#51657b}.callout{border-left:4px solid var(--amber);background:#fff8ea;padding:10px 12px;border-radius:6px;color:#553600}.actions{display:flex;gap:8px;flex-wrap:wrap}.btn{border:1px solid var(--line);background:#fff;color:var(--brand);border-radius:7px;padding:7px 10px;font-weight:750;text-decoration:none;font-size:13px}.danger{color:var(--red)}pre{white-space:pre-wrap;overflow-wrap:anywhere}
+textarea,input,select{width:100%;border:1px solid #bfcddd;border-radius:6px;padding:8px;background:#fff;color:var(--ink);font:inherit}textarea{min-height:126px;resize:vertical;font-family:Consolas,monospace;font-size:12px}.field-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:9px 0}.field label{display:block;font-size:11px;color:var(--muted);font-weight:700;margin-bottom:3px}.btn.primary{background:var(--brand);color:#fff;border-color:var(--brand);cursor:pointer}.btn:disabled{opacity:.45;cursor:not-allowed}.result{margin-top:12px;overflow:auto}.result:empty{display:none}
+@media(max-width:800px){.split{grid-template-columns:1fr}.head{display:block}.nav{position:static}table{display:block;overflow-x:auto}}
+@media(max-width:620px){.field-grid{grid-template-columns:1fr 1fr}}
 `;
 
 function shell(title, inner) {
@@ -148,12 +154,69 @@ export function renderAgent(db, session) {
   const cases = apiCases(db, session.role.startsWith("agent") ? session : { ...session, role: "platform_admin" });
   const commissions = db.prepare(`SELECT * FROM commission`).all();
   return shell("Agent Portal", `<div class="head"><div><div class="eyebrow">Agent and Facilitator Portal</div><h1>Lead intake and case tracking</h1><p class="lede">Add single leads, validate CSV imports, inspect API ingestion, track missing information, compare indicative estimates and commission status.</p></div><div class="actions"><a class="btn" href="/api/lead/ingest">API endpoint</a><span class="btn">Demo token: demo-ingest-trudoc</span></div></div>
-  <section class="split"><div class="panel"><h2>Add a Lead</h2><p class="label">Demo form is intentionally dry-run. Server ingestion uses <code>POST /api/lead/ingest</code> and rejects malformed rows instead of silently accepting them.</p><div class="callout">CSV import requirements: preview, column mapping, consent status, category/market mapping, duplicate detection and rejected-row report.</div></div>
+  <section class="split"><div class="panel"><h2>CSV Lead Import</h2>
+  <textarea id="csv-input" aria-label="CSV lead rows">country,treatment,phone,consent,urgency,budget
+Nigeria,cardiac bypass,+2345550199,true,soon,USD 8000-15000
+Neverland,unknown procedure,+1000,false,planning,unknown</textarea>
+  <div class="field-grid">
+    <div class="field"><label for="map-country">Country column</label><input id="map-country" value="country"></div>
+    <div class="field"><label for="map-treatment">Treatment column</label><input id="map-treatment" value="treatment"></div>
+    <div class="field"><label for="map-contact">Contact column</label><input id="map-contact" value="phone"></div>
+    <div class="field"><label for="map-consent">Consent column</label><input id="map-consent" value="consent"></div>
+    <div class="field"><label for="map-urgency">Urgency column</label><input id="map-urgency" value="urgency"></div>
+    <div class="field"><label for="map-budget">Budget column</label><input id="map-budget" value="budget"></div>
+  </div>
+  <div class="actions"><button class="btn primary" id="preview-csv">Preview</button><button class="btn" id="import-csv" disabled>Import accepted rows</button></div>
+  <div class="result" id="csv-result" aria-live="polite"></div></div>
   <div class="panel"><h2>API Ingestion</h2><pre>POST /api/lead/ingest
 X-Ingest-Token: demo-ingest-trudoc
 {"source":"trudoc-demo","leads":[{"country":"NG","treatment":"cardiac bypass","consent":true}]}</pre></div></section>
   <h2>Lead Status</h2><table><thead><tr><th>Case</th><th>Country</th><th>Category</th><th>Stage</th><th>Consent</th><th>Next</th></tr></thead><tbody>${cases.map(c=>`<tr><td><a href="/cases/${c.id}">${esc(c.synthetic_name)}</a></td><td>${esc(c.source_market)}</td><td>${esc(c.treatment_category)}</td><td>${badge(c.current_stage)}</td><td>${badge(c.consent_status)}</td><td>${esc(c.next_best_action)}</td></tr>`).join("")}</tbody></table>
-  <h2>Commission Forecast</h2><table><thead><tr><th>Case</th><th>Expected</th><th>Status</th><th>Payout</th><th>Disclosure</th></tr></thead><tbody>${rows(commissions,[["case_id"],["expected_amount",(r)=>`${r.currency} ${r.expected_amount}`],["status",(r)=>badge(r.status)],["payout_status"],["commercial_disclosure"]])}</tbody></table>`);
+  <h2>Commission Forecast</h2><table><thead><tr><th>Case</th><th>Expected</th><th>Status</th><th>Payout</th><th>Disclosure</th></tr></thead><tbody>${rows(commissions,[["case_id"],["expected_amount",(r)=>`${r.currency} ${r.expected_amount}`],["status",(r)=>badge(r.status)],["payout_status"],["commercial_disclosure"]])}</tbody></table>
+  <script>
+  const csvButton = document.querySelector("#preview-csv");
+  const importButton = document.querySelector("#import-csv");
+  const result = document.querySelector("#csv-result");
+  const payload = () => ({
+    source: "trudoc-demo",
+    csv: document.querySelector("#csv-input").value,
+    mapping: {
+      country: document.querySelector("#map-country").value,
+      treatment: document.querySelector("#map-treatment").value,
+      contact: document.querySelector("#map-contact").value,
+      consent: document.querySelector("#map-consent").value,
+      urgency: document.querySelector("#map-urgency").value,
+      budget_band: document.querySelector("#map-budget").value
+    }
+  });
+  const request = async (path) => {
+    const response = await fetch(path, { method: "POST", headers: { "content-type": "application/json", "x-ingest-token": "demo-ingest-trudoc" }, body: JSON.stringify(payload()) });
+    return response.json();
+  };
+  const showPreview = (data) => {
+    if (!data.ok) { result.textContent = data.error || "Preview failed"; importButton.disabled = true; return; }
+    const summary = document.createElement("p");
+    summary.className = "callout";
+    summary.textContent = data.summary.received + " rows: " + data.summary.ready + " ready, " + data.summary.held_no_consent + " held for consent, " + data.summary.duplicates + " duplicates, " + data.summary.rejected + " rejected.";
+    const table = document.createElement("table");
+    table.innerHTML = "<thead><tr><th>Row</th><th>Masked contact</th><th>Market</th><th>Category</th><th>Consent</th><th>Status</th><th>Reason</th></tr></thead>";
+    const body = document.createElement("tbody");
+    for (const row of data.rows) {
+      const tr = document.createElement("tr");
+      for (const value of [row.row, row.ref, row.market, row.category, row.consent, row.status, row.reasons.join("; ")]) {
+        const td = document.createElement("td"); td.textContent = value || "-"; tr.appendChild(td);
+      }
+      body.appendChild(tr);
+    }
+    table.appendChild(body); result.replaceChildren(summary, table); importButton.disabled = false;
+  };
+  csvButton.addEventListener("click", async () => { csvButton.disabled = true; showPreview(await request("/api/lead/preview-csv")); csvButton.disabled = false; });
+  importButton.addEventListener("click", async () => {
+    importButton.disabled = true;
+    const data = await request("/api/lead/import-csv");
+    result.textContent = data.ok ? data.accepted + " accepted, " + data.deduped + " duplicates, " + data.rejected.length + " rejected." : data.error;
+  });
+  </script>`);
 }
 
 export function renderVendors(db) {

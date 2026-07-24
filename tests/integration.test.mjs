@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { open } from "../data-core/db.mjs";
 import { ensureOsSchema, seedDemoOs } from "../data-core/os_core.mjs";
-import { ingestLeads } from "../data-core/ingest.mjs";
+import { ingestLeads, parseLeadCsv, previewLeadCsv } from "../data-core/ingest.mjs";
 import { apiAgentRuns, apiAudit, apiCase, apiCaseResource, apiServiceRequests } from "../server/os_pages.mjs";
 
 function seededDb() {
@@ -52,5 +52,30 @@ test("operational API readers enforce case and organization scope", () => {
   assert.ok(apiAgentRuns(db, hospital).every((r) => r.organization_id === "org_hospital_apollo"));
   assert.ok(apiAudit(db, hospital).every((r) => r.organization_id === "org_hospital_apollo"));
   assert.ok(apiServiceRequests(db, vendor).every((r) => r.vendor_organization_id === "org_vendor_blr"));
+  db.close(); rmSync(dir, { recursive: true, force: true });
+});
+
+test("CSV lead preview maps columns and reports invalid and duplicate rows without writing", () => {
+  const { db, dir } = seededDb();
+  const csv = [
+    "Patient Country,Requested Procedure,Phone,Opt In,Urgency",
+    'Nigeria,"cardiac bypass","+234 555 0111",yes,soon',
+    'Nigeria,"cardiac bypass","+234 555 0111",yes,soon',
+    'Neverland,"cardiac bypass","+1000",no,planning',
+  ].join("\n");
+  const mapping = {
+    country: "Patient Country",
+    treatment: "Requested Procedure",
+    contact: "Phone",
+    consent: "Opt In",
+    urgency: "Urgency",
+  };
+  const before = db.prepare(`SELECT count(*) c FROM lead`).get().c;
+  const preview = previewLeadCsv(db, { source: "trudoc-demo", token: "demo-ingest-trudoc", csv, mapping });
+  assert.equal(preview.ok, true);
+  assert.deepEqual(preview.summary, { received: 3, ready: 1, held_no_consent: 0, duplicates: 1, rejected: 1 });
+  assert.equal(preview.rows[0].ref, "***0111");
+  assert.equal(db.prepare(`SELECT count(*) c FROM lead`).get().c, before);
+  assert.equal(parseLeadCsv("country,treatment\nNG,cardiac").ok, false);
   db.close(); rmSync(dir, { recursive: true, force: true });
 });

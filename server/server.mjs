@@ -34,7 +34,7 @@ import {
   runVideoConsultSchedule, runVideoConsultOutcome,
 } from "./agents.mjs";
 import { renderJourney, runFullJourney } from "./orchestrate.mjs";
-import { ingestLeads } from "../data-core/ingest.mjs";
+import { ingestLeads, parseLeadCsv, previewLeadCsv } from "../data-core/ingest.mjs";
 import { benchmarks } from "../data-core/benchmarks.mjs";
 import { range } from "../lib/money.mjs";
 
@@ -169,7 +169,7 @@ const server = createServer(async (req, res) => {
   // ACCESS CONTROL: the console + APIs expose named partner contacts and pipeline. If CONSOLE_TOKEN is set,
   // gate everything except the public patient site (/, /site, /outputs) and the health probe. REQUIRED
   // before exposing this beyond localhost. (No token set = open, for localhost dev.)
-  const PROTECTED = /^\/(console|studio|sandbox|demo|agents|hospital|agent|cases|vendors|vendor|service-requests|tasks|integrations|audit|benchmarks|api\/(state|runs|studio|benchmarks|comms|agents|agent-runs|cases|readiness|session|metrics|auth|approvals|tasks|vendors|service-requests|integrations|audit|demo)|draft|outreach|worklist|comms|distribution|plugins|docs)/;
+  const PROTECTED = /^\/(console|studio|sandbox|demo|agents|hospital|agent|cases|vendors|vendor|service-requests|tasks|integrations|audit|benchmarks|api\/(state|runs|studio|benchmarks|comms|agents|agent-runs|lead|cases|readiness|session|metrics|auth|approvals|tasks|vendors|service-requests|integrations|audit|demo)|draft|outreach|worklist|comms|distribution|plugins|docs)/;
   if (process.env.CONSOLE_TOKEN && PROTECTED.test(url.pathname)) {
     const auth = req.headers.authorization || "";
     const pass = auth.startsWith("Basic ") ? Buffer.from(auth.slice(6), "base64").toString().split(":").slice(1).join(":") : "";
@@ -346,6 +346,22 @@ const server = createServer(async (req, res) => {
       const body = await readBody(req);
       const result = ingestLeads(db, { ...body, token: req.headers["x-ingest-token"] });
       return send(result.ok ? 200 : 401, "application/json", JSON.stringify(result));
+    }
+    if (req.method === "POST" && url.pathname === "/api/lead/preview-csv") {
+      const body = await readBody(req);
+      const result = previewLeadCsv(db, { ...body, token: req.headers["x-ingest-token"] });
+      return send(result.ok ? 200 : /token/.test(result.error || "") ? 401 : 400, "application/json", JSON.stringify(result));
+    }
+    if (req.method === "POST" && url.pathname === "/api/lead/import-csv") {
+      const body = await readBody(req);
+      const parsed = parseLeadCsv(body.csv, body.mapping);
+      if (!parsed.ok) return send(400, "application/json", JSON.stringify(parsed));
+      const result = ingestLeads(db, {
+        source: body.source,
+        token: req.headers["x-ingest-token"],
+        leads: parsed.leads,
+      });
+      return send(result.ok ? 200 : /token/.test(result.error || "") ? 401 : 400, "application/json", JSON.stringify({ ...result, mapping: parsed.mapping }));
     }
     if (url.pathname === "/") {
       const cats = db.prepare(`SELECT c.*, (SELECT min(india_low) FROM category_price p WHERE p.category_id=c.id) lo,

@@ -78,6 +78,7 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "csv-parse": "^6.2.1",
     "puppeteer-core": "^25.3.0"
   }
 }

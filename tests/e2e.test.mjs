@@ -23,5 +23,7 @@ test("browser-rendered golden path pages include required demo surfaces", () => 
   for (const text of ["DEMO ENVIRONMENT", "Ibrahim Musa", "Apollo International Cardiac Centre", "Mock quote", "Integration readiness"]) {
     assert.match(html, new RegExp(text));
   }
+  assert.match(html, /<span class="badge forecast">Forecast<\/span>/);
+  assert.doesNotMatch(html, /&lt;span class=&quot;badge/);
   db.close(); rmSync(dir, { recursive: true, force: true });
 });

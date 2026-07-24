@@ -59,6 +59,19 @@ const login = await fetch(base + "/api/auth/login", {
 console.log(`${login.status === 200 ? "✓" : "✗"} POST /api/auth/login demo credentials -> ${login.status}`);
 if (login.status !== 200) failed++;
 
+const csvPreview = await fetch(base + "/api/lead/preview-csv", {
+  method: "POST",
+  headers: { "content-type": "application/json", "x-ingest-token": "demo-ingest-trudoc" },
+  body: JSON.stringify({
+    source: "trudoc-demo",
+    csv: "country,treatment,phone,consent\nNigeria,cardiac bypass,+2345550188,true",
+  }),
+});
+const csvPreviewBody = await csvPreview.json();
+const csvPreviewOk = csvPreview.status === 200 && csvPreviewBody.summary?.ready === 1;
+console.log(`${csvPreviewOk ? "✓" : "✗"} POST /api/lead/preview-csv -> ${csvPreview.status}`);
+if (!csvPreviewOk) failed++;
+
 if (failed) {
   console.error(`Smoke failed: ${failed} check(s) failed`);
   process.exit(1);

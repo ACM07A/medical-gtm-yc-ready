@@ -29,6 +29,8 @@ Core demo APIs:
 - `GET /api/integrations`
 - `GET /api/audit`
 - `POST /api/lead/ingest`
+- `POST /api/lead/preview-csv`
+- `POST /api/lead/import-csv`
 - `GET /api/studio`
 - `POST /api/studio/approve`
 - `GET /api/benchmarks`

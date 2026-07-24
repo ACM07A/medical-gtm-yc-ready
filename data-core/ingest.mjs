@@ -6,6 +6,7 @@
 // regulatory gate until the market is cleared. Reusable: called by POST /api/lead/ingest and this CLI.
 //   node --experimental-sqlite data-core/ingest.mjs <batch.json>
 import { open, marketCleared, logRun } from "./db.mjs";
+import { parse } from "csv-parse/sync";
 
 // Map a free-text treatment to one of our category ids (verified against the DB), else null.
 const CAT_KW = [
@@ -39,6 +40,97 @@ function minimiseHandle(raw) {
   if (v.includes("@")) { const [u, d] = v.split("@"); return `${u.slice(0, 2)}***@${d || ""}`; }
   const digits = v.replace(/\D/g, "");
   return digits.length >= 4 ? `***${digits.slice(-4)}` : `ref-${v.slice(-4)}`;
+}
+
+const CSV_FIELDS = {
+  country: ["country", "country_code", "market", "source_market"],
+  treatment: ["treatment", "procedure", "category", "interest"],
+  contact: ["contact", "phone", "mobile", "email", "ref", "id"],
+  consent: ["consent", "opt_in", "consented"],
+  urgency: ["urgency", "timeline"],
+  budget_band: ["budget_band", "budget"],
+};
+
+const consentValue = (value) => ["true", "1", "yes", "y", "captured", "consented"].includes(String(value ?? "").trim().toLowerCase());
+
+export function parseLeadCsv(csv, requestedMapping = {}) {
+  if (typeof csv !== "string" || !csv.trim()) return { ok: false, error: "csv must be a non-empty string" };
+  let records;
+  try {
+    records = parse(csv, { bom: true, columns: true, skip_empty_lines: true, trim: true, relax_column_count: false });
+  } catch (error) {
+    return { ok: false, error: `invalid CSV: ${error.message}` };
+  }
+  if (!records.length) return { ok: false, error: "csv contains headers but no data rows" };
+  if (records.length > 500) return { ok: false, error: "csv preview is limited to 500 rows" };
+  const headers = Object.keys(records[0]);
+  const byLower = new Map(headers.map((header) => [header.toLowerCase(), header]));
+  const mapping = {};
+  for (const [field, aliases] of Object.entries(CSV_FIELDS)) {
+    const requested = String(requestedMapping[field] || "").trim();
+    mapping[field] = requested && headers.includes(requested)
+      ? requested
+      : aliases.map((alias) => byLower.get(alias)).find(Boolean) || null;
+  }
+  const missing = ["country", "treatment", "contact"].filter((field) => !mapping[field]);
+  if (missing.length) return { ok: false, error: `missing required column mapping: ${missing.join(", ")}`, headers, mapping };
+  const leads = records.map((row) => ({
+    country: row[mapping.country],
+    treatment: row[mapping.treatment],
+    ref: row[mapping.contact],
+    consent: mapping.consent ? consentValue(row[mapping.consent]) : false,
+    urgency: mapping.urgency ? row[mapping.urgency] : undefined,
+    budget_band: mapping.budget_band ? row[mapping.budget_band] : undefined,
+  }));
+  return { ok: true, headers, mapping, leads };
+}
+
+export function previewLeadCsv(db, { source = "external", token, csv, mapping = {} } = {}) {
+  const tenant = db.prepare(`SELECT * FROM tenant WHERE id=? AND active=1`).get(source);
+  if (!tenant) return { ok: false, error: `unknown or inactive tenant '${source}'` };
+  if (tenant.token && token !== tenant.token) return { ok: false, error: "invalid tenant token (X-Ingest-Token)" };
+  const parsed = parseLeadCsv(csv, mapping);
+  if (!parsed.ok) return parsed;
+  const batchKeys = new Set();
+  const rows = parsed.leads.map((raw, index) => {
+    const market = mapMarket(db, raw.country);
+    const category = mapCategory(db, raw.treatment);
+    const ref = minimiseHandle(raw);
+    const reasons = [];
+    if (!market) reasons.push(`unknown market '${raw.country || ""}'`);
+    if (!category) reasons.push(`unmapped treatment '${raw.treatment || ""}'`);
+    if (!ref) reasons.push("no contact handle");
+    const key = market && category && ref ? `${ref}|${market}|${category}` : null;
+    const existing = key && db.prepare(`SELECT id FROM lead WHERE source_ref=? AND ref=? AND market_code=? AND category_id=?`)
+      .get(source, ref, market, category);
+    const duplicate = !!existing || (key ? batchKeys.has(key) : false);
+    if (key) batchKeys.add(key);
+    return {
+      row: index + 2,
+      ref,
+      market,
+      category,
+      consent: raw.consent ? "captured" : "missing",
+      status: reasons.length ? "rejected" : duplicate ? "duplicate" : raw.consent ? "ready" : "held_no_consent",
+      reasons,
+    };
+  });
+  const count = (status) => rows.filter((row) => row.status === status).length;
+  return {
+    ok: true,
+    source: tenant.id,
+    tenant: tenant.name,
+    headers: parsed.headers,
+    mapping: parsed.mapping,
+    summary: {
+      received: rows.length,
+      ready: count("ready"),
+      held_no_consent: count("held_no_consent"),
+      duplicates: count("duplicate"),
+      rejected: count("rejected"),
+    },
+    rows,
+  };
 }
 
 export function ingestLeads(db, { source = "external", token, leads = [] } = {}) {

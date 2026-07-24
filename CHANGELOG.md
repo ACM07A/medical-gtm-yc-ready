@@ -7,6 +7,7 @@
 - Added role-scoped case-resource, agent-run, integration and audit APIs.
 - Added request correlation and browser security headers across server responses.
 - Made demo health depend on OS database readiness while retaining legacy loop health diagnostics.
+- Added functional CSV lead preview and import with explicit column mapping, validation, masked contacts, duplicate detection and rejected-row reporting.
 - Added static docs rendering for `docs/*.md` from the local server.
 - Added MedYatra OS deterministic demo schema and seed.
 - Added hospital command centre, agent portal, case workspace, vendor network, agent activity centre, integrations, audit, tasks and metrics surfaces.
