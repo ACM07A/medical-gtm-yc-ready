@@ -29,6 +29,7 @@ const checks = [
   ["GET", "/audit"],
   ["GET", "/docs/YC_REVIEWER_GUIDE.md"],
   ["GET", "/docs/VENDOR_DEPLOYMENT_READINESS.md"],
+  ["GET", "/docs/PRODUCTION_LAUNCH_RUNBOOK.md"],
 ];
 
 let failed = 0;

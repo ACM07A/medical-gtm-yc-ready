@@ -1,5 +1,7 @@
 # CanopusCare Vendor Deployment Readiness
 
+For the complete implementation sequence, ownership model and acceptance evidence, see [Production Launch Runbook](./PRODUCTION_LAUNCH_RUNBOOK.md).
+
 ## Current verdict
 
 The repository can be deployed today as a synthetic, outbound-disabled product demo. It is not ready for unrestricted vendor use with real patient or booking data.

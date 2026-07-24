@@ -84,11 +84,46 @@ test("vendor can update only service requests assigned to its organization", () 
   const { db, dir } = seededDb();
   const vendor = { role: "vendor_operator", organization_id: "org_vendor_blr", user: { id: "user_vendor", email: "vendor@canopuscare.demo" } };
   const requestId = db.prepare(`SELECT id FROM service_request WHERE vendor_id='vendor_interpreter'`).get().id;
-  const updated = updateServiceRequest(db, vendor, requestId, { status: "Quoted", mock_quote: "USD 95 mock quote" });
+  const updated = updateServiceRequest(db, vendor, requestId, { status: "Scheduled" });
   assert.equal(updated.ok, true);
-  assert.equal(updated.service_request.status, "Quoted");
+  assert.equal(updated.service_request.status, "Scheduled");
+  assert.equal(updated.service_request.quote_currency, "USD");
+  assert.equal(updated.service_request.quote_amount, 630);
   assert.match(updated.service_request.audit_note, /vendor@canopuscare\.demo/);
   const forbidden = updateServiceRequest(db, { ...vendor, organization_id: "org_other" }, requestId, { status: "Completed" });
   assert.equal(forbidden.error.code, "FORBIDDEN");
+  db.close(); rmSync(dir, { recursive: true, force: true });
+});
+
+test("service request lifecycle rejects skipped states, expired quotes and unexplained cancellation", () => {
+  const { db, dir } = seededDb();
+  const vendor = { role: "vendor_operator", organization_id: "org_vendor_blr", user: { id: "user_vendor", email: "vendor@canopuscare.demo" } };
+  const requestId = db.prepare(`SELECT id FROM service_request WHERE vendor_id='vendor_interpreter'`).get().id;
+  db.prepare(`UPDATE service_request SET status='Requested',quote_currency=NULL,quote_amount=NULL,quote_expires_at=NULL WHERE id=?`).run(requestId);
+
+  const skipped = updateServiceRequest(db, vendor, requestId, { status: "Approved" });
+  assert.equal(skipped.error.code, "INVALID_TRANSITION");
+  assert.deepEqual(skipped.error.details.allowed, ["Accepted", "Declined"]);
+
+  assert.equal(updateServiceRequest(db, vendor, requestId, { status: "Accepted" }).ok, true);
+  const quoted = updateServiceRequest(db, vendor, requestId, {
+    status: "Quoted",
+    quote_currency: "usd",
+    quote_amount: "95.50",
+    quote_expires_at: "2020-01-01T00:00:00Z",
+  });
+  assert.equal(quoted.ok, true);
+  assert.equal(quoted.service_request.quote_currency, "USD");
+  assert.equal(quoted.service_request.quote_amount, 95.5);
+
+  const expired = updateServiceRequest(db, vendor, requestId, { status: "Approved" });
+  assert.equal(expired.error.code, "QUOTE_EXPIRED");
+
+  db.prepare(`UPDATE service_request SET status='Scheduled',quote_expires_at=datetime('now','+1 day') WHERE id=?`).run(requestId);
+  const unexplained = updateServiceRequest(db, vendor, requestId, { status: "Cancelled" });
+  assert.equal(unexplained.error.code, "CANCELLATION_REASON_REQUIRED");
+  const cancelled = updateServiceRequest(db, vendor, requestId, { status: "Cancelled", cancellation_reason: "Patient changed travel dates" });
+  assert.equal(cancelled.ok, true);
+  assert.ok(cancelled.service_request.cancelled_at);
   db.close(); rmSync(dir, { recursive: true, force: true });
 });

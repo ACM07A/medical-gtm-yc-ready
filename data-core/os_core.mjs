@@ -107,6 +107,36 @@ export function ensureOsSchema(db) {
     );
     CREATE TABLE IF NOT EXISTS seed_version (id TEXT PRIMARY KEY, applied_at TEXT DEFAULT (datetime('now')));
   `);
+  for (const column of [
+    "quote_currency TEXT",
+    "quote_amount REAL",
+    "quote_expires_at TEXT",
+    "service_date TEXT",
+    "service_location TEXT",
+    "capacity_note TEXT",
+    "cancellation_policy TEXT",
+    "cancellation_reason TEXT",
+    "cancelled_at TEXT",
+  ]) {
+    try { db.exec(`ALTER TABLE service_request ADD COLUMN ${column}`); } catch {}
+  }
+  db.exec(`
+    UPDATE service_request
+    SET quote_currency='USD',
+        quote_amount=CASE vendor_id
+          WHEN 'vendor_interpreter' THEN 630
+          WHEN 'vendor_transfer' THEN 90
+          WHEN 'vendor_stay' THEN 550
+        END,
+        quote_expires_at=datetime('now','+14 days'),
+        service_date=COALESCE(NULLIF(service_date,''), due_date),
+        service_location=COALESCE(NULLIF(service_location,''), 'Bangalore'),
+        cancellation_policy=COALESCE(NULLIF(cancellation_policy,''), 'Demo terms require confirmation before any live booking')
+    WHERE case_id='case_ibrahim_musa'
+      AND quote_amount IS NULL
+      AND vendor_id IN ('vendor_interpreter','vendor_transfer','vendor_stay')
+      AND mock_quote LIKE 'Mock quote:%';
+  `);
 }
 
 const put = (db, sql, params) => db.prepare(sql).run(...params);
@@ -189,9 +219,19 @@ export function seedDemoOs(db) {
     ["vendor_stay","Accommodation","Bangalore","English","Family rooms available","USD 55/night","24h","Verified demo docs",4.5,"Mock marketplace","Commission disclosed"],
   ];
   for (const v of vendorRows) put(db, `INSERT INTO vendor (id,organization_id,service_categories,cities,languages,availability,indicative_price,sla,verification_status,rating,contact_channel,commercial_terms) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`, [v[0], "org_vendor_blr", ...v.slice(1)]);
-  for (const [vendor, cat, quote] of [["vendor_interpreter","Interpreter","Mock quote: 3 days x 6 hours, USD 630"],["vendor_transfer","Airport transfer","Mock quote: airport pickup and discharge transfer, USD 90"],["vendor_stay","Accommodation","Mock quote: family room near hospital, 10 nights, USD 550"]]) {
-    put(db, `INSERT INTO service_request (id,case_id,vendor_id,category,status,requested_for,mock_quote,owner,due_date,audit_note) VALUES (?,?,?,?,?,?,?,?,date('now','+3 days'),?)`,
-      [gid("sr"), "case_ibrahim_musa", vendor, cat, "Approved", "Arrival package", quote, "Meera Vendor Operator", "Human approved demo vendor package; no real booking performed"]);
+  for (const [vendor, cat, amount, serviceDate, location, capacity, cancellation] of [
+    ["vendor_interpreter","Interpreter",630,"2026-08-24","Apollo Bangalore","6 hours/day for 3 days","No fee until 24 hours before the first session"],
+    ["vendor_transfer","Airport transfer",90,"2026-08-24","Bengaluru airport to hospital","Patient plus one companion","No fee until 12 hours before pickup"],
+    ["vendor_stay","Accommodation",550,"2026-08-24","Near Apollo Bangalore","Family room for 10 nights","First night charged for cancellation within 48 hours"],
+  ]) {
+    const quote = `Mock quote: USD ${amount}`;
+    put(db, `INSERT INTO service_request
+      (id,case_id,vendor_id,category,status,requested_for,mock_quote,quote_currency,quote_amount,quote_expires_at,
+       service_date,service_location,capacity_note,cancellation_policy,owner,due_date,audit_note)
+      VALUES (?,?,?,?,?,?,?,?,?,datetime('now','+14 days'),?,?,?,?,?,date('now','+3 days'),?)`,
+      [gid("sr"), "case_ibrahim_musa", vendor, cat, "Approved", "Arrival package", quote, "USD", amount,
+       serviceDate, location, capacity, cancellation, "Meera Vendor Operator",
+       "Human approved demo vendor package; no real booking performed"]);
   }
 
   const tasks = [
