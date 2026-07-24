@@ -6,7 +6,41 @@
 // regulatory gate until the market is cleared. Reusable: called by POST /api/lead/ingest and this CLI.
 //   node --experimental-sqlite data-core/ingest.mjs <batch.json>
 import { open, marketCleared, logRun } from "./db.mjs";
-import { parse } from "csv-parse/sync";
+
+function parseCsv(csv) {
+  const rows = [];
+  let row = [], field = "", quoted = false;
+  const input = csv.replace(/^\uFEFF/, "");
+  for (let i = 0; i < input.length; i++) {
+    const char = input[i];
+    if (quoted) {
+      if (char === '"' && input[i + 1] === '"') { field += '"'; i++; }
+      else if (char === '"') quoted = false;
+      else field += char;
+    } else if (char === '"') {
+      if (field) throw new Error("quote must start at the beginning of a field");
+      quoted = true;
+    } else if (char === ",") {
+      row.push(field.trim()); field = "";
+    } else if (char === "\n") {
+      row.push(field.trim()); field = "";
+      if (row.some((value) => value !== "")) rows.push(row);
+      row = [];
+    } else if (char !== "\r") {
+      field += char;
+    }
+  }
+  if (quoted) throw new Error("unterminated quoted field");
+  row.push(field.trim());
+  if (row.some((value) => value !== "")) rows.push(row);
+  if (!rows.length) return [];
+  const headers = rows[0];
+  if (headers.some((header) => !header)) throw new Error("header names must not be empty");
+  return rows.slice(1).map((values, index) => {
+    if (values.length !== headers.length) throw new Error(`row ${index + 2} has ${values.length} columns; expected ${headers.length}`);
+    return Object.fromEntries(headers.map((header, column) => [header, values[column]]));
+  });
+}
 
 // Map a free-text treatment to one of our category ids (verified against the DB), else null.
 const CAT_KW = [
@@ -57,7 +91,7 @@ export function parseLeadCsv(csv, requestedMapping = {}) {
   if (typeof csv !== "string" || !csv.trim()) return { ok: false, error: "csv must be a non-empty string" };
   let records;
   try {
-    records = parse(csv, { bom: true, columns: true, skip_empty_lines: true, trim: true, relax_column_count: false });
+    records = parseCsv(csv);
   } catch (error) {
     return { ok: false, error: `invalid CSV: ${error.message}` };
   }

@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from "node:crypto";
 import { mkdirSync, copyFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { DB_PATH, logRun } from "./db.mjs";
+import { COMMISSION_TIERS, DB_PATH, commissionModel, logRun } from "./db.mjs";
 
 export const APP_MODES = new Set(["demo", "development", "production", "test"]);
 export const DEMO_PASSWORD = "canopuscare-demo";
@@ -13,6 +13,11 @@ export function appMode() {
 
 export function passwordHash(password, salt = "canopuscare-demo-salt") {
   return `sha256:${salt}:${createHash("sha256").update(`${salt}:${password}`).digest("hex")}`;
+}
+
+export function authenticateDemoUser(db, email, password) {
+  if (appMode() !== "demo" || password !== DEMO_PASSWORD) return null;
+  return db.prepare(`SELECT * FROM app_user WHERE email=? AND active=1`).get(String(email || "")) || null;
 }
 
 export function ensureOsSchema(db) {
@@ -30,7 +35,7 @@ export function ensureOsSchema(db) {
       PRIMARY KEY(user_id, organization_id, role)
     );
     CREATE TABLE IF NOT EXISTS patient_case (
-      id TEXT PRIMARY KEY, synthetic_name TEXT NOT NULL, synthetic_identifier TEXT, source_market TEXT, preferred_language TEXT,
+      id TEXT PRIMARY KEY, source_lead_id INTEGER REFERENCES lead(id), synthetic_name TEXT NOT NULL, synthetic_identifier TEXT, source_market TEXT, preferred_language TEXT,
       treatment_request TEXT, treatment_category TEXT, urgency TEXT, budget_band TEXT, travel_window TEXT,
       consent_status TEXT DEFAULT 'missing', current_stage TEXT, source_agent_org_id TEXT REFERENCES organization(id),
       assigned_hospital_org_id TEXT REFERENCES organization(id), assigned_vendor_org_id TEXT REFERENCES organization(id),
@@ -107,6 +112,76 @@ export function ensureOsSchema(db) {
     );
     CREATE TABLE IF NOT EXISTS seed_version (id TEXT PRIMARY KEY, applied_at TEXT DEFAULT (datetime('now')));
   `);
+  for (const column of [
+    "quote_currency TEXT",
+    "quote_amount REAL",
+    "quote_expires_at TEXT",
+    "service_date TEXT",
+    "service_location TEXT",
+    "capacity_note TEXT",
+    "cancellation_policy TEXT",
+    "cancellation_reason TEXT",
+    "cancelled_at TEXT",
+  ]) {
+    try { db.exec(`ALTER TABLE service_request ADD COLUMN ${column}`); } catch {}
+  }
+  db.exec(`
+    UPDATE service_request
+    SET quote_currency='USD',
+        quote_amount=CASE vendor_id
+          WHEN 'vendor_interpreter' THEN 630
+          WHEN 'vendor_transfer' THEN 90
+          WHEN 'vendor_stay' THEN 550
+        END,
+        quote_expires_at=datetime('now','+14 days'),
+        service_date=COALESCE(NULLIF(service_date,''), due_date),
+        service_location=COALESCE(NULLIF(service_location,''), 'Bangalore'),
+        cancellation_policy=COALESCE(NULLIF(cancellation_policy,''), 'Demo terms require confirmation before any live booking')
+    WHERE case_id='case_ibrahim_musa'
+      AND quote_amount IS NULL
+      AND vendor_id IN ('vendor_interpreter','vendor_transfer','vendor_stay')
+      AND mock_quote LIKE 'Mock quote:%';
+  `);
+  try { db.exec(`ALTER TABLE patient_case ADD COLUMN source_lead_id INTEGER`); } catch {}
+  const entryCommission = commissionModel({ low: 10850, high: 10850 });
+  db.exec(`
+    INSERT INTO lead (market_code,category_id,channel,ref,urgency,budget_band,docs_ready,consent,status,source_type,journey_stage)
+      SELECT m.code,c.id,'demo','case-ibrahim-musa','planning','unknown',0,1,'qualified','own','intake'
+      FROM market m JOIN category c ON c.id='cardiac'
+      WHERE m.code='NG' AND NOT EXISTS (SELECT 1 FROM lead WHERE ref='case-ibrahim-musa');
+    INSERT INTO lead (market_code,category_id,channel,ref,urgency,budget_band,docs_ready,consent,status,source_type,journey_stage)
+      SELECT m.code,c.id,'demo','case-amina-okoro','planning','unknown',0,0,'qualified','own','intake'
+      FROM market m JOIN category c ON c.id='oncology'
+      WHERE m.code='NG' AND NOT EXISTS (SELECT 1 FROM lead WHERE ref='case-amina-okoro');
+    UPDATE patient_case SET
+      source_lead_id=(SELECT id FROM lead WHERE ref='case-ibrahim-musa' ORDER BY id LIMIT 1),
+      synthetic_identifier='CNP-NG-CABG-001'
+      WHERE id='case_ibrahim_musa' AND demo=1;
+    UPDATE patient_case SET
+      source_lead_id=(SELECT id FROM lead WHERE ref='case-amina-okoro' ORDER BY id LIMIT 1),
+      synthetic_identifier='CNP-NG-ONC-002'
+      WHERE id='case_amina_okoro' AND demo=1;
+    UPDATE organization SET name='Demo Cardiac Centre A' WHERE id='org_hospital_apollo' AND demo=1;
+    UPDATE organization SET name='Demo Cardiac Centre B' WHERE id='org_hospital_fortis' AND demo=1;
+    UPDATE hospital_match SET
+      hospital_name=CASE hospital_org_id
+        WHEN 'org_hospital_apollo' THEN 'Demo Cardiac Centre A'
+        WHEN 'org_hospital_fortis' THEN 'Demo Cardiac Centre B'
+        ELSE 'Demo Cardiac Centre C'
+      END,
+      accreditation='Illustrative only',
+      partner_status='Synthetic demo organization',
+      commercial_disclosure='Illustrative only; not affiliated and no partnership is implied.'
+      WHERE case_id='case_ibrahim_musa';
+    UPDATE vendor SET rating=NULL WHERE organization_id='org_vendor_blr';
+    UPDATE service_request SET
+      service_location=replace(replace(service_location,'Apollo Bangalore','Demo Cardiac Centre A, Bangalore'),'Near Apollo Bangalore','Near Demo Cardiac Centre A, Bangalore')
+      WHERE case_id='case_ibrahim_musa';
+    UPDATE commission SET
+      expected_amount=${entryCommission.ourFee.low},
+      commercial_disclosure='Synthetic ${entryCommission.feePct}% entry-tier facilitation share, illustrative only'
+      WHERE id='commission_ibrahim';
+  `);
 }
 
 const put = (db, sql, params) => db.prepare(sql).run(...params);
@@ -129,8 +204,8 @@ export function seedDemoOs(db) {
   const orgs = [
     ["org_platform", "CanopusCare Platform", "platform", "IN"],
     ["org_agent_lagos", "Lagos Health Travel Partners", "agent", "NG"],
-    ["org_hospital_apollo", "Apollo International Cardiac Centre", "hospital", "IN"],
-    ["org_hospital_fortis", "Fortis International Patient Desk", "hospital", "IN"],
+    ["org_hospital_apollo", "Demo Cardiac Centre A", "hospital", "IN"],
+    ["org_hospital_fortis", "Demo Cardiac Centre B", "hospital", "IN"],
     ["org_vendor_blr", "Bangalore Arrival Care Network", "vendor", "IN"],
   ];
   for (const o of orgs) put(db, `INSERT INTO organization (id,name,type,country,demo) VALUES (?,?,?,?,1)`, o);
@@ -149,13 +224,25 @@ export function seedDemoOs(db) {
     put(db, `INSERT INTO membership (user_id,organization_id,role) VALUES (?,?,?)`, [id, org, role]);
   }
 
+  const ensureLead = (ref, category, consent) => {
+    let lead = db.prepare(`SELECT id FROM lead WHERE ref=?`).get(ref);
+    if (!lead) {
+      db.prepare(`INSERT INTO lead
+        (market_code,category_id,channel,ref,urgency,budget_band,docs_ready,consent,status,source_type,journey_stage)
+        VALUES ('NG',?,'demo',?,'planning','unknown',0,?,'qualified','own','intake')`).run(category, ref, consent);
+      lead = db.prepare(`SELECT id FROM lead WHERE ref=?`).get(ref);
+    }
+    return lead.id;
+  };
+  const ibrahimLeadId = ensureLead("case-ibrahim-musa", "cardiac", 1);
+  const aminaLeadId = ensureLead("case-amina-okoro", "oncology", 0);
   const cases = [
-    ["case_ibrahim_musa", "Ibrahim Musa", "MYT-NG-CABG-001", "Nigeria", "English", "Cardiac bypass evaluation", "cardiac", "Within 30 days", "USD 8,000-15,000", "Late August 2026", "captured", "Arrival scheduled", "org_agent_lagos", "org_hospital_apollo", "org_vendor_blr", "Nadia Care Coordinator", "Confirm arrival pack and post-treatment follow-up task", "Indicative pricing only; clinical suitability is hospital-owned.", ""],
-    ["case_amina_okoro", "Amina Okoro", "MYT-NG-ONC-002", "Nigeria", "English", "Oncology second opinion", "oncology", "Soon", "USD 12,000-25,000", "September 2026", "missing", "Blocked - consent required", "org_agent_lagos", null, null, "Nadia Care Coordinator", "Capture explicit consent before communication or routing", "No outbound message may be released. Missing consent blocks next action.", "CONSENT_REQUIRED"],
+    ["case_ibrahim_musa", ibrahimLeadId, "Ibrahim Musa", "CNP-NG-CABG-001", "Nigeria", "English", "Cardiac bypass evaluation", "cardiac", "Within 30 days", "USD 8,000-15,000", "Late August 2026", "captured", "Arrival scheduled", "org_agent_lagos", "org_hospital_apollo", "org_vendor_blr", "Nadia Care Coordinator", "Confirm arrival pack and post-treatment follow-up task", "Indicative pricing only; clinical suitability is hospital-owned.", ""],
+    ["case_amina_okoro", aminaLeadId, "Amina Okoro", "CNP-NG-ONC-002", "Nigeria", "English", "Oncology second opinion", "oncology", "Soon", "USD 12,000-25,000", "September 2026", "missing", "Blocked - consent required", "org_agent_lagos", null, null, "Nadia Care Coordinator", "Capture explicit consent before communication or routing", "No outbound message may be released. Missing consent blocks next action.", "CONSENT_REQUIRED"],
   ];
   for (const c of cases) put(db, `INSERT INTO patient_case
-    (id,synthetic_name,synthetic_identifier,source_market,preferred_language,treatment_request,treatment_category,urgency,budget_band,travel_window,consent_status,current_stage,source_agent_org_id,assigned_hospital_org_id,assigned_vendor_org_id,assigned_coordinator,next_best_action,warnings,blockers)
-    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, c);
+    (id,source_lead_id,synthetic_name,synthetic_identifier,source_market,preferred_language,treatment_request,treatment_category,urgency,budget_band,travel_window,consent_status,current_stage,source_agent_org_id,assigned_hospital_org_id,assigned_vendor_org_id,assigned_coordinator,next_best_action,warnings,blockers)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, c);
 
   const docs = [
     ["Passport copy","Accepted by hospital"],["Medical summary","Accepted by hospital"],["Laboratory reports","Accepted by hospital"],["Imaging reports","Needs review"],["Prior prescriptions","Uploaded"],["Referral note","Uploaded"],["Hospital request","Accepted by hospital"],["Invitation letter","Requested"],["Estimate","Uploaded"],["Discharge summary","Missing"],["Follow-up plan","Requested"],
@@ -164,9 +251,9 @@ export function seedDemoOs(db) {
   put(db, `INSERT INTO case_document (id,case_id,doc_type,status,metadata) VALUES (?,?,?,?,?)`, [gid("doc"), "case_amina_okoro", "Consent form", "Missing", JSON.stringify({ blocked: true })]);
 
   const matches = [
-    ["org_hospital_apollo","Apollo International Cardiac Centre","JCI/NABH","Bangalore","Cardiac sciences","Preferred demo partner","USD 8,900-11,800","24h","English, Arabic desk","Strong operational fit for cardiac international desk and fast estimate turnaround.","Commercial relationship disclosed; illustrative demo rate.","Patient prefers Bangalore and English coordination.","Hospital reviewer marked eligible for synthetic estimate.","Seeded partner profile + synthetic SLA", "High"],
-    ["org_hospital_fortis","Fortis International Patient Desk","NABH","Bangalore","Cardiac sciences","Warm-intro target","USD 9,200-12,500","36h","English","Good operational fit; requested additional investigation before estimate.","No exclusivity; illustrative demo comparison only.","Shortlisted by agent.","Additional investigation requested by hospital reviewer.","Seeded partner profile + synthetic task", "Medium"],
-    ["org_platform","Sir Ganga Ram International Desk","NABH","Delhi","Cardiac sciences","Research target","USD 8,200-10,900","48h","English","Potential fit but contact path requires verification.","No live outreach to inferred contacts.","Lower indicative cost but travel preference weaker.","No clinical acceptance yet.","Synthetic comparison row", "Medium"],
+    ["org_hospital_apollo","Demo Cardiac Centre A","Illustrative only","Bangalore","Cardiac sciences","Synthetic demo organization","USD 8,900-11,800","24h","English, Arabic desk","Illustrative operational fit for the synthetic workflow.","Illustrative only; not affiliated and no partnership is implied.","Patient prefers Bangalore and English coordination.","Synthetic reviewer marked eligible for an illustrative estimate.","Synthetic profile and SLA", "High"],
+    ["org_hospital_fortis","Demo Cardiac Centre B","Illustrative only","Bangalore","Cardiac sciences","Synthetic demo organization","USD 9,200-12,500","36h","English","Illustrative operational fit; additional investigation requested.","Illustrative only; not affiliated and no partnership is implied.","Shortlisted in synthetic data.","Additional investigation requested by synthetic reviewer.","Synthetic profile and task", "Medium"],
+    ["org_platform","Demo Cardiac Centre C","Illustrative only","Delhi","Cardiac sciences","Synthetic demo organization","USD 8,200-10,900","48h","English","Illustrative fit with an intentionally incomplete contact path.","Illustrative only; not affiliated and no partnership is implied.","Lower illustrative cost but travel preference weaker.","No clinical acceptance; synthetic comparison only.","Synthetic comparison row", "Medium"],
   ];
   for (const m of matches) put(db, `INSERT INTO hospital_match
     (id,case_id,hospital_org_id,hospital_name,accreditation,location,department,partner_status,price_band,response_sla,language_support,operational_fit,commercial_disclosure,patient_preference,clinical_acceptance,evidence,confidence)
@@ -184,14 +271,24 @@ export function seedDemoOs(db) {
   }
 
   const vendorRows = [
-    ["vendor_interpreter","Interpreter","Bangalore","English, Hausa","Available next 7 days","USD 35/hour","4h","Verified demo docs",4.7,"Mock marketplace","15% platform fee"],
-    ["vendor_transfer","Airport transfer","Bangalore","English","24/7","USD 45 pickup","2h","Verified demo docs",4.8,"Mock marketplace","Fixed net rate"],
-    ["vendor_stay","Accommodation","Bangalore","English","Family rooms available","USD 55/night","24h","Verified demo docs",4.5,"Mock marketplace","Commission disclosed"],
+    ["vendor_interpreter","Interpreter","Bangalore","English, Hausa","Available next 7 days","USD 35/hour","4h","Verified synthetic docs",null,"Mock marketplace",`${COMMISSION_TIERS[0].pct}% illustrative entry fee`],
+    ["vendor_transfer","Airport transfer","Bangalore","English","24/7","USD 45 pickup","2h","Verified synthetic docs",null,"Mock marketplace","Illustrative fixed net rate"],
+    ["vendor_stay","Accommodation","Bangalore","English","Family rooms available","USD 55/night","24h","Verified synthetic docs",null,"Mock marketplace","Illustrative commission disclosed"],
   ];
   for (const v of vendorRows) put(db, `INSERT INTO vendor (id,organization_id,service_categories,cities,languages,availability,indicative_price,sla,verification_status,rating,contact_channel,commercial_terms) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`, [v[0], "org_vendor_blr", ...v.slice(1)]);
-  for (const [vendor, cat, quote] of [["vendor_interpreter","Interpreter","Mock quote: 3 days x 6 hours, USD 630"],["vendor_transfer","Airport transfer","Mock quote: airport pickup and discharge transfer, USD 90"],["vendor_stay","Accommodation","Mock quote: family room near hospital, 10 nights, USD 550"]]) {
-    put(db, `INSERT INTO service_request (id,case_id,vendor_id,category,status,requested_for,mock_quote,owner,due_date,audit_note) VALUES (?,?,?,?,?,?,?,?,date('now','+3 days'),?)`,
-      [gid("sr"), "case_ibrahim_musa", vendor, cat, "Approved", "Arrival package", quote, "Meera Vendor Operator", "Human approved demo vendor package; no real booking performed"]);
+  for (const [vendor, cat, amount, serviceDate, location, capacity, cancellation] of [
+    ["vendor_interpreter","Interpreter",630,"2026-08-24","Demo Cardiac Centre A, Bangalore","6 hours/day for 3 days","No fee until 24 hours before the first session"],
+    ["vendor_transfer","Airport transfer",90,"2026-08-24","Bengaluru airport to hospital","Patient plus one companion","No fee until 12 hours before pickup"],
+    ["vendor_stay","Accommodation",550,"2026-08-24","Near Demo Cardiac Centre A, Bangalore","Family room for 10 nights","First night charged for cancellation within 48 hours"],
+  ]) {
+    const quote = `Mock quote: USD ${amount}`;
+    put(db, `INSERT INTO service_request
+      (id,case_id,vendor_id,category,status,requested_for,mock_quote,quote_currency,quote_amount,quote_expires_at,
+       service_date,service_location,capacity_note,cancellation_policy,owner,due_date,audit_note)
+      VALUES (?,?,?,?,?,?,?,?,?,datetime('now','+14 days'),?,?,?,?,?,date('now','+3 days'),?)`,
+      [gid("sr"), "case_ibrahim_musa", vendor, cat, "Approved", "Arrival package", quote, "USD", amount,
+       serviceDate, location, capacity, cancellation, "Meera Vendor Operator",
+       "Human approved demo vendor package; no real booking performed"]);
   }
 
   const tasks = [
@@ -213,7 +310,7 @@ export function seedDemoOs(db) {
   }
 
   const approvals = [
-    ["approval_estimate_release","Approve estimate release","estimate_apollo_ibrahim","Approved","Release Apollo synthetic estimate to the agent portal","agent@canopuscare.demo","Indicative estimate rows and caveats","Consent, hospital reviewer status, demo watermark","PASS: consent captured; PASS: no clinical recommendation","", "hospital@canopuscare.demo", "Prepared", "Released"],
+    ["approval_estimate_release","Approve estimate release","estimate_apollo_ibrahim","Approved","Release the synthetic estimate to the agent portal","agent@canopuscare.demo","Indicative estimate rows and caveats","Consent, hospital reviewer status, demo watermark","PASS: consent captured; PASS: no clinical recommendation","", "hospital@canopuscare.demo", "Prepared", "Released"],
     ["approval_blocked_consent","Approve patient communication","case_amina_okoro","Blocked","Would send WhatsApp follow-up","Synthetic patient contact handle","Treatment request and source market","Consent gate","BLOCKED: CONSENT_REQUIRED","Consent missing", "", "Draft", "Blocked"],
   ];
   for (const a of approvals) put(db, `INSERT INTO approval (id,type,subject_ref,status,what_will_happen,recipient,data_exposed,evidence_checked,compliance_checks,blocking_reasons,reviewer,before_state,after_state,organization_id,decided_at) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,'org_platform',datetime('now'))`, a);
@@ -228,8 +325,9 @@ export function seedDemoOs(db) {
   ];
   for (const i of integrations) put(db, `INSERT INTO integration_connection (id,provider,status,required_variables,last_success,last_error,outbound_armed,human_approval_required) VALUES (?,?,?,?,?,?,?,?)`, [gid("int"), ...i]);
 
+  const demoCommission = commissionModel({ low: 10850, high: 10850 });
   put(db, `INSERT INTO commission (id,case_id,agent_org_id,expected_amount,currency,status,payout_status,commercial_disclosure) VALUES (?,?,?,?,?,?,?,?)`,
-    ["commission_ibrahim", "case_ibrahim_musa", "org_agent_lagos", 1627.5, "USD", "Forecast", "Not payable until treatment is completed", "Synthetic 15% facilitation share, illustrative only"]);
+    ["commission_ibrahim", "case_ibrahim_musa", "org_agent_lagos", demoCommission.ourFee.low, "USD", "Forecast", "Not payable until treatment is completed", `Synthetic ${demoCommission.feePct}% entry-tier facilitation share, illustrative only`]);
   for (const [action, subject, outcome, detail] of [
     ["demo_seed", "patient_case", "ok", "Golden path and blocked consent case seeded"],
     ["consent_gate", "case_amina_okoro", "blocked", "CONSENT_REQUIRED before communication"],
@@ -238,7 +336,7 @@ export function seedDemoOs(db) {
   ]) put(db, `INSERT INTO audit_event (id,actor_user_id,organization_id,action,subject_type,subject_id,outcome,request_id,detail) VALUES (?,?,?,?,?,?,?,?,?)`, [gid("audit"), "user_admin", "org_platform", action, subject, subject.includes("case_") ? subject : "case_ibrahim_musa", outcome, "seed-request", detail]);
 
   put(db, `INSERT OR REPLACE INTO seed_version (id) VALUES (?)`, ["medyatra_os_demo_v1"]);
-  logRun(db, "MedYatra OS", "Demo OS seeded", "Golden Nigerian cardiac path + blocked consent exception + roles/vendors/agents/audit", "/demo", "ok");
+  logRun(db, "CanopusCare OS", "Demo OS seeded", "Golden Nigerian cardiac path + blocked consent exception + roles/vendors/agents/audit", "/demo", "ok");
 }
 
 export function readinessReport(db) {

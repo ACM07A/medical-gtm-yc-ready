@@ -16,6 +16,9 @@ const checks = [
   ["GET", "/api/integrations"],
   ["GET", "/api/audit"],
   ["GET", "/api/metrics"],
+  ["GET", "/api/markets"],
+  ["GET", "/api/vault"],
+  ["GET", "/api/economics"],
   ["GET", "/demo"],
   ["GET", "/hospital"],
   ["GET", "/agent"],
@@ -27,8 +30,10 @@ const checks = [
   ["GET", "/console"],
   ["GET", "/integrations"],
   ["GET", "/audit"],
+  ["GET", "/journey"],
   ["GET", "/docs/YC_REVIEWER_GUIDE.md"],
   ["GET", "/docs/VENDOR_DEPLOYMENT_READINESS.md"],
+  ["GET", "/docs/PRODUCTION_LAUNCH_RUNBOOK.md"],
 ];
 
 let failed = 0;

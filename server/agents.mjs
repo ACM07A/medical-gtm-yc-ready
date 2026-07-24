@@ -219,7 +219,7 @@ export function renderAgentsDemo() {
   const groups = [...new Set(AGENT_META.map((a) => a.grp))];
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CanopusCare — Concierge Agents</title><style>${CSS}</style></head><body>
-<div class="ribbon">MEDYATRA · concierge agents — every run below is LIVE (real model call or its safety-checked deterministic fallback) — <a href="/demo">back to demo hub</a></div>
+<div class="ribbon">CANOPUSCARE · concierge agents — every run below is LIVE (real model call or its safety-checked deterministic fallback) — <a href="/demo">back to demo hub</a></div>
 <div class="wrap">
   <div class="eyebrow">Post-booking journey · build-os/09</div>
   <h1>The agents that get a booked patient actually treated</h1>

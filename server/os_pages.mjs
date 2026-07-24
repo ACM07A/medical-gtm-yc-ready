@@ -1,4 +1,4 @@
-import { readinessReport } from "../data-core/os_core.mjs";
+import { appMode, readinessReport } from "../data-core/os_core.mjs";
 import { appShell, icon } from "./canopus_ui.mjs";
 
 const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -23,6 +23,8 @@ function viewOptions(active, session, metrics) {
 }
 
 export function getSession(db, req) {
+  if (appMode() !== "demo")
+    return { user: null, memberships: [], role: "unauthenticated", organization_id: null };
   const email = req.headers["x-demo-user"] || "admin@canopuscare.demo";
   const user = db.prepare(`SELECT * FROM app_user WHERE email=? AND active=1`).get(email) || db.prepare(`SELECT * FROM app_user WHERE email='admin@canopuscare.demo'`).get();
   const memberships = user ? db.prepare(`SELECT m.role,o.* FROM membership m JOIN organization o ON o.id=m.organization_id WHERE m.user_id=?`).all(user.id) : [];
@@ -45,8 +47,12 @@ export function apiCases(db, session) {
 export function apiCase(db, session, id) {
   const c = apiCases(db, session).find((x) => x.id === id);
   if (!c) return null;
+  const sourceLead = c.source_lead_id
+    ? db.prepare(`SELECT id,market_code,category_id,channel,ref,consent,status,journey_stage FROM lead WHERE id=?`).get(c.source_lead_id)
+    : null;
   return {
     ...c,
+    source_lead: sourceLead,
     documents: db.prepare(`SELECT * FROM case_document WHERE case_id=? ORDER BY doc_type`).all(id),
     matches: db.prepare(`SELECT * FROM hospital_match WHERE case_id=? ORDER BY confidence`).all(id),
     reviews: db.prepare(`SELECT * FROM hospital_review WHERE case_id=?`).all(id),
@@ -104,6 +110,32 @@ export function apiServiceRequests(db, session) {
   return requests.filter((r) => caseIds.has(r.case_id));
 }
 
+export const SERVICE_REQUEST_TRANSITIONS = Object.freeze({
+  Requested: ["Accepted", "Declined"],
+  Accepted: ["Quoted", "Declined"],
+  Quoted: ["Approved", "Declined"],
+  Approved: ["Scheduled", "Cancelled"],
+  Scheduled: ["Completed", "Cancelled"],
+  Completed: [],
+  Declined: [],
+  Cancelled: [],
+});
+
+function serviceRequestError(code, message, details = {}) {
+  return { ok: false, error: { code, message, details } };
+}
+
+function parseQuote(patch, request) {
+  const currency = String(patch.quote_currency ?? request.quote_currency ?? "").trim().toUpperCase();
+  const rawAmount = patch.quote_amount ?? request.quote_amount;
+  const amount = rawAmount === "" || rawAmount == null ? null : Number(rawAmount);
+  const expiresAt = String(patch.quote_expires_at ?? request.quote_expires_at ?? "").trim();
+  if (!/^[A-Z]{3}$/.test(currency)) return serviceRequestError("INVALID_QUOTE", "Quote currency must be a three-letter ISO code.", { field: "quote_currency" });
+  if (!Number.isFinite(amount) || amount <= 0) return serviceRequestError("INVALID_QUOTE", "Quote amount must be greater than zero.", { field: "quote_amount" });
+  if (!expiresAt || Number.isNaN(Date.parse(expiresAt))) return serviceRequestError("INVALID_QUOTE", "Quote expiry must be a valid date and time.", { field: "quote_expires_at" });
+  return { ok: true, currency, amount, expiresAt };
+}
+
 export function apiHospital(db, session) {
   const cases = apiCases(db, session);
   const tasks = db.prepare(`SELECT * FROM ops_task WHERE organization_id=? OR ?='platform_admin' ORDER BY due_date`).all(session.organization_id, session.role);
@@ -121,8 +153,13 @@ export function renderCase(db, session, id) {
   const c = apiCase(db, session, id);
   if (!c) return shell("Not found", `<h1>Case not found</h1><p class="lede">This role cannot access that case.</p>`, viewOptions("cases", session));
   return shell(c.synthetic_name, `<div class="head"><div><div class="eyebrow">${esc(c.synthetic_identifier)}</div><h1>${esc(c.synthetic_name)}</h1><p class="lede">${esc(c.treatment_request)}. ${esc(c.warnings)}</p></div><div>${badge(c.current_stage)} ${badge(c.consent_status)}</div></div>
+  <div class="callout">Illustrative synthetic organizations and rates only. No affiliation, accreditation or partnership is implied.${c.source_lead ? ` Linked GTM lead #${esc(c.source_lead.id)} (${esc(c.source_lead.journey_stage || "intake")}). <a href="/journey">Open journey orchestrator</a>.` : ""}</div>
   <div class="tabs">${["Overview","Documents","Hospital Matches","Estimates","Messages","Tasks","Travel Support","Vendors","Timeline","Compliance","Audit Log"].map((t)=>`<span class="tab">${t}</span>`).join("")}</div>
-  <section class="split"><div class="panel"><h2>Overview</h2><table><tbody>${rows([c],[["source_market",(x)=>`Source market: ${x.source_market}`],["preferred_language",(x)=>`Language: ${x.preferred_language}`],["urgency",(x)=>`Urgency: ${x.urgency}`],["budget_band",(x)=>`Budget: ${x.budget_band}`],["travel_window",(x)=>`Travel window: ${x.travel_window}`],["assigned_coordinator",(x)=>`Coordinator: ${x.assigned_coordinator}`],["next_best_action",(x)=>`Next best operational action: ${x.next_best_action}`],["blockers",(x)=>`Blockers: ${x.blockers || "none"}`]] )}</tbody></table></div>
+  <section class="split"><div class="panel"><h2>Overview</h2><div class="case-facts">${[
+    ["Source market", c.source_market], ["Language", c.preferred_language], ["Urgency", c.urgency],
+    ["Budget", c.budget_band], ["Travel window", c.travel_window], ["Coordinator", c.assigned_coordinator],
+    ["Next operational action", c.next_best_action], ["Blockers", c.blockers || "none"],
+  ].map(([label, value]) => `<div class="case-fact"><b>${esc(label)}</b><span>${esc(value)}</span></div>`).join("")}</div></div>
   <div class="panel"><h2>Compliance</h2><div class="callout">${esc(c.blockers || "No blocking compliance issue on this synthetic path.")}</div><p class="label">AI may classify documents and prepare operational checklists. It must not diagnose, interpret scans, choose treatment, promise outcomes, or declare fitness to fly.</p></div></section>
   <h2>Documents</h2><table><thead><tr><th>Type</th><th>Status</th><th>Watermark</th></tr></thead><tbody>${rows(c.documents,[["doc_type"],["status",(r)=>badge(r.status)],["demo_watermark"]])}</tbody></table>
   <h2>Hospital Matches</h2><table><thead><tr><th>Hospital</th><th>Operational Fit</th><th>Clinical Acceptance</th><th>Commercial Disclosure</th><th>Confidence</th></tr></thead><tbody>${rows(c.matches,[["hospital_name"],["operational_fit"],["clinical_acceptance"],["commercial_disclosure"],["confidence",(r)=>badge(r.confidence)]])}</tbody></table>
@@ -212,15 +249,25 @@ X-Ingest-Token: demo-ingest-trudoc
 
 export function renderVendors(db, session) {
   const vendors = db.prepare(`SELECT * FROM vendor ORDER BY service_categories`).all();
-  const reqs = db.prepare(`SELECT sr.*, v.service_categories FROM service_request sr LEFT JOIN vendor v ON v.id=sr.vendor_id ORDER BY sr.created`).all();
-  const active = reqs.filter((r) => !["Completed", "Declined"].includes(r.status)).length;
+  const reqs = apiServiceRequests(db, session || { role: "read_only", organization_id: "org_platform" });
+  const active = reqs.filter((r) => !["Completed", "Declined", "Cancelled"].includes(r.status)).length;
   const canEdit = session && (session.role === "platform_admin" || session.role.startsWith("vendor"));
-  const statusOptions = ["Requested", "Accepted", "Quoted", "Approved", "Scheduled", "Completed", "Declined"];
-  const requestRows = reqs.map((r) => `<tr><td>${esc(r.case_id)}</td><td>${esc(r.category)}</td><td>${badge(r.status)}</td><td>${esc(r.mock_quote)}</td><td>${esc(r.owner)}</td><td>${esc(r.due_date)}</td><td>${canEdit ? `<div class="inline-edit"><select aria-label="Status for ${esc(r.id)}" data-status="${esc(r.id)}">${statusOptions.map((status) => `<option${status === r.status ? " selected" : ""}>${status}</option>`).join("")}</select><input aria-label="Quote for ${esc(r.id)}" data-quote="${esc(r.id)}" value="${esc(r.mock_quote)}"><button class="icon-btn" data-save="${esc(r.id)}" title="Save request" aria-label="Save request">${icon("Save", 15)}</button></div>` : esc(r.audit_note)}</td></tr>`).join("");
+  const requestRows = reqs.map((r) => {
+    const allowed = [r.status, ...(SERVICE_REQUEST_TRANSITIONS[r.status] || [])];
+    const controls = canEdit ? `<div class="request-editor">
+      <select aria-label="Status for ${esc(r.id)}" data-status="${esc(r.id)}">${allowed.map((status) => `<option${status === r.status ? " selected" : ""}>${status}</option>`).join("")}</select>
+      <input aria-label="Currency for ${esc(r.id)}" data-currency="${esc(r.id)}" value="${esc(r.quote_currency || "")}" placeholder="USD" maxlength="3">
+      <input aria-label="Amount for ${esc(r.id)}" data-amount="${esc(r.id)}" value="${esc(r.quote_amount || "")}" placeholder="Amount" type="number" min="0" step="0.01">
+      <input aria-label="Quote expiry for ${esc(r.id)}" data-expiry="${esc(r.id)}" value="${esc(String(r.quote_expires_at || "").replace(" ", "T").slice(0, 16))}" type="datetime-local">
+      <input aria-label="Cancellation reason for ${esc(r.id)}" data-cancel="${esc(r.id)}" value="${esc(r.cancellation_reason || "")}" placeholder="Reason if cancelling">
+      <button class="icon-btn" data-save="${esc(r.id)}" title="Save request" aria-label="Save request">${icon("Save", 15)}</button>
+    </div>` : esc(r.audit_note);
+    return `<tr><td>${esc(r.case_id)}</td><td>${esc(r.category)}</td><td>${badge(r.status)}</td><td><b>${esc(r.quote_currency || "-")} ${esc(r.quote_amount || "")}</b><br><span class="label">Expires ${esc(r.quote_expires_at || "-")}</span></td><td>${esc(r.service_date || "-")}<br><span class="label">${esc(r.service_location || "-")}</span></td><td>${esc(r.owner)}</td><td>${controls}</td></tr>`;
+  }).join("");
   return shell("Vendor Coordination", `<div class="head"><div><div class="eyebrow">Vendor Coordination Network</div><h1>Non-clinical service operations</h1><p class="lede">Manage assigned interpreter, airport transfer and accommodation requests. Demo mode records workflow changes without performing real bookings.</p></div><div class="actions">${badge("Demo only")}<a class="btn" href="/docs/VENDOR_DEPLOYMENT_READINESS.md">${icon("ClipboardCheck", 14)} Go-live checklist</a></div></div>
   <div class="metric-row"><div class="metric-tile"><div class="k">${vendors.length}</div><div class="label">verified demo vendors</div></div><div class="metric-tile"><div class="k">${reqs.length}</div><div class="label">assigned requests</div></div><div class="metric-tile"><div class="k">${active}</div><div class="label">active coordination items</div></div><div class="metric-tile"><div class="k">0</div><div class="label">live bookings</div></div></div>
-  <h2>Vendors</h2><table><thead><tr><th>Service</th><th>Cities</th><th>Languages</th><th>Availability</th><th>Indicative price</th><th>SLA</th><th>Status</th><th>Rating</th></tr></thead><tbody>${rows(vendors,[["service_categories"],["cities"],["languages"],["availability"],["indicative_price"],["sla"],["verification_status",(r)=>badge(r.verification_status)],["rating"]])}</tbody></table>
-  <h2>Service Requests</h2><table><thead><tr><th>Case</th><th>Category</th><th>Status</th><th>Quote</th><th>Owner</th><th>Due</th><th>${canEdit ? "Update" : "Audit"}</th></tr></thead><tbody>${requestRows}</tbody></table>
+  <h2>Vendors</h2><table><thead><tr><th>Service</th><th>Cities</th><th>Languages</th><th>Availability</th><th>Indicative price</th><th>SLA</th><th>Status</th></tr></thead><tbody>${rows(vendors,[["service_categories"],["cities"],["languages"],["availability"],["indicative_price"],["sla"],["verification_status",(r)=>badge(r.verification_status)]])}</tbody></table>
+  <h2>Service Requests</h2><table><thead><tr><th>Case</th><th>Category</th><th>Status</th><th>Structured quote</th><th>Service</th><th>Owner</th><th>${canEdit ? "Update" : "Audit"}</th></tr></thead><tbody>${requestRows}</tbody></table>
   ${canEdit ? `<script>
   for (const button of document.querySelectorAll("[data-save]")) button.addEventListener("click", async () => {
     const id = button.dataset.save;
@@ -228,7 +275,13 @@ export function renderVendors(db, session) {
     const response = await fetch("/api/service-requests/" + encodeURIComponent(id), {
       method: "PATCH",
       headers: { "content-type": "application/json", "x-demo-user": "${esc(session.user?.email || "vendor@canopuscare.demo")}" },
-      body: JSON.stringify({ status: document.querySelector("[data-status='" + id + "']").value, mock_quote: document.querySelector("[data-quote='" + id + "']").value })
+      body: JSON.stringify({
+        status: document.querySelector("[data-status='" + id + "']").value,
+        quote_currency: document.querySelector("[data-currency='" + id + "']").value,
+        quote_amount: document.querySelector("[data-amount='" + id + "']").value,
+        quote_expires_at: document.querySelector("[data-expiry='" + id + "']").value,
+        cancellation_reason: document.querySelector("[data-cancel='" + id + "']").value
+      })
     });
     const result = await response.json();
     if (result.ok) location.reload();
@@ -331,8 +384,15 @@ export function createServiceRequest(db, session, body = {}) {
   const vendor = db.prepare(`SELECT * FROM vendor WHERE id=?`).get(body.vendor_id || "vendor_interpreter");
   if (!vendor) return { ok: false, error: { code: "NOT_FOUND", message: "Vendor not found.", details: {} } };
   const id = `sr_${Date.now().toString(36)}`;
-  db.prepare(`INSERT INTO service_request (id,case_id,vendor_id,category,status,requested_for,mock_quote,owner,due_date,audit_note)
-    VALUES (?,?,?,?,?,?,?,?,date('now','+2 days'),?)`).run(id, c.id, vendor.id, body.category || vendor.service_categories, "Requested", body.requested_for || "Demo coordination", "Mock quote pending", session.user?.name || "Demo user", "Created via API in demo mode; no real booking");
+  db.prepare(`INSERT INTO service_request
+    (id,case_id,vendor_id,category,status,requested_for,mock_quote,service_date,service_location,capacity_note,owner,due_date,audit_note)
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,date('now','+2 days'),?)`).run(
+      id, c.id, vendor.id, String(body.category || vendor.service_categories).slice(0, 80), "Requested",
+      String(body.requested_for || "Demo coordination").slice(0, 300), "Quote pending",
+      String(body.service_date || "").slice(0, 40), String(body.service_location || "").slice(0, 160),
+      String(body.capacity_note || "").slice(0, 300), session.user?.name || "Demo user",
+      "Created via API in demo mode; no real booking"
+    );
   return { ok: true, service_request: db.prepare(`SELECT * FROM service_request WHERE id=?`).get(id) };
 }
 
@@ -344,14 +404,43 @@ export function updateServiceRequest(db, session, id, patch = {}) {
   const canUpdate = session.role === "platform_admin"
     || (session.role.startsWith("vendor") && request.vendor_organization_id === session.organization_id);
   if (!canUpdate) return { ok: false, error: { code: "FORBIDDEN", message: "This request is assigned to another vendor organization.", details: {} } };
-  const statuses = new Set(["Requested", "Accepted", "Quoted", "Approved", "Scheduled", "Completed", "Declined"]);
+  const statuses = new Set(Object.keys(SERVICE_REQUEST_TRANSITIONS));
   const status = String(patch.status || request.status);
-  if (!statuses.has(status)) return { ok: false, error: { code: "INVALID_STATUS", message: "Unsupported service request status.", details: { allowed: [...statuses] } } };
-  const quote = String(patch.mock_quote || request.mock_quote || "").trim().slice(0, 160);
-  db.prepare(`UPDATE service_request SET status=?,mock_quote=?,updated=datetime('now'),audit_note=? WHERE id=?`)
-    .run(status, quote, `${request.audit_note || ""}; ${status} by ${session.user?.email || "demo-user"}`.slice(-600), id);
+  if (!statuses.has(status)) return serviceRequestError("INVALID_STATUS", "Unsupported service request status.", { allowed: [...statuses] });
+  if (status !== request.status && !SERVICE_REQUEST_TRANSITIONS[request.status]?.includes(status))
+    return serviceRequestError("INVALID_TRANSITION", `Cannot move a service request from ${request.status} to ${status}.`, { allowed: SERVICE_REQUEST_TRANSITIONS[request.status] || [] });
+
+  let quote = {
+    ok: true,
+    currency: request.quote_currency,
+    amount: request.quote_amount,
+    expiresAt: request.quote_expires_at,
+  };
+  if (status === "Quoted" || ["Approved", "Scheduled", "Completed"].includes(status) || patch.quote_amount != null)
+    quote = parseQuote(patch, request);
+  if (!quote.ok) return quote;
+  if (status === "Approved" && Date.parse(quote.expiresAt) <= Date.now())
+    return serviceRequestError("QUOTE_EXPIRED", "Expired quotes cannot be approved. Ask the vendor for a refreshed quote.", { quote_expires_at: quote.expiresAt });
+
+  const cancellationReason = String(patch.cancellation_reason ?? request.cancellation_reason ?? "").trim().slice(0, 300);
+  if (status === "Cancelled" && !cancellationReason)
+    return serviceRequestError("CANCELLATION_REASON_REQUIRED", "A cancellation reason is required.", { field: "cancellation_reason" });
+  const serviceDate = String(patch.service_date ?? request.service_date ?? "").trim().slice(0, 40);
+  const serviceLocation = String(patch.service_location ?? request.service_location ?? "").trim().slice(0, 160);
+  const capacityNote = String(patch.capacity_note ?? request.capacity_note ?? "").trim().slice(0, 300);
+  const cancellationPolicy = String(patch.cancellation_policy ?? request.cancellation_policy ?? "").trim().slice(0, 500);
+  const quoteLabel = quote.amount ? `${quote.currency} ${Number(quote.amount).toFixed(2)}` : "Quote pending";
+  db.prepare(`UPDATE service_request SET
+      status=?,mock_quote=?,quote_currency=?,quote_amount=?,quote_expires_at=?,service_date=?,service_location=?,
+      capacity_note=?,cancellation_policy=?,cancellation_reason=?,cancelled_at=CASE WHEN ?='Cancelled' THEN datetime('now') ELSE cancelled_at END,
+      updated=datetime('now'),audit_note=?
+    WHERE id=?`).run(
+      status, quoteLabel, quote.currency || null, quote.amount, quote.expiresAt || null, serviceDate || null,
+      serviceLocation || null, capacityNote || null, cancellationPolicy || null, cancellationReason || null, status,
+      `${request.audit_note || ""}; ${status} by ${session.user?.email || "demo-user"}`.slice(-600), id
+    );
   db.prepare(`INSERT INTO audit_event (id,actor_user_id,organization_id,action,subject_type,subject_id,outcome,request_id,detail)
     VALUES (lower(hex(randomblob(8))),?,?,?,?,?,?,?,?)`)
-    .run(session.user?.id || null, session.organization_id, "service_request_update", "service_request", id, "ok", "api-service-request", `${status}; ${quote || "no quote"}`);
+    .run(session.user?.id || null, session.organization_id, "service_request_update", "service_request", id, "ok", "api-service-request", `${request.status} -> ${status}; ${quoteLabel}`);
   return { ok: true, service_request: db.prepare(`SELECT * FROM service_request WHERE id=?`).get(id) };
 }

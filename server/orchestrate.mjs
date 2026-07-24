@@ -39,7 +39,11 @@ function addDays(iso, n) { const d = new Date(iso + "T00:00:00Z"); d.setUTCDate(
 
 // runFullJourney: the orchestration itself. Every step is wrapped so a single failure (LLM timeout, a
 // quota limit) is caught, recorded, and does not stop the rest of the walkthrough from running.
-export async function runFullJourney(db, body) {
+export async function runFullJourney(db, body, dependencies = {}) {
+  const generateFamilyUpdate = dependencies.familyUpdateFn || familyUpdate;
+  const triagePatient = dependencies.triageFn || runTriage;
+  const relayDischarge = dependencies.dischargeFn || runDischargeRelay;
+  const reconcileAdhoc = dependencies.billingAdhocFn || runBillingAdhoc;
   const leadId = Number(body.leadId);
   const lead = db.prepare(`SELECT * FROM lead WHERE id=?`).get(leadId);
   if (!lead) return { error: `no lead ${leadId} on file — seed leads first (npm run seed-leads)` };
@@ -71,7 +75,7 @@ export async function runFullJourney(db, body) {
     }
   }
 
-  await step("Intake", "triage", "triage", () => runTriage({ text: (SAMPLE_MESSAGE[lead.category_id] || SAMPLE_MESSAGE.ortho)(marketLabel) }));
+  await step("Intake", "triage", "triage", () => triagePatient({ text: (SAMPLE_MESSAGE[lead.category_id] || SAMPLE_MESSAGE.ortho)(marketLabel) }));
   await step("Before travel", "document-kyc", "kyc-init", () => runKycInit(db, { leadId, countryCode: lead.market_code, attendants }));
   await step("Before travel", "visa-documents", "visa-start", () => runVisaStart(db, { leadId, countryCode: lead.market_code, attendants }));
   await step("Before travel", "payment-routing", "payment-routing", () => runPaymentRouting({ method, countryCode: lead.market_code, packageEstimateLow: pkg?.lo || null }));
@@ -96,17 +100,31 @@ export async function runFullJourney(db, body) {
   }));
   await step("During treatment", "interpreter-scheduling", "interpreter-scheduling", () => runInterpreterScheduling({ consultTime: `${addDays(admissionDate, 1)}T11:00`, language }));
   await step("During treatment", "family-update", "family-update-send-preview", async () => {
-    const r = await familyUpdate({ stage: "in_treatment", note: "settled in, met the care team, first review tomorrow" });
+    const r = await generateFamilyUpdate({ stage: "in_treatment", note: "settled in, met the care team, first review tomorrow" });
     return { ...r, note: "Generated directly for this preview — sending for real requires a consented family contact (see the standalone Family Update agent)." };
   });
-  await step("After treatment", "discharge-relay", "discharge-relay", () => runDischargeRelay({ hospitalText: DISCHARGE_SAMPLE, language: "en" }));
+  await step("After treatment", "discharge-relay", "discharge-relay", () => relayDischarge({ hospitalText: DISCHARGE_SAMPLE, language: "en" }));
   await step("After treatment", "billing-reconciliation", "billing-lead", async () => {
     try { const r = await runBillingLead(db, { leadId }); if (r.error) throw new Error(r.error); return r; }
-    catch { return runBillingAdhoc({ quoted: "Procedure:5500,Hospital stay:800,Coordination:300", actual: "Procedure:5500,Hospital stay:1400,Coordination:300,ICU night:900" }); }
+    catch { return reconcileAdhoc({ quoted: "Procedure:5500,Hospital stay:800,Coordination:300", actual: "Procedure:5500,Hospital stay:1400,Coordination:300,ICU night:900" }); }
   });
   await step("After treatment", "travel-readiness", "travel-readiness", () => runTravelReadiness({ category: lead.category_id, dischargeDate, plannedReturnDate: null }));
 
   logRun(db, "Agents", `Full journey orchestrated · lead ${leadId}`, `${steps.filter((s) => s.ok).length}/${steps.length} steps ok`, "/journey", steps.every((s) => s.ok) ? "ok" : "fail");
+  try {
+    const linkedCase = db.prepare(`SELECT id FROM patient_case WHERE source_lead_id=?`).get(leadId);
+    if (linkedCase) {
+      const completed = steps.filter((stepResult) => stepResult.ok).length;
+      db.prepare(`UPDATE patient_case SET current_stage='Journey orchestrated',next_best_action=?,updated=datetime('now') WHERE id=?`)
+        .run(`Review ${completed}/${steps.length} orchestration steps and resolve any failures`, linkedCase.id);
+      db.prepare(`INSERT INTO audit_event
+        (id,organization_id,action,subject_type,subject_id,outcome,request_id,detail)
+        VALUES (lower(hex(randomblob(8))),'org_platform','journey_sync','patient_case',?,?,?,?)`)
+        .run(linkedCase.id, steps.every((stepResult) => stepResult.ok) ? "ok" : "partial", `journey-lead-${leadId}`, `${completed}/${steps.length} steps completed`);
+    }
+  } catch {
+    // GTM-only databases can run the journey without the operational projection installed.
+  }
   return { leadId, category: category?.name || lead.category_id, market: marketLabel, admissionDate, targetDepartureDate, dischargeDate, steps };
 }
 
@@ -125,7 +143,7 @@ export function renderJourney(db) {
 .tphase:first-child{margin-top:0}
 .tms{font-size:10.5px;color:var(--muted);float:right}
 </style></head><body>
-<div class="ribbon">MEDYATRA · full journey orchestrator — one real lead, every concierge agent, in the real order — <a href="/agents">individual agents</a> · <a href="/demo">back to demo hub</a></div>
+<div class="ribbon">CANOPUSCARE · full journey orchestrator — one real lead, every concierge agent, in the real order — <a href="/agents">individual agents</a> · <a href="/demo">back to demo hub</a></div>
 <div class="wrap">
   <div class="eyebrow">Post-booking journey, end to end · build-os/09</div>
   <h1>Watch one patient go through the entire journey</h1>
