@@ -1,4 +1,9 @@
-import { icons } from "lucide";
+// lucide is an OPTIONAL dependency — the icon set is cosmetic, and a missing npm package must never keep
+// the server from booting (the engine's contract is: clone → seed → serve, no install step required). If
+// the import fails we fall back to a neutral glyph and every page still renders.
+let icons = {};
+try { ({ icons } = await import("lucide")); }
+catch { /* zero-dep boot: icon() renders the fallback glyph below */ }
 
 const esc = (value) => String(value ?? "")
   .replace(/&/g, "&amp;")
@@ -19,7 +24,9 @@ function nodeToHtml([tag, attrs, children]) {
 
 export function icon(name, size = 18, className = "") {
   const node = icons[name] || icons.CircleHelp;
-  return `<svg class="icon ${esc(className)}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${node.map(nodeToHtml).join("")}</svg>`;
+  // No lucide installed → a simple circle keeps the layout intact without pretending to be the real icon.
+  const body = node ? node.map(nodeToHtml).join("") : `<circle cx="12" cy="12" r="9"></circle>`;
+  return `<svg class="icon ${esc(className)}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
 }
 
 const NAV = [
