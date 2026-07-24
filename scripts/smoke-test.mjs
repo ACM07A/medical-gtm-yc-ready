@@ -5,6 +5,9 @@ const checks = [
   ["GET", "/api/readiness"],
   ["GET", "/api/session"],
   ["GET", "/api/cases"],
+  ["GET", "/api/approvals"],
+  ["GET", "/api/tasks"],
+  ["GET", "/api/vendors"],
   ["GET", "/api/metrics"],
   ["GET", "/demo"],
   ["GET", "/hospital"],
@@ -17,6 +20,7 @@ const checks = [
   ["GET", "/console"],
   ["GET", "/integrations"],
   ["GET", "/audit"],
+  ["GET", "/docs/YC_REVIEWER_GUIDE.md"],
 ];
 
 let failed = 0;
@@ -39,6 +43,14 @@ const ingest = await fetch(base + "/api/lead/ingest", {
 });
 console.log(`${ingest.status === 401 ? "✓" : "✗"} POST /api/lead/ingest invalid token -> ${ingest.status}`);
 if (ingest.status !== 401) failed++;
+
+const login = await fetch(base + "/api/auth/login", {
+  method: "POST",
+  headers: { "content-type": "application/json" },
+  body: JSON.stringify({ email: "admin@medyatra.demo", password: "medyatra-demo" }),
+});
+console.log(`${login.status === 200 ? "✓" : "✗"} POST /api/auth/login demo credentials -> ${login.status}`);
+if (login.status !== 200) failed++;
 
 if (failed) {
   console.error(`Smoke failed: ${failed} check(s) failed`);

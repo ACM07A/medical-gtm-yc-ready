@@ -157,3 +157,62 @@ export function metrics(db) {
     integration_status: db.prepare(`SELECT provider,status FROM integration_connection ORDER BY provider`).all(),
   };
 }
+
+export function apiApprovals(db, session) {
+  const rows = session.role === "platform_admin" || session.role === "read_only"
+    ? db.prepare(`SELECT * FROM approval ORDER BY created DESC`).all()
+    : db.prepare(`SELECT * FROM approval WHERE organization_id=? ORDER BY created DESC`).all(session.organization_id);
+  return rows;
+}
+
+export function decideApproval(db, session, id, decision) {
+  if (session.role === "read_only") return { ok: false, error: { code: "READ_ONLY", message: "Read-only users cannot change approvals.", details: {} } };
+  const row = db.prepare(`SELECT * FROM approval WHERE id=?`).get(id);
+  if (!row) return { ok: false, error: { code: "NOT_FOUND", message: "Approval not found.", details: {} } };
+  if (row.status === "Blocked") return { ok: false, error: { code: "COMPLIANCE_BLOCKED", message: row.blocking_reasons || "Approval is blocked by compliance.", details: {} } };
+  if (row.organization_id !== session.organization_id && session.role !== "platform_admin") {
+    return { ok: false, error: { code: "FORBIDDEN", message: "Approval belongs to another organization.", details: {} } };
+  }
+  const status = decision === "reject" ? "Rejected" : "Approved";
+  db.prepare(`UPDATE approval SET status=?, reviewer=?, decided_at=datetime('now'), after_state=? WHERE id=?`)
+    .run(status, session.user?.email || "demo-user", status, id);
+  db.prepare(`INSERT INTO audit_event (id,actor_user_id,organization_id,action,subject_type,subject_id,outcome,request_id,detail)
+    VALUES (lower(hex(randomblob(8))),?,?,?,?,?,?,?,?)`)
+    .run(session.user?.id || null, session.organization_id, `approval_${decision}`, row.type, row.subject_ref, status.toLowerCase(), "api-approval", `${status} via API`);
+  return { ok: true, approval: db.prepare(`SELECT * FROM approval WHERE id=?`).get(id) };
+}
+
+export function apiTasks(db, session) {
+  if (session.role === "platform_admin" || session.role === "read_only") return db.prepare(`SELECT * FROM ops_task ORDER BY due_date, priority`).all();
+  return db.prepare(`SELECT * FROM ops_task WHERE organization_id=? ORDER BY due_date, priority`).all(session.organization_id);
+}
+
+export function updateTask(db, session, id, patch = {}) {
+  if (session.role === "read_only") return { ok: false, error: { code: "READ_ONLY", message: "Read-only users cannot update tasks.", details: {} } };
+  const task = db.prepare(`SELECT * FROM ops_task WHERE id=?`).get(id);
+  if (!task) return { ok: false, error: { code: "NOT_FOUND", message: "Task not found.", details: {} } };
+  if (session.role !== "platform_admin" && task.organization_id !== session.organization_id) return { ok: false, error: { code: "FORBIDDEN", message: "Task belongs to another organization.", details: {} } };
+  const status = String(patch.status || task.status).slice(0, 60);
+  const next = String(patch.next_action || task.next_action || "").slice(0, 300);
+  db.prepare(`UPDATE ops_task SET status=?, next_action=?, audit_history=? WHERE id=?`).run(status, next, `${task.audit_history || ""}; updated by ${session.user?.email || "demo-user"}`, id);
+  return { ok: true, task: db.prepare(`SELECT * FROM ops_task WHERE id=?`).get(id) };
+}
+
+export function apiVendors(db) {
+  return {
+    vendors: db.prepare(`SELECT * FROM vendor ORDER BY service_categories`).all(),
+    service_requests: db.prepare(`SELECT sr.*, v.service_categories FROM service_request sr LEFT JOIN vendor v ON v.id=sr.vendor_id ORDER BY sr.created DESC`).all(),
+  };
+}
+
+export function createServiceRequest(db, session, body = {}) {
+  if (session.role === "read_only") return { ok: false, error: { code: "READ_ONLY", message: "Read-only users cannot create service requests.", details: {} } };
+  const c = apiCase(db, { ...session, role: session.role === "platform_admin" ? "platform_admin" : session.role }, body.case_id || "case_ibrahim_musa");
+  if (!c) return { ok: false, error: { code: "FORBIDDEN", message: "Case not found or not authorized.", details: {} } };
+  const vendor = db.prepare(`SELECT * FROM vendor WHERE id=?`).get(body.vendor_id || "vendor_interpreter");
+  if (!vendor) return { ok: false, error: { code: "NOT_FOUND", message: "Vendor not found.", details: {} } };
+  const id = `sr_${Date.now().toString(36)}`;
+  db.prepare(`INSERT INTO service_request (id,case_id,vendor_id,category,status,requested_for,mock_quote,owner,due_date,audit_note)
+    VALUES (?,?,?,?,?,?,?,?,date('now','+2 days'),?)`).run(id, c.id, vendor.id, body.category || vendor.service_categories, "Requested", body.requested_for || "Demo coordination", "Mock quote pending", session.user?.name || "Demo user", "Created via API in demo mode; no real booking");
+  return { ok: true, service_request: db.prepare(`SELECT * FROM service_request WHERE id=?`).get(id) };
+}

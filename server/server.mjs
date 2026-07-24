@@ -17,10 +17,11 @@ import { vaultBackend, openVault, accessLog } from "../lib/vault.mjs";
 import { renderStudio, studioQueue, studioApprove } from "./studio.mjs";
 import { renderSandbox, saveTemplate } from "./sandbox.mjs";
 import { renderDemo } from "./demo.mjs";
-import { ensureOsSchema, readinessReport } from "../data-core/os_core.mjs";
+import { DEMO_PASSWORD, appMode, ensureOsSchema, readinessReport, seedDemoOs } from "../data-core/os_core.mjs";
 import {
   getSession, apiCases, apiCase, renderCases, renderCase, renderHospital, renderAgent,
   renderVendors, renderOsAgents, renderTasks, renderIntegrations, renderAudit, metrics,
+  apiApprovals, decideApproval, apiTasks, updateTask, apiVendors, createServiceRequest,
 } from "./os_pages.mjs";
 import {
   renderAgentsDemo, runTriage, runDocumentChecklist,
@@ -153,7 +154,7 @@ const server = createServer(async (req, res) => {
   // ACCESS CONTROL: the console + APIs expose named partner contacts and pipeline. If CONSOLE_TOKEN is set,
   // gate everything except the public patient site (/, /site, /outputs) and the health probe. REQUIRED
   // before exposing this beyond localhost. (No token set = open, for localhost dev.)
-  const PROTECTED = /^\/(console|studio|sandbox|demo|agents|hospital|agent|cases|vendors|vendor|service-requests|tasks|integrations|audit|benchmarks|api\/(state|runs|studio|benchmarks|comms|agents|cases|readiness|session|metrics)|draft|outreach|worklist|comms|distribution|plugins)/;
+  const PROTECTED = /^\/(console|studio|sandbox|demo|agents|hospital|agent|cases|vendors|vendor|service-requests|tasks|integrations|audit|benchmarks|api\/(state|runs|studio|benchmarks|comms|agents|cases|readiness|session|metrics|auth|approvals|tasks|vendors|service-requests|demo)|draft|outreach|worklist|comms|distribution|plugins|docs)/;
   if (process.env.CONSOLE_TOKEN && PROTECTED.test(url.pathname)) {
     const auth = req.headers.authorization || "";
     const pass = auth.startsWith("Basic ") ? Buffer.from(auth.slice(6), "base64").toString().split(":").slice(1).join(":") : "";
@@ -164,6 +165,16 @@ const server = createServer(async (req, res) => {
     }
   }
   try {
+    if (req.method === "POST" && url.pathname === "/api/auth/login") {
+      const body = await readBody(req);
+      const user = db.prepare(`SELECT * FROM app_user WHERE email=? AND active=1`).get(body.email || "");
+      const ok = !!user && appMode() === "demo" && body.password === DEMO_PASSWORD;
+      if (ok) db.prepare(`INSERT INTO audit_event (id,actor_user_id,organization_id,action,subject_type,subject_id,outcome,request_id,detail)
+        VALUES (lower(hex(randomblob(8))),?,?,?,?,?,?,?,?)`).run(user.id, session.organization_id, "login", "user", user.id, "ok", "api-auth", "Demo login");
+      return send(ok ? 200 : 401, "application/json", JSON.stringify(ok ? { ok: true, user: { email: user.email, name: user.name } } : { ok: false, error: { code: "AUTH_FAILED", message: "Invalid demo credentials.", details: {} }, request_id: "api-auth" }));
+    }
+    if (req.method === "POST" && url.pathname === "/api/auth/logout")
+      return send(200, "application/json", JSON.stringify({ ok: true }));
     if (url.pathname === "/api/session")
       return send(200, "application/json", JSON.stringify({ ok: true, user: session.user && { email: session.user.email, name: session.user.name }, memberships: session.memberships }));
     if (url.pathname === "/api/readiness")
@@ -176,6 +187,30 @@ const server = createServer(async (req, res) => {
     if (apiCaseMatch) {
       const c = apiCase(db, session, apiCaseMatch[1]);
       return send(c ? 200 : 404, "application/json", JSON.stringify(c ? { ok: true, case: c } : { ok: false, error: { code: "NOT_FOUND", message: "Case not found or not authorized", details: {} }, request_id: "local" }));
+    }
+    if (url.pathname === "/api/approvals")
+      return send(200, "application/json", JSON.stringify({ ok: true, approvals: apiApprovals(db, session) }));
+    const approvalAction = url.pathname.match(/^\/api\/approvals\/([^/]+)\/(approve|reject)$/);
+    if (req.method === "POST" && approvalAction)
+      return send(200, "application/json", JSON.stringify(decideApproval(db, session, approvalAction[1], approvalAction[2])));
+    if (url.pathname === "/api/tasks")
+      return send(200, "application/json", JSON.stringify({ ok: true, tasks: apiTasks(db, session) }));
+    const taskPatch = url.pathname.match(/^\/api\/tasks\/([^/]+)$/);
+    if (req.method === "PATCH" && taskPatch) {
+      const body = await readBody(req);
+      return send(200, "application/json", JSON.stringify(updateTask(db, session, taskPatch[1], body)));
+    }
+    if (url.pathname === "/api/vendors")
+      return send(200, "application/json", JSON.stringify({ ok: true, ...apiVendors(db) }));
+    if (req.method === "POST" && url.pathname === "/api/service-requests") {
+      const body = await readBody(req);
+      return send(200, "application/json", JSON.stringify(createServiceRequest(db, session, body)));
+    }
+    if (req.method === "POST" && url.pathname === "/api/demo/reset") {
+      if (appMode() !== "demo") return send(403, "application/json", JSON.stringify({ ok: false, error: { code: "NOT_DEMO", message: "Demo reset is only allowed in APP_MODE=demo.", details: {} } }));
+      if (session.role !== "platform_admin") return send(403, "application/json", JSON.stringify({ ok: false, error: { code: "FORBIDDEN", message: "Only platform admins can reset demo data.", details: {} } }));
+      seedDemoOs(db);
+      return send(200, "application/json", JSON.stringify({ ok: true, reset: "medyatra_os_demo" }));
     }
     if (url.pathname === "/hospital")
       return send(200, "text/html; charset=utf-8", renderHospital(db, session));
@@ -292,6 +327,13 @@ const server = createServer(async (req, res) => {
     }
     if (url.pathname === "/console")
       return send(200, "text/html; charset=utf-8", readFileSync(join(HERE, "console.html")));
+    if (url.pathname.startsWith("/docs/") && url.pathname.endsWith(".md")) {
+      const fp = join(ROOT, url.pathname.replace(/^\//, ""));
+      if (!fp.startsWith(join(ROOT, "docs"))) return send(403, "text/plain", "forbidden");
+      try {
+        return send(200, "text/html; charset=utf-8", docPage(url.pathname, "Documentation", mdToHtml(readFileSync(fp, "utf8"))));
+      } catch { return send(404, "text/plain", "doc not found"); }
+    }
     if (url.pathname === "/worklist") {
       try {
         const md = readFileSync(join(ROOT, "outputs", "partner-research-worklist.md"), "utf8");

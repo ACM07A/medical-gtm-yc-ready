@@ -2,6 +2,9 @@
 
 ## 2026-07-24
 
+- Reworked `/demo` into an executive OS demo hub with network diagram, status, golden path, current scenario, local-run instructions, credentials and reset action.
+- Added demo auth, approvals, tasks, vendors, service-request and demo-reset APIs.
+- Added static docs rendering for `docs/*.md` from the local server.
 - Added MedYatra OS deterministic demo schema and seed.
 - Added hospital command centre, agent portal, case workspace, vendor network, agent activity centre, integrations, audit, tasks and metrics surfaces.
 - Added `/api/readiness`, `/api/session`, `/api/cases`, `/api/metrics`.
