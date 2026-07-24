@@ -1,0 +1,11 @@
+.git
+node_modules
+data-core/*.db
+data-core/*.db-*
+outputs/backups
+outputs/proposals
+outputs/doctor-outreach
+outputs/loop.log
+integrations/.env
+.env
+npm-debug.log*

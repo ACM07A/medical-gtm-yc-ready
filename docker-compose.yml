@@ -1,0 +1,24 @@
+services:
+  medyatra:
+    build: .
+    ports:
+      - "5173:5173"
+    environment:
+      APP_MODE: demo
+      POST_LIVE: "0"
+      PORT: "5173"
+      APP_BASE_URL: http://localhost:5173
+      DATABASE_PATH: /app/runtime/medyatra.db
+    volumes:
+      - medyatra_runtime:/app/runtime
+      - medyatra_outputs:/app/outputs
+    command: sh -c "node --experimental-sqlite data-core/demo_seed.mjs && node --experimental-sqlite server/server.mjs"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:5173/api/readiness').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  medyatra_runtime:
+  medyatra_outputs:

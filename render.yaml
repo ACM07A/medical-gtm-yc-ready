@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: medyatra-demo
+    env: docker
+    plan: starter
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/readiness
+    envVars:
+      - key: APP_MODE
+        value: demo
+      - key: POST_LIVE
+        value: "0"
+      - key: DATABASE_PATH
+        value: /var/data/medyatra.db
+      - key: APP_BASE_URL
+        sync: false
+      - key: CONSOLE_TOKEN
+        generateValue: true
+    disk:
+      name: medyatra-data
+      mountPath: /var/data
+      sizeGB: 1

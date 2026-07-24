@@ -23,6 +23,7 @@ const STEPS = [
   { s: "seed_reference_prices.mjs", fatal: false, note: "price-ladder rungs (local → international → India)" },
   { s: "seed_tenants.mjs", fatal: false, note: "own-brand + demo operator (dual-mode)" },
   { s: "seed_leads.mjs", fatal: false, note: "demo patient leads for the journey" },
+  { s: "seed_os.mjs", fatal: true, note: "MedYatra OS roles, cases, vendors, approvals, audit and agent runs" },
   { s: "gen_comms.mjs", fatal: false, note: "21 WhatsApp templates (+ infographic headers, needs a browser)" },
   { s: "gen_header_datauris.mjs", fatal: false, note: "inline headers for the shareable sandbox artifact (browser)" },
   // Regulatory: illustrative demo clearances so guides can publish (NG left gated to show the gate working).

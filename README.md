@@ -115,3 +115,53 @@ This is a **first-draft engine**, and it says so where it matters:
 **Want the deep version?** See [`PROJECT_CONTEXT.md`](./PROJECT_CONTEXT.md) — a full walkthrough of every capability, design decision, nuance, and limitation.
 
 **Want the business version?** See [`BUSINESS_STATUS.md`](./BUSINESS_STATUS.md) — market, unit economics (with every input labelled cited or assumed), partnership status, and an honest risk register. Written for a partner or investor conversation, not an engineer.
+# MedYatra - autonomous medical-tourism operating system demo
+
+[![CI](https://github.com/hussainbombaywala/medical-tourism-gtm/actions/workflows/ci.yml/badge.svg)](https://github.com/hussainbombaywala/medical-tourism-gtm/actions/workflows/ci.yml)
+
+MedYatra is an AI-assisted operating system demo for cross-border healthcare coordination. It connects source-market agents, hospitals, patients, non-clinical vendors, approvals, audit, and autonomous operational agents around a deterministic synthetic Nigerian cardiac case.
+
+Run it locally with no paid API key:
+
+```bash
+cp .env.example .env
+npm ci
+npm run demo
+npm run dev
+# open http://localhost:5173/demo
+```
+
+One-command reviewer path:
+
+```bash
+npm run yc-demo
+```
+
+Docker path:
+
+```bash
+cp .env.example .env
+docker compose up --build
+```
+
+Demo credentials are synthetic only:
+
+```text
+admin@medyatra.demo / medyatra-demo
+hospital@medyatra.demo / medyatra-demo
+agent@medyatra.demo / medyatra-demo
+vendor@medyatra.demo / medyatra-demo
+viewer@medyatra.demo / medyatra-demo
+```
+
+Start at `/demo`, then use `/agent`, `/cases/case_ibrahim_musa`, `/hospital`, `/vendors`, `/agents`, `/studio`, `/integrations`, and `/audit`.
+
+What works: deterministic demo seed, role-scoped case APIs, hospital command centre, agent portal, patient case workspace, synthetic estimates, mock vendor coordination, AI agent activity centre, approval/audit records, readiness/metrics endpoints, smoke tests, unit/integration tests, Docker, CI, and guarded demo reset.
+
+What is mocked: LLM runs, WhatsApp, email, social posting, vendor booking, object storage, payment, and production identity. External actions are disabled in `APP_MODE=demo`.
+
+What is human-gated: clinical review status, estimate release, patient communication, vendor assignment, outreach, publishing, exports, and account activation. The app must not diagnose patients, interpret medical records, recommend treatments, promise outcomes, or declare fitness to fly.
+
+![Operator console - the partner account board](outputs/screenshots/console_named_pocs.png)
+
+---

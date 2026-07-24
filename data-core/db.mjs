@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-export const DB_PATH = join(HERE, "medyatra.db");
+export const DB_PATH = process.env.DATABASE_PATH || join(HERE, "medyatra.db");
 
 export function open(path = DB_PATH) {
   const db = new DatabaseSync(path);

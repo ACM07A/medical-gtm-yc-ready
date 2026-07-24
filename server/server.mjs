@@ -17,6 +17,11 @@ import { vaultBackend, openVault, accessLog } from "../lib/vault.mjs";
 import { renderStudio, studioQueue, studioApprove } from "./studio.mjs";
 import { renderSandbox, saveTemplate } from "./sandbox.mjs";
 import { renderDemo } from "./demo.mjs";
+import { ensureOsSchema, readinessReport } from "../data-core/os_core.mjs";
+import {
+  getSession, apiCases, apiCase, renderCases, renderCase, renderHospital, renderAgent,
+  renderVendors, renderOsAgents, renderTasks, renderIntegrations, renderAudit, metrics,
+} from "./os_pages.mjs";
 import {
   renderAgentsDemo, runTriage, runDocumentChecklist,
   runFamilyUpdateAdd, runFamilyUpdateOptin, runFamilyUpdateSend,
@@ -142,11 +147,13 @@ const readBody = (req) => new Promise((resolve) => {
 const server = createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   const db = open();
+  ensureOsSchema(db);
+  const session = getSession(db, req);
   const send = (code, type, body) => { res.writeHead(code, { "content-type": type, "cache-control": "no-store" }); res.end(body); };
   // ACCESS CONTROL: the console + APIs expose named partner contacts and pipeline. If CONSOLE_TOKEN is set,
   // gate everything except the public patient site (/, /site, /outputs) and the health probe. REQUIRED
   // before exposing this beyond localhost. (No token set = open, for localhost dev.)
-  const PROTECTED = /^\/(console|studio|sandbox|demo|agents|benchmarks|api\/(state|runs|studio|benchmarks|comms|agents)|draft|outreach|worklist|comms|distribution|plugins)/;
+  const PROTECTED = /^\/(console|studio|sandbox|demo|agents|hospital|agent|cases|vendors|vendor|service-requests|tasks|integrations|audit|benchmarks|api\/(state|runs|studio|benchmarks|comms|agents|cases|readiness|session|metrics)|draft|outreach|worklist|comms|distribution|plugins)/;
   if (process.env.CONSOLE_TOKEN && PROTECTED.test(url.pathname)) {
     const auth = req.headers.authorization || "";
     const pass = auth.startsWith("Basic ") ? Buffer.from(auth.slice(6), "base64").toString().split(":").slice(1).join(":") : "";
@@ -157,6 +164,36 @@ const server = createServer(async (req, res) => {
     }
   }
   try {
+    if (url.pathname === "/api/session")
+      return send(200, "application/json", JSON.stringify({ ok: true, user: session.user && { email: session.user.email, name: session.user.name }, memberships: session.memberships }));
+    if (url.pathname === "/api/readiness")
+      return send(200, "application/json", JSON.stringify(readinessReport(db)));
+    if (url.pathname === "/api/metrics")
+      return send(200, "application/json", JSON.stringify(metrics(db)));
+    if (url.pathname === "/api/cases")
+      return send(200, "application/json", JSON.stringify({ ok: true, cases: apiCases(db, session) }));
+    const apiCaseMatch = url.pathname.match(/^\/api\/cases\/([^/]+)$/);
+    if (apiCaseMatch) {
+      const c = apiCase(db, session, apiCaseMatch[1]);
+      return send(c ? 200 : 404, "application/json", JSON.stringify(c ? { ok: true, case: c } : { ok: false, error: { code: "NOT_FOUND", message: "Case not found or not authorized", details: {} }, request_id: "local" }));
+    }
+    if (url.pathname === "/hospital")
+      return send(200, "text/html; charset=utf-8", renderHospital(db, session));
+    if (url.pathname === "/agent")
+      return send(200, "text/html; charset=utf-8", renderAgent(db, session));
+    if (url.pathname === "/cases")
+      return send(200, "text/html; charset=utf-8", renderCases(db, session));
+    const caseMatch = url.pathname.match(/^\/cases\/([^/]+)$/);
+    if (caseMatch)
+      return send(200, "text/html; charset=utf-8", renderCase(db, session, caseMatch[1]));
+    if (url.pathname === "/vendors" || url.pathname === "/vendor" || url.pathname === "/service-requests")
+      return send(200, "text/html; charset=utf-8", renderVendors(db));
+    if (url.pathname === "/tasks")
+      return send(200, "text/html; charset=utf-8", renderTasks(db));
+    if (url.pathname === "/integrations")
+      return send(200, "text/html; charset=utf-8", renderIntegrations(db));
+    if (url.pathname === "/audit")
+      return send(200, "text/html; charset=utf-8", renderAudit(db));
     // STUDIO — the live approve-and-deploy console (real data + write-back actions).
     if (req.method === "POST" && url.pathname === "/api/studio/approve") {
       const body = await readBody(req);
@@ -173,7 +210,7 @@ const server = createServer(async (req, res) => {
     // CONCIERGE AGENTS — post-booking journey, live and clickable (server/agents.mjs). Real model calls
     // through the same failover chain and safety gate as everything else; deterministic fallback if no key.
     if (url.pathname === "/agents")
-      return send(200, "text/html; charset=utf-8", renderAgentsDemo());
+      return send(200, "text/html; charset=utf-8", url.searchParams.get("legacy") === "1" ? renderAgentsDemo() : renderOsAgents(db));
     if (req.method === "POST" && url.pathname.startsWith("/api/agents/")) {
       const body = await readBody(req);
       const kind = url.pathname.slice("/api/agents/".length);

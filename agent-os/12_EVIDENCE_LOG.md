@@ -4,6 +4,9 @@ Proof the engine's work is real and cited. No evidence = not done.
 
 | Date | Gate | Item | Result | Evidence / source |
 |---|---|---|---|---|
+| 2026-07-24 | Product | MedYatra OS demo layer | Added deterministic synthetic Nigerian cardiac golden path, blocked consent exception, role-aware cases, hospital command centre, agent portal, vendors, AI agent run centre, integrations and audit | `data-core/os_core.mjs`, `server/os_pages.mjs`, `/hospital`, `/agent`, `/cases/case_ibrahim_musa`, `/vendors`, `/agents`, `/integrations`, `/audit` |
+| 2026-07-24 | Safety | Demo mode and misleading workflow hardening | `APP_MODE=demo` readiness, outbound disabled, consent-blocked exception, Studio proposal stage fixed to `Outreach sent`; dry-run release no longer claims delivered/posted | `data-core/os_core.mjs`, `server/studio.mjs`, `npm run test` |
+| 2026-07-24 | Delivery | Local/CI/Docker readiness | Added `yc-demo`, guarded reset, DB check/backup, smoke tests, Dockerfile, compose, Render config and GitHub Actions | `package.json`, `scripts/`, `Dockerfile`, `docker-compose.yml`, `.github/workflows/ci.yml`; local `npm run smoke` pass |
 | 2026-07-03 | Pricing | CABG India intl package range | $5,000–9,000 verified | Multiple aggregators (afiyaindia, vaidam, shifamhealth) — `/build-os/08` |
 | 2026-07-03 | Pricing | Knee replacement India | $3,500–6,500 (US ~$49k) | medicaltourismco, indicure |
 | 2026-07-03 | Pricing | IVF / bariatric India | $2.5k–5k / $4k–7k | continentalhospitals, vaidam |

@@ -102,7 +102,7 @@ export function studioApprove(db, { type, id } = {}) {
         ORDER BY CASE contact_type WHEN 'named-verified' THEN 0 WHEN 'named-public' THEN 1 ELSE 3 END LIMIT 1`).get(p.partner_id);
       if (!poc || !["named-verified", "named-public"].includes(poc.contact_type)) return { ok: false, error: "contact is inferred, not verified" };
       db.prepare(`UPDATE proposal SET status='sent' WHERE id=?`).run(id);
-      db.prepare(`UPDATE partner SET stage='Responded' WHERE id=? AND stage NOT IN ('Pilot live','Signed','Active')`).run(p.partner_id);
+      db.prepare(`UPDATE partner SET stage='Outreach sent' WHERE id=? AND stage NOT IN ('Responded','Pilot proposed','Pilot live','Signed','Active')`).run(p.partner_id);
       logRun(db, "Studio", `Sent proposal ${p.partner_id}`, "approved via Studio", null, "ok");
       return { ok: true, msg: "Sent to verified contact" };
     }
@@ -111,8 +111,8 @@ export function studioApprove(db, { type, id } = {}) {
       if (!cp) return { ok: false, error: "not found or already actioned" };
       if (!marketCleared(db, cp.market_code).cleared) return { ok: false, error: "market not regulatory-cleared" };
       db.prepare(`UPDATE channel_post SET status='approved' WHERE id=?`).run(id);
-      logRun(db, "Studio", `Approved ${cp.channel} post`, `${cp.category_id}×${cp.market_code} via Studio`, null, "ok");
-      return { ok: true, msg: "Post approved" };
+      logRun(db, "Studio", `Approved ${cp.channel} post`, `${cp.category_id}×${cp.market_code} via Studio dry-run; not posted`, null, "ok");
+      return { ok: true, msg: "Post approved for dry-run queue" };
     }
     if (type === "comms") {
       const L = db.prepare(`SELECT * FROM lead WHERE id=?`).get(id);
@@ -135,8 +135,8 @@ export function studioApprove(db, { type, id } = {}) {
       const adv = STAGES[L.journey_stage]?.advance;
       db.prepare(`UPDATE lead SET last_outbound_at=datetime('now'), nudge_count=nudge_count+?, journey_stage=? WHERE id=?`)
         .run(act.nudge ? 1 : 0, adv || L.journey_stage, id);
-      logRun(db, "Studio", `Released comms · lead ${id}`, `${act.stage} (${act.via})${adv ? ` → ${adv}` : ""} via Studio`, "/comms", "ok");
-      return { ok: true, msg: `Released${adv ? ` → ${adv.replace(/_/g, " ")}` : ""}` };
+      logRun(db, "Studio", `Released comms draft · lead ${id}`, `${act.stage} (${act.via})${adv ? ` → ${adv}` : ""} via Studio dry-run; no delivery claimed`, "/comms", "ok");
+      return { ok: true, msg: `Released to dry-run${adv ? ` → ${adv.replace(/_/g, " ")}` : ""}` };
     }
     return { ok: false, error: "unknown type" };
   } catch (e) { return { ok: false, error: String(e.message || e) }; }

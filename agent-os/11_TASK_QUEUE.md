@@ -4,6 +4,9 @@ Each task small, verifiable, safe. Status: TODO · IN_PROGRESS · BLOCKED · PAS
 
 | ID | Status | Task | Relevant files | Verification | Risk |
 |---|---|---|---|---|---|
+| T100 | PASS | MedYatra OS deterministic demo layer: roles, cases, hospital/agent/vendor surfaces, approvals, audit, readiness and metrics | data-core/os_core.mjs, server/os_pages.mjs, server/server.mjs | `npm run test`, `npm run smoke` pass locally | Med |
+| T101 | PASS | One-command and deployment readiness commands | package.json, scripts/yc-demo.mjs, Dockerfile, docker-compose.yml, render.yaml | `npm run db:seed`, `npm run lint`, smoke checks pass | Med |
+| T102 | PASS | Studio misleading transition fixed: proposal approval now records `Outreach sent`, not `Responded`; dry-run messaging avoids delivery/posting claims | server/studio.mjs | code inspection + tests/smoke | Low |
 | T001 | PASS | Stand up data core + market-config schema (SQLite, node:sqlite) | data-core/ | seed loads 12 markets/6 cats/12 partners; 5 query reports run | Low |
 | T013 | PASS | Reconciled portfolio: accept model rank, Cardiac=flagship (brand/deal-size). Dental resourced as easy-volume wedge | 03, data-core | flagship flag set; re-seeded | Med |
 | T014 | IN_PROGRESS | Resolve real named POCs (public-web pass). Fortis: 2 named ✅. Apollo/Medanta ops head not public → needs enrichment API / Sales-Nav | 04, data-core/poc | ≥1 named public POC per ★ partner, cited | Med |
