@@ -22,7 +22,7 @@ const A = (s, ...p) => db.prepare(s).all(...p);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const LIMIT = Number(process.argv[2]) || 3;
 
-const SYSTEM = withEmpathyContent(`You write customer-facing trust copy for MedYatra, a medical-travel FACILITATOR (not a hospital).
+const SYSTEM = withEmpathyContent(`You write customer-facing trust copy for Canopus Care, a medical-travel FACILITATOR (not a hospital).
 Your job: make a HIGH-QUALITY but LESSER-KNOWN Indian hospital feel credible to an international patient who
 has never heard of it — someone anxious about trusting their care to a name they don't recognise, far from
 home. Use ONLY facts you are given. For any specific claim you are NOT given (procedure volumes, exact
@@ -35,7 +35,7 @@ function prompt(p, cats) {
   const clinician = (p.notes || "").match(/\(([^)]*(?:Dr\.?|Prof)[^)]*)\)/i)?.[1] || (p.notes || "").match(/Dr\.?\s+[A-Z][A-Za-z. ]+/)?.[0] || "";
   return `Write a ~200-word credibility profile of "${p.name}" (${p.city}, India) — a ${cats} ${p.mvt_presence === "latent" ? "specialist centre that is world-class but not yet a household name abroad" : "quality hospital"}.
 Facts you may use: accreditation = ${accred || "[VERIFY: confirm JCI/NABH status]"}; specialty focus = ${cats}${clinician ? `; associated senior clinician = ${clinician}` : ""}.
-Lead with the ACCREDITATION as the global-standard equalizer. Reframe "lesser-known" as a FOCUSED SPECIALIST advantage (higher volume in this specialty → better outcomes). ${clinician ? "Name the senior clinician." : "[VERIFY: add a named lead specialist + their training]."} Use radical transparency (real prices shown, real inclusions, virtual tour offered) as the trust builder. Close with MedYatra's vetting promise ("we only work with accredited hospitals that clear our quality bar") and a soft WhatsApp CTA. Mark every unsupplied specific claim as [VERIFY: …].`;
+Lead with the ACCREDITATION as the global-standard equalizer. Reframe "lesser-known" as a FOCUSED SPECIALIST advantage (higher volume in this specialty → better outcomes). ${clinician ? "Name the senior clinician." : "[VERIFY: add a named lead specialist + their training]."} Use radical transparency (real prices shown, real inclusions, virtual tour offered) as the trust builder. Close with Canopus Care's vetting promise ("we only work with accredited hospitals that clear our quality bar") and a soft WhatsApp CTA. Mark every unsupplied specific claim as [VERIFY: …].`;
 }
 
 const partners = A(`SELECT * FROM partner WHERE mvt_presence IN ('latent','emerging') AND opportunity IN ('High','Med')

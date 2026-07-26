@@ -26,7 +26,7 @@ const PAST = new Set(["Responded", "Pilot proposed", "Pilot live", "Signed", "Ac
 const DONE_OUTCOME = new Set(["replied", "meeting", "pilot", "signed"]);
 mkdirSync(join(ROOT, "outputs", "doctor-outreach"), { recursive: true });
 
-const SYSTEM = "You are a partnerships lead at MedYatra, a medical-value-travel FACILITATOR, writing to an individual clinician (not a hospital's international-patient desk). " +
+const SYSTEM = "You are a partnerships lead at Canopus Care, a medical-value-travel FACILITATOR, writing to an individual clinician (not a hospital's international-patient desk). " +
   "Write like a real, senior person: formal, practical, specific — NOT marketing copy, NOT an AI assistant. Short declarative sentences; concrete nouns over adjectives. " +
   "BANNED phrases: seamless, world-class, bridging the gap, leverage, patient journey, ecosystem, cutting-edge, holistic, empower, tailored solutions, unlock, elevate, state-of-the-art, synergy, robust, streamline. " +
   "BANNED AI tells: 'I hope this finds you well', 'In today's world', rhetorical questions, a closing paragraph that restates the ask. Open with the point. " +
@@ -38,21 +38,21 @@ function prompt(d, cat, market) {
   const warm = d.warmth === "warm";
   const source = (d.source || "").trim();
   const cme = (d.cme_notes || "").trim();
-  return `Write a first-touch message from MedYatra to ${d.name}, a ${cat.name} clinician${d.current_hospital ? ` currently at ${d.current_hospital}` : ""} in ${market ? market.name : d.country_code}.
+  return `Write a first-touch message from Canopus Care to ${d.name}, a ${cat.name} clinician${d.current_hospital ? ` currently at ${d.current_hospital}` : ""} in ${market ? market.name : d.country_code}.
 
 Context (use only this — do not invent anything beyond it):
-- Relationship warmth: ${warm ? `WARM — a real introduction exists${source ? ` (${source})` : ""}. Reference it briefly and naturally, do not oversell it.` : "COLD — no introduction exists yet. Do not imply one. Open on the substance instead: what MedYatra does and why a ${cat.name} clinician in this market is relevant."}
+- Relationship warmth: ${warm ? `WARM — a real introduction exists${source ? ` (${source})` : ""}. Reference it briefly and naturally, do not oversell it.` : "COLD — no introduction exists yet. Do not imply one. Open on the substance instead: what Canopus Care does and why a ${cat.name} clinician in this market is relevant."}
 ${cme ? `- CME/engagement context already discussed: ${cme}` : ""}
-- Why this matters to them: patients in ${market ? market.name : "their market"} needing ${cat.name} care sometimes look abroad; when that happens, MedYatra coordinates the referral, the hospital match, and the paperwork — this doctor stays their patient's doctor of record for anything that isn't the procedure itself.
+- Why this matters to them: patients in ${market ? market.name : "their market"} needing ${cat.name} care sometimes look abroad; when that happens, Canopus Care coordinates the referral, the hospital match, and the paperwork — this doctor stays their patient's doctor of record for anything that isn't the procedure itself.
 
 Structure:
 1. Who we are (facilitator, not a competing clinician, not a hospital) and, if warm, the real introduction.
 2. Why we're reaching out to THEM specifically — their specialty and market, not a generic pitch.
-3. What a referral relationship actually looks like in practice: a single named MedYatra coordinator, visibility into their patient's case status (with the patient's consent), and MedYatra handling logistics coordination once a referral is made — nothing clinical, nothing that competes with their own practice.
+3. What a referral relationship actually looks like in practice: a single named Canopus Care coordinator, visibility into their patient's case status (with the patient's consent), and Canopus Care handling logistics coordination once a referral is made — nothing clinical, nothing that competes with their own practice.
 4. Compensation/terms — do NOT state a number or structure. Use the exact required placeholder verbatim: "[VERIFY: confirm local permissibility + structure of any referral arrangement with counsel before discussing terms]".
 5. The ask — a short call to explain how it would work for a specific recent case type, not a commitment.
 
-~250-350 words. Professional sign-off from "MedYatra Partnerships".`;
+~250-350 words. Professional sign-off from "Canopus Care Partnerships".`;
 }
 
 const doctors = A(`SELECT p.*, d.* FROM partner p JOIN doctor_affiliate d ON d.partner_id = p.id
@@ -90,7 +90,7 @@ for (const d of doctors) {
   const flagNote = (lint.vague.length || lint.filler.length)
     ? `<!-- QA: ${lint.vague.length} vague-claim(s) auto-tagged [VERIFY]${lint.filler.length ? ` · filler to cut: ${lint.filler.slice(0, 6).join(", ")}` : ""} -->\n` : "";
   const file = join("outputs", "doctor-outreach", `${d.id}.md`);
-  const header = `<!-- DOCTOR OUTREACH · DRAFT (human review before send) · ${d.warmth} · ${d.id} · model:${r.model} · ${new Date().toISOString().slice(0, 10)} -->\n${flagNote}\n# Doctor Outreach — ${d.name}\n_${cat.name} · ${market ? market.name : d.country_code} · prepared by MedYatra Partnerships_\n\n`;
+  const header = `<!-- DOCTOR OUTREACH · DRAFT (human review before send) · ${d.warmth} · ${d.id} · model:${r.model} · ${new Date().toISOString().slice(0, 10)} -->\n${flagNote}\n# Doctor Outreach — ${d.name}\n_${cat.name} · ${market ? market.name : d.country_code} · prepared by Canopus Care Partnerships_\n\n`;
   writeFileSync(join(ROOT, file), header + lint.text.trim() + "\n");
 
   db.prepare(`DELETE FROM proposal WHERE partner_id=? AND category_id=?`).run(d.id, d.specialty);

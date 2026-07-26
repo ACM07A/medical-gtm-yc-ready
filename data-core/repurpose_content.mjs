@@ -31,23 +31,23 @@ function facts(md) {
   };
 }
 
-const DISCLAIMER = "MedYatra is a medical-travel facilitator, not a hospital; prices are indicative package ranges.";
+const DISCLAIMER = "Canopus Care is a medical-travel facilitator, not a hospital; prices are indicative package ranges.";
 
 // Social posts are read by the same frightened person as the guides — the empathy principle governs them too,
 // not just the WhatsApp channel. Facts stay injected; the SYSTEM carries the voice.
-const REPURPOSE_SYSTEM = withEmpathyContent("You write patient-facing social content for MedYatra, a " +
+const REPURPOSE_SYSTEM = withEmpathyContent("You write patient-facing social content for Canopus Care, a " +
   "medical-travel FACILITATOR (not a hospital). Use ONLY the facts given — never invent a number, a price, " +
   "an outcome, or an accreditation. Facilitator voice, no cure or outcome guarantees, honour the platform's " +
   "own norms (Reddit hates ads; LinkedIn is professional). Cost is part of the story but never the shout.");
 
 // Platform prompt builders. Each enforces facilitator voice + injected facts + no cure claims.
 function prompt(channel, f, market, category) {
-  const base = `You write for MedYatra, a medical-travel FACILITATOR (not a hospital) helping patients from ${market} reach accredited Indian hospitals for ${category}.
+  const base = `You write for Canopus Care, a medical-travel FACILITATOR (not a hospital) helping patients from ${market} reach accredited Indian hospitals for ${category}.
 STRICT RULES: facilitator voice only; NO cure/outcome guarantees; NO fear-mongering; use ONLY these facts — India price ${f.india || "(see page)"}, Western reference ${f.western || "(varies)"}; prices are indicative; disclose we are a facilitator; end with a soft WhatsApp CTA. Topic: "${f.title}".`;
   const specs = {
     linkedin: `Write a LinkedIn post (B2B / thought-leadership angle for the medical-value-travel space, ~120 words). Professional, credible, no hashtag spam (3-4 max).`,
     instagram: `Write an INSTAGRAM CAROUSEL: 5 slides. For EACH slide give: (a) on-slide text (<=12 words, punchy), and (b) an IMAGE BRIEF (one line describing the visual for a designer/image model — clinical blue #0B4A8B + green, clean, human, no text-in-image). Then a caption (<=125 words) + 8-10 relevant hashtags. Label sections clearly.`,
-    reddit: `Write a Reddit post for a relevant subreddit (e.g. r/medicaltourism): value-first, genuine, NON-promotional tone (Reddit hates ads). Title + body (~120 words). Mention MedYatra only once, softly, as a disclosure.`,
+    reddit: `Write a Reddit post for a relevant subreddit (e.g. r/medicaltourism): value-first, genuine, NON-promotional tone (Reddit hates ads). Title + body (~120 words). Mention Canopus Care only once, softly, as a disclosure.`,
     whatsapp: `Write a WhatsApp broadcast message (<=90 words, warm, 1-2 emoji max, clear next step). This is the conversion channel.`,
     x: `Write an X/Twitter thread (4 tweets, each <=270 chars, numbered). Hook first, facts middle, soft CTA last.`,
   };

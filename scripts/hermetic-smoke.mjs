@@ -9,7 +9,7 @@ const dir = mkdtempSync(join(tmpdir(), "canopuscare-smoke-"));
 const database = join(dir, "smoke.db");
 const port = String(5200 + Math.floor(Math.random() * 400));
 const env = { ...process.env, APP_MODE: "demo", POST_LIVE: "0", PORT: port, DATABASE_PATH: database };
-const server = spawn(process.execPath, ["--experimental-sqlite", "server/server.mjs"], {
+const server = spawn(process.execPath, ["--experimental-sqlite", "scripts/start-app.mjs"], {
   cwd: root,
   env,
   stdio: ["ignore", "pipe", "pipe"],
@@ -19,7 +19,7 @@ server.stdout.on("data", (chunk) => { output += chunk; });
 server.stderr.on("data", (chunk) => { output += chunk; });
 
 async function waitForServer() {
-  for (let attempt = 0; attempt < 40; attempt++) {
+  for (let attempt = 0; attempt < 80; attempt++) {
     try {
       const response = await fetch(`http://127.0.0.1:${port}/api/readiness`);
       if (response.ok) return;

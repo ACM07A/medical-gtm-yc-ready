@@ -47,7 +47,7 @@ const WELCOME = rel(welcomeImg), HOW = rel(howImg), EST = estImg[flagship] || re
 // clinical:true marks a HOSPITAL handoff (their medical team owns the content). marketing = needs opt-in+STOP.
 const SEQ = [
   { stage: "first_touch", seq: 1, msg_type: "template", category: "utility", header: WELCOME,
-    body: "Hi {{1}}, thank you for reaching out to MedYatra about {{2}} — we know looking into this isn't easy. A real care coordinator will personally help you find the right accredited hospital. Reply YES whenever you're ready and we'll take it from there.",
+    body: "Hi {{1}}, thank you for reaching out to Canopus Care about {{2}} — we know looking into this isn't easy. A real care coordinator will personally help you find the right accredited hospital. Reply YES whenever you're ready and we'll take it from there.",
     variables: { "1": "first name", "2": "treatment" }, buttons: QR("Yes, tell me more", "Not now") },
   { stage: "nudge", seq: 2, msg_type: "template", category: "utility", header: EST,
     body: "Hi {{1}}, still exploring {{2}} in India? Accredited hospitals, no waiting list, English-speaking care. Options whenever you're ready.",
@@ -90,7 +90,7 @@ const SEQ = [
   { stage: "stay_options", seq: 13, msg_type: "template", category: "utility", header: HOW,
     body: "Here are near-hospital stay options via our partners, for you and your family before and after treatment. You book your own flights and visa; we help with the stay and the paperwork. Want these options?",
     variables: {}, buttons: QR("See stays", "Ask a question"),
-    note: "Partner-provided stay (lib/stay.mjs). Flights + visa are the patient's own; MedYatra keeps coordination light." },
+    note: "Partner-provided stay (lib/stay.mjs). Flights + visa are the patient's own; Canopus Care keeps coordination light." },
   { stage: "pre_op", seq: 14, msg_type: "session", category: "utility", header: null, clinical: true,
     body: "Hi {{1}}, your pre-op instructions from the hospital are ready (fasting, medicines, what to bring). Safe travels — message us anytime if you need anything.",
     variables: { "1": "first name" }, buttons: QR("Got it", "Ask a question") },
@@ -109,7 +109,7 @@ const SEQ = [
     body: "Hi {{1}}, we hope your treatment and recovery went well. If we helped, a short review means a lot — and if a friend or relative ever needs care in India, we're here. Reply STOP to opt out.",
     variables: { "1": "first name" }, buttons: QR("Leave a review", "Refer someone") },
   { stage: "reengage", seq: 19, msg_type: "template", category: "marketing", header: WELCOME,
-    body: "Hi {{1}}, still considering treatment in India? Your MedYatra coordinator is here whenever you're ready — no pressure. Reply STOP to opt out.",
+    body: "Hi {{1}}, still considering treatment in India? Your Canopus Care coordinator is here whenever you're ready — no pressure. Reply STOP to opt out.",
     variables: { "1": "first name" }, buttons: QR("I'm ready", "Not now"),
     note: "Marketing category — requires prior opt-in; includes opt-out." },
 
@@ -121,7 +121,7 @@ const SEQ = [
   { stage: "complication", seq: 21, msg_type: "session", category: "utility", header: null, clinical: true,
     body: "Hi {{1}}, we know this is frightening. Your care is fully in the hands of the hospital's medical team and they are on it. We're staying close, keeping your family updated, and here for anything you need that isn't medical. Please follow the doctors' guidance — you are not alone in this.",
     variables: { "1": "first name" }, buttons: QR("Thank you"),
-    note: "Clinical escalation — hospital-led. MedYatra never advises clinically; family-comms + logistics only." },
+    note: "Clinical escalation — hospital-led. Canopus Care never advises clinically; family-comms + logistics only." },
 ];
 
 db.exec(`DELETE FROM comms_template`);

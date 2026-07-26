@@ -73,12 +73,12 @@
 
 ## ሂደቱ በትክክል እንዴት ይሰራል?
 
-MedYatra ህክምናዎን ለማቀላጠፍ የሚያግዝ አስታራቂ እንጂ የህክምና አቅራቢ አይደለም። ህክምናውን የሚያገኙት ከህንድ ሆስፒታሎች ነው፣ እና ጉዞዎን እና ቪዛዎን በራስዎ ያዘጋጃሉ። ሂደቱ የሚከተሉትን ደረጃዎች ያካትታል፡-
+Canopus Care ህክምናዎን ለማቀላጠፍ የሚያግዝ አስታራቂ እንጂ የህክምና አቅራቢ አይደለም። ህክምናውን የሚያገኙት ከህንድ ሆስፒታሎች ነው፣ እና ጉዞዎን እና ቪዛዎን በራስዎ ያዘጋጃሉ። ሂደቱ የሚከተሉትን ደረጃዎች ያካትታል፡-
 
 1.  **የህክምና ሪፖርቶችዎን መላክ:** የቅርብ ጊዜ የህክምና ምርመራ ውጤቶችዎን፣ የምርመራ ሪፖርቶችዎን እና የሐኪም ደብዳቤዎን በዋትስአፕ በኩል ወደ እኛ ይልካሉ።
 2.  **በእውቅና የተሰጣቸው ሆስፒታሎች ግምገማ:** እኛ ከምንሰራባቸው በእውቅና የተሰጣቸው የህንድ ሆስፒታሎች መካከል ከህመምዎ ጋር የተሻለውን ህክምና ሊሰጥ የሚችለው የህክምና ቡድን ሪፖርቶችዎን ይገመግማል።
 3.  **የህክምና አስተያየት እና ግምታዊ ዋጋ:** ሆስፒታሉ በሪፖርቶችዎ ላይ ተመስርቶ የህክምና አስተያየት እና ግምታዊ የጥቅል ዋጋ (indicative quote) ይሰጥዎታል። እነዚህ ዋጋዎች ትክክለኛ የዋጋ ቅናሾች ሳይሆኑ፣ የመጀመሪያ ግምቶች ናቸው።
-4.  **የግብዣ ደብዳቤ:** ህክምናውን ለማግኘት ከወሰኑ በኋላ፣ ሆስፒታሉ ለህክምና ቪዛ ማመልከቻዎ የሚያስፈልግ የግብዣ ደብዳቤ (invitation letter) ይሰጥዎታል። MedYatra ይህንን ደብዳቤ ለማግኘት ያግዛል።
+4.  **የግብዣ ደብዳቤ:** ህክምናውን ለማግኘት ከወሰኑ በኋላ፣ ሆስፒታሉ ለህክምና ቪዛ ማመልከቻዎ የሚያስፈልግ የግብዣ ደብዳቤ (invitation letter) ይሰጥዎታል። Canopus Care ይህንን ደብዳቤ ለማግኘት ያግዛል።
 5.  **የኢ-ህክምና ቪዛ ማመልከቻ እና የበረራ ትኬት ማስያዝ:** የግብዣ ደብዳቤውን ከተቀበሉ በኋላ፣ እርስዎ በራስዎ ለህንድ ኢ-ህክምና ቪዛ (e-Medical Visa) ማመልከት እና የበረራ ትኬትዎን ማስያዝ ይኖርብዎታል። የቪዛ ሂደቱን እና የበረራ ዝግጅቶችን በተመለከተ መረጃዎችን ማየት ያስፈልጋል።
 6.  **ጉዞ እና ህክምና:** ወደ ህንድ ተጉዘው በሆስፒታሉ ውስጥ ህክምናዎን ይጀምራሉ።
 7.  **ማገገም እና ወደ ቤት መመለስ:** ከህክምናው በኋላ በሆስፒታል ውስጥ ወይም በአቅራቢያው በሚገኝ ማረፊያ ውስጥ ለተወሰነ ጊዜ ማገገም ያስፈልግዎታል። የህክምና ቡድኑ ወደ ቤትዎ ለመመለስ ዝግጁ መሆንዎን ሲያረጋግጥ፣ ወደ ኢትዮጵያ መመለስ ይችላሉ።
@@ -88,10 +88,10 @@ MedYatra ህክምናዎን ለማቀላጠፍ የሚያግዝ አስታራቂ �
 
 ### About this page
 
-Written by MedYatra editorial. Last reviewed on 2026-07-21.
+Written by Canopus Care editorial. Last reviewed on 2026-07-21.
 
 **Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
 
 **What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
 
-**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.
+**What this page is not.** Canopus Care is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

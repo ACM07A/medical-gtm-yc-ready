@@ -22,7 +22,7 @@ th,td{padding:10px 12px;border-bottom:1px solid #dbe4ef;text-align:left}th{backg
 const esc = (s) => String(s || "").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 // Structured data on every page. Typed as Article, deliberately NOT MedicalWebPage — that type asserts
 // medical authorship we do not have, and mis-declaring it is both a trust risk and a compliance one.
-const page = (title, inner, desc = "", ld = null) => `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title>${desc ? `<meta name="description" content="${esc(desc)}">` : ""}${ld ? `<script type="application/ld+json">${ld}</script>` : ""}<style>${CSS}</style></head><body><div class="ribbon">MedYatra — LOCAL PREVIEW build · <a href="/site/index.html">all guides</a></div><main>${inner}<p><a class="cta" href="#">Message us on WhatsApp →</a></p></main></body></html>`;
+const page = (title, inner, desc = "", ld = null) => `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)}</title>${desc ? `<meta name="description" content="${esc(desc)}">` : ""}${ld ? `<script type="application/ld+json">${ld}</script>` : ""}<style>${CSS}</style></head><body><div class="ribbon">Canopus Care — LOCAL PREVIEW build · <a href="/site/index.html">all guides</a></div><main>${inner}<p><a class="cta" href="#">Message us on WhatsApp →</a></p></main></body></html>`;
 
 const rows = db.prepare(`SELECT ca.*, c.name cat, mk.name mname FROM content_asset ca
   JOIN category c ON c.id=ca.category_id JOIN market mk ON mk.code=ca.market_code
@@ -62,7 +62,7 @@ for (const a of rows) {
   const reg = marketCleared(db, a.market_code);
   const warn = reg.cleared ? "" : `<div style="background:#d05a5a;color:#fff;padding:8px;text-align:center;font-size:13px;font-weight:700">⚠ ${a.mname}: market NOT regulatory-cleared (${reg.status}) — PREVIEW ONLY, do not deploy live</div>`;
   const ld = jsonLd({ title: a.meta_title || `${a.cat} — ${a.mname}`, description: a.meta_desc || "",
-    url: `/site/${slug}`, author: "MedYatra editorial", reviewedAt: a.reviewed_at,
+    url: `/site/${slug}`, author: "Canopus Care editorial", reviewedAt: a.reviewed_at,
     citations: ["Vaidam published package pricing", "MediGence published package pricing"] });
   writeFileSync(join(SITE, slug), warn + page(a.meta_title || `${a.cat} — ${a.mname}`, mdToHtml(md) + relatedHtml(a), a.meta_desc || "", ld));
   if (reg.cleared) {
@@ -74,7 +74,7 @@ for (const a of rows) {
   }
   links.push({ slug, title: `${a.cat} cost in India — ${a.mname}${reg.cleared ? "" : " ⚠"}` });
 }
-const index = page("MedYatra — Treatment cost guides", `<h1>Treatment cost guides (India)</h1><p>Accredited hospitals, honest prices, full support. Facilitator, not a provider.</p><ul>${links.map(l => `<li><a href="/site/${l.slug}">${l.title}</a></li>`).join("")}</ul>`);
+const index = page("Canopus Care — Treatment cost guides", `<h1>Treatment cost guides (India)</h1><p>Indicative, cited information with facilitator support. Hospitals retain clinical decisions.</p><ul>${links.map(l => `<li><a href="/site/${l.slug}">${l.title}</a></li>`).join("")}</ul>`);
 writeFileSync(join(SITE, "index.html"), index);
 logRun(db, "Publisher", "Site build complete", `${links.length} pages → /site · ${gated} gated (market not regulatory-cleared)`, "/site/index.html", gated ? "pending" : "ok");
 console.log(`built ${links.length} English pages → site/  (${gated} regulatory-GATED — preview only; clear markets via set_regulatory.mjs)`);

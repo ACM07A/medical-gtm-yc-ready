@@ -115,8 +115,6 @@ export async function runFullJourney(db, body, dependencies = {}) {
     const linkedCase = db.prepare(`SELECT id FROM patient_case WHERE source_lead_id=?`).get(leadId);
     if (linkedCase) {
       const completed = steps.filter((stepResult) => stepResult.ok).length;
-      db.prepare(`UPDATE patient_case SET current_stage='Journey orchestrated',next_best_action=?,updated=datetime('now') WHERE id=?`)
-        .run(`Review ${completed}/${steps.length} orchestration steps and resolve any failures`, linkedCase.id);
       db.prepare(`INSERT INTO audit_event
         (id,organization_id,action,subject_type,subject_id,outcome,request_id,detail)
         VALUES (lower(hex(randomblob(8))),'org_platform','journey_sync','patient_case',?,?,?,?)`)

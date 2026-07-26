@@ -6,6 +6,8 @@ import { tmpdir } from "node:os";
 import { open } from "../data-core/db.mjs";
 import { DEMO_PASSWORD, authenticateDemoUser, ensureOsSchema, passwordHash, readinessReport, seedDemoOs } from "../data-core/os_core.mjs";
 import { apiCase, apiCases, getSession } from "../server/os_pages.mjs";
+import { requiresConsoleToken } from "../server/access.mjs";
+import { createSessionToken, sessionCookie, sessionMutationOriginAllowed, verifySessionToken } from "../server/session.mjs";
 
 function seededDb() {
   const dir = mkdtempSync(join(tmpdir(), "medyatra-test-"));
@@ -17,8 +19,102 @@ function seededDb() {
 
 test("demo users use deterministic non-production password hash", () => {
   const { db, dir } = seededDb();
-  const user = db.prepare(`SELECT * FROM app_user WHERE email='admin@canopuscare.demo'`).get();
+  const user = db.prepare(`SELECT * FROM app_user WHERE email='reviewer@canopuscare.com'`).get();
   assert.equal(user.password_hash, passwordHash(DEMO_PASSWORD));
+  db.close(); rmSync(dir, { recursive: true, force: true });
+});
+
+test("anonymous demo visitors receive read-only scope", () => {
+  const { db, dir } = seededDb();
+  const prior = process.env.APP_MODE;
+  process.env.APP_MODE = "demo";
+  const session = getSession(db, { headers: {} });
+  assert.equal(session.role, "read_only");
+  assert.equal(session.authenticated, false);
+  assert.equal(apiCases(db, session).length, 2);
+  if (prior == null) delete process.env.APP_MODE; else process.env.APP_MODE = prior;
+  db.close(); rmSync(dir, { recursive: true, force: true });
+});
+
+test("signed cookie alone applies hospital case scope", () => {
+  const { db, dir } = seededDb();
+  const priorMode = process.env.APP_MODE;
+  const priorSecret = process.env.SESSION_SECRET;
+  process.env.APP_MODE = "demo";
+  process.env.SESSION_SECRET = "test-session-secret-at-least-32-characters";
+  const cookie = sessionCookie("user_hospital").split(";")[0];
+  const session = getSession(db, { headers: { cookie } });
+  assert.equal(session.role, "hospital_admin");
+  assert.equal(session.authenticated, true);
+  assert.deepEqual(apiCases(db, session).map((row) => row.id), ["case_ibrahim_musa"]);
+  if (priorMode == null) delete process.env.APP_MODE; else process.env.APP_MODE = priorMode;
+  if (priorSecret == null) delete process.env.SESSION_SECRET; else process.env.SESSION_SECRET = priorSecret;
+  db.close(); rmSync(dir, { recursive: true, force: true });
+});
+
+test("session signatures reject tampering and expiration", () => {
+  const priorMode = process.env.APP_MODE;
+  const priorSecret = process.env.SESSION_SECRET;
+  process.env.APP_MODE = "demo";
+  process.env.SESSION_SECRET = "test-session-secret-at-least-32-characters";
+  const now = Date.now();
+  const token = createSessionToken("user_hospital", now);
+  assert.equal(verifySessionToken(token, now)?.sub, "user_hospital");
+  assert.equal(verifySessionToken(`${token.slice(0, -1)}x`, now), null);
+  assert.equal(verifySessionToken(token, now + 9 * 60 * 60 * 1000), null);
+  if (priorMode == null) delete process.env.APP_MODE; else process.env.APP_MODE = priorMode;
+  if (priorSecret == null) delete process.env.SESSION_SECRET; else process.env.SESSION_SECRET = priorSecret;
+});
+
+test("session-cookie mutations require an allowed origin", () => {
+  const prior = {
+    APP_MODE: process.env.APP_MODE,
+    APP_BASE_URL: process.env.APP_BASE_URL,
+    ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS,
+    SESSION_SECRET: process.env.SESSION_SECRET,
+  };
+  Object.assign(process.env, {
+    APP_MODE: "production",
+    APP_BASE_URL: "https://demo.canopuscare.online",
+    ALLOWED_ORIGINS: "https://demo.canopuscare.online",
+    SESSION_SECRET: "test-session-secret-at-least-32-characters",
+  });
+  const cookie = sessionCookie("user_agent").split(";")[0];
+  const request = (origin) => ({ method: "POST", headers: { cookie, ...(origin ? { origin } : {}) } });
+  assert.equal(sessionMutationOriginAllowed(request("https://demo.canopuscare.online")), true);
+  assert.equal(sessionMutationOriginAllowed(request("https://attacker.example")), false);
+  assert.equal(sessionMutationOriginAllowed(request()), false);
+  assert.equal(sessionMutationOriginAllowed({ method: "GET", headers: { cookie } }), true);
+  for (const [key, value] of Object.entries(prior)) {
+    if (value == null) delete process.env[key]; else process.env[key] = value;
+  }
+});
+
+test("public OS and operator route posture is explicit", () => {
+  for (const path of ["/demo", "/cases", "/cases/case_ibrahim_musa", "/vendors", "/audit", "/api/readiness", "/api/cases", "/login"])
+    assert.equal(requiresConsoleToken(path), false, path);
+  for (const path of ["/console", "/studio", "/sandbox", "/site/index.html", "/outputs/screenshots/landing-home.png", "/api/studio/approve", "/api/agents/triage", "/api/journey/run", "/api/economics"])
+    assert.equal(requiresConsoleToken(path), true, path);
+});
+
+test("production readiness blocks a database containing demo users", () => {
+  const { db, dir } = seededDb();
+  const keys = ["APP_MODE", "SESSION_SECRET", "APP_BASE_URL", "CONSOLE_TOKEN", "ALLOWED_ORIGINS", "ENCRYPTION_KEY"];
+  const prior = Object.fromEntries(keys.map((key) => [key, process.env[key]]));
+  Object.assign(process.env, {
+    APP_MODE: "production",
+    SESSION_SECRET: "production-session-secret-at-least-32-characters",
+    APP_BASE_URL: "https://demo.example.com",
+    CONSOLE_TOKEN: "production-console-token",
+    ALLOWED_ORIGINS: "https://demo.example.com",
+    ENCRYPTION_KEY: "production-encryption-key-at-least-32-characters",
+  });
+  const report = readinessReport(db);
+  assert.equal(report.status, "BLOCKED");
+  assert.ok(report.missing.includes("DEMO_USERS_PRESENT"));
+  for (const key of keys) {
+    if (prior[key] == null) delete process.env[key]; else process.env[key] = prior[key];
+  }
   db.close(); rmSync(dir, { recursive: true, force: true });
 });
 

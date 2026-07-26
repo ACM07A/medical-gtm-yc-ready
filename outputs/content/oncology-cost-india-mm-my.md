@@ -46,7 +46,7 @@
 *   အိန္ဒိယသို့မလာမီ မြန်မာနိုင်ငံတွင် ပြုလုပ်ခဲ့သော ရောဂါရှာဖွေရေးစစ်ဆေးမှုများ
 *   ဆေးရုံမှ ဆင်းပြီးနောက် လိုအပ်သော ဆေးဝါးများနှင့် နောက်ဆက်တွဲ ပြန်လည်စစ်ဆေးမှုများ (tele-follow-up မှလွဲ၍)
 
-MedYatra သည် ကုသမှုဆိုင်ရာ ညှိနှိုင်းဆောင်ရွက်ပေးခြင်းနှင့် လိုအပ်သော စာရွက်စာတမ်းများ ပံ့ပိုးပေးခြင်းသာ ဖြစ်ပြီး၊ လူနာများအနေဖြင့် မိမိတို့၏ ခရီးစဉ်နှင့် ဗီဇာကိစ္စများကို ကိုယ်တိုင်စီစဉ်ရမည်ဖြစ်ကြောင်း နားလည်ထားရန် အရေးကြီးပါသည်။ ဖော်ပြထားသော ဈေးနှုန်းများသည် ခန့်မှန်းခြေဖြစ်ပြီး အတိအကျမဟုတ်ကြောင်း သတိပြုသင့်ပါသည်။ နောက်ဆုံးအတည်ပြု ကုန်ကျစရိတ်သည် ဆေးရုံ၏ ဆရာဝန်ကြီးများမှ လူနာ၏ အခြေအနေအား အကဲဖြတ်ပြီးမှသာ သိရှိနိုင်မည်ဖြစ်သည်။
+Canopus Care သည် ကုသမှုဆိုင်ရာ ညှိနှိုင်းဆောင်ရွက်ပေးခြင်းနှင့် လိုအပ်သော စာရွက်စာတမ်းများ ပံ့ပိုးပေးခြင်းသာ ဖြစ်ပြီး၊ လူနာများအနေဖြင့် မိမိတို့၏ ခရီးစဉ်နှင့် ဗီဇာကိစ္စများကို ကိုယ်တိုင်စီစဉ်ရမည်ဖြစ်ကြောင်း နားလည်ထားရန် အရေးကြီးပါသည်။ ဖော်ပြထားသော ဈေးနှုန်းများသည် ခန့်မှန်းခြေဖြစ်ပြီး အတိအကျမဟုတ်ကြောင်း သတိပြုသင့်ပါသည်။ နောက်ဆုံးအတည်ပြု ကုန်ကျစရိတ်သည် ဆေးရုံ၏ ဆရာဝန်ကြီးများမှ လူနာ၏ အခြေအနေအား အကဲဖြတ်ပြီးမှသာ သိရှိနိုင်မည်ဖြစ်သည်။
 
 ## ဆေးရုံကို ဘယ်လိုရွေးချယ်မလဲ
 
@@ -70,9 +70,9 @@ MedYatra သည် ကုသမှုဆိုင်ရာ ညှိနှို
 
 ## လုပ်ငန်းစဉ် ဘယ်လိုအလုပ်လုပ်လဲ
 
-အိန္ဒိယတွင် ကင်ဆာကုသမှုခံယူရန်အတွက် လုပ်ငန်းစဉ်သည် အဆင့်အနည်းငယ်ဖြင့် ရှင်းရှင်းလင်းလင်း ရှိပါသည်။ MedYatra ကဲ့သို့သော ကုသမှုညှိနှိုင်းဆောင်ရွက်ပေးသည့် အဖွဲ့အစည်းတစ်ခု၏ အကူအညီဖြင့် မည်သို့ဆောင်ရွက်နိုင်သည်ကို အောက်တွင်ဖော်ပြထားပါသည်။
+အိန္ဒိယတွင် ကင်ဆာကုသမှုခံယူရန်အတွက် လုပ်ငန်းစဉ်သည် အဆင့်အနည်းငယ်ဖြင့် ရှင်းရှင်းလင်းလင်း ရှိပါသည်။ Canopus Care ကဲ့သို့သော ကုသမှုညှိနှိုင်းဆောင်ရွက်ပေးသည့် အဖွဲ့အစည်းတစ်ခု၏ အကူအညီဖြင့် မည်သို့ဆောင်ရွက်နိုင်သည်ကို အောက်တွင်ဖော်ပြထားပါသည်။
 
-1.  **ဆေးမှတ်တမ်းများ ပေးပို့ခြင်း:** ပထမဦးစွာ သင်၏ လက်ရှိဆေးမှတ်တမ်းများ၊ ရောဂါရှာဖွေရေး အစီရင်ခံစာများ (ဥပမာ- သွေးစစ်ချက်များ၊ ဓာတ်မှန်များ၊ CT/MRI scan များ၊ biopsy အစီရင်ခံစာများ) ကို စုဆောင်းပါ။ ထို့နောက် ၎င်းတို့ကို MedYatra သို့ WhatsApp မှတစ်ဆင့် ပေးပို့နိုင်ပါသည်။
+1.  **ဆေးမှတ်တမ်းများ ပေးပို့ခြင်း:** ပထမဦးစွာ သင်၏ လက်ရှိဆေးမှတ်တမ်းများ၊ ရောဂါရှာဖွေရေး အစီရင်ခံစာများ (ဥပမာ- သွေးစစ်ချက်များ၊ ဓာတ်မှန်များ၊ CT/MRI scan များ၊ biopsy အစီရင်ခံစာများ) ကို စုဆောင်းပါ။ ထို့နောက် ၎င်းတို့ကို Canopus Care သို့ WhatsApp မှတစ်ဆင့် ပေးပို့နိုင်ပါသည်။
 
 2.  **ဆေးရုံမှ အကြံဉာဏ်နှင့် ကုန်ကျစရိတ်ခန့်မှန်း
 
@@ -80,10 +80,10 @@ MedYatra သည် ကုသမှုဆိုင်ရာ ညှိနှို
 
 ### About this page
 
-Written by MedYatra editorial. Last reviewed on 2026-07-21.
+Written by Canopus Care editorial. Last reviewed on 2026-07-21.
 
 **Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
 
 **What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
 
-**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.
+**What this page is not.** Canopus Care is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

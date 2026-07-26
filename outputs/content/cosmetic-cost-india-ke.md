@@ -52,7 +52,7 @@ When considering medical treatment abroad, selecting the right hospital is param
 1.  **Accreditation Matters:**
     *   **Joint Commission International (JCI):** This is a globally recognised accreditation for healthcare quality and patient safety. A JCI-accredited hospital meets rigorous international standards. It signals a commitment to patient safety, infection control, and continuous quality improvement.
     *   **National Accreditation Board for Hospitals & Healthcare Providers (NABH):** This is India's own national accreditation, similar to JCI but specific to the Indian context. Many top Indian hospitals hold both JCI and NABH accreditation, demonstrating adherence to high standards.
-    When MedYatra coordinates your care, we work with JCI and NABH accredited hospitals.
+    When Canopus Care coordinates your care, we work with JCI and NABH accredited hospitals.
 
 2.  **Surgeon Credentials:**
     *   Ask for your surgeon's full CV. This should detail their qualifications (degrees, fellowships), specialisations, years of experience, and the number of procedures they have performed, specifically the type you are considering.
@@ -67,14 +67,14 @@ When considering medical treatment abroad, selecting the right hospital is param
 
 ## How the Process Really Works
 
-Navigating international medical travel requires coordination. MedYatra acts as a facilitator, streamlining the connection between you and accredited Indian hospitals.
+Navigating international medical travel requires coordination. Canopus Care acts as a facilitator, streamlining the connection between you and accredited Indian hospitals.
 
-1.  **Your Initial Inquiry and Medical Reports:** You will begin by messaging MedYatra, typically on WhatsApp, sharing your recent medical reports, diagnostic scans, and a brief history of your condition. This allows the medical team to understand your needs.
-2.  **Hospital Review and Opinion:** MedYatra forwards your medical information to one or more JCI/NABH accredited hospitals in India that specialise in bariatric or cosmetic surgery. A team of specialists at these hospitals will review your reports. They will then provide a preliminary medical opinion, a recommended treatment plan, and an indicative cost estimate for the procedure. This assessment is based on the information you provide.
-3.  **Invitation Letter:** Once you decide to proceed with a particular hospital, MedYatra coordinates with the hospital to obtain an official invitation letter. This letter is a crucial supporting document for your visa application.
+1.  **Your Initial Inquiry and Medical Reports:** You will begin by messaging Canopus Care, typically on WhatsApp, sharing your recent medical reports, diagnostic scans, and a brief history of your condition. This allows the medical team to understand your needs.
+2.  **Hospital Review and Opinion:** Canopus Care forwards your medical information to one or more JCI/NABH accredited hospitals in India that specialise in bariatric or cosmetic surgery. A team of specialists at these hospitals will review your reports. They will then provide a preliminary medical opinion, a recommended treatment plan, and an indicative cost estimate for the procedure. This assessment is based on the information you provide.
+3.  **Invitation Letter:** Once you decide to proceed with a particular hospital, Canopus Care coordinates with the hospital to obtain an official invitation letter. This letter is a crucial supporting document for your visa application.
 4.  **Your Visa and Travel Arrangements:** **You are responsible for applying for your own e-Medical Visa** through the official Indian government portal. You will need the hospital invitation letter and other required documents. **You are also responsible for booking your own flights** to and from India and arranging your accommodation (hotel or guesthouse) for the duration of your stay outside the hospital.
 5.  **Travel, Treatment, and Recovery:** You will travel to India, attend your pre-operative consultations, undergo the surgery, and recover in the hospital. The medical team will monitor your progress closely.
-6.  **Discharge and Follow-up:** After discharge, you will typically remain in India for a period of recovery and follow-up checks before being cleared to fly home. MedYatra helps coordinate tele-follow-up consultations with your surgeon after you return to Kenya, ensuring continuity of care.
+6.  **Discharge and Follow-up:** After discharge, you will typically remain in India for a period of recovery and follow-up checks before being cleared to fly home. Canopus Care helps coordinate tele-follow-up consultations with your surgeon after you return to Kenya, ensuring continuity of care.
 
 ## Honest Answers to Your Real Worries
 
@@ -95,26 +95,26 @@ Patient safety is a priority for accredited hospitals. They adhere to strict pro
 *   **Financial Responsibility:** It is critical to understand that while the hospital will provide necessary care for complications, the costs associated with treating unexpected issues, extended hospital stays, or additional procedures not covered in your initial package are typically the patient's financial responsibility. It is advisable to discuss this with the hospital and consider travel insurance that covers medical emergencies abroad.
 
 **Language Barrier?**
-English is widely spoken in major Indian cities, especially within the medical community. Doctors, nurses, and administrative staff in accredited hospitals are generally proficient in English. MedYatra can also provide support if there are any communication challenges.
+English is widely spoken in major Indian cities, especially within the medical community. Doctors, nurses, and administrative staff in accredited hospitals are generally proficient in English. Canopus Care can also provide support if there are any communication challenges.
 
 **How Does Payment Work?**
-You will pay the hospital directly for your treatment. MedYatra facilitates the connection and coordination but does not handle patient funds for medical treatment. The hospital will provide you with clear payment instructions.
+You will pay the hospital directly for your treatment. Canopus Care facilitates the connection and coordination but does not handle patient funds for medical treatment. The hospital will provide you with clear payment instructions.
 
 **Length of Stay in India?**
 The total length of stay in India varies depending on the procedure and individual recovery. For bariatric surgery (gastric sleeve or bypass), you might expect to stay in the hospital for 3-5 days, followed by another 7-10 days in India for post-operative checks and initial recovery before being cleared to fly home. For cosmetic procedures, the hospital stay might be shorter, but a recovery period of 7-14 days in India is often recommended before travel. Your specific medical team will advise you on the recommended duration based on your case.
 
-Considering treatment abroad is a journey that requires careful planning and reliable information. MedYatra is here to help coordinate your demand and provide supporting documents, ensuring you connect with accredited medical institutions in India.
+Considering treatment abroad is a journey that requires careful planning and reliable information. Canopus Care is here to help coordinate your demand and provide supporting documents, ensuring you connect with accredited medical institutions in India.
 
-If you are considering bariatric or cosmetic treatment in India, message MedYatra on WhatsApp to
+If you are considering bariatric or cosmetic treatment in India, message Canopus Care on WhatsApp to
 
 ---
 
 ### About this page
 
-Written by MedYatra editorial. Last reviewed on 2026-07-21.
+Written by Canopus Care editorial. Last reviewed on 2026-07-21.
 
 **Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
 
 **What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
 
-**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.
+**What this page is not.** Canopus Care is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

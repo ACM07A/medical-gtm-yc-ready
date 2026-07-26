@@ -74,16 +74,16 @@
 
 تتضمن عملية الحصول على علاج الأسنان في الهند عدة خطوات منظمة، تبدأ من منزلك في الإمارات العربية المتحدة:
 
-1.  **إرسال التقارير الطبية:** الخطوة الأولى هي إرسال تقاريرك الطبية الحالية، مثل الأشعة السينية البانورامية، صور الأسنان، وأي تقارير أخرى ذات صلة إلى فريق MedYatra عبر واتساب. هذا يسمح للمتخصصين بتقييم حالتك عن بُعد.
-2.  **مراجعة المستشفى المعتمد:** بعد استلام تقاريرك، يقوم فريق MedYatra بتنسيقها مع مستشفى معتمد ومرموق في الهند. سيقوم أخصائيو الأسنان في المستشفى بمراجعة حالتك وتقديم رأي طبي مبدئي وخطة علاج مقترحة، بالإضافة إلى عرض أسعار تقديري. هذه الأسعار هي مؤشرات فقط وقد تتغير بعد الفحص السريري.
+1.  **إرسال التقارير الطبية:** الخطوة الأولى هي إرسال تقاريرك الطبية الحالية، مثل الأشعة السينية البانورامية، صور الأسنان، وأي تقارير أخرى ذات صلة إلى فريق Canopus Care عبر واتساب. هذا يسمح للمتخصصين بتقييم حالتك عن بُعد.
+2.  **مراجعة المستشفى المعتمد:** بعد استلام تقاريرك، يقوم فريق Canopus Care بتنسيقها مع مستشفى معتمد ومرموق في الهند. سيقوم أخصائيو الأسنان في المستشفى بمراجعة حالتك وتقديم رأي طبي مبدئي وخطة علاج مقترحة، بالإضافة إلى عرض أسعار تقديري. هذه الأسعار هي مؤشرات فقط وقد تتغير بعد الفحص السريري.
 3.  **خطاب دعوة المستشفى:** في حال موافقتك على خطة العلاج المقترحة، سيصدر المستشفى خطاب دعوة. هذا الخطاب هو وثيقة داعمة أساسية ستحتاجها عند التقدم بطلب للحصول على التأشيرة.
 4.  **مسؤوليتك عن التأشيرة والسفر:**
     *   **تأشيرة طبية إلكترونية (e-Medical Visa):** أنت مسؤول عن التقدم بطلب للحصول على التأشيرة الطبية الإلكترونية الهندية بنفسك من خلال الموقع الرسمي للحكومة الهندية. تأكد من إعداد جميع المستندات المطلوبة، بما في ذلك خطاب دعوة المستشفى.
-    *   **حجز الرحلات والإقامة:** أنت أيضاً مسؤول عن حجز رحلات الطيران الخاصة بك إلى الهند وترتيب إقامتك خلال فترة العلاج والتعافي. يمكن لفريق MedYatra تقديم إرشادات حول المناطق القريبة من المستشفى.
+    *   **حجز الرحلات والإقامة:** أنت أيضاً مسؤول عن حجز رحلات الطيران الخاصة بك إلى الهند وترتيب إقامتك خلال فترة العلاج والتعافي. يمكن لفريق Canopus Care تقديم إرشادات حول المناطق القريبة من المستشفى.
 5.  **السفر والعلاج والتعافي:** بمجرد حصولك على التأشيرة وتأكيد حجوزاتك، تسافر إلى الهند. ستقوم بزيارة المستشفى لإجراء الفحوصات النهائية والخضوع للإجراء المتفق عليه. بعد العلاج، ستحتاج إلى فترة تعافٍ قصيرة في الهند قبل أن تتمكن من العودة إلى الوطن.
 6.  **المتابعة عن بُعد:** بعد عودتك، يمكن ترتيب متابعة عن بُعد مع الأطباء في الهند لمناقشة تقدم تعافيك والإجابة على أي أسئلة قد تكون لديك.
 
-MedYatra هي جهة تسهيل وتنسيق. نحن نساعد في ربطك بالمستشفيات المعتمدة ونقدم الوثائق الداعمة اللازمة، بينما تظل مسؤولية السفر والتأشيرة والإقامة عليك كلياً.
+Canopus Care هي جهة تسهيل وتنسيق. نحن نساعد في ربطك بالمستشفيات المعتمدة ونقدم الوثائق الداعمة اللازمة، بينما تظل مسؤولية السفر والتأشيرة والإقامة عليك كلياً.
 
 ## أجوبة صادقة لمخاوف حقيقية
 
@@ -97,10 +97,10 @@ MedYatra هي جهة تسهيل وتنسيق. نحن نساعد في ربطك ب
 
 ### About this page
 
-Written by MedYatra editorial. Last reviewed on 2026-07-21.
+Written by Canopus Care editorial. Last reviewed on 2026-07-21.
 
 **Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
 
 **What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
 
-**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.
+**What this page is not.** Canopus Care is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

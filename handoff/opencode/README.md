@@ -22,7 +22,7 @@ export MINIMAX_API_KEY="sk-..."         # Git Bash
 
 ## 3. Launch from the repo root (so it can see the code)
 ```bash
-cd "c:/Projects/Medical Tourism GTM"
+cd "c:/Projects/Canopus Care"
 opencode            # opencode.json auto-loads MiniMax + the worker brief
 ```
 First prompt to give it:

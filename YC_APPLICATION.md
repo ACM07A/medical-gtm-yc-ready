@@ -24,7 +24,7 @@ makes the application worse.
 
 ## What is your company going to make?
 
-> MedYatra is a medical travel facilitator. Patients in Africa, the Middle East and South East Asia who need
+> Canopus Care is a medical travel facilitator. Patients in Africa, the Middle East and South East Asia who need
 > surgery they can't get at home — or can't afford privately, or have been told to wait eleven months for —
 > come to us. We work out what they need, collect and structure their medical reports so a consultant can
 > review them in three minutes, get them a quote from an accredited Indian hospital, handle the visa
@@ -199,7 +199,7 @@ Statistically the highest-leverage minute of the whole application. Both of you 
 slides, no script read aloud.
 
 Suggested shape:
-1. **(0:00–0:10)** Names, and what MedYatra does in one plain sentence.
+1. **(0:00–0:10)** Names, and what Canopus Care does in one plain sentence.
 2. **(0:10–0:30)** Why you two — hospital/GTM plus technical, and the Aster/Manipal access.
 3. **(0:30–0:50)** The number: what a treated patient costs an agency versus us, and why organic changes it.
 4. **(0:50–1:00)** What you'll have done by the time the batch starts.

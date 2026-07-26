@@ -57,7 +57,7 @@ It is crucial to understand that these indicative package prices do not cover ev
 *   **Post-discharge rehabilitation:** Extensive physiotherapy sessions after you leave the hospital and before you travel home are often extra.
 *   **Follow-up consultations after returning home:** Any consultations with local doctors in Kenya or tele-consultations with your Indian surgeon after your return.
 
-MedYatra acts as a facilitator, coordinating your needs with accredited hospitals in India and helping you with supporting documents. However, the patient is responsible for booking their own travel arrangements, applying for their visa, and managing their personal expenses. Prices provided are always indicative and subject to final assessment by the hospital.
+Canopus Care acts as a facilitator, coordinating your needs with accredited hospitals in India and helping you with supporting documents. However, the patient is responsible for booking their own travel arrangements, applying for their visa, and managing their personal expenses. Prices provided are always indicative and subject to final assessment by the hospital.
 
 ## How to Judge a Hospital from Abroad
 
@@ -85,15 +85,15 @@ By requesting these specifics, you build a clearer picture of the care you will 
 
 ## How the Process Really Works
 
-The journey for orthopedic treatment in India, coordinated through a facilitator like MedYatra, follows a structured path designed to simplify the process for you:
+The journey for orthopedic treatment in India, coordinated through a facilitator like Canopus Care, follows a structured path designed to simplify the process for you:
 
 1.  **Initial Information Sharing:** You begin by sending your recent medical reports, X-rays, MRI scans, and a brief history of your condition via WhatsApp or email. This allows the medical team in India to understand your case.
-2.  **Hospital Review and Opinion:** MedYatra forwards your documents to multiple accredited hospitals and experienced orthopedic surgeons. Within a few days, an orthopedic specialist will review your reports, provide a preliminary medical opinion, and an indicative treatment plan. This opinion will include the recommended procedure, the expected length of hospital stay, and an estimated cost range for the package. This is not a firm quote but a professional assessment.
+2.  **Hospital Review and Opinion:** Canopus Care forwards your documents to multiple accredited hospitals and experienced orthopedic surgeons. Within a few days, an orthopedic specialist will review your reports, provide a preliminary medical opinion, and an indicative treatment plan. This opinion will include the recommended procedure, the expected length of hospital stay, and an estimated cost range for the package. This is not a firm quote but a professional assessment.
 3.  **Choosing Your Hospital:** You will receive these opinions and cost estimates. You can then compare the options, ask further questions, and choose the hospital and surgeon that best fit your needs and budget.
 4.  **Invitation Letter:** Once you decide, the chosen hospital will issue a formal invitation letter. This letter is a crucial supporting document required for your visa application.
 5.  **Visa Application and Travel Booking:**
     *   **e-Medical Visa:** With the hospital's invitation letter, you will apply for an e-Medical Visa for India yourself. This is typically done online through the official Indian government visa portal. Ensure you have all required documents, including your passport, recent photograph, and the invitation letter.
-    *   **Flights and Accommodation:** You will book your own international flights from Kenya to India. You also arrange your accommodation for the period before and after your hospital stay, if needed. MedYatra can offer guidance on suitable areas near the hospital.
+    *   **Flights and Accommodation:** You will book your own international flights from Kenya to India. You also arrange your accommodation for the period before and after your hospital stay, if needed. Canopus Care can offer guidance on suitable areas near the hospital.
 6.  **Travel and Treatment:** You travel to India. Upon arrival, you will typically be met at the airport by a hospital representative and transferred to your accommodation or directly to the hospital for pre-operative assessments. You will then undergo the orthopedic procedure, followed by a period of recovery in the hospital.
 7.  **Post-Operative Recovery and Follow-up:** After discharge from the hospital, you will usually need to stay in India for an additional 1-2 weeks for initial recovery and physiotherapy before you are medically cleared to fly home. Upon your return to Kenya, tele-follow-up consultations with your Indian surgeon can be arranged to monitor your progress.
 
@@ -124,10 +124,10 @@ Patient safety is a priority for accredited Indian hospitals. They adhere to int
 
 ### About this page
 
-Written by MedYatra editorial. Last reviewed on 2026-07-21.
+Written by Canopus Care editorial. Last reviewed on 2026-07-21.
 
 **Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
 
 **What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
 
-**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.
+**What this page is not.** Canopus Care is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

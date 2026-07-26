@@ -1,4 +1,4 @@
-# MedYatra — Business Status
+# Canopus Care — Business Status
 
 **As of 22 July 2026.** Written for people deciding whether to back, partner with, or join this — not for
 engineers. The technical walkthrough is [`PROJECT_CONTEXT.md`](./PROJECT_CONTEXT.md).
@@ -10,7 +10,7 @@ the single fastest way to lose a hospital partner or an investor is to quote a g
 
 ## 1. What the business is
 
-MedYatra is a **medical-travel facilitator**. We acquire international patients, qualify and triage them
+Canopus Care is a **medical-travel facilitator**. We acquire international patients, qualify and triage them
 into a case file a consultant can review in minutes, coordinate the entire journey, and earn a commission
 from the treating hospital. We are not a hospital, we make no clinical decisions, and we do not sell
 software.
@@ -56,7 +56,7 @@ UK or Irish patient's data can be processed in India at all. It is a later corri
 **Sachin Rai's ranked top-5 target markets** (9.5-year MVT desk veteran, interviewed 2026-07-22, re-confirmed
 same day): **1. Ethiopia · 2. Nigeria · 3. Kenya · 4. Tanzania · 5. Zambia/Zimbabwe/Namibia** (a cluster, not
 individually ranked). Cameroon and Sudan named as possible extensions, not core. This is one experienced
-operator's real desk read on where MedYatra could actually win — agent-supply saturation, category fit, and
+operator's real desk read on where Canopus Care could actually win — agent-supply saturation, category fit, and
 relationship access in each market — not aggregate industry volume; it's a different, complementary signal
 to the cited 2025 figures above (which rank Oman ahead of Kenya at the country level). All five markets are
 now in the data core (`market` table); Tanzania, Zambia, Zimbabwe, Namibia, Cameroon were newly added
@@ -188,7 +188,7 @@ only kind of partner:
 - **Payers.** Sachin cited a real precedent — Toyota routed its own insured employees through medical tourism
   for treatment. The pitch to an insurer, a TPA, or a large self-insured employer is financial (lower claims
   cost for treatment they already fund) applied to a whole population at once, not a clinical-trust pitch to
-  one referrer. This exact pitch is already built once — the `MedYatra × TruDoc` partnership document — and
+  one referrer. This exact pitch is already built once — the `Canopus Care × TruDoc` partnership document — and
   Toyota is independent evidence it generalizes. The **base is now built** (a payer account type and a fit
   rubric scoring population × claims-exposure × decision authority); **the repeatable outreach motion is
   deliberately parked for phase 2/3.**
@@ -206,7 +206,7 @@ Operational today in a sandbox, without any API keys:
   this document, and it is closed.** Thirteen agents carry a booked patient from intake through aftercare:
   triage, document-KYC, visa documents, **a patient–doctor video consult** (the patient meets their treating
   surgeon by video after the quote is finalized and before anyone buys a ticket — gated mechanically on a
-  finalized quote; MedYatra schedules it and is not a party to the clinical conversation), accommodation,
+  finalized quote; Canopus Care schedules it and is not a party to the clinical conversation), accommodation,
   flexible-date ticketing, airport logistics, interpreter scheduling, family updates (on the family member's
   own separate consent), discharge-and-medication relay, billing reconciliation, return-travel readiness, and
   payment routing. Each clears the safety gate; several are deliberately deterministic — a visa rule, a
@@ -222,7 +222,7 @@ Operational today in a sandbox, without any API keys:
   outreach parked for phase 2/3).
 - **Medical data architecture — GDPR as the backbone, in code.** Clinical information moving between patient
   and hospital (prescriptions, treatment methodologies, recommended tests, medical history) lives in an
-  encrypted vault (AES-256-GCM) in its own database, separate from everything commercial. MedYatra's own
+  encrypted vault (AES-256-GCM) in its own database, separate from everything commercial. Canopus Care's own
   read surface is limited *by construction* to what a non-clinical facilitator needs: treatment
   name/protocol, timelines, cost structure, surgeon details. Decryption exists only for named relay purposes
   (hospital→patient, patient→hospital, patient's own copy); every access including refusals is logged;
@@ -353,6 +353,6 @@ builds toward them by accident.
 
 ---
 
-*Working codename MedYatra ("medical journey"). Prepared for partner and investor conversations; every
+*Working codename Canopus Care ("medical journey"). Prepared for partner and investor conversations; every
 figure is either cited or labelled as an assumption. Where a number is ours, it is a hypothesis awaiting a
 real one.*

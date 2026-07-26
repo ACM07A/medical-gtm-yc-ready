@@ -93,11 +93,11 @@ Having these details in writing provides clarity and helps prevent misunderstand
 
 ## How the Process Really Works
 
-Navigating medical care abroad involves several distinct steps. MedYatra acts as a facilitator, helping coordinate your initial contact with accredited hospitals and assisting with necessary supporting documents. You, as the patient, will manage your own travel bookings, visa application, and local accommodation.
+Navigating medical care abroad involves several distinct steps. Canopus Care acts as a facilitator, helping coordinate your initial contact with accredited hospitals and assisting with necessary supporting documents. You, as the patient, will manage your own travel bookings, visa application, and local accommodation.
 
 Here is a typical sequence:
 
-1.  **Initial Contact and Medical Reports:** You begin by messaging MedYatra, sharing your current medical reports, X-rays, MRI scans, and a brief description of your condition via WhatsApp. Providing comprehensive and recent information allows for an accurate initial assessment.
+1.  **Initial Contact and Medical Reports:** You begin by messaging Canopus Care, sharing your current medical reports, X-rays, MRI scans, and a brief description of your condition via WhatsApp. Providing comprehensive and recent information allows for an accurate initial assessment.
 2.  **Hospital Review and Opinion:** We forward your reports to several JCI or NABH accredited hospitals in India that specialize in orthopedics. Their specialists will review your case, provide a medical opinion on the most suitable treatment, and offer an indicative cost estimate or package quote. This process usually takes a few business days.
 3.  **Choosing a Hospital and Invitation Letter:** Once you review the options and choose a hospital, that hospital will issue an official invitation letter. This letter is a crucial supporting document required for your visa application.
 4.  **Visa Application and Travel Arrangements:** With the invitation letter in hand, you will apply for your e-Medical Visa to India yourself. This is a personal responsibility. Simultaneously, you will book your own international flights to India and arrange your accommodation for the duration of your stay, both before and after your hospital admission.
@@ -108,10 +108,10 @@ Here is a typical sequence:
 
 ### About this page
 
-Written by MedYatra editorial. Last reviewed on 2026-07-21.
+Written by Canopus Care editorial. Last reviewed on 2026-07-21.
 
 **Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
 
 **What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
 
-**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.
+**What this page is not.** Canopus Care is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

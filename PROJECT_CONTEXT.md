@@ -1,4 +1,4 @@
-# PROJECT CONTEXT — MedYatra GTM Engine
+# PROJECT CONTEXT — Canopus Care GTM Engine
 
 A complete walkthrough of what this project is, how every part works, the decisions and nuances behind
 it, and its honest limits. Written so you can understand — and speak to — every capability you've built.
@@ -9,7 +9,7 @@ it, and its honest limits. Written so you can understand — and speak to — ev
 
 ## 1. The one-paragraph version
 
-MedYatra is an **agentic go-to-market (GTM) engine** for a medical-tourism *facilitator* — a business that
+Canopus Care is an **agentic go-to-market (GTM) engine** for a medical-tourism *facilitator* — a business that
 connects international patients to accredited Indian hospitals and takes a facilitation fee — a volume ramp
 that steps up 20% → 22.5% → 25% (₹0–20L / 20–50L / 50L+ routed), opening below incumbent agents' 25–33% and
 rising only to their floor (it is
@@ -249,7 +249,7 @@ already produces the best of these.
 The margin play brings on high-quality hospitals patients abroad haven't heard of. Customer-facing content
 must *build* their credibility, using levers that work without brand fame: **accreditation as the global
 equalizer**, reframing "lesser-known" as a **focused-specialist** advantage, named-clinician credentials,
-radical transparency, and MedYatra's vetting promise. Every unsupplied stat is emitted as a `[VERIFY: …]`
+radical transparency, and Canopus Care's vetting promise. Every unsupplied stat is emitted as a `[VERIFY: …]`
 placeholder — never fabricated. See [`build-os/05`](./build-os/05_CONTENT_BRAND_CAMPAIGN.md).
 
 ### 5.2d Doctor-affiliate accounts — a second GTM motion ([`data-core/capture_doctor.mjs`](./data-core/capture_doctor.mjs))
@@ -343,11 +343,11 @@ drives it from first touch to treated-and-referred. It's pure logic (no I/O): gi
 and timing, it returns the next human-gated action, honouring the WhatsApp **24-hour session rule** (free-form
 only ≤24h after the patient's last message, otherwise an approved template), a no-reply **nudge cadence + cap**,
 a **diagnosis fork** (knows the procedure → product selection vs. has symptoms → remote opinion), explicit
-**hospital handoffs** (`clinical:true` steps the medical team owns — MedYatra never advises), and stress-hardened
+**hospital handoffs** (`clinical:true` steps the medical team owns — Canopus Care never advises), and stress-hardened
 edge states (visa denied / not-fit-to-fly, reschedule, complication). 22 stages, one approval-ready template each
 ([`data-core/gen_comms.mjs`](./data-core/gen_comms.mjs), stored in `comms_template`).
 
-**Scope, deliberately narrow** (build-os/09): MedYatra does *light* coordination — demand-gen, qualification,
+**Scope, deliberately narrow** (build-os/09): Canopus Care does *light* coordination — demand-gen, qualification,
 relaying reports to the hospital, and **supporting documents** (orchestrating the hospital invitation letter +
 a visa checklist, [`lib/visa.mjs`](./lib/visa.mjs)). The **patient applies for their own visa and books their
 own tickets**; near-hospital stay is partner-provided ([`lib/stay.mjs`](./lib/stay.mjs)). No heavy logistics.
@@ -367,7 +367,7 @@ the template back to `review` before it can ever send. The same page powers the 
 DB) and a self-contained shareable artifact (edits persist to the browser). This is what you put in front of a
 prospective operator to let them *feel* the product and shape the copy without touching anything real.
 
-Everything outbound is still approved in **MedYatra Studio** (`/studio`, [`server/studio.mjs`](./server/studio.mjs)) —
+Everything outbound is still approved in **Canopus Care Studio** (`/studio`, [`server/studio.mjs`](./server/studio.mjs)) —
 the live approve-and-deploy console that re-checks the gates (regulatory · verified contact · consent) and writes
 back: publishes a page, marks a proposal sent, approves a post, or releases a comms draft and advances the lead.
 
@@ -438,7 +438,7 @@ medication instruction, or a sum of money is worse than no answer at all:
   routing, encoding real constraints found by research (Kenya SHA's ~$3,900 cap and 3-hospital list, plus
   named institutional corridors — Uzbekistan's government-backed channel, Zambia/Tanzania embassy referral,
   Iraq NGO-mediated, NNPC Nigeria — from the Sachin Rai interview, 2026-07-22).
-- **Visa & travel documents** ([`lib/visa.mjs`](./lib/visa.mjs)) — deliberately narrow scope: MedYatra
+- **Visa & travel documents** ([`lib/visa.mjs`](./lib/visa.mjs)) — deliberately narrow scope: Canopus Care
   orchestrates the hospital's Medical Invitation Letter (mandatory since 1 Apr 2025, the actual gate on the
   whole visa process) and hands over a country-correct document checklist; the patient still applies on the
   government portal themselves — that line hasn't moved. Idempotent per lead (`service` table), so re-running
@@ -453,11 +453,11 @@ medication instruction, or a sum of money is worse than no answer at all:
   anyone buys a ticket. Mechanically **gated on a finalized quote** (`estimate_line kind='quote'` — no
   quote, no consult); deterministic timezone-overlap math between the surgeon's IST hours and the patient's
   waking hours across all 22 markets; interpreter attached for non-English consults. The compliance line IS
-  the design: MedYatra schedules the call and is *not a party to it* — no joining, recording, or storing of
+  the design: Canopus Care schedules the call and is *not a party to it* — no joining, recording, or storing of
   the clinical conversation; we keep scheduling metadata plus a non-clinical outcome
   (proceed / revise_quote / not_suitable / follow_up), and `recordConsultOutcome` **refuses** notes that read
   as clinical content. Video platform is an env-key-away plugin; scheduling is a human-gated dry-run.
-- **Ticketing** ([`lib/flights.mjs`](./lib/flights.mjs)) — the scope line above did move: MedYatra now
+- **Ticketing** ([`lib/flights.mjs`](./lib/flights.mjs)) — the scope line above did move: Canopus Care now
   searches and recommends flight dates (the patient still completes the actual purchase). The real idea:
   arrival has a hard constraint (the pre-op buffer before admission, reused directly from `stay.mjs`'s own
   `stayPlan()` so the two agents can never disagree about what "arrive in time" means) while departure
@@ -516,7 +516,7 @@ this standard:
 
 ### 5.10 The safety gate ([`lib/safety.mjs`](./lib/safety.mjs))
 
-MedYatra is a facilitator, not a provider — that's the legal basis for operating without a healthcare
+Canopus Care is a facilitator, not a provider — that's the legal basis for operating without a healthcare
 licence in every source market, and one agent sentence of diagnosis, dosage, or prognosis voids it. So
 scope is enforced **mechanically on agent output**, not requested in a system prompt — a guardrail a model
 can be argued out of isn't a guardrail. `checkMessage()` returns `block | escalate | review | pass`:
@@ -549,7 +549,7 @@ Everything clinical moving between patient and hospital — prescriptions, treat
 recommended tests, medical history, discharge notes — lives in an **AES-256-GCM-encrypted vault in its own
 database file**, never mingled with the GTM core, behind a pluggable backend: local sandbox today (the
 default), a fully GDPR-compliant EU host at go-live (`VAULT_BACKEND=remote` + keys; hosting to be provided).
-The load-bearing idea is a **two-surface record**: the clinical payload is an encrypted blob MedYatra's code
+The load-bearing idea is a **two-surface record**: the clinical payload is an encrypted blob Canopus Care's code
 cannot casually read; the only plaintext is the **facilitator envelope** — treatment name/protocol,
 treatment timelines, cost structure, surgeon details — which is the *entire* read surface a non-clinical
 facilitator needs. Decryption exists solely for three named relay purposes (hospital→patient,
@@ -716,5 +716,5 @@ re-enable GLM-5.2.
 
 ---
 
-*Working codename **MedYatra** ("medical journey") — rename freely. This is a first-draft engine: a
+*Working codename **Canopus Care** ("medical journey") — rename freely. This is a first-draft engine: a
 demonstration of building a real, autonomous, honest AI product end-to-end.*

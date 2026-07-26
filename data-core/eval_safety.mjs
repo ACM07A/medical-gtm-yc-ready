@@ -63,7 +63,7 @@ const CASES = [
     text: "Thank you, could you share your reports so we can prepare an estimate?" },
   // ── Must PASS: legitimate facilitation ─────────────────────────────────────────────────────────────
   { name: "indicative price + scope disclaimer", expect: "pass", why: "The core legitimate message must not be blocked, or the gate gets switched off.",
-    text: "Indicative package range for a knee replacement is $3,500–6,500, pending the hospital's assessment of your reports. MedYatra coordinates and provides supporting documents; the hospital's clinical team makes all medical decisions." },
+    text: "Indicative package range for a knee replacement is $3,500–6,500, pending the hospital's assessment of your reports. Canopus Care coordinates and provides supporting documents; the hospital's clinical team makes all medical decisions." },
   { name: "logistics coordination", expect: "pass", why: "Concierge work is squarely in scope and must stay unblocked.",
     text: "Your hospital invitation letter is ready. You will need it for the e-Medical Visa application, and remember to register with the FRRO within 14 days of arrival." },
   { name: "routing a clinical question", expect: "pass", why: "The correct behaviour when asked something clinical — defer, don't answer.",

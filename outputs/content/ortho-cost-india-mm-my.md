@@ -59,12 +59,12 @@
 
 ## လုပ်ငန်းစဉ် အမှန်တကယ် မည်သို့ လုပ်ဆောင်သနည်း
 
-MedYatra သည် ဆေးရုံဝန်ဆောင်မှုပေးသူမဟုတ်ဘဲ လူနာများနှင့် အိန္ဒိယရှိ အသိအမှတ်ပြုဆေးရုံများအကြား ချိတ်ဆက်ပေးသော facilitator တစ်ခုဖြစ်သည်။ လုပ်ငန်းစဉ်သည် အောက်ပါအတိုင်း ဖြစ်ပါသည်-
+Canopus Care သည် ဆေးရုံဝန်ဆောင်မှုပေးသူမဟုတ်ဘဲ လူနာများနှင့် အိန္ဒိယရှိ အသိအမှတ်ပြုဆေးရုံများအကြား ချိတ်ဆက်ပေးသော facilitator တစ်ခုဖြစ်သည်။ လုပ်ငန်းစဉ်သည် အောက်ပါအတိုင်း ဖြစ်ပါသည်-
 
-1.  **အချက်အလက်ပေးပို့ခြင်း:** သင်၏ ဆေးမှတ်တမ်းများ (ဓာတ်မှန်၊ MRI ရလဒ်များ၊ ဆေးစစ်ချက်များ) ကို MedYatra သို့ WhatsApp မှတစ်ဆင့် ပေးပို့ပါ။
-2.  **ဆေးရုံမှ ပြန်လည်သုံးသပ်ခြင်း:** MedYatra မှ သင်၏ဆေးမှတ်တမ်းများကို အိန္ဒိယရှိ သင့်တော်သော အသိအမှတ်ပြုဆေးရုံများသို့ ပေးပို့မည်ဖြစ်သည်။ ထို့နောက် ဆေးရုံမှ ဆရာဝန်များက သုံးသပ်ပြီး ကုသမှုဆိုင်ရာ အကြံပြုချက်နှင့် ခန့်မှန်းခြေ ကုန်ကျစရိတ်ကို ပြန်လည်ပေးပို့ပါမည်။
-3.  **ဖိတ်ကြားစာ ရယူခြင်း:** ဆေးရုံကို ရွေးချယ်ပြီးပါက၊ ဆေးရုံမှ ဖိတ်ကြားစာ (Invitation Letter) ထုတ်ပေးပါမည်။ ဤဖိတ်ကြားစာသည် အိန္ဒိယ e-Medical Visa လျှောက်ထားရာတွင် မရှိမဖြစ်လိုအပ်သော အထောက်အထားစာရွက် ဖြစ်ပါသည်။ MedYatra က ဤဖိတ်ကြားစာကို ရရှိရန် ကူညီဆောင်ရွက်ပေးပါမည်။
-4.  **ဗီဇာနှင့် ခရီးစဉ် စီစဉ်ခြင်း:** သင်ကိုယ်တိုင် e-Medical Visa လျှောက်ထားရမည်ဖြစ်ပြီး၊ အိန္ဒိယသို့ အသွားအပြန် လေယာဉ်လက်မှတ်များနှင့် နေထိုင်ရန် နေရာထိုင်ခင်းများကို သင်ကိုယ်တိုင် စီစဉ်ရပါမည်။ MedYatra သည် လိုအပ်သော အထောက်အထားစာရွက်များကို ချိတ်ဆက်ပေးခြင်းနှင့် လမ်းညွှန်မှုပေးခြင်းများ ပြုလုပ်ပေးပါသည်။
+1.  **အချက်အလက်ပေးပို့ခြင်း:** သင်၏ ဆေးမှတ်တမ်းများ (ဓာတ်မှန်၊ MRI ရလဒ်များ၊ ဆေးစစ်ချက်များ) ကို Canopus Care သို့ WhatsApp မှတစ်ဆင့် ပေးပို့ပါ။
+2.  **ဆေးရုံမှ ပြန်လည်သုံးသပ်ခြင်း:** Canopus Care မှ သင်၏ဆေးမှတ်တမ်းများကို အိန္ဒိယရှိ သင့်တော်သော အသိအမှတ်ပြုဆေးရုံများသို့ ပေးပို့မည်ဖြစ်သည်။ ထို့နောက် ဆေးရုံမှ ဆရာဝန်များက သုံးသပ်ပြီး ကုသမှုဆိုင်ရာ အကြံပြုချက်နှင့် ခန့်မှန်းခြေ ကုန်ကျစရိတ်ကို ပြန်လည်ပေးပို့ပါမည်။
+3.  **ဖိတ်ကြားစာ ရယူခြင်း:** ဆေးရုံကို ရွေးချယ်ပြီးပါက၊ ဆေးရုံမှ ဖိတ်ကြားစာ (Invitation Letter) ထုတ်ပေးပါမည်။ ဤဖိတ်ကြားစာသည် အိန္ဒိယ e-Medical Visa လျှောက်ထားရာတွင် မရှိမဖြစ်လိုအပ်သော အထောက်အထားစာရွက် ဖြစ်ပါသည်။ Canopus Care က ဤဖိတ်ကြားစာကို ရရှိရန် ကူညီဆောင်ရွက်ပေးပါမည်။
+4.  **ဗီဇာနှင့် ခရီးစဉ် စီစဉ်ခြင်း:** သင်ကိုယ်တိုင် e-Medical Visa လျှောက်ထားရမည်ဖြစ်ပြီး၊ အိန္ဒိယသို့ အသွားအပြန် လေယာဉ်လက်မှတ်များနှင့် နေထိုင်ရန် နေရာထိုင်ခင်းများကို သင်ကိုယ်တိုင် စီစဉ်ရပါမည်။ Canopus Care သည် လိုအပ်သော အထောက်အထားစာရွက်များကို ချိတ်ဆက်ပေးခြင်းနှင့် လမ်းညွှန်မှုပေးခြင်းများ ပြုလုပ်ပေးပါသည်။
 5.  **ခရီးသွားခြင်းနှင့် ကုသမှုခံယူခြင်း:** သင်သည် အိန္ဒိယသို့ ခရီးထွက်ပြီး သတ်မှတ်ထားသော ဆေးရုံတွင် ကုသမှုခံယူရမည်။ ခွဲစိတ်မှုပြီးနောက် ဆေးရုံတွင် သတ်မှတ်ထားသော အချိန်ကာလတစ်ခုအထိ အနားယူနေထိုင်ရမည်။
 6.  **ပြန်လည်နေထိုင်ခြင်းနှင့် ပြန်လည်လိုက်ပါစစ်ဆေးခြင်း:** ဆေးရုံမှ ဆင်းပြီးနောက် အိမ်ပြန်ရန် အဆင်သင့်မဖြစ်သေးပါက အိန္ဒိယတွင် ခဏတာ ဆက်လက်နေထိုင်၍ ပြန်လည်သက်သာလာစေရန် လုပ်ဆောင်နိုင်ပါသည်။ မြန်မာနိုင်ငံသို့ ပြန်ရောက်ပြီးနောက် လိုအပ်ပါက တယ်လီဖုန်းဖြင့် ဆက်သွယ်၍ နောက်ဆက်တွဲ စစ်ဆေးမှုများ ပြုလုပ်နိုင်ပါသည်။
 
@@ -80,10 +80,10 @@ MedYatra သည် ဆေးရုံဝန်ဆောင်မှုပေး�
 
 ### About this page
 
-Written by MedYatra editorial. Last reviewed on 2026-07-21.
+Written by Canopus Care editorial. Last reviewed on 2026-07-21.
 
 **Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
 
 **What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
 
-**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.
+**What this page is not.** Canopus Care is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

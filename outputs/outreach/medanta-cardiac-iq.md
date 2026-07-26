@@ -4,7 +4,7 @@ Subject: Partnership proposal: Pre-qualified Cardiac patients from Iraq & the Gu
 
 Dear Medanta International Patient Services team,
 
-MedYatra is a medical-value-travel facilitator connecting international patients with established hospitals. We are writing to propose a partnership focused on delivering incremental, pre-qualified Cardiac patients from Iraq and the Gulf to Medanta.
+Canopus Care is a medical-value-travel facilitator connecting international patients with established hospitals. We are writing to propose a partnership focused on delivering incremental, pre-qualified Cardiac patients from Iraq and the Gulf to Medanta.
 
 Our dedicated Arabic and English demand engine manages patient outreach and navigation, directly reducing your acquisition effort. As a facilitator, we do not provide clinical care; we ensure patients arrive prepared and informed, complementing your NABH/JCI-accredited services.
 
@@ -14,4 +14,4 @@ We would appreciate a 20-30 minute introductory call to explore this alignment. 
 
 Sincerely,
 
-MedYatra Partnerships
+Canopus Care Partnerships

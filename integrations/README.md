@@ -1,6 +1,6 @@
 # Integrations — setup & handoff
 
-Wires the MedYatra engine's model tiers and external endpoints. Keys live in `.env` (gitignored), never in code or chat.
+Wires the Canopus Care engine's model tiers and external endpoints. Keys live in `.env` (gitignored), never in code or chat.
 
 ## Status (2026-07-03)
 

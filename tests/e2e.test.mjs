@@ -26,5 +26,12 @@ test("browser-rendered golden path pages include required demo surfaces", () => 
   assert.doesNotMatch(html, /Apollo International|Fortis International|Sir Ganga Ram/);
   assert.match(html, /<span class="badge forecast">Forecast<\/span>/);
   assert.doesNotMatch(html, /&lt;span class=&quot;badge/);
+  assert.match(html, /class="brand-lockup"/);
+  assert.match(html, /class="nav-label">Cases<\/span>/);
+  assert.match(html, /--brand-500:#39745B/);
+  assert.match(html, /font-family:"DM Sans","Segoe UI"/);
+  assert.match(html, /h1,h2\{font-family:"Fraunces",Georgia,serif\}/);
+  assert.match(html, /grid-template-rows:auto auto 1fr/);
+  assert.match(html, /class="compact-user"/);
   db.close(); rmSync(dir, { recursive: true, force: true });
 });

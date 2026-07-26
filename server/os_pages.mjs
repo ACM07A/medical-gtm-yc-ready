@@ -1,5 +1,7 @@
 import { appMode, readinessReport } from "../data-core/os_core.mjs";
+import { allowedCaseTransitions, CASE_WORKFLOW, caseStateLabel } from "../data-core/case_workflow.mjs";
 import { appShell, icon } from "./canopus_ui.mjs";
+import { sessionUserId } from "./session.mjs";
 
 const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 class SafeHtml extends String {}
@@ -23,12 +25,25 @@ function viewOptions(active, session, metrics) {
 }
 
 export function getSession(db, req) {
-  if (appMode() !== "demo")
-    return { user: null, memberships: [], role: "unauthenticated", organization_id: null };
-  const email = req.headers["x-demo-user"] || "admin@canopuscare.demo";
-  const user = db.prepare(`SELECT * FROM app_user WHERE email=? AND active=1`).get(email) || db.prepare(`SELECT * FROM app_user WHERE email='admin@canopuscare.demo'`).get();
+  const cookieUserId = sessionUserId(req);
+  const headerEmail = appMode() === "demo" ? req.headers["x-demo-user"] : null;
+  let user = cookieUserId
+    ? db.prepare(`SELECT * FROM app_user WHERE id=? AND active=1`).get(cookieUserId)
+    : null;
+  if (!user && headerEmail)
+    user = db.prepare(`SELECT * FROM app_user WHERE email=? AND active=1`).get(headerEmail);
+  if (!user && appMode() === "demo")
+    user = db.prepare(`SELECT * FROM app_user WHERE id='user_viewer' AND active=1`).get();
+  if (!user)
+    return { user: null, memberships: [], role: "unauthenticated", organization_id: null, authenticated: false };
   const memberships = user ? db.prepare(`SELECT m.role,o.* FROM membership m JOIN organization o ON o.id=m.organization_id WHERE m.user_id=?`).all(user.id) : [];
-  return { user, memberships, role: memberships[0]?.role || "read_only", organization_id: memberships[0]?.id || "org_platform" };
+  return {
+    user,
+    memberships,
+    role: memberships[0]?.role || "read_only",
+    organization_id: memberships[0]?.id || "org_platform",
+    authenticated: !!cookieUserId || !!headerEmail,
+  };
 }
 
 function scopedCaseWhere(session) {
@@ -45,22 +60,23 @@ export function apiCases(db, session) {
 }
 
 export function apiCase(db, session, id) {
-  const c = apiCases(db, session).find((x) => x.id === id);
+  const c = apiCases(db, session).find((x) => x.id === id || x.synthetic_identifier === id);
   if (!c) return null;
+  const caseId = c.id;
   const sourceLead = c.source_lead_id
     ? db.prepare(`SELECT id,market_code,category_id,channel,ref,consent,status,journey_stage FROM lead WHERE id=?`).get(c.source_lead_id)
     : null;
   return {
     ...c,
     source_lead: sourceLead,
-    documents: db.prepare(`SELECT * FROM case_document WHERE case_id=? ORDER BY doc_type`).all(id),
-    matches: db.prepare(`SELECT * FROM hospital_match WHERE case_id=? ORDER BY confidence`).all(id),
-    reviews: db.prepare(`SELECT * FROM hospital_review WHERE case_id=?`).all(id),
-    estimates: db.prepare(`SELECT * FROM estimate WHERE case_id=?`).all(id).map((e) => ({ ...e, items: db.prepare(`SELECT * FROM estimate_item WHERE estimate_id=?`).all(e.id) })),
-    services: db.prepare(`SELECT sr.*,v.service_categories,v.indicative_price FROM service_request sr LEFT JOIN vendor v ON v.id=sr.vendor_id WHERE sr.case_id=?`).all(id),
-    tasks: db.prepare(`SELECT * FROM ops_task WHERE case_id=?`).all(id),
-    approvals: db.prepare(`SELECT * FROM approval WHERE subject_ref=? OR subject_ref IN (SELECT id FROM estimate WHERE case_id=?)`).all(id, id),
-    audit: db.prepare(`SELECT * FROM audit_event WHERE subject_id=? ORDER BY created DESC`).all(id),
+    documents: db.prepare(`SELECT * FROM case_document WHERE case_id=? ORDER BY doc_type`).all(caseId),
+    matches: db.prepare(`SELECT * FROM hospital_match WHERE case_id=? ORDER BY confidence`).all(caseId),
+    reviews: db.prepare(`SELECT * FROM hospital_review WHERE case_id=?`).all(caseId),
+    estimates: db.prepare(`SELECT * FROM estimate WHERE case_id=?`).all(caseId).map((e) => ({ ...e, items: db.prepare(`SELECT * FROM estimate_item WHERE estimate_id=?`).all(e.id) })),
+    services: db.prepare(`SELECT sr.*,v.service_categories,v.indicative_price FROM service_request sr LEFT JOIN vendor v ON v.id=sr.vendor_id WHERE sr.case_id=?`).all(caseId),
+    tasks: db.prepare(`SELECT * FROM ops_task WHERE case_id=?`).all(caseId),
+    approvals: db.prepare(`SELECT * FROM approval WHERE subject_ref=? OR subject_ref IN (SELECT id FROM estimate WHERE case_id=?)`).all(caseId, caseId),
+    audit: db.prepare(`SELECT * FROM audit_event WHERE subject_id=? ORDER BY created DESC`).all(caseId),
   };
 }
 
@@ -76,7 +92,7 @@ export function apiCaseResource(db, session, id, resource) {
     tasks: c.tasks,
     approvals: c.approvals,
     audit: c.audit,
-    messages: db.prepare(`SELECT * FROM message WHERE case_id=? ORDER BY created DESC`).all(id),
+    messages: db.prepare(`SELECT * FROM message WHERE case_id=? ORDER BY created DESC`).all(c.id),
   };
   return Object.hasOwn(resources, resource) ? resources[resource] : undefined;
 }
@@ -146,13 +162,18 @@ export function apiHospital(db, session) {
 export function renderCases(db, session) {
   const cases = apiCases(db, session);
   return shell("Cases", `<div class="head"><div><div class="eyebrow">Patient case workspace</div><h1>Cases</h1><p class="lede">Synthetic demo patients only. Clinical suitability remains owned by hospital reviewers.</p></div></div>
-  <table><thead><tr><th>Case</th><th>Market</th><th>Treatment</th><th>Stage</th><th>Consent</th><th>Next action</th></tr></thead><tbody>${cases.map((c) => `<tr><td><a href="/cases/${c.id}">${esc(c.synthetic_name)}</a><br><span class="label">${esc(c.synthetic_identifier)}</span></td><td>${esc(c.source_market)}</td><td>${esc(c.treatment_request)}</td><td>${badge(c.current_stage)}</td><td>${badge(c.consent_status)}</td><td>${esc(c.next_best_action)}</td></tr>`).join("")}</tbody></table>`, viewOptions("cases", session, { cases: cases.length, agents: 16, actions: 0 }));
+  <table><thead><tr><th>Case</th><th>Market</th><th>Treatment</th><th>Stage</th><th>Consent</th><th>Next action</th></tr></thead><tbody>${cases.map((c) => `<tr><td><a href="/cases/${c.synthetic_identifier || c.id}">${esc(c.synthetic_name)}</a><br><span class="label">${esc(c.synthetic_identifier)}</span></td><td>${esc(c.source_market)}</td><td>${esc(c.treatment_request)}</td><td>${badge(c.current_stage)}</td><td>${badge(c.consent_status)}</td><td>${esc(c.next_best_action)}</td></tr>`).join("")}</tbody></table>`, viewOptions("cases", session, { cases: cases.length, agents: 16, actions: 0 }));
 }
 
 export function renderCase(db, session, id) {
   const c = apiCase(db, session, id);
   if (!c) return shell("Not found", `<h1>Case not found</h1><p class="lede">This role cannot access that case.</p>`, viewOptions("cases", session));
-  return shell(c.synthetic_name, `<div class="head"><div><div class="eyebrow">${esc(c.synthetic_identifier)}</div><h1>${esc(c.synthetic_name)}</h1><p class="lede">${esc(c.treatment_request)}. ${esc(c.warnings)}</p></div><div>${badge(c.current_stage)} ${badge(c.consent_status)}</div></div>
+  const allowedTransitions = allowedCaseTransitions(c.current_stage, session.role);
+  const workflowAction = allowedTransitions.length
+    ? `<div class="panel"><h2>Next workflow action</h2><p>${esc(c.next_best_action)}</p>${allowedTransitions.map((state) =>
+      `<button class="btn primary" data-case-transition="${esc(state)}">${esc(CASE_WORKFLOW[state].label)}</button>`).join("")}<p id="transition-result" class="label" aria-live="polite"></p></div>`
+    : `<div class="panel"><h2>Next workflow action</h2><p>${esc(c.next_best_action)}</p><p class="label">${session.authenticated ? "This action belongs to another demo role, or the case is blocked." : "Log in as the assigned demo role to perform workflow actions."}</p></div>`;
+  return shell(c.synthetic_name, `<div class="head"><div><div class="eyebrow">${esc(c.synthetic_identifier)}</div><h1>${esc(c.synthetic_name)}</h1><p class="lede">${esc(c.treatment_request)}. ${esc(c.warnings)}</p></div><div>${badge(caseStateLabel(c.current_stage))} ${badge(c.consent_status)}</div></div>
   <div class="callout">Illustrative synthetic organizations and rates only. No affiliation, accreditation or partnership is implied.${c.source_lead ? ` Linked GTM lead #${esc(c.source_lead.id)} (${esc(c.source_lead.journey_stage || "intake")}). <a href="/journey">Open journey orchestrator</a>.` : ""}</div>
   <div class="tabs">${["Overview","Documents","Hospital Matches","Estimates","Messages","Tasks","Travel Support","Vendors","Timeline","Compliance","Audit Log"].map((t)=>`<span class="tab">${t}</span>`).join("")}</div>
   <section class="split"><div class="panel"><h2>Overview</h2><div class="case-facts">${[
@@ -160,12 +181,34 @@ export function renderCase(db, session, id) {
     ["Budget", c.budget_band], ["Travel window", c.travel_window], ["Coordinator", c.assigned_coordinator],
     ["Next operational action", c.next_best_action], ["Blockers", c.blockers || "none"],
   ].map(([label, value]) => `<div class="case-fact"><b>${esc(label)}</b><span>${esc(value)}</span></div>`).join("")}</div></div>
-  <div class="panel"><h2>Compliance</h2><div class="callout">${esc(c.blockers || "No blocking compliance issue on this synthetic path.")}</div><p class="label">AI may classify documents and prepare operational checklists. It must not diagnose, interpret scans, choose treatment, promise outcomes, or declare fitness to fly.</p></div></section>
+  ${workflowAction}</section>
+  <div class="panel"><h2>Compliance</h2><div class="callout">${esc(c.blockers || "No blocking compliance issue on this synthetic path.")}</div><p class="label">AI may classify documents and prepare operational checklists. It must not diagnose, interpret scans, choose treatment, promise outcomes, or declare fitness to fly.</p></div>
   <h2>Documents</h2><table><thead><tr><th>Type</th><th>Status</th><th>Watermark</th></tr></thead><tbody>${rows(c.documents,[["doc_type"],["status",(r)=>badge(r.status)],["demo_watermark"]])}</tbody></table>
   <h2>Hospital Matches</h2><table><thead><tr><th>Hospital</th><th>Operational Fit</th><th>Clinical Acceptance</th><th>Commercial Disclosure</th><th>Confidence</th></tr></thead><tbody>${rows(c.matches,[["hospital_name"],["operational_fit"],["clinical_acceptance"],["commercial_disclosure"],["confidence",(r)=>badge(r.confidence)]])}</tbody></table>
   <h2>Estimates</h2><table><thead><tr><th>Procedure</th><th>Status</th><th>Total</th><th>Caveats</th></tr></thead><tbody>${rows(c.estimates,[["procedure"],["status",(r)=>badge(r.status)],["indicative_total",(r)=>`${r.currency} ${r.indicative_total}`],["caveats"]])}</tbody></table>
   <h2>Vendors & Travel Support</h2><table><thead><tr><th>Category</th><th>Status</th><th>Mock quote</th><th>Owner</th></tr></thead><tbody>${rows(c.services,[["category"],["status",(r)=>badge(r.status)],["mock_quote"],["owner"]])}</tbody></table>
-  <h2>Audit Log</h2><table><thead><tr><th>When</th><th>Action</th><th>Outcome</th><th>Detail</th></tr></thead><tbody>${rows(c.audit,[["created"],["action"],["outcome",(r)=>badge(r.outcome)],["detail"]])}</tbody></table>`, viewOptions("cases", session, { cases: 1, agents: 16, actions: 0 }));
+  <h2>Audit Log</h2><table><thead><tr><th>When</th><th>Action</th><th>Outcome</th><th>Detail</th></tr></thead><tbody>${rows(c.audit,[["created"],["action"],["outcome",(r)=>badge(r.outcome)],["detail"]])}</tbody></table>
+  <script>
+  document.querySelectorAll("[data-case-transition]").forEach((button) => button.addEventListener("click", async () => {
+    const result = document.querySelector("#transition-result");
+    button.disabled = true;
+    result.textContent = "Saving...";
+    try {
+      const response = await fetch("/api/cases/${encodeURIComponent(c.synthetic_identifier || c.id)}/transition", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ state: button.dataset.caseTransition })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error?.message || "Transition failed");
+      result.textContent = "Saved. Refreshing timeline...";
+      location.reload();
+    } catch (error) {
+      result.textContent = error.message;
+      button.disabled = false;
+    }
+  }));
+  </script>`, viewOptions("cases", session, { cases: 1, agents: 16, actions: allowedTransitions.length }));
 }
 
 export function renderHospital(db, session) {
@@ -173,7 +216,7 @@ export function renderHospital(db, session) {
   const byStage = Object.entries(h.cases.reduce((a,c)=>(a[c.current_stage]=(a[c.current_stage]||0)+1,a),{}));
   return shell("Hospital Command Centre", `<div class="head"><div><div class="eyebrow">Hospital Command Centre</div><h1>International patient operations</h1><p class="lede">Inbox, SLA, estimates and synthetic revenue for routed demo cases. Hospital clinical reviewers own clinical status.</p></div></div>
   <div class="metric-row"><div class="metric-tile"><div class="k">${h.cases.length}</div><div class="label">routed cases</div></div><div class="metric-tile"><div class="k">${h.tasks.filter(t=>t.status!=="Completed").length}</div><div class="label">open tasks</div></div><div class="metric-tile"><div class="k">USD ${Math.round(h.pipeline_value).toLocaleString()}</div><div class="label">synthetic estimate value</div></div><div class="metric-tile"><div class="k">24h</div><div class="label">demo response SLA</div></div></div>
-  <h2>International Patient Inbox</h2><table><thead><tr><th>Case</th><th>Stage</th><th>Missing / next</th><th>Agent</th></tr></thead><tbody>${h.cases.map(c=>`<tr><td><a href="/cases/${c.id}">${esc(c.synthetic_name)}</a></td><td>${badge(c.current_stage)}</td><td>${esc(c.next_best_action)}</td><td>${esc(c.source_agent_org_id)}</td></tr>`).join("")}</tbody></table>
+  <h2>International Patient Inbox</h2><table><thead><tr><th>Case</th><th>Stage</th><th>Missing / next</th><th>Agent</th></tr></thead><tbody>${h.cases.map(c=>`<tr><td><a href="/cases/${c.synthetic_identifier || c.id}">${esc(c.synthetic_name)}</a></td><td>${badge(c.current_stage)}</td><td>${esc(c.next_best_action)}</td><td>${esc(c.source_agent_org_id)}</td></tr>`).join("")}</tbody></table>
   <h2>Pipeline</h2><div class="grid">${byStage.map(([s,n])=>`<div class="card"><h3>${esc(s)}</h3><div class="k">${n}</div></div>`).join("")}</div>
   <h2>Hospital Task Board</h2><table><thead><tr><th>Owner</th><th>Priority</th><th>Due</th><th>Case</th><th>Status</th><th>Next action</th></tr></thead><tbody>${rows(h.tasks,[["owner"],["priority",(r)=>badge(r.priority)],["due_date"],["case_id"],["status",(r)=>badge(r.status)],["next_action"]])}</tbody></table>`, viewOptions("hospital", session, { cases: h.cases.length, agents: 4, actions: 0 }));
 }
@@ -199,7 +242,7 @@ Neverland,unknown procedure,+1000,false,planning,unknown</textarea>
   <div class="panel"><h2>API Ingestion</h2><pre>POST /api/lead/ingest
 X-Ingest-Token: demo-ingest-trudoc
 {"source":"trudoc-demo","leads":[{"country":"NG","treatment":"cardiac bypass","consent":true}]}</pre></div></section>
-  <h2>Lead Status</h2><table><thead><tr><th>Case</th><th>Country</th><th>Category</th><th>Stage</th><th>Consent</th><th>Next</th></tr></thead><tbody>${cases.map(c=>`<tr><td><a href="/cases/${c.id}">${esc(c.synthetic_name)}</a></td><td>${esc(c.source_market)}</td><td>${esc(c.treatment_category)}</td><td>${badge(c.current_stage)}</td><td>${badge(c.consent_status)}</td><td>${esc(c.next_best_action)}</td></tr>`).join("")}</tbody></table>
+  <h2>Lead Status</h2><table><thead><tr><th>Case</th><th>Country</th><th>Category</th><th>Stage</th><th>Consent</th><th>Next</th></tr></thead><tbody>${cases.map(c=>`<tr><td><a href="/cases/${c.synthetic_identifier || c.id}">${esc(c.synthetic_name)}</a></td><td>${esc(c.source_market)}</td><td>${esc(c.treatment_category)}</td><td>${badge(c.current_stage)}</td><td>${badge(c.consent_status)}</td><td>${esc(c.next_best_action)}</td></tr>`).join("")}</tbody></table>
   <h2>Commission Forecast</h2><table><thead><tr><th>Case</th><th>Expected</th><th>Status</th><th>Payout</th><th>Disclosure</th></tr></thead><tbody>${rows(commissions,[["case_id"],["expected_amount",(r)=>`${r.currency} ${r.expected_amount}`],["status",(r)=>badge(r.status)],["payout_status"],["commercial_disclosure"]])}</tbody></table>
   <script>
   const csvButton = document.querySelector("#preview-csv");
@@ -274,7 +317,7 @@ export function renderVendors(db, session) {
     button.disabled = true;
     const response = await fetch("/api/service-requests/" + encodeURIComponent(id), {
       method: "PATCH",
-      headers: { "content-type": "application/json", "x-demo-user": "${esc(session.user?.email || "vendor@canopuscare.demo")}" },
+      headers: { "content-type": "application/json" },
       body: JSON.stringify({
         status: document.querySelector("[data-status='" + id + "']").value,
         quote_currency: document.querySelector("[data-currency='" + id + "']").value,

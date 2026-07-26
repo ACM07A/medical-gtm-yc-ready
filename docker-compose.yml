@@ -1,24 +1,25 @@
 services:
   canopuscare:
     build: .
+    env_file:
+      - .env
     ports:
       - "5173:5173"
     environment:
       APP_MODE: demo
+      NODE_ENV: production
       POST_LIVE: "0"
       PORT: "5173"
       APP_BASE_URL: http://localhost:5173
-      DATABASE_PATH: /app/runtime/medyatra.db
+      DATABASE_PATH: /app/data/canopus-care-demo.db
+      ALLOWED_ORIGINS: http://localhost:5173
     volumes:
-      - medyatra_runtime:/app/runtime
-      - medyatra_outputs:/app/outputs
-    command: sh -c "node --experimental-sqlite data-core/demo_seed.mjs && node --experimental-sqlite server/server.mjs"
+      - canopus_data:/app/data
     healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://localhost:5173/api/readiness').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
-      interval: 30s
+      test: ["CMD", "node", "scripts/healthcheck.mjs"]
+      interval: 10s
       timeout: 5s
-      retries: 3
+      retries: 10
 
 volumes:
-  medyatra_runtime:
-  medyatra_outputs:
+  canopus_data:

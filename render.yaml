@@ -11,12 +11,26 @@ services:
       - key: POST_LIVE
         value: "0"
       - key: DATABASE_PATH
-        value: /var/data/medyatra.db
+        value: /var/data/canopus-care-demo.db
+      - key: NODE_ENV
+        value: production
       - key: APP_BASE_URL
         sync: false
+      - key: ALLOWED_ORIGINS
+        sync: false
+      - key: AUTH_PROVIDER
+        value: demo
+      - key: DEMO_USERNAME
+        value: reviewer@canopuscare.com
+      - key: DEMO_PASSWORD
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
       - key: CONSOLE_TOKEN
         generateValue: true
+      - key: ENCRYPTION_KEY
+        generateValue: true
     disk:
-      name: medyatra-data
+      name: canopus-care-data
       mountPath: /var/data
       sizeGB: 1

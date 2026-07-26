@@ -1,134 +1,135 @@
-import { readinessReport } from "../data-core/os_core.mjs";
+import { DEMO_USERNAME, readinessReport } from "../data-core/os_core.mjs";
 import { appShell, icon } from "./canopus_ui.mjs";
 
-const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-
-function stat(db, sql, ...p) { try { return db.prepare(sql).get(...p).c; } catch { return 0; } }
-function one(db, sql, ...p) { try { return db.prepare(sql).get(...p); } catch { return null; } }
+const esc = (value) => String(value ?? "")
+  .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const stat = (db, sql, ...params) => { try { return db.prepare(sql).get(...params).c; } catch { return 0; } };
+const one = (db, sql, ...params) => { try { return db.prepare(sql).get(...params); } catch { return null; } };
 
 export function demoStats(db) {
   return {
     cases: stat(db, `SELECT count(*) c FROM patient_case`),
     blockedCases: stat(db, `SELECT count(*) c FROM patient_case WHERE blockers<>''`),
     agents: stat(db, `SELECT count(*) c FROM agent_definition`),
-    agentRuns: stat(db, `SELECT count(*) c FROM agent_run`),
     approvals: stat(db, `SELECT count(*) c FROM approval`),
     vendors: stat(db, `SELECT count(*) c FROM vendor`),
     serviceRequests: stat(db, `SELECT count(*) c FROM service_request`),
-    tasks: stat(db, `SELECT count(*) c FROM ops_task`),
     integrations: stat(db, `SELECT count(*) c FROM integration_connection`),
-    partners: stat(db, `SELECT count(*) c FROM partner`),
-    guides: stat(db, `SELECT count(*) c FROM content_asset WHERE status='published' AND language='en'`),
-    tenants: stat(db, `SELECT count(*) c FROM tenant WHERE active=1`),
-    leads: stat(db, `SELECT count(*) c FROM lead`),
   };
 }
 
 const surfaces = [
-  ["/agent", "Agent Portal", "Lead intake, API instructions, case status, commission forecast and malformed-row guardrails.", "core"],
-  ["/cases/case_ibrahim_musa", "Ibrahim Musa Case", "Synthetic Nigerian cardiac golden path with documents, matches, estimate, vendors and audit.", "core"],
-  ["/hospital", "Hospital Command Centre", "Inbox, pipeline, SLA board, task board and synthetic revenue view.", "core"],
-  ["/vendors", "Vendor Coordination", "Interpreter, transfer and accommodation mock quotes without real bookings.", "core"],
-  ["/agents", "AI Agent Activity Centre", "Deterministic operational agents with evidence, cost, confidence and approval flags.", "core"],
-  ["/studio", "Human Approval Studio", "Server-side compliance gates before publishing, outreach, messages or releases.", "gate"],
-  ["/integrations", "Integration Readiness", "Mocked, disabled and configured adapter states with outbound arming status.", "gate"],
-  ["/audit", "Audit Log", "Material actions and blocked compliance decisions.", "gate"],
-  ["/cases/case_amina_okoro", "Blocked Exception Case", "No-consent case visibly blocked before communication or routing.", "blocked"],
-  ["/console", "Legacy GTM Console", "Partner sourcing, content and distribution engine from the original prototype.", "legacy"],
-  ["/sandbox", "WhatsApp Sandbox", "Legacy editable patient-journey simulator.", "legacy"],
-  ["/benchmarks", "Benchmarks", "De-identified aggregate learning with k-anonymity suppression.", "legacy"],
+  ["/agent", "Agent portal", "Lead intake, case status, commission forecast and input guardrails.", "core", "Users"],
+  ["/cases/CASE-DEMO-001", "Golden case workspace", "Synthetic cardiac case with records, hospital responses, estimates and audit.", "core", "HeartPulse"],
+  ["/hospital", "Hospital command centre", "Assigned-case inbox, response workflow, SLA and task board.", "core", "Building2"],
+  ["/vendors", "Travel coordination", "Interpreter, transfer and accommodation requests without real bookings.", "core", "Plane"],
+  ["/agents", "AI-assisted activity", "Deterministic operational outputs with evidence and approval state.", "core", "Activity"],
+  ["/studio", "Human approval studio", "Compliance gates before releases, messages or external actions.", "gate", "CircleCheckBig"],
+  ["/integrations", "Integration readiness", "Operational, simulated and disabled adapter states.", "gate", "Plug"],
+  ["/audit", "Audit history", "Material actions, actors, timestamps and blocked decisions.", "gate", "ScrollText"],
+  ["/cases/CASE-DEMO-002", "Consent-blocked case", "Progression is refused until consent and records are complete.", "blocked", "TriangleAlert"],
+  ["/console", "GTM operator console", "Gated partner, content and distribution operations.", "legacy", "BriefcaseMedical"],
+  ["/sandbox", "Journey sandbox", "Gated communications and journey simulation.", "legacy", "MessageCircleQuestion"],
+  ["/benchmarks", "Aggregate benchmarks", "De-identified learning with k-anonymity suppression.", "legacy", "Activity"],
 ];
 
-export function renderDemo(db) {
-  const s = demoStats(db);
+export function renderDemo(db, session) {
+  const stats = demoStats(db);
   const ready = readinessReport(db);
   const golden = one(db, `SELECT * FROM patient_case WHERE id='case_ibrahim_musa'`) || {};
   const blocked = one(db, `SELECT * FROM patient_case WHERE blockers<>'' LIMIT 1`) || {};
   const compliance = one(db, `SELECT count(*) c FROM approval WHERE status='Blocked'`)?.c || 0;
   const agentSummary = one(db, `SELECT count(*) total, sum(CASE WHEN status='Completed' THEN 1 ELSE 0 END) completed FROM agent_run`) || { total: 0, completed: 0 };
-  const cards = surfaces.map(([href, title, desc, kind]) => `<a class="card surface-link" href="${href}"><h3>${esc(title)} <span class="badge ${kind === "blocked" ? "blocked" : kind === "gate" ? "waiting-for-input" : kind === "legacy" ? "" : "ready"}">${kind}</span></h3><p class="label">${esc(desc)}</p></a>`).join("");
-  return appShell("Executive Demo", `
-  <section class="split">
-    <div class="panel">
-      <div class="eyebrow">Autonomous medical-tourism operating system</div>
-      <h1>CanopusCare coordinates agents, hospitals, patients and vendors without crossing clinical lines.</h1>
-      <p class="lede">AI prepares, organizes, follows up and recommends operational next actions. Humans and hospitals authorize clinical, regulatory, commercial and outbound decisions.</p>
-      <div class="metric-row">
-        <div class="metric-tile"><div class="k">${s.cases}</div><div class="label">synthetic cases</div></div>
-        <div class="metric-tile"><div class="k">${s.agents}</div><div class="label">operational agents</div></div>
-        <div class="metric-tile"><div class="k">${s.vendors}</div><div class="label">mock vendors</div></div>
-        <div class="metric-tile"><div class="k">${s.approvals}</div><div class="label">approval records</div></div>
+  const cards = surfaces.map(([href, title, desc, kind, iconName]) => `
+    <a class="card surface-link surface-card ${kind === "blocked" ? "blocked-card" : kind === "gate" ? "gate-card" : ""}" href="${href}">
+      <span class="surface-icon">${icon(iconName, 20)}</span>
+      <span><h3>${esc(title)}</h3><p class="label">${esc(desc)}</p><span class="badge ${kind === "blocked" ? "blocked" : kind === "gate" ? "waiting-for-input" : kind === "core" ? "ready" : ""}">${kind}</span></span>
+      <span class="arrow">${icon("ArrowRight", 17)}</span>
+    </a>`).join("");
+
+  return appShell("Executive demo", `
+    <section class="panel hero-panel"><div class="hero-copy">
+      <div class="eyebrow">International patient coordination</div>
+      <h1>One clear workflow from patient intake to hospital response and travel readiness.</h1>
+      <p class="lede">Canopus Care helps care coordinators and hospital teams organize records, approvals, quotations and next steps. Clinicians retain every medical decision.</p>
+      <div class="actions hero-actions"><a class="btn primary" href="/cases/CASE-DEMO-001">${icon("HeartPulse",16)} Open golden case</a><a class="btn" href="/login">${icon("KeyRound",16)} Sign in by role</a></div>
+      <div class="trust-row"><span>${icon("LockKeyhole",14)} Synthetic data</span><span>${icon("CircleCheckBig",14)} Human approved</span><span>${icon("Building2",14)} Hospital-led care</span></div>
+    </div><figure class="hero-media"><img src="/site/assets/care-coordination.png" alt="A patient and care coordinator reviewing a travel care plan"></figure></section>
+
+    <div class="metric-row">
+      <div class="metric-tile"><span class="metric-icon">${icon("BriefcaseMedical",18)}</span><div class="k">${stats.cases}</div><div class="label">Synthetic cases</div></div>
+      <div class="metric-tile"><span class="metric-icon">${icon("Bot",18)}</span><div class="k">${stats.agents}</div><div class="label">Operational agents</div></div>
+      <div class="metric-tile"><span class="metric-icon">${icon("FileCheck2",18)}</span><div class="k">${stats.approvals}</div><div class="label">Approval records</div></div>
+      <div class="metric-tile"><span class="metric-icon">${icon("Plane",18)}</span><div class="k">${stats.serviceRequests}</div><div class="label">Travel requests</div></div>
+    </div>
+
+    <div class="section-head"><div><div class="eyebrow">Current case</div><h2>Golden demonstration workflow</h2></div><span class="label">Synthetic demo case. No real patient data.</span></div>
+    <section class="split">
+      <div class="panel case-summary">
+        <span class="case-symbol">${icon("HeartPulse",28)}</span>
+        <span><h2>${esc(golden.synthetic_name)}</h2><p class="lede">${esc(golden.treatment_request)} from ${esc(golden.source_market)}</p>
+          <span class="case-meta"><span class="badge ready">${esc(golden.synthetic_identifier)}</span><span class="badge ready">${esc(golden.consent_status)}</span><span class="badge waiting-for-input">${esc(golden.current_stage).replace(/_/g, " ")}</span></span>
+        </span>
+        <a class="btn primary" href="/cases/CASE-DEMO-001">Continue case ${icon("ArrowRight",15)}</a>
       </div>
-    </div>
-    <div class="panel">
-      <h2>Four-Sided Network</h2>
-      <div class="network">
-        <div class="node"><b>Patients</b><br><span class="label">Synthetic case data, consent, documents, travel support.</span></div>
-        <div class="node"><b>Agents</b><br><span class="label">Lead intake, status, hospital options, commission.</span></div>
-        <div class="node center"><b>CanopusCare OS</b><br><span class="label">Compliance gates, agents, approvals, audit and orchestration.</span></div>
-        <div class="node"><b>Hospitals</b><br><span class="label">Clinical review status, estimates, SLA, tasks.</span></div>
-        <div class="node"><b>Vendors</b><br><span class="label">Interpreter, transfers, accommodation and non-clinical logistics.</span></div>
-      </div>
-    </div>
-  </section>
+      <div class="panel attention-panel"><div class="status-list"><div class="status-row">
+        <span class="status-icon">${icon("TriangleAlert",17)}</span>
+        <span><b>${esc(blocked.synthetic_name)} needs attention</b><span class="label">${esc(blocked.blockers)} prevents external sharing.</span></span>
+        <a class="icon-btn" href="/cases/CASE-DEMO-002" aria-label="Open blocked case">${icon("ArrowRight",16)}</a>
+      </div></div></div>
+    </section>
 
-  <section class="split">
-    <div class="panel">
-      <h2>Current Demo Scenario</h2>
-      <p><b>${esc(golden.synthetic_name)}</b> from ${esc(golden.source_market)} needs ${esc(golden.treatment_request)}. Consent is ${esc(golden.consent_status)}; current stage is ${esc(golden.current_stage)}.</p>
-      <p class="label">Exception path: ${esc(blocked.synthetic_name)} is blocked with <b>${esc(blocked.blockers)}</b>.</p>
-    </div>
-    <div class="panel">
-      <h2>Live System Status</h2>
-      <p>${esc(ready.app_mode)} mode ${ready.status === "READY" ? '<span class="badge ready">READY</span>' : `<span class="badge blocked">${esc(ready.status)}</span>`} · external actions <span class="badge blocked">${esc(ready.external_actions)}</span></p>
-      <p class="label">${agentSummary.completed || 0}/${agentSummary.total || 0} deterministic agent runs completed · ${compliance} blocked approval(s) seeded · ${s.integrations} integration adapters tracked.</p>
-    </div>
-  </section>
+    <div class="panel journey-panel">
+      <div class="section-head"><div><span class="eyebrow">Patient journey</span><h2>Case progress</h2></div><span class="badge info">4 of 7 stages</span></div>
+      <div class="journey-track" aria-label="Case progress">
+      <div class="journey-step done"><span class="journey-dot">${icon("CircleCheckBig",15)}</span><span>Intake</span></div>
+      <div class="journey-step done"><span class="journey-dot">${icon("CircleCheckBig",15)}</span><span>Records</span></div>
+      <div class="journey-step done"><span class="journey-dot">${icon("CircleCheckBig",15)}</span><span>Matching</span></div>
+      <div class="journey-step active"><span class="journey-dot">${icon("Building2",15)}</span><span>Hospital review</span></div>
+      <div class="journey-step"><span class="journey-dot">${icon("WalletCards",15)}</span><span>Estimate</span></div>
+      <div class="journey-step"><span class="journey-dot">${icon("Plane",15)}</span><span>Travel</span></div>
+      <div class="journey-step"><span class="journey-dot">${icon("HeartPulse",15)}</span><span>Follow-up</span></div>
+    </div></div>
 
-  <h2>Golden Path Walkthrough</h2>
-  <div class="panel"><ol class="path">
-    <li>Agent imports the Lagos cardiac lead and consent is captured.</li>
-    <li>Document Checklist Agent identifies missing reports; synthetic placeholders are attached.</li>
-    <li>Hospital Matching Agent creates three operational matches without claiming clinical suitability.</li>
-    <li>Apollo marks the case eligible for a synthetic estimate; Fortis requests an additional investigation.</li>
-    <li>Hospital admin approves estimate release; the agent sees an indicative comparison.</li>
-    <li>Patient selects a hospital; invitation-letter, visa checklist, interpreter, transfer and accommodation requests are prepared.</li>
-    <li>Mock vendors provide quotes; coordinator approves the package; arrival and follow-up tasks are scheduled.</li>
-  </ol></div>
+    <section class="split">
+      <div class="panel"><h2>System readiness</h2><div class="status-list">
+        <div class="status-row"><span class="status-icon">${icon("Activity",17)}</span><span><b>Application status</b><span class="label">${esc(ready.app_mode)} mode with synthetic seed loaded</span></span>${ready.status === "READY" ? '<span class="badge ready">Ready</span>' : `<span class="badge blocked">${esc(ready.status)}</span>`}</div>
+        <div class="status-row"><span class="status-icon">${icon("Bot",17)}</span><span><b>AI-assisted operations</b><span class="label">${agentSummary.completed || 0}/${agentSummary.total || 0} deterministic runs completed</span></span><span class="badge high">Assisted</span></div>
+        <div class="status-row"><span class="status-icon">${icon("LockKeyhole",17)}</span><span><b>External actions</b><span class="label">Human approval and provider credentials required</span></span><span class="badge blocked">${esc(ready.external_actions)}</span></div>
+      </div></div>
+      <div class="panel"><h2>Human oversight</h2><div class="status-list">
+        <div class="status-row"><span class="status-icon">${icon("Users",17)}</span><span><b>Maya Rao, care coordinator</b><span class="label">Owns administrative next steps for the golden case</span></span><span class="badge ready">Assigned</span></div>
+        <div class="status-row"><span class="status-icon">${icon("CircleCheckBig",17)}</span><span><b>Approval controls</b><span class="label">${stats.approvals} recorded decisions; ${compliance} compliance refusal</span></span><a class="icon-btn" href="/studio" aria-label="Open approvals">${icon("ArrowRight",16)}</a></div>
+      </div></div>
+    </section>
 
-  <h2>Demo Surfaces</h2>
-  <div class="grid">${cards}</div>
+    <div class="section-head"><div><div class="eyebrow">Explore</div><h2>Product workspaces</h2></div><span class="label">Core workflow first; gated and legacy operator surfaces are labelled.</span></div>
+    <div class="grid">${cards}</div>
 
-  <section class="split">
-    <div class="panel">
-      <h2>Run Locally</h2>
-      <pre class="cmd">cp .env.example .env
+    <section class="split">
+      <div class="panel"><h2>Local setup</h2><pre class="cmd">cp .env.example .env
 npm ci
-npm run demo
-npm run dev
-# open http://localhost:5173/demo</pre>
-      <p class="label">One command: <code>npm run yc-demo</code>. Docker: <code>docker compose up --build</code>.</p>
-    </div>
-    <div class="panel">
-      <h2>Demo Credentials</h2>
-      <pre class="cmd">admin@canopuscare.demo / canopuscare-demo
-hospital@canopuscare.demo / canopuscare-demo
-agent@canopuscare.demo / canopuscare-demo
-vendor@canopuscare.demo / canopuscare-demo
-viewer@canopuscare.demo / canopuscare-demo</pre>
-      <div class="actions"><button class="btn primary" onclick="resetDemo()">${icon("RotateCcw", 14)} Reset OS Demo</button><a class="btn" href="/docs/YC_REVIEWER_GUIDE.md">${icon("BookOpenText", 14)} Reviewer guide</a></div>
-    </div>
-  </section>
+npm run yc-demo</pre><p class="label">Docker alternative: <code>docker compose up --build</code>.</p></div>
+      <div class="panel"><h2>Reviewer access</h2><pre class="cmd">${esc(process.env.DEMO_USERNAME || DEMO_USERNAME)}
+Password configured by the deployment owner</pre><p class="label">Anonymous visitors remain read-only. Hospital, agent and vendor accounts receive server-scoped views.</p>
+        <div class="actions"><a class="btn primary" href="/login">${icon("KeyRound",14)} Reviewer login</a>${session?.authenticated && session.role === "platform_admin" ? `<button class="btn" onclick="resetDemo()">${icon("RotateCcw",14)} Reset demo</button>` : ""}<a class="btn" href="/docs/YC_REVIEWER_GUIDE.md">${icon("BookOpenText",14)} Reviewer guide</a></div>
+      </div>
+    </section>
 
-  <div class="foot"><b>Safety posture:</b> demo data is synthetic; regulatory clearances and pricing are illustrative; AI does not diagnose, interpret records, choose treatment, promise outcomes, declare fitness to fly, send real messages, post to social platforms or book vendors.</div>
-<script>
-async function resetDemo(){
-  if(!confirm("Reset the synthetic OS demo data?")) return;
-  const r = await fetch("/api/demo/reset", { method:"POST", headers:{"content-type":"application/json","x-demo-user":"admin@canopuscare.demo"}, body:"{}" });
-  const j = await r.json();
-  alert(j.ok ? "Demo reset complete" : (j.error && j.error.message) || j.error || "Reset blocked");
-  if(j.ok) location.reload();
-}
-</script>
-`, { active: "demo", metrics: { cases: s.cases, agents: s.agents, actions: 0 } });
+    <div class="foot"><b>Safety posture:</b> synthetic data only. AI does not diagnose, interpret scans, choose treatment, promise outcomes, declare fitness to fly, send messages, post publicly or book vendors.</div>
+    <script>
+    async function resetDemo(){
+      if(!confirm("Reset the synthetic demo data?")) return;
+      const response = await fetch("/api/demo/reset",{method:"POST",headers:{"content-type":"application/json"},body:"{}"});
+      const data = await response.json();
+      alert(data.ok ? "Demo reset complete" : data.error?.message || "Reset blocked");
+      if(data.ok) location.reload();
+    }
+    </script>
+  `, {
+    active: "demo",
+    userName: session?.user?.name,
+    userRole: session?.role?.replace(/_/g, " "),
+    metrics: { cases: stats.cases, agents: stats.agents, actions: 0 },
+  });
 }

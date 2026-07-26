@@ -1,14 +1,51 @@
-# 10-12 Minute Demo Script
+# Canopus Care 85-Second Demo
 
-1. Problem: medical tourism is run through WhatsApp, spreadsheets, unverified middlemen and slow hospital responses.
-2. Product: CanopusCare coordinates agents, hospitals, patients and vendors while humans approve clinical, regulatory, commercial and outbound actions.
-3. Open `/demo`: show synthetic-data banner, live status, seeded counts and major surfaces.
-4. Open `/agent`: show Lagos Health Travel Partners, API ingestion instructions, consent handling and commission forecast.
-5. Open `/cases/case_ibrahim_musa`: show Ibrahim Musa, Nigeria, cardiac bypass evaluation, consent captured, documents, hospital matches, estimates, vendors, compliance and audit.
-6. Open `/hospital`: show the hospital inbox, pipeline, SLA indicators, revenue and task board.
-7. Open `/vendors`: show interpreter, transfer and accommodation mock quotes. State that no real booking is made.
-8. Open `/agents`: show deterministic operational agents, evidence, provider, cost, confidence, human approval and correlation IDs.
-9. Open `/studio`: show approvals and explain that unsafe or uncleared actions are blocked server-side.
-10. Open `/cases/case_amina_okoro`: show the exception path blocked by missing consent.
-11. Open `/integrations`: show mocked/disabled adapters and that outbound actions are not armed in demo mode.
-12. Close with business model: hospital SaaS, agent OS and managed marketplace; production requires legal, security and integration work before real patient use.
+## 0-8 seconds
+
+Open `/demo`.
+
+"A Nigerian cardiac enquiry arrives from a medical-travel agent. Everything on
+this screen is synthetic, and external actions are disabled."
+
+## 8-22 seconds
+
+Open `/cases/case_ibrahim_musa` and the document section.
+
+"Canopus Care structures intake, verifies consent, and identifies the missing
+echocardiogram. It prepares administrative work; it does not interpret the
+record."
+
+## 22-38 seconds
+
+Show hospital matches and routing.
+
+"The engine creates three fictional operational matches and routes the case
+without claiming clinical suitability. Hospitals retain that decision."
+
+## 38-54 seconds
+
+Open `/hospital` and the estimate.
+
+"One synthetic hospital requests another report. Another prepares an
+indicative estimate. A human approves release before the agent can see it."
+
+## 54-67 seconds
+
+Return to `/agent` and show the structured comparison and vendor requests.
+
+"The agent sees one coordinated case, including mock interpreter, transfer,
+and accommodation quotes. No booking or message is sent."
+
+## 67-78 seconds
+
+Open `/agents`, then `/cases/case_amina_okoro`.
+
+"Every software-worker run is inspectable. The second case proves the safety
+boundary: missing consent blocks communication and routing."
+
+## 78-85 seconds
+
+Return to `/demo`.
+
+"Canopus Care is the administrative operating layer between agents and
+hospitals. AI prepares; hospitals decide; humans approve."

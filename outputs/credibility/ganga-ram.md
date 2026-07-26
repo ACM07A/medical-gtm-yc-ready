@@ -7,4 +7,4 @@ At Sir Ganga Ram Hospital in New Delhi, India, international patients can trust 
 
 Transparency is key at Sir Ganga Ram Hospital. You'll find no hidden costs or surprises – all prices are clearly listed, and inclusions such as [VERIFY: specific inclusions, e.g., language interpretation, airport transfers] are outlined upfront. Take a virtual tour of the hospital's facilities to get a sense of the care and comfort you'll receive.
 
-At MedYatra, we only work with accredited hospitals like Sir Ganga Ram Hospital that clear our quality bar. Reach out to us on WhatsApp (+91 <MedYatra Number>) to discuss your medical travel needs and let us guide you through the process.
+At Canopus Care, we only work with accredited hospitals like Sir Ganga Ram Hospital that clear our quality bar. Reach out to us on WhatsApp (+91 <Canopus Care Number>) to discuss your medical travel needs and let us guide you through the process.

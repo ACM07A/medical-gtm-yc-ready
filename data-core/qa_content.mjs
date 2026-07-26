@@ -28,7 +28,7 @@ for (const a of drafts) {
   // E-E-A-T gate. Organic acquisition is the profitable path in the economics model, and YMYL content
   // without visible authorship, a review date and traceable sources does not rank — so a page failing this
   // is not "publishable but weaker", it is a page that will never earn a reader. Treated as a hard issue.
-  const ee = eeatCheck(text, { author: "MedYatra editorial", reviewed_at: a.reviewed_at || new Date().toISOString().slice(0, 10) });
+  const ee = eeatCheck(text, { author: "Canopus Care editorial", reviewed_at: a.reviewed_at || new Date().toISOString().slice(0, 10) });
   if (!ee.ready) issues.push(`E-E-A-T ${ee.score}/100 — missing: ${ee.missing.map((m) => m.signal).join(", ")}`);
   db.prepare(`UPDATE content_asset SET eeat_score=? WHERE id=?`).run(ee.score, a.id);
 

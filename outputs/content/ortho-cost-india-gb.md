@@ -41,12 +41,12 @@ When considering medical treatment abroad, assessing the quality and credibility
 
 ## The Process: From Inquiry to Recovery
 
-The journey to receiving orthopedic treatment in India typically follows a clear, structured path. MedYatra acts as a facilitator in this process, helping coordinate your medical journey.
+The journey to receiving orthopedic treatment in India typically follows a clear, structured path. Canopus Care acts as a facilitator in this process, helping coordinate your medical journey.
 
 1.  **Initial Inquiry and Report Submission:** Your first step is to gather your relevant medical reports. This includes recent MRI or X-ray scans, doctor's notes, and any diagnostic test results pertaining to your orthopedic condition. You can send these reports to us, often conveniently via WhatsApp or email.
 2.  **Hospital Review and Opinion:** We forward your reports to accredited, specialist hospitals in India. A team of orthopedic surgeons at one of these hospitals will review your case. They will provide a medical opinion, confirming if the treatment is suitable for you, and offer an indicative quote based on their assessment of your reports. This initial quote is not a firm commitment but provides a realistic estimate.
 3.  **Invitation Letter:** Once you decide to proceed, the chosen hospital will issue an official invitation letter. This letter is a crucial supporting document required for your visa application.
-4.  **Your Travel and Visa Arrangements:** It is your responsibility to apply for your own e-Medical Visa for India. You will need the hospital's invitation letter and other personal documents for this application. You also arrange and book your own international flights to India and your accommodation for your pre- and post-operative stay. MedYatra coordinates the medical aspects and provides necessary supporting documents from the hospital, but does not arrange your travel or visa.
+4.  **Your Travel and Visa Arrangements:** It is your responsibility to apply for your own e-Medical Visa for India. You will need the hospital's invitation letter and other personal documents for this application. You also arrange and book your own international flights to India and your accommodation for your pre- and post-operative stay. Canopus Care coordinates the medical aspects and provides necessary supporting documents from the hospital, but does not arrange your travel or visa.
 5.  **Travel, Treatment, and Recovery:** Upon arrival in India, you will be admitted to the hospital. The orthopedic procedure will be performed, followed by a period of in-hospital recovery and initial physical therapy. The duration of your hospital stay will depend on the procedure and your individual recovery rate.
 6.  **Return Home and Follow-up:** Once medically cleared, you will be discharged. You will then return home to the UK. Many hospitals offer tele-follow-up consultations post-return, allowing you to discuss your recovery progress with your surgeon remotely.
 
@@ -74,10 +74,10 @@ Researching your options thoroughly is a significant step towards managing your 
 
 ### About this page
 
-Written by MedYatra editorial. Last reviewed on 2026-07-21.
+Written by Canopus Care editorial. Last reviewed on 2026-07-21.
 
 **Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
 
 **What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
 
-**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.
+**What this page is not.** Canopus Care is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

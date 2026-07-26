@@ -5,7 +5,7 @@
 ## 1. first_touch — `medyatra_first_touch`
 - **Type:** template · **Category:** utility
 - **Image header:** `outputs/comms/img/welcome.png`
-- **Body:** Hi {{1}}, thank you for reaching out to MedYatra about {{2}} — we know looking into this isn't easy. A real care coordinator will personally help you find the right accredited hospital. Reply YES whenever you're ready and we'll take it from there.
+- **Body:** Hi {{1}}, thank you for reaching out to Canopus Care about {{2}} — we know looking into this isn't easy. A real care coordinator will personally help you find the right accredited hospital. Reply YES whenever you're ready and we'll take it from there.
 - **Buttons:** [Yes, tell me more] [Not now]
 
 ## 2. nudge — `medyatra_nudge`
@@ -81,7 +81,7 @@
 - **Image header:** `outputs/comms/img/how-it-works.png`
 - **Body:** Here are near-hospital stay options via our partners, for you and your family before and after treatment. You book your own flights and visa; we help with the stay and the paperwork. Want these options?
 - **Buttons:** [See stays] [Ask a question]
-- _Partner-provided stay (lib/stay.mjs). Flights + visa are the patient's own; MedYatra keeps coordination light._
+- _Partner-provided stay (lib/stay.mjs). Flights + visa are the patient's own; Canopus Care keeps coordination light._
 
 ## 14. pre_op — `medyatra_pre_op`
 - **Type:** session · **Category:** utility
@@ -117,7 +117,7 @@
 ## 19. reengage — `medyatra_reengage`
 - **Type:** template · **Category:** marketing
 - **Image header:** `outputs/comms/img/welcome.png`
-- **Body:** Hi {{1}}, still considering treatment in India? Your MedYatra coordinator is here whenever you're ready — no pressure. Reply STOP to opt out.
+- **Body:** Hi {{1}}, still considering treatment in India? Your Canopus Care coordinator is here whenever you're ready — no pressure. Reply STOP to opt out.
 - **Buttons:** [I'm ready] [Not now]
 - _Marketing category — requires prior opt-in; includes opt-out._
 
@@ -133,7 +133,7 @@
 - **Image header:** `null`
 - **Body:** Hi {{1}}, we know this is frightening. Your care is fully in the hands of the hospital's medical team and they are on it. We're staying close, keeping your family updated, and here for anything you need that isn't medical. Please follow the doctors' guidance — you are not alone in this.
 - **Buttons:** [Thank you]
-- _Clinical escalation — hospital-led. MedYatra never advises clinically; family-comms + logistics only._
+- _Clinical escalation — hospital-led. Canopus Care never advises clinically; family-comms + logistics only._
 
 
 **Compliance:** consent required before outbound; no clinical claims/guarantees; prices indicative (shown in image, not body); facilitator voice; honor opt-out. See /build-os/09.

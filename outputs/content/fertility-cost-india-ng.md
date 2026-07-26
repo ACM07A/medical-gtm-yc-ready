@@ -95,7 +95,7 @@ Navigating medical travel for IVF involves a clear sequence of steps:
 6.  **Recovery and Return Home:** After the embryo transfer, you will typically need a period of rest and recovery before you are medically cleared to fly home. The hospital will advise on this.
 7.  **Tele-Follow-up:** Many hospitals offer tele-consultations or follow-up calls after you return home to monitor your progress and answer any questions.
 
-MedYatra acts as a facilitator in this process. We help coordinate the sharing of your medical reports with accredited hospitals, obtain their medical opinions and indicative quotes, and assist in securing the necessary invitation letters. However, MedYatra is not a medical provider; you, the patient, are responsible for arranging your own travel, applying for your visa, and managing your stay. The prices provided are indicative and subject to the hospital's final assessment.
+Canopus Care acts as a facilitator in this process. We help coordinate the sharing of your medical reports with accredited hospitals, obtain their medical opinions and indicative quotes, and assist in securing the necessary invitation letters. However, Canopus Care is not a medical provider; you, the patient, are responsible for arranging your own travel, applying for your visa, and managing your stay. The prices provided are indicative and subject to the hospital's final assessment.
 
 ## Honest Answers to Real Worries
 
@@ -118,7 +118,7 @@ English is widely spoken in major Indian cities, particularly within the medical
 
 ### How Payment Works
 
-You will typically pay the hospital directly for your IVF treatment. MedYatra does not handle direct payments for medical services. This ensures transparency, as you are directly engaging with the healthcare provider for your medical expenses. Hospitals usually accept major credit cards and bank transfers.
+You will typically pay the hospital directly for your IVF treatment. Canopus Care does not handle direct payments for medical services. This ensures transparency, as you are directly engaging with the healthcare provider for your medical expenses. Hospitals usually accept major credit cards and bank transfers.
 
 ### Length of Stay
 
@@ -132,10 +132,10 @@ If you have specific questions about these steps or need help coordinating your 
 
 ### About this page
 
-Written by MedYatra editorial. Last reviewed on 2026-07-21.
+Written by Canopus Care editorial. Last reviewed on 2026-07-21.
 
 **Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
 
 **What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
 
-**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.
+**What this page is not.** Canopus Care is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

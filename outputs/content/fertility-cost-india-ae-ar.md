@@ -59,7 +59,7 @@
 5.  **السفر والعلاج والتعافي:** بمجرد وصولك إلى الهند، ستخضع لإجراءات أطفال الأنابيب كما هو مخطط لها. بعد الإجراء، ستحتاج إلى فترة تعافٍ في الهند قبل أن تتمكن من السفر بأمان إلى الوطن. يعتمد طول الإقامة على البروتوكول الطبي الفردي وحالة التعافي، ولكن عادةً ما يتطلب دورة أطفال الأنابيب حوالي 3-4 أسابيع في الهند.
 6.  **المتابعة عن بعد:** بعد عودتك إلى الوطن، يمكن للمستشفى تقديم استشارات متابعة عن بعد عبر مكالمات الفيديو أو الهاتف لمراقبة تقدمك وتقديم أي نصيحة إضافية.
 
-تُقدم MedYatra خدمات التنسيق وتوفير المستندات الداعمة اللازمة لك. ومع ذلك، فإن المريض هو من يقوم بترتيب سفره وتأشيرته بنفسه، وتُعد الأسعار المقدمة تقديرية وتخضع للتقييم النهائي من المستشفى.
+تُقدم Canopus Care خدمات التنسيق وتوفير المستندات الداعمة اللازمة لك. ومع ذلك، فإن المريض هو من يقوم بترتيب سفره وتأشيرته بنفسه، وتُعد الأسعار المقدمة تقديرية وتخضع للتقييم النهائي من المستشفى.
 
 ## إجابات صادقة لمخاوف حقيقية
 
@@ -77,10 +77,10 @@
     تأخذ المستشفيات الهندية المعتمدة سلامة المرضى على محمل الجد. ومع ذلك، مثل أي إجراء طبي، هناك دائمًا مخاطر محتملة. من الضروري اختيار مستشفى معتمد ومعروف ببروتوكولات السلامة الصارمة لديه. قبل العلاج، سيقوم المستشفى بإجراء فحص شامل لتقييم المخاطر المحددة لحالتك ومناقشة أي مضاعفات محتملة معك. في حالة حدوث مضاعفات، فإن المستشفيات المعتمدة لديها الإجراءات والموظفين للتعامل معها. من المهم مناقشة خطط الطوارئ مع المستشفى مسبقًا.
 
 *   **اللغة:**
-    لا ينبغي أن تكون اللغة عائقًا. يتحدث غالبية الأطباء والممرضات والموظفين في المستشفيات الهندية الكبرى، وخاصة تلك التي تخدم المرضى الدوليين، اللغة الإنجليزية بطلاقة. إذا كنت تفضل التواصل باللغة العربية، يمكن لـ MedYatra المساعدة في ترتيب خدمات الترجمة لضمان فهمك الكامل لكل خطوة من خطوات العلاج.
+    لا ينبغي أن تكون اللغة عائقًا. يتحدث غالبية الأطباء والممرضات والموظفين في المستشفيات الهندية الكبرى، وخاصة تلك التي تخدم المرضى الدوليين، اللغة الإنجليزية بطلاقة. إذا كنت تفضل التواصل باللغة العربية، يمكن لـ Canopus Care المساعدة في ترتيب خدمات الترجمة لضمان فهمك الكامل لكل خطوة من خطوات العلاج.
 
 *   **كيف يتم الدفع؟**
-    يتم الدفع مقابل العلاج مباشرة إلى المستشفى في الهند. لن تقوم بدفع أي مبالغ لـ MedYatra مقابل العلاج نفسه. ستزودك المستشفى بتفصيل واضح للتكاليف ويمكنها تقديم إرشادات حول طرق الدفع المقبولة.
+    يتم الدفع مقابل العلاج مباشرة إلى المستشفى في الهند. لن تقوم بدفع أي مبالغ لـ Canopus Care مقابل العلاج نفسه. ستزودك المستشفى بتفصيل واضح للتكاليف ويمكنها تقديم إرشادات حول طرق الدفع المقبولة.
 
 *   **مدة الإقامة:**
     بالنسبة لدورة أطفال الأنابيب الواحدة، يوصى عادةً بالبقاء في الهند لمدة تتراوح بين 3 إلى 4 أسابيع. يتيح هذا الوقت إجراء جميع مراحل العلاج، من التحفيز إلى استخراج البويضات، والتخصيب، ونقل الأجنة، وفترة تعافٍ أولية قبل العودة إلى الوطن. قد تختلف المدة الدقيقة بناءً على بروتوكول العلاج الفردي واستجابة جسمك.
@@ -91,10 +91,10 @@
 
 ### About this page
 
-Written by MedYatra editorial. Last reviewed on 2026-07-21.
+Written by Canopus Care editorial. Last reviewed on 2026-07-21.
 
 **Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
 
 **What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
 
-**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.
+**What this page is not.** Canopus Care is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

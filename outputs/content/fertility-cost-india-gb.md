@@ -47,7 +47,7 @@ It is important to understand what these package prices typically include and, e
 *   **Travel Insurance:** Comprehensive travel and medical insurance is highly recommended and is your responsibility.
 *   **Local Transportation and Personal Expenses:** Daily travel, meals, and other personal expenditures are not covered.
 
-MedYatra acts as a facilitator, coordinating your initial contact with accredited hospitals and providing supporting documents. However, all prices are indicative package ranges, not firm quotes, and are subject to your specific medical assessment by the hospital. The patient is responsible for booking their own travel and applying for their own visa.
+Canopus Care acts as a facilitator, coordinating your initial contact with accredited hospitals and providing supporting documents. However, all prices are indicative package ranges, not firm quotes, and are subject to your specific medical assessment by the hospital. The patient is responsible for booking their own travel and applying for their own visa.
 
 ## Choosing a Hospital from Abroad
 
@@ -96,7 +96,7 @@ Medical procedures always carry inherent risks, regardless of where they are per
 In major private hospitals in India, especially those catering to international patients, English is widely spoken by doctors, nurses, and administrative staff. Communication during your treatment should not be a significant barrier.
 
 **How Payment Works:**
-You will pay the hospital directly for your treatment. MedYatra does not handle patient funds for medical procedures. The hospital will provide you with clear payment terms and methods, typically involving bank transfers or direct payment upon arrival.
+You will pay the hospital directly for your treatment. Canopus Care does not handle patient funds for medical procedures. The hospital will provide you with clear payment terms and methods, typically involving bank transfers or direct payment upon arrival.
 
 **Length of Stay:**
 An typical IVF cycle, from the start of ovarian stimulation to embryo transfer and a safe period for recovery before flying, can require a stay of approximately 3 to 4 weeks in India. This allows for all necessary monitoring, procedures, and a short recovery phase. Your doctor will provide a more precise timeline based on your individual treatment plan.
@@ -110,10 +110,10 @@ For further information or to begin the process of understanding your options, y
 
 ### About this page
 
-Written by MedYatra editorial. Last reviewed on 2026-07-21.
+Written by Canopus Care editorial. Last reviewed on 2026-07-21.
 
 **Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
 
 **What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
 
-**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.
+**What this page is not.** Canopus Care is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

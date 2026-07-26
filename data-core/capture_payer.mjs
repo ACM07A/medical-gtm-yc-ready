@@ -1,7 +1,7 @@
-// Capture a payer account — the BASE of MedYatra's third GTM motion (insurer / TPA / self-insured employer /
+// Capture a payer account — the BASE of Canopus Care's third GTM motion (insurer / TPA / self-insured employer /
 // government health office), deliberately parked for phase 2/3. The pitch is claims-cost reduction applied to
 // a whole population, not a clinical-trust pitch to one referrer — precedent: Sachin's Toyota example, and the
-// MedYatra × TruDoc partnership already prototypes it. See PARTNER_AGENT.md §12.
+// Canopus Care × TruDoc partnership already prototypes it. See PARTNER_AGENT.md §12.
 //
 // Base scope, on purpose: this is the only entry point (a payer becomes real through a relationship, not a
 // cold directory — same rule as capture_doctor.mjs / capture_poc.mjs). There is NO outreach generator and NO

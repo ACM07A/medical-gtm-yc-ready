@@ -2,13 +2,48 @@
 //   npm run demo
 //   SEED_BROWSER=1 npm run demo  (requires CHROME_PATH/EDGE_PATH or a known browser installation)
 import { execFileSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, rmSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { loadEnv } from "../lib/env.mjs";
 
 loadEnv();
 const HERE = dirname(fileURLToPath(import.meta.url));
+const { DB_PATH, open } = await import("./db.mjs");
+const { ensureOsSchema } = await import("./os_core.mjs");
+const mode = process.env.APP_MODE || "demo";
+
+if (mode === "production") {
+  console.error("Refusing to seed synthetic demo data in APP_MODE=production.");
+  process.exit(1);
+}
+
+if (existsSync(DB_PATH) && process.env.RESET_DEMO !== "1") {
+  const existing = open();
+  ensureOsSchema(existing);
+  const seeded = existing.prepare(`SELECT count(*) count FROM seed_version`).get().count > 0;
+  const populated = existing.prepare(`SELECT
+    (SELECT count(*) FROM lead) + (SELECT count(*) FROM partner) + (SELECT count(*) FROM patient_case) count`).get().count > 0;
+  existing.close();
+  if (seeded || populated) {
+    console.log(`Existing database preserved at ${DB_PATH}. Set RESET_DEMO=1 or use npm run db:reset-demo for a deliberate reset.`);
+    process.exit(0);
+  }
+}
+if (process.env.RESET_DEMO === "1") {
+  if (mode !== "demo") {
+    console.error("RESET_DEMO=1 is allowed only in APP_MODE=demo.");
+    process.exit(1);
+  }
+  if (existsSync(DB_PATH)) {
+    const backupDir = process.env.BACKUP_DIR || join(dirname(DB_PATH), "backups");
+    mkdirSync(backupDir, { recursive: true });
+    const backup = join(backupDir, `pre-reset-${new Date().toISOString().replace(/[:.]/g, "-")}.db`);
+    copyFileSync(DB_PATH, backup);
+    rmSync(DB_PATH);
+    console.log(`Existing demo database backed up to ${backup}`);
+  }
+}
 const hasGenKey = !!(process.env.GEMINI_API_KEY || process.env.NVIDIA_API_KEY);
 const generationRequested = process.env.SEED_GENERATION === "1";
 const browserRequested = process.env.SEED_BROWSER === "1";

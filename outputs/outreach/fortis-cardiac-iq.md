@@ -4,7 +4,7 @@ Subject: Partnership enquiry — pre-qualified Cardiac patients from Iraq and th
 
 Dear Mr. Maharaj,
 
-MedYatra is a medical-value-travel facilitator specialising in patient flows from Iraq and the Gulf. We are writing to propose a non-exclusive partnership focused on your Cardiac programmes.
+Canopus Care is a medical-value-travel facilitator specialising in patient flows from Iraq and the Gulf. We are writing to propose a non-exclusive partnership focused on your Cardiac programmes.
 
 What we bring is incremental, pre-qualified Cardiac patients from Iraq and the Gulf, supported by an Arabic and English demand engine that reduces your acquisition effort. As a facilitator rather than a provider, we handle the patient-side journey so your clinical teams can focus on care.
 
@@ -15,4 +15,4 @@ We would value the opportunity to brief you on our patient pipeline and explore 
 Thank you for your time and consideration.
 
 Regards,
-MedYatra Partnerships
+Canopus Care Partnerships

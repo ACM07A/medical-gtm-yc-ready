@@ -73,14 +73,14 @@
 تتضمن عملية تنظيم العلاج في الهند عدة خطوات منظمة لضمان سلاسة التجربة:
 
 1.  **إرسال التقارير الطبية:** تبدأ العملية بإرسال تقاريرك الطبية الحديثة (مثل تقارير تخطيط القلب، الأشعة، الفحوصات المخبرية، تقارير الأطباء) إلينا عبر الواتساب.
-2.  **مراجعة المستشفى:** تقوم MedYatra بتنسيق مراجعة تقاريرك من قبل فريق طبي متخصص في مستشفى معتمد في الهند. سيقوم الأطباء بتقييم حالتك وتقديم رأي طبي حول العلاج الأنسب لك.
+2.  **مراجعة المستشفى:** تقوم Canopus Care بتنسيق مراجعة تقاريرك من قبل فريق طبي متخصص في مستشفى معتمد في الهند. سيقوم الأطباء بتقييم حالتك وتقديم رأي طبي حول العلاج الأنسب لك.
 3.  **عرض السعر التقديري:** بعد التقييم، سيزودك المستشفى بعرض سعر تقديري للحزمة العلاجية المقترحة، بناءً على حالتك.
 4.  **خطاب الدعوة من المستشفى:** بمجرد موافقتك على خطة العلاج وعرض السعر، يصدر المستشفى خطاب دعوة رسمي. هذا الخطاب هو وثيقة داعمة ضرورية لطلب التأشيرة الطبية.
-5.  **طلب التأشيرة وحجز السفر:** **أنت مسؤول عن تقديم طلب التأشيرة الطبية الإلكترونية (e-Medical Visa) بنفسك وحجز تذاكر الطيران والإقامة** في الهند. سيوفر لك خطاب الدعوة من المستشفى الدعم اللازم لطلب التأشيرة. تقوم MedYatra بتنسيق الجانب الطبي وتوفير الوثائق الداعمة، ولكن لا تتدخل في عملية حجز السفر أو التأشيرة.
+5.  **طلب التأشيرة وحجز السفر:** **أنت مسؤول عن تقديم طلب التأشيرة الطبية الإلكترونية (e-Medical Visa) بنفسك وحجز تذاكر الطيران والإقامة** في الهند. سيوفر لك خطاب الدعوة من المستشفى الدعم اللازم لطلب التأشيرة. تقوم Canopus Care بتنسيق الجانب الطبي وتوفير الوثائق الداعمة، ولكن لا تتدخل في عملية حجز السفر أو التأشيرة.
 6.  **السفر والعلاج:** عند وصولك إلى الهند، ستخضع لإجراءات الفحص والتحضير للعملية. بعد الجراحة، ستبقى في المستشفى لفترة النقاهة الأولية، ثم ستخرج لتستكمل فترة التعافي في مكان إقامتك المؤقت قبل العودة إلى العراق.
 7.  **المتابعة عن بُعد:** بعد عودتك، يمكن ترتيب استشارات متابعة عن بُعد مع الأطباء في الهند لمراقبة تقدمك والإجابة على أي استفسارات.
 
-تذكر أن MedYatra هي جهة ميسّرة ومنسقة، وليست مقدم خدمة علاجية. نحن نساعد في ربطك بالمستشفيات المعتمدة وتنسيق الوثائق الداعمة، ولكن قرارات العلاج والسفر هي مسؤوليتك. الأسعار المذكورة هي تقديرية وتعتمد على تقييم المستشفى لحالتك.
+تذكر أن Canopus Care هي جهة ميسّرة ومنسقة، وليست مقدم خدمة علاجية. نحن نساعد في ربطك بالمستشفيات المعتمدة وتنسيق الوثائق الداعمة، ولكن قرارات العلاج والسفر هي مسؤوليتك. الأسعار المذكورة هي تقديرية وتعتمد على تقييم المستشفى لحالتك.
 
 ## إجابات صريحة على مخاوفك
 
@@ -93,10 +93,10 @@
 
 ### About this page
 
-Written by MedYatra editorial. Last reviewed on 2026-07-21.
+Written by Canopus Care editorial. Last reviewed on 2026-07-21.
 
 **Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
 
 **What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
 
-**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.
+**What this page is not.** Canopus Care is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

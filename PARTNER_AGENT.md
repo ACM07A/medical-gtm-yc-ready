@@ -1,6 +1,6 @@
 # The Partner Agent — operating context
 
-The full context for the one subsystem that builds MedYatra's hospital-partner supply side: who to target,
+The full context for the one subsystem that builds Canopus Care's hospital-partner supply side: who to target,
 how to score them, how to find the named person who can actually sign a deal, and how to write to them.
 This is the "GTM spine" referenced in `PROJECT_CONTEXT.md` §5.2 — pulled into its own file because it's a
 distinct, self-contained agent with its own rubric, its own legal posture, and its own pipeline.
@@ -13,7 +13,7 @@ someone (human or model) who needs to operate this agent without reading five fi
 
 ## 0. Mission, in one line
 
-Find the hospitals that most need MedYatra, find the one person at each who can actually say yes, and write
+Find the hospitals that most need Canopus Care, find the one person at each who can actually say yes, and write
 to them like a real person who has done the homework — never inventing a fact, a price, or a name.
 
 ## 1. The legal and honesty posture — read this before anything else
@@ -44,7 +44,7 @@ Nothing this agent produces is ever trusted at face value — see the confidence
 ## 2. Stage 1 — Sourcing & the fit-scoring rubric
 
 **The margin thesis, as a number.** Competitors (Vaidam, MediGence) crowd the big chains that already run
-an international desk. The margin is in high-quality hospitals that *don't* — because MedYatra can win
+an international desk. The margin is in high-quality hospitals that *don't* — because Canopus Care can win
 preferred terms by bringing the demand engine they aren't running themselves. `partnerFit()` is that thesis
 encoded (`data-core/db.mjs:264`):
 
@@ -229,13 +229,13 @@ dental(1) < cosmetic(2) < fertility(3) < ortho(4) < oncology(5) < cardiac(6)
 | | `latent` / `emerging` (angle: `latent`) | `established` (angle: `established`) |
 |---|---|---|
 | Framing | Founding-partner pilot | Scale play — incremental volume |
-| Demand claim | **Never** claims existing volume — explicitly instructed not to; MedYatra is building the pipeline now | Incremental, pre-qualified patients from low-effort acquisition |
+| Demand claim | **Never** claims existing volume — explicitly instructed not to; Canopus Care is building the pipeline now | Incremental, pre-qualified patients from low-effort acquisition |
 | Commercial | Zero-downside: no exclusivity, no upfront, fee only on delivered patients | Non-exclusive pilot, pay-per-delivered-patient |
-| What's leaned on | Their accreditation as "the global-standard equalizer"; MedYatra's demand-generation + credibility marketing | Existing brand strength; MedYatra's low-effort incremental volume |
+| What's leaned on | Their accreditation as "the global-standard equalizer"; Canopus Care's demand-generation + credibility marketing | Existing brand strength; Canopus Care's low-effort incremental volume |
 
 **The proposal's fixed 7-section structure**, every time: (1) who we are — facilitator, not a provider,
 (2) the case for travelling for this treatment — cost gap, quality, no unsupported demand numbers,
-(3) what MedYatra brings — precise and modest: demand generation, pre-qualified patients, coordination of
+(3) what Canopus Care brings — precise and modest: demand generation, pre-qualified patients, coordination of
 the enquiry and *supporting documents* (never interpreters, flights, hotels, or on-ground logistics — those
 are explicitly **not** claimed), (4) commercial model — facilitation fee **20% entry rising to 25% across
 three revenue tiers** (₹0–20L / 20–50L / 50L+; always ≤ the 25–33% incumbents charge), pay only on delivered
@@ -268,7 +268,7 @@ answering *"why should I trust a hospital I've never heard of?"* using six lever
 2. **Reframe "lesser-known" as "focused specialist"** — depth and procedure volume, not obscurity.
 3. **Named-clinician credentials** — a real name transfers trust the hospital's brand alone can't.
 4. **Radical transparency** — real prices, real inclusions, a virtual tour offered — substitutes for fame.
-5. **MedYatra's own vetting promise** — "we only partner with accredited hospitals that clear our bar."
+5. **Canopus Care's own vetting promise** — "we only partner with accredited hospitals that clear our bar."
 6. **Peer proof** — patients from the same country who've already gone.
 
 Any specific claim not actually supplied — procedure volumes, exact fellowships, awards, an outcome
@@ -411,7 +411,7 @@ Hospital partnerships (§2–§8) and doctor-affiliates (§11) both work by find
 one at a time. Sachin named a structurally different motion, with a real precedent: **Toyota routed its own
 insured employees through medical tourism for treatment.** The user separately proposed the general version —
 for new-market entry or fast volume in an open market, partner with an insurer, a TPA, or a large
-self-insured employer, and pitch reducing THEIR claims payout by redirecting a procedure to MedYatra's
+self-insured employer, and pitch reducing THEIR claims payout by redirecting a procedure to Canopus Care's
 curated hospital network instead of a costlier local or third-country route.
 
 **Why this doesn't fit the existing rubric.** `partnerFit()` scores an institution's quality × whitespace;
@@ -419,7 +419,7 @@ curated hospital network instead of a costlier local or third-country route.
 pitch is pure claims-cost arithmetic applied to a population, not a trust relationship with an individual.
 It needs its own logic if it's ever built out, not a forced fit into either existing rubric.
 
-**This is not theoretical — it's already been pitched once.** The `MedYatra × TruDoc` partnership document
+**This is not theoretical — it's already been pitched once.** The `Canopus Care × TruDoc` partnership document
 (built earlier this session) is exactly this motion, worked out in full for one company: TruDoc (a UAE
 chronic-care manager, 4.4M members) gets a claims-cost-reduction pitch, a tenant-isolation guarantee ("your
 members' data stays yours"), and a performance-based commercial model — no retainer, paid on delivered

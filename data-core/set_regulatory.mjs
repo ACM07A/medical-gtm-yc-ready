@@ -1,4 +1,4 @@
-// Set a market's regulatory clearance — the human/counsel decision on whether MedYatra may legally
+// Set a market's regulatory clearance — the human/counsel decision on whether Canopus Care may legally
 // solicit patients there. Nothing markets live to an 'unverified' or 'blocked' market.
 //   node --experimental-sqlite data-core/set_regulatory.mjs <market> <verified|unverified|blocked> ["note"]
 //   node --experimental-sqlite data-core/set_regulatory.mjs                      # list all

@@ -19,6 +19,11 @@ import { renderStudio, studioQueue, studioApprove } from "./studio.mjs";
 import { renderSandbox, saveTemplate } from "./sandbox.mjs";
 import { renderDemo } from "./demo.mjs";
 import { appMode, authenticateDemoUser, ensureOsSchema, readinessReport, seedDemoOs } from "../data-core/os_core.mjs";
+import { clearSessionCookie, loginRateLimit, sessionCookie, sessionMutationOriginAllowed } from "./session.mjs";
+import { requiresConsoleToken } from "./access.mjs";
+import { renderLogin } from "./login.mjs";
+import { errorPage } from "./canopus_ui.mjs";
+import { structuredLog } from "./logger.mjs";
 import {
   getSession, apiCases, apiCase, renderCases, renderCase, renderHospital, renderAgent,
   renderVendors, renderOsAgents, renderTasks, renderIntegrations, renderAudit, metrics,
@@ -26,6 +31,7 @@ import {
   apiCaseResource, apiAgentRuns, apiAudit, apiIntegrations, apiServiceRequests, updateServiceRequest,
 } from "./os_pages.mjs";
 import { renderConciergePage, answerConcierge } from "./concierge_bot.mjs";
+import { transitionCase } from "../data-core/case_workflow.mjs";
 import {
   renderAgentsDemo, runTriage, runDocumentChecklist,
   runFamilyUpdateAdd, runFamilyUpdateOptin, runFamilyUpdateSend,
@@ -147,6 +153,11 @@ const readBody = (req) => new Promise((resolve) => {
   req.on("end", () => { try { resolve(JSON.parse(s || "{}")); } catch { resolve({}); } });
   req.on("error", () => resolve({}));
 });
+const resultStatus = (result) => result?.ok ? 200
+  : result?.error?.code === "NOT_FOUND" ? 404
+    : result?.error?.code === "AUTH_REQUIRED" ? 401
+    : ["FORBIDDEN", "READ_ONLY", "COMPLIANCE_BLOCKED"].includes(result?.error?.code) ? 403
+      : 400;
 
 const server = createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
@@ -154,7 +165,7 @@ const server = createServer(async (req, res) => {
   const db = open();
   ensureOsSchema(db);
   const session = getSession(db, req);
-  const send = (code, type, body) => {
+  const send = (code, type, body, extraHeaders = {}) => {
     res.writeHead(code, {
       "content-type": type,
       "cache-control": "no-store",
@@ -162,16 +173,17 @@ const server = createServer(async (req, res) => {
       "x-frame-options": "DENY",
       "referrer-policy": "no-referrer",
       "permissions-policy": "camera=(), microphone=(), geolocation=()",
-      "content-security-policy": "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'",
+      "content-security-policy": "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'",
       "x-request-id": requestId,
+      ...extraHeaders,
     });
     res.end(body);
   };
-  // ACCESS CONTROL: the console + APIs expose named partner contacts and pipeline. If CONSOLE_TOKEN is set,
-  // gate everything except the public patient site (/, /site, /outputs) and the health probe. REQUIRED
-  // before exposing this beyond localhost. (No token set = open, for localhost dev.)
-  const PROTECTED = /^\/(console|studio|sandbox|demo|agents|hospital|agent|cases|vendors|vendor|service-requests|tasks|integrations|audit|benchmarks|api\/(state|runs|studio|benchmarks|comms|agents|agent-runs|lead|cases|readiness|session|metrics|auth|approvals|tasks|vendors|service-requests|integrations|audit|demo)|draft|outreach|worklist|comms|distribution|plugins|docs)/;
-  if (process.env.CONSOLE_TOKEN && PROTECTED.test(url.pathname)) {
+  // Public sandbox: synthetic OS pages and read APIs stay browseable as a read-only reviewer.
+  // Operator/GTM surfaces expose contact research, content queues, or powerful actions and remain
+  // behind CONSOLE_TOKEN. OS mutations are separately role-checked by the signed demo session.
+  const OPERATOR_PROTECTED = requiresConsoleToken(url.pathname);
+  if (process.env.CONSOLE_TOKEN && OPERATOR_PROTECTED) {
     const auth = req.headers.authorization || "";
     const pass = auth.startsWith("Basic ") ? Buffer.from(auth.slice(6), "base64").toString().split(":").slice(1).join(":") : "";
     if (pass !== process.env.CONSOLE_TOKEN) {
@@ -181,18 +193,49 @@ const server = createServer(async (req, res) => {
     }
   }
   try {
+    if (!sessionMutationOriginAllowed(req)) {
+      structuredLog("csrf_rejected", { request_id: requestId, method: req.method, path: url.pathname }, "error");
+      return send(403, "application/json", JSON.stringify({
+        ok: false,
+        error: { code: "ORIGIN_REJECTED", message: "The request origin is not allowed.", details: {} },
+        request_id: requestId,
+      }));
+    }
+    if (req.method === "GET" && url.pathname === "/app")
+      return send(302, "text/plain; charset=utf-8", "Open dashboard", { location: "/demo" });
+    const appCaseMatch = url.pathname.match(/^\/app\/cases\/([^/]+)$/);
+    if (req.method === "GET" && appCaseMatch)
+      return send(302, "text/plain; charset=utf-8", "Open case", { location: `/cases/${encodeURIComponent(appCaseMatch[1])}` });
+    if (req.method === "GET" && url.pathname === "/login")
+      return send(200, "text/html; charset=utf-8", renderLogin());
     if (req.method === "POST" && url.pathname === "/api/auth/login") {
+      const rateKey = req.socket.remoteAddress || "unknown";
+      const limit = loginRateLimit(rateKey);
+      if (!limit.allowed)
+        return send(429, "application/json", JSON.stringify({ ok: false, error: { code: "RATE_LIMITED", message: "Too many login attempts. Try again later.", details: {} } }), { "retry-after": String(limit.retryAfter) });
       const body = await readBody(req);
       const user = authenticateDemoUser(db, body.email, body.password);
       const ok = !!user;
-      if (ok) db.prepare(`INSERT INTO audit_event (id,actor_user_id,organization_id,action,subject_type,subject_id,outcome,request_id,detail)
-        VALUES (lower(hex(randomblob(8))),?,?,?,?,?,?,?,?)`).run(user.id, session.organization_id, "login", "user", user.id, "ok", "api-auth", "Demo login");
-      return send(ok ? 200 : 401, "application/json", JSON.stringify(ok ? { ok: true, user: { email: user.email, name: user.name } } : { ok: false, error: { code: "AUTH_FAILED", message: "Invalid demo credentials.", details: {} }, request_id: "api-auth" }));
+      if (ok) {
+        loginRateLimit(rateKey, true);
+        const organization = db.prepare(`SELECT organization_id FROM membership WHERE user_id=? ORDER BY role LIMIT 1`).get(user.id);
+        db.prepare(`INSERT INTO audit_event (id,actor_user_id,organization_id,action,subject_type,subject_id,outcome,request_id,detail)
+          VALUES (lower(hex(randomblob(8))),?,?,?,?,?,?,?,?)`).run(user.id, organization?.organization_id || null, "login", "user", user.id, "ok", requestId, "Demo login");
+      }
+      return send(ok ? 200 : 401, "application/json",
+        JSON.stringify(ok ? { ok: true, user: { email: user.email, name: user.name } } : { ok: false, error: { code: "AUTH_FAILED", message: "Invalid demo credentials.", details: {} }, request_id: requestId }),
+        ok ? { "set-cookie": sessionCookie(user.id) } : {});
     }
     if (req.method === "POST" && url.pathname === "/api/auth/logout")
-      return send(200, "application/json", JSON.stringify({ ok: true }));
+      return send(200, "application/json", JSON.stringify({ ok: true }), { "set-cookie": clearSessionCookie() });
     if (url.pathname === "/api/session")
-      return send(200, "application/json", JSON.stringify({ ok: true, user: session.user && { email: session.user.email, name: session.user.name }, memberships: session.memberships }));
+      return send(200, "application/json", JSON.stringify({
+        ok: true,
+        authenticated: session.authenticated,
+        role: session.role,
+        user: session.user && { email: session.user.email, name: session.user.name },
+        memberships: session.memberships,
+      }));
     if (url.pathname === "/api/readiness")
       return send(200, "application/json", JSON.stringify(readinessReport(db)));
     if (url.pathname === "/api/metrics")
@@ -203,6 +246,12 @@ const server = createServer(async (req, res) => {
     if (apiCaseMatch) {
       const c = apiCase(db, session, apiCaseMatch[1]);
       return send(c ? 200 : 404, "application/json", JSON.stringify(c ? { ok: true, case: c } : { ok: false, error: { code: "NOT_FOUND", message: "Case not found or not authorized", details: {} }, request_id: "local" }));
+    }
+    const caseTransitionMatch = url.pathname.match(/^\/api\/cases\/([^/]+)\/transition$/);
+    if (req.method === "POST" && caseTransitionMatch) {
+      const body = await readBody(req);
+      const result = transitionCase(db, session, caseTransitionMatch[1], String(body.state || ""));
+      return send(resultStatus(result), "application/json", JSON.stringify(result));
     }
     const apiCaseResourceMatch = url.pathname.match(/^\/api\/cases\/([^/]+)\/(documents|matches|reviews|estimates|messages|tasks|services|approvals|audit)$/);
     if (apiCaseResourceMatch) {
@@ -221,14 +270,17 @@ const server = createServer(async (req, res) => {
     if (url.pathname === "/api/approvals")
       return send(200, "application/json", JSON.stringify({ ok: true, approvals: apiApprovals(db, session) }));
     const approvalAction = url.pathname.match(/^\/api\/approvals\/([^/]+)\/(approve|reject)$/);
-    if (req.method === "POST" && approvalAction)
-      return send(200, "application/json", JSON.stringify(decideApproval(db, session, approvalAction[1], approvalAction[2])));
+    if (req.method === "POST" && approvalAction) {
+      const result = decideApproval(db, session, approvalAction[1], approvalAction[2]);
+      return send(resultStatus(result), "application/json", JSON.stringify(result));
+    }
     if (url.pathname === "/api/tasks")
       return send(200, "application/json", JSON.stringify({ ok: true, tasks: apiTasks(db, session) }));
     const taskPatch = url.pathname.match(/^\/api\/tasks\/([^/]+)$/);
     if (req.method === "PATCH" && taskPatch) {
       const body = await readBody(req);
-      return send(200, "application/json", JSON.stringify(updateTask(db, session, taskPatch[1], body)));
+      const result = updateTask(db, session, taskPatch[1], body);
+      return send(resultStatus(result), "application/json", JSON.stringify(result));
     }
     if (url.pathname === "/api/vendors")
       return send(200, "application/json", JSON.stringify({ ok: true, ...apiVendors(db) }));
@@ -243,7 +295,8 @@ const server = createServer(async (req, res) => {
     }
     if (req.method === "POST" && url.pathname === "/api/service-requests") {
       const body = await readBody(req);
-      return send(200, "application/json", JSON.stringify(createServiceRequest(db, session, body)));
+      const result = createServiceRequest(db, session, body);
+      return send(resultStatus(result), "application/json", JSON.stringify(result));
     }
     if (req.method === "POST" && url.pathname === "/api/demo/reset") {
       if (appMode() !== "demo") return send(403, "application/json", JSON.stringify({ ok: false, error: { code: "NOT_DEMO", message: "Demo reset is only allowed in APP_MODE=demo.", details: {} } }));
@@ -274,6 +327,8 @@ const server = createServer(async (req, res) => {
       return send(200, "text/html; charset=utf-8", renderTasks(db, session));
     if (url.pathname === "/integrations")
       return send(200, "text/html; charset=utf-8", renderIntegrations(db, session));
+    if (url.pathname === "/readiness")
+      return send(200, "text/html; charset=utf-8", renderIntegrations(db, session));
     if (url.pathname === "/audit")
       return send(200, "text/html; charset=utf-8", renderAudit(db, session));
     // STUDIO — the live approve-and-deploy console (real data + write-back actions).
@@ -288,7 +343,7 @@ const server = createServer(async (req, res) => {
     // SANDBOX — the deployment-ready patient-journey walk-through: simulate every branch + edit templates
     // live. Editing a template routes it back to `review` (human-gated before it can ever send).
     if (url.pathname === "/demo")
-      return send(200, "text/html; charset=utf-8", renderDemo(db));
+      return send(200, "text/html; charset=utf-8", renderDemo(db, session));
     // CONCIERGE AGENTS — post-booking journey, live and clickable (server/agents.mjs). Real model calls
     // through the same failover chain and safety gate as everything else; deterministic fallback if no key.
     if (url.pathname === "/agents")
@@ -380,6 +435,8 @@ const server = createServer(async (req, res) => {
       return send(result.ok ? 200 : /token/.test(result.error || "") ? 401 : 400, "application/json", JSON.stringify({ ...result, mapping: parsed.mapping }));
     }
     if (url.pathname === "/") {
+      if (appMode() === "demo")
+        return send(302, "text/plain; charset=utf-8", "Canopus Care demo", { location: "/demo" });
       const cats = db.prepare(`SELECT c.*, (SELECT min(india_low) FROM category_price p WHERE p.category_id=c.id) lo,
         (SELECT max(india_high) FROM category_price p WHERE p.category_id=c.id) hi
         FROM category c WHERE c.status='launch' ORDER BY c.rank`).all();
@@ -515,6 +572,11 @@ ${rows.map(card).join("")}</main></body></html>`;
       const loopHealthy = ageH != null && ageH < staleAfter;
       return send(200, "application/json", JSON.stringify({
         ok: os.ok && (appMode() === "demo" || loopHealthy),
+        service: "canopus-care",
+        mode: appMode(),
+        database: os.database === "READY" ? "ok" : "degraded",
+        seed: db.prepare(`SELECT count(*) count FROM seed_version`).get().count ? "loaded" : "missing",
+        last_loop: done?.v || null,
         app_mode: appMode(), os_ready: os.ok, legacy_loop_healthy: loopHealthy,
         last_loop_completed: done?.v || null, hours_since: ageH == null ? null : +ageH.toFixed(1),
         stale: ageH == null || ageH >= staleAfter, last_backup: getState(db, "last_backup")?.v || null,
@@ -596,14 +658,16 @@ ${rows.map(card).join("")}</main></body></html>`;
       return send(200, "text/html; charset=utf-8",
         docPage(`Outreach — ${row.partner}`, `DRAFT outreach · ${row.angle} angle · NOT sent (human-gated)`, mdToHtml(md)));
     }
-    return send(404, "text/html", "not found");
-  } catch (e) { send(500, "text/plain", String(e && e.stack || e)); }
+    if (url.pathname.startsWith("/api/"))
+      return send(404, "application/json", JSON.stringify({ ok: false, error: { code: "NOT_FOUND", message: "API route not found.", details: {} }, request_id: requestId }));
+    return send(404, "text/html; charset=utf-8", errorPage(404, "Page not found", "The requested demo page does not exist or has moved.", requestId));
+  } catch (e) {
+    structuredLog("route_error", { request_id: requestId, method: req.method, path: url.pathname, error: String(e?.message || e) }, "error");
+    if (url.pathname.startsWith("/api/"))
+      send(500, "application/json", JSON.stringify({ ok: false, error: { code: "INTERNAL_ERROR", message: "The request could not be completed.", details: {} }, request_id: requestId }));
+    else
+      send(500, "text/html; charset=utf-8", errorPage(500, "Something went wrong", "The demo is still available. Return to the dashboard and try again.", requestId));
+  }
   finally { db.close(); }
 });
-if (appMode() === "demo") {
-  const bootstrapDb = open();
-  ensureOsSchema(bootstrapDb);
-  if (bootstrapDb.prepare(`SELECT count(*) count FROM app_user`).get().count === 0) seedDemoOs(bootstrapDb);
-  bootstrapDb.close();
-}
-server.listen(PORT, () => console.log(`CanopusCare console  ->  http://localhost:${PORT}`));
+server.listen(PORT, () => structuredLog("server_started", { port: PORT, mode: appMode() }));
