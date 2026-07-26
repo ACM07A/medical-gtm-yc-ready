@@ -47,14 +47,16 @@ answering the family** → the consent-blocked case refusing. `[FOUNDER FILL —
 
 ## Where do you live now, and where would the company be based after YC?
 
-`[FOUNDER FILL]`. Suggested honest framing if staying: "Bengaluru — our first five hospital partners are in
-one city here, and the supply side of this business is won in person at their international desks."
+We both live in **Bengaluru** and will base the company here: most of our first hospital partners are
+headquartered in this city and both our families are here — and the supply side of this business is won in
+person at hospitals' international desks. We may open a **UAE office** later to meet Gulf data-residency laws
+and open that corridor `[FOUNDER FILL: mention the Hub71 / Abu Dhabi application if you want to signal it]`.
 
 ## How far along are you?
 
-- Working product, built in 20 days (83 commits since July 8): case workflow for agent → hospital → estimate
-  → approval, 13 journey agents (visa, ticketing, stay, interpreter, billing, aftercare), and a patient/family
-  concierge bot — all runnable in one command, no API keys, 15 automated tests passing.
+- Working product, built in three weeks (started July 2; 83 commits): case workflow for agent → hospital →
+  estimate → approval, 13 journey agents (visa, ticketing, stay, interpreter, billing, aftercare), and a
+  patient/family concierge bot — all runnable in one command, no API keys, 15 automated tests passing.
 - 0 revenue, 0 real patients — the demo runs entirely on synthetic cases, and says so on every screen.
 - Direct warm intros into 5 hospitals, most through personal ties (this is our unfair advantage — hospital
   supply is the hard side of this market): **Manipal** (the group's former Lead Counsel is Ajeya's father),
@@ -63,14 +65,19 @@ one city here, and the supply side of this business is won in person at their in
   doctors we know there), and **Prime Hospitals, Rajkot** (Hussain's brother-in-law is a 1/3 owner).
 - Advised by `[FOUNDER FILL: Sachin's full title + consent to name him]`, a veteran hospital
   international-patient-desk operator whose numbers (incumbent commissions, upfront-payment norms) anchor our model.
+- Outreach underway: met our Aster contact and Sachin (Fortis) in person, and spoke with Ajeya's father
+  (Manipal) and Hussain's brother-in-law (co-owner, Prime Rajkot) — feedback plus open-ended conversations
+  about actually partnering.
 - Health-data-law register covering 22 source markets; we deliberately refuse 4 of them (UAE, Uzbekistan,
   Kazakhstan, Zambia) until we can meet their data-residency laws — the compliance gate is working code.
 
 ## How long have each of you been working on this? How much has been full-time?
 
-`[FOUNDER FILL — per founder, with dates]`. Verifiable piece: the codebase started **July 8, 2026** (83
-commits since). The guide: full-time is the green flag; if either of you quit or is quitting a job for this,
-say it plainly with the date.
+We started on **July 2, 2026** — about three weeks. Hussain is on a career break and has been on this
+effectively full-time since day one; Ajeya has split time with Ricotta Trivia and is moving to full-time on
+Canopus Care now. Once we submit this application we're both full-time: we'll incorporate, put in our own
+money, and are targeting our first hospital-paid commission by end of October `[FOUNDER FILL — confirm the
+exact split of Ajeya's time so this is precise, not rounded up]`.
 
 ## How many active users or customers do you have? How many are paying?
 
@@ -81,42 +88,59 @@ say it plainly with the date.
 
 ## Why did you pick this idea? Do you have domain expertise? How do you know people need this?
 
-- `[FOUNDER FILL — 1 sentence: the real moment this became your problem. Do not invent a dramatic origin.]`
-- Domain + access: Hussain built `[FOUNDER FILL: role]` at **LiveAltlife**, a healthcare company now partnered
-  with KIMS — that's how we know the hospital-desk workflow first-hand and have a direct line to a hospital COO.
-  Ajeya's father was **Lead Counsel of the Manipal Group**, so we understand exactly how hospitals' existing
-  facilitator agreements are written — and where the commercial friction we remove actually sits. Plus a
-  standing adviser who ran an international patient desk `[VERIFY: Sachin's hospital + role]`.
-- Demand facts we've verified so far: incumbent facilitation agents charge Indian hospitals **25–33% of the
-  package** for cases coordinated over WhatsApp and spreadsheets; hospitals require **80–100% of the package
-  upfront** before surgery; `[FOUNDER FILL: N hospital-desk and M agent interviews conducted — real numbers
-  only]`. Patients pay these costs invisibly today; hospitals sign us because we open at 20%.
+- Hussain spent 4.5 years at LiveAltlife building hospital and doctor partnerships — including embedding a
+  Narayana Nethralaya hospital partnership across four locations — and kept seeing international patient cases
+  run on WhatsApp, phone calls and spreadsheets; the idea of doing it properly has been in his head for years.
+- Domain + access, split cleanly across the two of us: **Hussain** built 0-to-1 sales and channel engines for
+  nine years in healthtech and fintech (LiveAltlife: a handful of customers → 250+ subscribers/month and 75+
+  partnerships; before that a ₹40Cr lending book at OfBusiness and 50%+ of a city's revenue at a Paytm company)
+  — he knows how to win hospital supply and build a demand funnel. **Ajeya** left FMCG in 2021 to build Ricotta
+  Trivia to $800k ARR and has shipped AI products for 3+ years on exactly the agent infrastructure this is built
+  on — he owns the tech. **Ajeya's father was Lead Counsel of the Manipal Group**, so we understand precisely
+  how hospitals' existing facilitator agreements are written and where the commercial friction sits.
+- How we know people need it: India already treats ~**644,000 foreign patients a year on medical visas**
+  (a ~**$7.7B** market growing ~18%/year), and **~24% of that flow is our corridor** — 16% West Asia, 8% Africa,
+  with Ethiopia, Kenya, Tanzania, Oman and Iraq among the top source countries. Today that demand is served by
+  agents charging hospitals **25–33%** over WhatsApp, with patients paying **80–100% of the package upfront**.
+  We've had first partnering conversations with `[FOUNDER FILL: N hospitals]` and our advisers confirm the
+  numbers `[FOUNDER FILL: how many agent/desk conversations — real count only]`.
 
 ## Who are your competitors? What do you understand that they don't?
 
-> Incumbent facilitators (Vaidam, HealthTrip, MediGence `[VERIFY current top 3]`) and the informal agent
-> networks that route most of this flow today; hospitals' own international desks are the substitute.
+> The real competition isn't the branded platforms — it's a **fragmented army of individual agents**: foreign
+> students, interpreters, even former patient-attendants who learned the mechanics and became agents, plus
+> **hospitals' own international desks**, which have built deep in-country referral networks, local information
+> centres, and senior doctors who refer patients directly for a cut. The visible layer on top is the
+> aggregators — Vaidam (100k+ patients since 2016), MediGence, HealthTrip — but they're mostly lead-generation
+> directories, not the operating layer.
 >
-> What we understand: the constraint isn't demand — India's hospitals already receive it — it's coordination
-> cost. Incumbents charge hospitals 25–33% because human coordinators scale linearly with cases; since our
-> coordination is software, we profitably open at 20%, rising only to 25% (their floor) at volume — the
-> hospital never pays more than its cheapest current agent and gets a treatment-ready case file instead of a
-> lead. And we treat health-data law as a feature, not friction: our system legally refuses markets we can't
-> serve yet, which is exactly what a hospital's compliance team wants to see.
+> What we understand that they don't: this is not one market, it's two flows. Most patients today arrive
+> already captured by an agent or a referring doctor. But **10–20% arrive organically** — they research, shop
+> around, and choose for themselves — and that self-directed flow is underserved by everyone, because agents
+> compete on relationships and kickbacks, not on transparent discovery. **We win that direct demand first** by
+> making discovery and estimates easy, honest and all-in (agents quote a clean package price and hide the ~44%
+> travel basket; we don't), earn trust, and then layer in the agent and hospital-desk channels for scale.
+> Underneath, our advantage is structural: incumbents charge 25–33% because human coordinators scale linearly
+> with cases; our coordination is software, so we profitably open at 20% and give the hospital a treatment-ready
+> case file, not a lead. And we treat health-data law as a feature — the system legally refuses markets we can't
+> yet serve, which is exactly what a hospital's compliance team wants to see.
 
 ## How do or will you make money? How much could you make?
 
 > Hospitals pay us a success fee per treated patient: 20% of the package at entry, stepping to 22.5% and
 > capping at 25% as annual routed revenue grows — always at or below the 25–33% incumbents charge. On a
-> $5,000–9,000 cardiac package that is ~$1,000–1,800 per patient. Bottom-up: at an average $1,200 fee, $100M
-> ARR needs ~83,000 treated patients a year — about 4% of the ~2 million international patients India already
-> treats annually `[VERIFY figure + source before submission]`. We take no patient markup, so growing us costs
-> the patient nothing.
+> $5,000–9,000 cardiac package that is ~$1,000–1,800 per patient (add modest vendor-side commission on the
+> travel basket). Bottom-up: India treats ~644,000 foreign patients a year on medical visas; ~24% (~155,000)
+> come from our Africa + Middle East corridor, so at an average ~$1,200 fee that corridor alone is a
+> **~$185M/year facilitation pool today, growing ~18%/year**. $100M ARR is ~83,000 treated patients — a low
+> double-digit share of India's inbound flow, reached by owning the self-directed organic segment first and
+> layering in agent and hospital-desk channels. We take no patient markup, so growing us costs the patient nothing.
 
 ## Equity breakdown
 
-`[FOUNDER FILL]`. Guide (quoting Michael Seibel): "Aim for roughly equal equity splits" — a 90/10 split is a
-red flag to YC because the 10% founder has little reason to stay when it gets hard.
+> Hussain 50%, Ajeya 50%.
+
+(Exactly what the guide wants — Michael Seibel: "Aim for roughly equal equity splits.")
 
 ## Other ideas you considered (guide: 50-char line + 1 sentence each — YC sometimes funds these)
 
@@ -126,12 +150,21 @@ red flag to YC because the 10% founder has little reason to stay when it gets ha
   their lead databases into tenant-isolated journey rails; de-identified cross-operator benchmarks compound.
 - `Tiny open health-logistics model for Africa` (43) — a 1.5–2B-parameter open-source on-device model for
   health-adjacent logistics in low-connectivity markets; fine-tuning spec already written.
+- `Coordinate Indian surgeons operating abroad` (44) — Indian doctors already fly to Africa/the Gulf to
+  perform surgeries in-country; the same case rails could coordinate that reverse flow (surfaced by a
+  hospital co-owner we spoke to — an inversion of the corridor, not a separate company).
 
-## Founder-only questions the application will also ask — prepare these together
+## Founder / team questions — mostly answerable now
 
-How you met · how long you've worked together · who writes code (be specific about the AI-assisted workflow —
-it's a strength: **one founder-directed agent stack produced a tested product in 20 days**) · what each of you
-built or sold before · what you've done together under pressure · why you'll still be doing this in 10 years.
+- **How you met:** IIM Trichy batchmates.
+- **Who does what:** Ajeya owns AI/product/engineering (built Ricotta Trivia to $800k ARR; 3+ yrs shipping AI
+  products on this same agent stack). Hussain owns GTM, hospital supply and the demand funnel (9 yrs 0-to-1
+  sales/channel; built the LiveAltlife hospital-partnership engine). Clean, complementary — the tech builder and
+  the healthcare-GTM builder — which is the natural shape of an AI-native services company.
+- **Who writes the code:** Ajeya-led, with a founder-directed agent stack — worth stating plainly, it's a
+  strength: two founders shipped a tested, one-command product in three weeks.
+- **Still `[FOUNDER FILL]`:** what you've built together before under pressure (if anything), and the one-line
+  "why you'll still be doing this in ten years."
 
 ---
 
@@ -139,5 +172,15 @@ built or sold before · what you've done together under pressure · why you'll s
 - [ ] Name frozen with Ajeya → swap into every answer above.
 - [ ] Repo URL = `github.com/hussainbombaywala/medical-tourism-gtm` (NOT ACM07A).
 - [ ] Deploy demo → paste URL + reviewer credentials into the application block.
-- [ ] Verify: incumbent-commission range attribution, India inbound-patient volume, competitor top-3.
+- [x] Verified (July 26): India MVT market ~$7.7B / ~644k medical-visa arrivals 2024, growing ~18%/yr;
+      corridor mix West Asia 16% + Africa 8%; competitors Vaidam / MediGence / HealthTrip are lead-gen aggregators.
+- [ ] Remaining `[FOUNDER FILL]`: Sachin's title + name consent; exact count of hospital/agent conversations;
+      Ajeya's precise full-time split; "built together before" + "why for 10 years"; Hub71 mention (optional).
 - [ ] Founder video: use the refocused line from `outputs/06_YC_REFOCUS.md`, not YC_PLAN's agent-SaaS line.
+
+## Sources for the verified market numbers (cite if asked, don't paste into answers)
+- India MVT market ~$7.69B (2024) → ~$10.2B (2025): Mordor Intelligence; Medical Buyer.
+- ~644,387 foreign medical-visa arrivals 2024 (vs a broad 7.3M "MVT" figure that includes wellness/AYUSH/companions —
+  use the 644k, it's the honest number): Business Standard; Medical Buyer.
+- Origin mix 70% South Asia / 16% West Asia / 8% Africa / 6% other (Crisil); +18% intl-travel revenue FY24: ORF.
+- Competitors: Vaidam (100k+ patients since 2016), MediGence (100k+), HealthTrip (69k+) — company/LinkedIn profiles.
