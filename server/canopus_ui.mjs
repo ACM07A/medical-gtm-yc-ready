@@ -43,6 +43,7 @@ export function icon(name, size = 18, className = "") {
 
 const NAV = [
   ["demo", "/demo", "House", "Overview"],
+  ["concierge", "/concierge", "MessageCircleQuestion", "Concierge"],
   ["cases", "/cases", "BriefcaseMedical", "Cases"],
   ["hospital", "/hospital", "Building2", "Hospitals"],
   ["agent", "/agent", "Users", "Agents"],

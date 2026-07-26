@@ -25,6 +25,7 @@ import {
   apiApprovals, decideApproval, apiTasks, updateTask, apiVendors, createServiceRequest,
   apiCaseResource, apiAgentRuns, apiAudit, apiIntegrations, apiServiceRequests, updateServiceRequest,
 } from "./os_pages.mjs";
+import { renderConciergePage, answerConcierge } from "./concierge_bot.mjs";
 import {
   renderAgentsDemo, runTriage, runDocumentChecklist,
   runFamilyUpdateAdd, runFamilyUpdateOptin, runFamilyUpdateSend,
@@ -254,6 +255,14 @@ const server = createServer(async (req, res) => {
       return send(200, "text/html; charset=utf-8", renderHospital(db, session));
     if (url.pathname === "/agent")
       return send(200, "text/html; charset=utf-8", renderAgent(db, session));
+    // CONCIERGE BOT — the patient/family's single conversational point of contact for the whole journey
+    // (server/concierge_bot.mjs). Deterministic, key-free, reads the same case record the OS pages read.
+    if (url.pathname === "/concierge")
+      return send(200, "text/html; charset=utf-8", renderConciergePage(db));
+    if (req.method === "POST" && url.pathname === "/api/concierge/ask") {
+      const body = await readBody(req);
+      return send(200, "application/json", JSON.stringify(answerConcierge(db, body)));
+    }
     if (url.pathname === "/cases")
       return send(200, "text/html; charset=utf-8", renderCases(db, session));
     const caseMatch = url.pathname.match(/^\/cases\/([^/]+)$/);
