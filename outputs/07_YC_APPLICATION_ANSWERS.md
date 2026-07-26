@@ -50,7 +50,7 @@ answering the family** → the consent-blocked case refusing. `[FOUNDER FILL —
 We both live in **Bengaluru** and will base the company here: most of our first hospital partners are
 headquartered in this city and both our families are here — and the supply side of this business is won in
 person at hospitals' international desks. We may open a **UAE office** later to meet Gulf data-residency laws
-and open that corridor `[FOUNDER FILL: mention the Hub71 / Abu Dhabi application if you want to signal it]`.
+and open that corridor.
 
 ## How far along are you?
 
@@ -60,14 +60,13 @@ and open that corridor `[FOUNDER FILL: mention the Hub71 / Abu Dhabi application
 - 0 revenue, 0 real patients — the demo runs entirely on synthetic cases, and says so on every screen.
 - Direct warm intros into 5 hospitals, most through personal ties (this is our unfair advantage — hospital
   supply is the hard side of this market): **Manipal** (the group's former Lead Counsel is Ajeya's father),
-  **Fortis Bannerghatta** (our adviser Sachin is on the team, connects us inside), **KIMS E-City** (Hussain's
+  **Fortis Bannerghatta** (our adviser, an Assistant Manager on their International Desk, connects us inside), **KIMS E-City** (Hussain's
   former company LiveAltlife is partnered and close to the COO), **Sparsh** (family connection to the owner +
   doctors we know there), and **Prime Hospitals, Rajkot** (Hussain's brother-in-law is a 1/3 owner).
-- Advised by `[FOUNDER FILL: Sachin's full title + consent to name him]`, a veteran hospital
-  international-patient-desk operator whose numbers (incumbent commissions, upfront-payment norms) anchor our model.
-- Outreach underway: met our Aster contact and Sachin (Fortis) in person, and spoke with Ajeya's father
-  (Manipal) and Hussain's brother-in-law (co-owner, Prime Rajkot) — feedback plus open-ended conversations
-  about actually partnering.
+- Advised by an Assistant Manager on the Fortis Bannerghatta International Desk, whose numbers (incumbent
+  commissions, upfront-payment norms, exactly what a package includes) anchor our model.
+- Three hospital conversations so far: our Fortis International Desk adviser, our Aster contact, and Hussain's
+  brother-in-law (co-owner, Prime Rajkot) — feedback plus open-ended discussion of actually partnering.
 - Health-data-law register covering 22 source markets; we deliberately refuse 4 of them (UAE, Uzbekistan,
   Kazakhstan, Zambia) until we can meet their data-residency laws — the compliance gate is working code.
 
@@ -102,8 +101,8 @@ exact split of Ajeya's time so this is precise, not rounded up]`.
   (a ~**$7.7B** market growing ~18%/year), and **~24% of that flow is our corridor** — 16% West Asia, 8% Africa,
   with Ethiopia, Kenya, Tanzania, Oman and Iraq among the top source countries. Today that demand is served by
   agents charging hospitals **25–33%** over WhatsApp, with patients paying **80–100% of the package upfront**.
-  We've had first partnering conversations with `[FOUNDER FILL: N hospitals]` and our advisers confirm the
-  numbers `[FOUNDER FILL: how many agent/desk conversations — real count only]`.
+  We've had first partnering conversations with three hospitals (Fortis, Aster, Prime Rajkot), and our Fortis
+  International Desk adviser confirms the numbers.
 
 ## Who are your competitors? What do you understand that they don't?
 
@@ -131,9 +130,11 @@ exact split of Ajeya's time so this is precise, not rounded up]`.
 ## How do or will you make money? How much could you make?
 
 > Hospitals pay us a success fee per treated patient: 20% of the package at entry, stepping to 22.5% and
-> capping at 25% as annual routed revenue grows — always at or below the 25–33% incumbents charge. On a
-> $5,000–9,000 cardiac package that is ~$1,000–1,800 per patient (add modest vendor-side commission on the
-> travel basket). Bottom-up: India treats ~644,000 foreign patients a year on medical visas; ~24% (~155,000)
+> capping at 25% as annual routed revenue grows — always at or below the 25–33% incumbents charge. This isn't a
+> new cost to them: hospital international tariffs are *already* priced to fund agent payouts, so the commission
+> comes out of margin they've allocated to acquisition regardless — they simply care about the business coming
+> in, and we deliver it cheaper and treatment-ready. On a $5,000–9,000 cardiac package that is ~$1,000–1,800 per
+> patient (add modest vendor-side commission on the travel basket). Bottom-up: India treats ~644,000 foreign patients a year on medical visas; ~24% (~155,000)
 > come from our Africa + Middle East corridor, so at an average ~$1,200 fee that corridor alone is a
 > **~$185M/year facilitation pool today, growing ~18%/year**. $100M ARR is ~83,000 treated patients — a low
 > double-digit share of India's inbound flow, reached by owning the self-directed organic segment first and
@@ -168,7 +169,10 @@ exact split of Ajeya's time so this is precise, not rounded up]`.
   the healthcare-GTM builder — which is the natural shape of an AI-native services company.
 - **Who writes the code:** Ajeya-led, with a founder-directed agent stack — worth stating plainly, it's a
   strength: two founders shipped a tested, one-command product in three weeks.
-- **Still `[FOUNDER FILL]`:** the one-line "why you'll still be doing this in ten years."
+- **Why we'll still be doing this in 10 years:** the fundamentals only widen the gap we serve — India's (and
+  other corridors') healthcare keeps getting better and cheaper, while the source markets that will increasingly
+  look outward (Europe, the Americas, Japan) face healthcare systems that are already overloaded and only getting
+  more strained. Cross-border care is a structural, decades-long shift, and we want to be the layer it runs on.
 
 ---
 
@@ -178,8 +182,9 @@ exact split of Ajeya's time so this is precise, not rounded up]`.
 - [ ] Deploy demo → paste URL + reviewer credentials into the application block.
 - [x] Verified (July 26): India MVT market ~$7.7B / ~644k medical-visa arrivals 2024, growing ~18%/yr;
       corridor mix West Asia 16% + Africa 8%; competitors Vaidam / MediGence / HealthTrip are lead-gen aggregators.
-- [ ] Remaining `[FOUNDER FILL]`: Sachin's title + name consent; exact count of hospital/agent conversations;
-      Ajeya's precise full-time split; "built together before" + "why for 10 years"; Hub71 mention (optional).
+- [ ] Remaining `[FOUNDER FILL]`: Ajeya's precise full-time split (only open founder detail). Everything else
+      answered: adviser = Assistant Manager, Fortis International Desk (name withheld); 3 hospital conversations
+      (Fortis/Aster/Prime); Hub71 omitted; 10-year answer written; hospital-pays-from-acquisition-margin confirmed.
 - [ ] Founder video: use the refocused line from `outputs/06_YC_REFOCUS.md`, not YC_PLAN's agent-SaaS line.
 
 ## Sources for the verified market numbers (cite if asked, don't paste into answers)
