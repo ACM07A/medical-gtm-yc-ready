@@ -118,8 +118,11 @@ exact split of Ajeya's time so this is precise, not rounded up]`.
 > already captured by an agent or a referring doctor. But **10–20% arrive organically** — they research, shop
 > around, and choose for themselves — and that self-directed flow is underserved by everyone, because agents
 > compete on relationships and kickbacks, not on transparent discovery. **We win that direct demand first** by
-> making discovery and estimates easy, honest and all-in (agents quote a clean package price and hide the ~44%
-> travel basket; we don't), earn trust, and then layer in the agent and hospital-desk channels for scale.
+> removing the complexity and ambiguity of the whole journey — reports, hospital quote, travel, accommodation,
+> local logistics — and by being transparent about the true all-in cost (agents quote a clean package price and
+> hide the ~44% travel basket; we don't). We do **not** compete on price — the same treatment costs the same
+> whether a patient comes via us, an agent, or alone — we compete on certainty, transparency and a supported
+> journey, plus a pre-travel video consult with a senior specialist that most patients can't get today.
 > Underneath, our advantage is structural: incumbents charge 25–33% because human coordinators scale linearly
 > with cases; our coordination is software, so we profitably open at 20% and give the hospital a treatment-ready
 > case file, not a lead. And we treat health-data law as a feature — the system legally refuses markets we can't
@@ -156,15 +159,16 @@ exact split of Ajeya's time so this is precise, not rounded up]`.
 
 ## Founder / team questions — mostly answerable now
 
-- **How you met:** IIM Trichy batchmates.
+- **How you met / how long:** IIM Trichy batchmates — we've known each other **9 years**, and have been
+  swapping ideas and sketching business models together since business school. This is the first we're building
+  together (beyond a college project or two), but the working relationship and trust are a decade deep.
 - **Who does what:** Ajeya owns AI/product/engineering (built Ricotta Trivia to $800k ARR; 3+ yrs shipping AI
   products on this same agent stack). Hussain owns GTM, hospital supply and the demand funnel (9 yrs 0-to-1
   sales/channel; built the LiveAltlife hospital-partnership engine). Clean, complementary — the tech builder and
   the healthcare-GTM builder — which is the natural shape of an AI-native services company.
 - **Who writes the code:** Ajeya-led, with a founder-directed agent stack — worth stating plainly, it's a
   strength: two founders shipped a tested, one-command product in three weeks.
-- **Still `[FOUNDER FILL]`:** what you've built together before under pressure (if anything), and the one-line
-  "why you'll still be doing this in ten years."
+- **Still `[FOUNDER FILL]`:** the one-line "why you'll still be doing this in ten years."
 
 ---
 

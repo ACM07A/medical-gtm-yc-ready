@@ -21,9 +21,14 @@ const db = open();
 // 20% (below their floor) with a volume ramp that steps UP to 25% across three tiers of routed revenue
 // (₹0–20L / 20–50L / 50L+) — cheaper than any incumbent early, at parity with their cheapest at scale, never
 // above. In return we ask for something extra, strongest in the early undercut phase. Attached to every warm account.
+// NOTE (founder correction, 2026-07-26): the ask is NOT a cheaper patient package — the hospital keeps our
+// fee saving as margin and won't discount the patient. So we ask for what improves the PATIENT EXPERIENCE
+// (the thing we actually compete on): the same inclusions the hospital already gives its agents, plus a
+// pre-travel video consult with a senior specialist. Priority scheduling + a named coordinator support it.
 const VALUE_ASK = "20% entry fee — below incumbents' 25–33% — rising to 25% across three revenue tiers " +
-  "(₹0–20L / 20–50L / 50L+ routed), in exchange for: best-of-book package rates, priority admission/OT " +
-  "scheduling for our patients, a named international coordinator, and co-funded patient-education content.";
+  "(₹0–20L / 20–50L / 50L+ routed), in exchange for: the same package inclusions extended to the hospital's " +
+  "agents, a pre-travel video consult with a senior specialist, priority admission/OT scheduling for our " +
+  "patients, and a named international coordinator.";
 
 const ACCOUNTS = [
   {

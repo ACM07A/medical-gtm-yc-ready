@@ -79,10 +79,14 @@ const AGENCY_CAC = num("agencycac", 1400);             // ASSUMED — coordinato
 //      the industry's bait pricing — our estimates must always show the ALL-IN number.
 //   2. OUR basket revenue is VENDOR-SIDE commission (standard travel-agency economics) — the patient pays
 //      market rate; the vendor pays us for the booking we bring. Never a patient surcharge.
-// One deeper honesty note: hospitals' international tariffs ALREADY embed agent commissions (part of why
-// intl tariffs sit above domestic ones). "The hospital pays us, not the patient" is true at the prevailing
-// tariff — and our below-incumbent fee is what lets a partner hospital quote LOWER all-in than via agents.
-// Every number below is ASSUMED until a vendor agreement or a hospital package sheet replaces it.
+// One deeper honesty note (founder correction, 2026-07-26): a hospital will NOT pass our lower fee through as
+// a cheaper patient package — it pockets the difference as margin. So we do NOT win the patient on price; the
+// same treatment costs the same whether they come via us, an agent, or on their own. We win on REMOVING the
+// complexity and ambiguity of the whole journey (reports → hospital quote → travel → stay → local logistics)
+// and on TRANSPARENCY (showing the true all-in, not a bait package price). What our below-incumbent fee buys
+// FROM the hospital is our ask: the same package inclusions it already extends to its agents, PLUS a pre-travel
+// video consult with a senior specialist. Every number below is ASSUMED until a vendor agreement or a hospital
+// package sheet replaces it.
 const BASKET = [
   { label: "Flights — patient + 1 attendant, return", cost: 1200, ours: 0,  src: "ASSUMED Africa/ME→BLR avg; airline affiliate margin ≈ 0 — flights are a service, not a revenue line" },
   { label: "India e-medical visas ×2",                cost: 160,  ours: 25, src: "ASSUMED $80/head official fee; ours = documentation-service fee IF charged (else 0)" },
