@@ -61,6 +61,29 @@ test("public demo, signed hospital session and operator token enforce the route 
     assert.match(cookie, /^canopus_session=/);
     const cases = await (await fetch(`${base}/api/cases`, { headers: { cookie } })).json();
     assert.deepEqual(cases.cases.map((row) => row.id), ["case_ibrahim_musa"]);
+    const firstTransition = await fetch(`${base}/api/cases/CASE-DEMO-001/transition`, {
+      method: "POST",
+      headers: { cookie, "content-type": "application/json" },
+      body: JSON.stringify({ state: "hospital_reviewing" }),
+    });
+    assert.equal(firstTransition.status, 200);
+    const persistedCase = await (await fetch(`${base}/api/cases/CASE-DEMO-001`, { headers: { cookie } })).json();
+    assert.equal(persistedCase.case.current_stage, "hospital_reviewing");
+    assert.ok(persistedCase.case.audit.some((event) => event.action === "case_transition"));
+
+    const blockedLogin = await fetch(`${base}/api/auth/login`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: "admin@canopuscare.demo", password: "canopus-demo" }),
+    });
+    const adminCookie = blockedLogin.headers.get("set-cookie")?.split(";")[0];
+    const blockedTransition = await fetch(`${base}/api/cases/CASE-DEMO-002/transition`, {
+      method: "POST",
+      headers: { cookie: adminCookie, "content-type": "application/json" },
+      body: JSON.stringify({ state: "ready_to_share" }),
+    });
+    assert.equal(blockedTransition.status, 403);
+    assert.equal((await blockedTransition.json()).error.code, "COMPLIANCE_BLOCKED");
 
     const basic = Buffer.from(`reviewer:${env.CONSOLE_TOKEN}`).toString("base64");
     assert.equal((await fetch(`${base}/console`, { headers: { authorization: `Basic ${basic}` } })).status, 200);

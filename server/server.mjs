@@ -28,6 +28,7 @@ import {
   apiApprovals, decideApproval, apiTasks, updateTask, apiVendors, createServiceRequest,
   apiCaseResource, apiAgentRuns, apiAudit, apiIntegrations, apiServiceRequests, updateServiceRequest,
 } from "./os_pages.mjs";
+import { transitionCase } from "../data-core/case_workflow.mjs";
 import {
   renderAgentsDemo, runTriage, runDocumentChecklist,
   runFamilyUpdateAdd, runFamilyUpdateOptin, runFamilyUpdateSend,
@@ -151,6 +152,7 @@ const readBody = (req) => new Promise((resolve) => {
 });
 const resultStatus = (result) => result?.ok ? 200
   : result?.error?.code === "NOT_FOUND" ? 404
+    : result?.error?.code === "AUTH_REQUIRED" ? 401
     : ["FORBIDDEN", "READ_ONLY", "COMPLIANCE_BLOCKED"].includes(result?.error?.code) ? 403
       : 400;
 
@@ -188,6 +190,11 @@ const server = createServer(async (req, res) => {
     }
   }
   try {
+    if (req.method === "GET" && url.pathname === "/app")
+      return send(302, "text/plain; charset=utf-8", "Open dashboard", { location: "/demo" });
+    const appCaseMatch = url.pathname.match(/^\/app\/cases\/([^/]+)$/);
+    if (req.method === "GET" && appCaseMatch)
+      return send(302, "text/plain; charset=utf-8", "Open case", { location: `/cases/${encodeURIComponent(appCaseMatch[1])}` });
     if (req.method === "GET" && url.pathname === "/login")
       return send(200, "text/html; charset=utf-8", renderLogin());
     if (req.method === "POST" && url.pathname === "/api/auth/login") {
@@ -228,6 +235,12 @@ const server = createServer(async (req, res) => {
     if (apiCaseMatch) {
       const c = apiCase(db, session, apiCaseMatch[1]);
       return send(c ? 200 : 404, "application/json", JSON.stringify(c ? { ok: true, case: c } : { ok: false, error: { code: "NOT_FOUND", message: "Case not found or not authorized", details: {} }, request_id: "local" }));
+    }
+    const caseTransitionMatch = url.pathname.match(/^\/api\/cases\/([^/]+)\/transition$/);
+    if (req.method === "POST" && caseTransitionMatch) {
+      const body = await readBody(req);
+      const result = transitionCase(db, session, caseTransitionMatch[1], String(body.state || ""));
+      return send(resultStatus(result), "application/json", JSON.stringify(result));
     }
     const apiCaseResourceMatch = url.pathname.match(/^\/api\/cases\/([^/]+)\/(documents|matches|reviews|estimates|messages|tasks|services|approvals|audit)$/);
     if (apiCaseResourceMatch) {

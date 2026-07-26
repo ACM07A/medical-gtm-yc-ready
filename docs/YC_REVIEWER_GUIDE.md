@@ -15,14 +15,17 @@ Public deployment is pending. Do not treat an unverified URL as live.
 
 Local entry point: `http://localhost:5173/demo`
 
-Default local reviewer credentials:
+Default local role accounts:
 
 ```text
-Username: reviewer@canopuscare.com
-Password: canopus-demo
+Hospital: hospital@canopuscare.demo
+Agent: agent@canopuscare.demo
+Read only: reviewer@canopuscare.com
+Local password: canopus-demo
 ```
 
-The public deployment password is configured through `DEMO_PASSWORD`.
+Public role passwords are configured through `DEMO_HOSPITAL_PASSWORD`,
+`DEMO_AGENT_PASSWORD` and `DEMO_REVIEWER_PASSWORD`.
 
 ## One-Command Setup
 
@@ -42,19 +45,16 @@ npm run yc-demo
 
 No paid API key is required.
 
-## Ten-Minute Path
+## Three-Minute Path
 
 1. Open `/demo` and confirm the synthetic-data banner and readiness state.
-2. Open `/cases/case_ibrahim_musa`.
-3. Inspect consent, missing documents, fictional hospital matches, estimate,
-   tasks, mock vendors, timeline, and audit history.
-4. Open `/hospital` and log in with a deployment-provided hospital role.
-5. Confirm the hospital session sees only its assigned synthetic case.
-6. Open `/agents` and inspect deterministic output, evidence, provider, cost,
-   confidence, approval requirement, and correlation IDs.
-7. Open `/cases/case_amina_okoro` and confirm consent blocks release.
-8. Open `/readiness` for the real, mocked, and disabled inventory.
-9. Confirm `/console` and `/studio` require the operator token.
+2. Sign in as the hospital user and open `CASE-DEMO-001`.
+3. Select **Hospital reviewing**, then **Response received**. Refresh and show
+   both persisted transition events in the audit history.
+4. Log out, sign in as the agent user and open the same case.
+5. Select **Option accepted**, then **Travel preparation**.
+6. Open `CASE-DEMO-002` and confirm consent blocks progression.
+7. Open `/readiness` for the operational, simulated and disabled inventory.
 
 ## Golden Case
 
@@ -86,7 +86,7 @@ timestamps, and correlation ID. A provider outage does not prevent the demo.
 
 ## Real, Mocked, and Disabled
 
-See `docs/WHAT_IS_REAL.md` and `/readiness`.
+See `docs/REAL_MOCKED_DISABLED.md` and `/readiness`.
 
 ## Known Limitations
 
@@ -104,6 +104,7 @@ See `docs/WHAT_IS_REAL.md` and `/readiness`.
 npm run env:check
 npm run yc-demo
 npm run check
+npm run verify
 npm run smoke:hermetic
 npm run db:check
 npm run db:backup

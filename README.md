@@ -41,7 +41,8 @@ Username: reviewer@canopuscare.com
 Password: canopus-demo
 ```
 
-Public deployments must override the password through `DEMO_PASSWORD`.
+Public deployments must override the role passwords through `DEMO_AGENT_PASSWORD`,
+`DEMO_HOSPITAL_PASSWORD` and `DEMO_REVIEWER_PASSWORD`. Passwords remain server-side.
 
 > The demo contains synthetic patients, documents, hospital responses,
 > estimates, and vendor quotations. External messages, payments, bookings,

@@ -1,7 +1,8 @@
-import { createHash, randomUUID } from "node:crypto";
+import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
 import { mkdirSync, copyFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { COMMISSION_TIERS, DB_PATH, commissionModel, logRun } from "./db.mjs";
+import { CASE_WORKFLOW } from "./case_workflow.mjs";
 
 export const APP_MODES = new Set(["demo", "development", "production", "test"]);
 export const DEMO_PASSWORD = "canopus-demo";
@@ -17,9 +18,12 @@ export function passwordHash(password, salt = "canopuscare-demo-salt") {
 }
 
 export function authenticateDemoUser(db, email, password) {
-  const configuredPassword = process.env.DEMO_PASSWORD || DEMO_PASSWORD;
-  if (appMode() !== "demo" || password !== configuredPassword) return null;
-  return db.prepare(`SELECT * FROM app_user WHERE email=? AND active=1`).get(String(email || "")) || null;
+  if (appMode() !== "demo" || !password) return null;
+  const user = db.prepare(`SELECT * FROM app_user WHERE email=? AND active=1`).get(String(email || ""));
+  if (!user) return null;
+  const supplied = Buffer.from(passwordHash(String(password)));
+  const stored = Buffer.from(String(user.password_hash || ""));
+  return supplied.length === stored.length && timingSafeEqual(supplied, stored) ? user : null;
 }
 
 export function ensureOsSchema(db) {
@@ -145,6 +149,12 @@ export function ensureOsSchema(db) {
       AND mock_quote LIKE 'Mock quote:%';
   `);
   try { db.exec(`ALTER TABLE patient_case ADD COLUMN source_lead_id INTEGER`); } catch {}
+  db.exec(`
+    UPDATE patient_case SET current_stage='shared_with_hospital'
+      WHERE id='case_ibrahim_musa' AND current_stage IN ('Arrival scheduled','Journey orchestrated');
+    UPDATE patient_case SET current_stage='compliance_blocked'
+      WHERE id='case_amina_okoro' AND current_stage='Blocked - consent required';
+  `);
   const entryCommission = commissionModel({ low: 10850, high: 10850 });
   db.exec(`
     INSERT INTO lead (market_code,category_id,channel,ref,urgency,budget_band,docs_ready,consent,status,source_type,journey_stage)
@@ -214,17 +224,17 @@ export function seedDemoOs(db) {
   put(db, `INSERT OR REPLACE INTO tenant (id,name,mode,token,rev_share,active) VALUES (?,?,?,?,?,1)`, ["medyatra", "CanopusCare (own acquisition)", "own", null, 1.0]);
   put(db, `INSERT OR REPLACE INTO tenant (id,name,mode,token,rev_share,active) VALUES (?,?,?,?,?,1)`, ["trudoc-demo", "Trudoc (demo operator)", "operator", "demo-ingest-trudoc", 0.5]);
 
+  const fallbackPassword = process.env.DEMO_PASSWORD || DEMO_PASSWORD;
   const users = [
-    ["user_admin", "admin@canopuscare.demo", "Asha Platform Admin", "platform_admin", "org_platform"],
-    ["user_hospital", "hospital@canopuscare.demo", "Ravi Hospital Admin", "hospital_admin", "org_hospital_apollo"],
-    ["user_agent", "agent@canopuscare.demo", "Zainab Agent Admin", "agent_admin", "org_agent_lagos"],
-    ["user_vendor", "vendor@canopuscare.demo", "Meera Vendor Operator", "vendor_operator", "org_vendor_blr"],
-    ["user_viewer", "viewer@canopuscare.demo", "Read Only Reviewer", "read_only", "org_platform"],
-    ["user_reviewer", process.env.DEMO_USERNAME || DEMO_USERNAME, "YC Demo Reviewer", "read_only", "org_platform"],
+    ["user_admin", process.env.DEMO_ADMIN_EMAIL || "admin@canopuscare.demo", "Asha Platform Admin", "platform_admin", "org_platform", process.env.DEMO_ADMIN_PASSWORD || fallbackPassword],
+    ["user_hospital", process.env.DEMO_HOSPITAL_EMAIL || "hospital@canopuscare.demo", "Ravi Hospital Admin", "hospital_admin", "org_hospital_apollo", process.env.DEMO_HOSPITAL_PASSWORD || fallbackPassword],
+    ["user_agent", process.env.DEMO_AGENT_EMAIL || "agent@canopuscare.demo", "Zainab Agent Admin", "agent_admin", "org_agent_lagos", process.env.DEMO_AGENT_PASSWORD || fallbackPassword],
+    ["user_vendor", process.env.DEMO_VENDOR_EMAIL || "vendor@canopuscare.demo", "Meera Vendor Operator", "vendor_operator", "org_vendor_blr", process.env.DEMO_VENDOR_PASSWORD || fallbackPassword],
+    ["user_viewer", "viewer@canopuscare.demo", "Read Only Reviewer", "read_only", "org_platform", fallbackPassword],
+    ["user_reviewer", process.env.DEMO_USERNAME || DEMO_USERNAME, "YC Demo Reviewer", "read_only", "org_platform", process.env.DEMO_REVIEWER_PASSWORD || fallbackPassword],
   ];
-  const configuredPassword = process.env.DEMO_PASSWORD || DEMO_PASSWORD;
-  for (const [id, email, name, role, org] of users) {
-    put(db, `INSERT INTO app_user (id,email,name,password_hash,demo_password_hint) VALUES (?,?,?,?,?)`, [id, email, name, passwordHash(configuredPassword), "configured server-side; synthetic demo only"]);
+  for (const [id, email, name, role, org, password] of users) {
+    put(db, `INSERT INTO app_user (id,email,name,password_hash,demo_password_hint) VALUES (?,?,?,?,?)`, [id, email, name, passwordHash(password), "configured server-side; synthetic demo only"]);
     put(db, `INSERT INTO membership (user_id,organization_id,role) VALUES (?,?,?)`, [id, org, role]);
   }
 
@@ -241,8 +251,8 @@ export function seedDemoOs(db) {
   const ibrahimLeadId = ensureLead("case-ibrahim-musa", "cardiac", 1);
   const aminaLeadId = ensureLead("case-amina-okoro", "oncology", 0);
   const cases = [
-    ["case_ibrahim_musa", ibrahimLeadId, "Ibrahim Musa", "CASE-DEMO-001", "Nigeria", "English", "Cardiac bypass evaluation", "cardiac", "Within 30 days", "USD 8,000-15,000", "Late August 2026", "captured", "Arrival scheduled", "org_agent_lagos", "org_hospital_apollo", "org_vendor_blr", "Nadia Care Coordinator", "Confirm arrival pack and post-treatment follow-up task", "Indicative pricing only; clinical suitability is hospital-owned.", ""],
-    ["case_amina_okoro", aminaLeadId, "Amina Okoro", "CASE-DEMO-002", "Nigeria", "English", "Oncology second opinion", "oncology", "Soon", "USD 12,000-25,000", "September 2026", "missing", "Blocked - consent required", "org_agent_lagos", null, null, "Nadia Care Coordinator", "Capture explicit consent before communication or routing", "No outbound message may be released. Missing consent blocks next action.", "CONSENT_REQUIRED"],
+    ["case_ibrahim_musa", ibrahimLeadId, "Ibrahim Musa", "CASE-DEMO-001", "Nigeria", "English", "Cardiac bypass evaluation", "cardiac", "Within 30 days", "USD 8,000-15,000", "Late August 2026", "captured", "shared_with_hospital", "org_agent_lagos", "org_hospital_apollo", "org_vendor_blr", "Nadia Care Coordinator", CASE_WORKFLOW.shared_with_hospital.nextAction, "Indicative pricing only; clinical suitability is hospital-owned.", ""],
+    ["case_amina_okoro", aminaLeadId, "Amina Okoro", "CASE-DEMO-002", "Nigeria", "English", "Oncology second opinion", "oncology", "Soon", "USD 12,000-25,000", "September 2026", "missing", "compliance_blocked", "org_agent_lagos", null, null, "Nadia Care Coordinator", CASE_WORKFLOW.compliance_blocked.nextAction, "No outbound message may be released. Missing consent blocks next action.", "CONSENT_REQUIRED"],
   ];
   for (const c of cases) put(db, `INSERT INTO patient_case
     (id,source_lead_id,synthetic_name,synthetic_identifier,source_market,preferred_language,treatment_request,treatment_category,urgency,budget_band,travel_window,consent_status,current_stage,source_agent_org_id,assigned_hospital_org_id,assigned_vendor_org_id,assigned_coordinator,next_best_action,warnings,blockers)

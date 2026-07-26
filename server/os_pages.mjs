@@ -1,4 +1,5 @@
 import { appMode, readinessReport } from "../data-core/os_core.mjs";
+import { allowedCaseTransitions, CASE_WORKFLOW, caseStateLabel } from "../data-core/case_workflow.mjs";
 import { appShell, icon } from "./canopus_ui.mjs";
 import { sessionUserId } from "./session.mjs";
 
@@ -167,7 +168,12 @@ export function renderCases(db, session) {
 export function renderCase(db, session, id) {
   const c = apiCase(db, session, id);
   if (!c) return shell("Not found", `<h1>Case not found</h1><p class="lede">This role cannot access that case.</p>`, viewOptions("cases", session));
-  return shell(c.synthetic_name, `<div class="head"><div><div class="eyebrow">${esc(c.synthetic_identifier)}</div><h1>${esc(c.synthetic_name)}</h1><p class="lede">${esc(c.treatment_request)}. ${esc(c.warnings)}</p></div><div>${badge(c.current_stage)} ${badge(c.consent_status)}</div></div>
+  const allowedTransitions = allowedCaseTransitions(c.current_stage, session.role);
+  const workflowAction = allowedTransitions.length
+    ? `<div class="panel"><h2>Next workflow action</h2><p>${esc(c.next_best_action)}</p>${allowedTransitions.map((state) =>
+      `<button class="btn primary" data-case-transition="${esc(state)}">${esc(CASE_WORKFLOW[state].label)}</button>`).join("")}<p id="transition-result" class="label" aria-live="polite"></p></div>`
+    : `<div class="panel"><h2>Next workflow action</h2><p>${esc(c.next_best_action)}</p><p class="label">${session.authenticated ? "This action belongs to another demo role, or the case is blocked." : "Log in as the assigned demo role to perform workflow actions."}</p></div>`;
+  return shell(c.synthetic_name, `<div class="head"><div><div class="eyebrow">${esc(c.synthetic_identifier)}</div><h1>${esc(c.synthetic_name)}</h1><p class="lede">${esc(c.treatment_request)}. ${esc(c.warnings)}</p></div><div>${badge(caseStateLabel(c.current_stage))} ${badge(c.consent_status)}</div></div>
   <div class="callout">Illustrative synthetic organizations and rates only. No affiliation, accreditation or partnership is implied.${c.source_lead ? ` Linked GTM lead #${esc(c.source_lead.id)} (${esc(c.source_lead.journey_stage || "intake")}). <a href="/journey">Open journey orchestrator</a>.` : ""}</div>
   <div class="tabs">${["Overview","Documents","Hospital Matches","Estimates","Messages","Tasks","Travel Support","Vendors","Timeline","Compliance","Audit Log"].map((t)=>`<span class="tab">${t}</span>`).join("")}</div>
   <section class="split"><div class="panel"><h2>Overview</h2><div class="case-facts">${[
@@ -175,12 +181,34 @@ export function renderCase(db, session, id) {
     ["Budget", c.budget_band], ["Travel window", c.travel_window], ["Coordinator", c.assigned_coordinator],
     ["Next operational action", c.next_best_action], ["Blockers", c.blockers || "none"],
   ].map(([label, value]) => `<div class="case-fact"><b>${esc(label)}</b><span>${esc(value)}</span></div>`).join("")}</div></div>
-  <div class="panel"><h2>Compliance</h2><div class="callout">${esc(c.blockers || "No blocking compliance issue on this synthetic path.")}</div><p class="label">AI may classify documents and prepare operational checklists. It must not diagnose, interpret scans, choose treatment, promise outcomes, or declare fitness to fly.</p></div></section>
+  ${workflowAction}</section>
+  <div class="panel"><h2>Compliance</h2><div class="callout">${esc(c.blockers || "No blocking compliance issue on this synthetic path.")}</div><p class="label">AI may classify documents and prepare operational checklists. It must not diagnose, interpret scans, choose treatment, promise outcomes, or declare fitness to fly.</p></div>
   <h2>Documents</h2><table><thead><tr><th>Type</th><th>Status</th><th>Watermark</th></tr></thead><tbody>${rows(c.documents,[["doc_type"],["status",(r)=>badge(r.status)],["demo_watermark"]])}</tbody></table>
   <h2>Hospital Matches</h2><table><thead><tr><th>Hospital</th><th>Operational Fit</th><th>Clinical Acceptance</th><th>Commercial Disclosure</th><th>Confidence</th></tr></thead><tbody>${rows(c.matches,[["hospital_name"],["operational_fit"],["clinical_acceptance"],["commercial_disclosure"],["confidence",(r)=>badge(r.confidence)]])}</tbody></table>
   <h2>Estimates</h2><table><thead><tr><th>Procedure</th><th>Status</th><th>Total</th><th>Caveats</th></tr></thead><tbody>${rows(c.estimates,[["procedure"],["status",(r)=>badge(r.status)],["indicative_total",(r)=>`${r.currency} ${r.indicative_total}`],["caveats"]])}</tbody></table>
   <h2>Vendors & Travel Support</h2><table><thead><tr><th>Category</th><th>Status</th><th>Mock quote</th><th>Owner</th></tr></thead><tbody>${rows(c.services,[["category"],["status",(r)=>badge(r.status)],["mock_quote"],["owner"]])}</tbody></table>
-  <h2>Audit Log</h2><table><thead><tr><th>When</th><th>Action</th><th>Outcome</th><th>Detail</th></tr></thead><tbody>${rows(c.audit,[["created"],["action"],["outcome",(r)=>badge(r.outcome)],["detail"]])}</tbody></table>`, viewOptions("cases", session, { cases: 1, agents: 16, actions: 0 }));
+  <h2>Audit Log</h2><table><thead><tr><th>When</th><th>Action</th><th>Outcome</th><th>Detail</th></tr></thead><tbody>${rows(c.audit,[["created"],["action"],["outcome",(r)=>badge(r.outcome)],["detail"]])}</tbody></table>
+  <script>
+  document.querySelectorAll("[data-case-transition]").forEach((button) => button.addEventListener("click", async () => {
+    const result = document.querySelector("#transition-result");
+    button.disabled = true;
+    result.textContent = "Saving...";
+    try {
+      const response = await fetch("/api/cases/${encodeURIComponent(c.synthetic_identifier || c.id)}/transition", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ state: button.dataset.caseTransition })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error?.message || "Transition failed");
+      result.textContent = "Saved. Refreshing timeline...";
+      location.reload();
+    } catch (error) {
+      result.textContent = error.message;
+      button.disabled = false;
+    }
+  }));
+  </script>`, viewOptions("cases", session, { cases: 1, agents: 16, actions: allowedTransitions.length }));
 }
 
 export function renderHospital(db, session) {

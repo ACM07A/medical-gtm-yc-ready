@@ -58,7 +58,9 @@ try {
   console.log(`Hospital:     http://localhost:${port}/hospital`);
   console.log(`Agent portal: http://localhost:${port}/agent`);
   console.log(`Case:         http://localhost:${port}/cases/CASE-DEMO-001`);
-  console.log(`Credentials:  ${process.env.DEMO_USERNAME || "reviewer@canopuscare.com"} / ${process.env.DEMO_PASSWORD || "canopus-demo"}`);
+  console.log(`Reviewer:     ${process.env.DEMO_USERNAME || "reviewer@canopuscare.com"} (password is configured server-side)`);
+  console.log(`Agent:        ${process.env.DEMO_AGENT_EMAIL || "agent@canopuscare.demo"} (password is configured server-side)`);
+  console.log(`Hospital:     ${process.env.DEMO_HOSPITAL_EMAIL || "hospital@canopuscare.demo"} (password is configured server-side)`);
   console.log(`Integrations: ${ready.integrations.map((i) => `${i.provider}=${i.status}`).join(", ")}`);
   console.log("\nPress Ctrl+C to stop.");
 } catch (e) {

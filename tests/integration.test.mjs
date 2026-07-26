@@ -10,6 +10,7 @@ import { ensureOsSchema, seedDemoOs } from "../data-core/os_core.mjs";
 import { ingestLeads, parseLeadCsv, previewLeadCsv } from "../data-core/ingest.mjs";
 import { apiAgentRuns, apiAudit, apiCase, apiCaseResource, apiServiceRequests, updateServiceRequest } from "../server/os_pages.mjs";
 import { runFullJourney } from "../server/orchestrate.mjs";
+import { CASE_WORKFLOW, transitionCase } from "../data-core/case_workflow.mjs";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 
@@ -31,6 +32,35 @@ test("golden cardiac case contains matches, estimate, vendors, tasks and audit",
   assert.ok(c.services.length >= 3);
   assert.ok(c.tasks.length >= 4);
   assert.ok(c.audit.length >= 1);
+  db.close(); rmSync(dir, { recursive: true, force: true });
+});
+
+test("canonical case workflow enforces role order, persists transitions and writes audit", () => {
+  const { db, dir } = seededDb();
+  const hospital = { authenticated: true, role: "hospital_admin", organization_id: "org_hospital_apollo", user: { id: "user_hospital" } };
+  const agent = { authenticated: true, role: "agent_admin", organization_id: "org_agent_lagos", user: { id: "user_agent" } };
+
+  assert.equal(db.prepare(`SELECT current_stage FROM patient_case WHERE id='case_ibrahim_musa'`).get().current_stage, "shared_with_hospital");
+  assert.equal(transitionCase(db, agent, "CASE-DEMO-001", "hospital_reviewing").error.code, "INVALID_TRANSITION");
+  assert.equal(transitionCase(db, hospital, "CASE-DEMO-001", "hospital_reviewing").ok, true);
+  assert.equal(transitionCase(db, hospital, "CASE-DEMO-001", "response_received").ok, true);
+  assert.equal(transitionCase(db, hospital, "CASE-DEMO-001", "option_accepted").error.code, "INVALID_TRANSITION");
+  assert.equal(transitionCase(db, agent, "CASE-DEMO-001", "option_accepted").ok, true);
+
+  const persisted = db.prepare(`SELECT current_stage,next_best_action FROM patient_case WHERE id='case_ibrahim_musa'`).get();
+  assert.equal(persisted.current_stage, "option_accepted");
+  assert.equal(persisted.next_best_action, CASE_WORKFLOW.option_accepted.nextAction);
+  assert.equal(db.prepare(`SELECT count(*) count FROM audit_event WHERE action='case_transition' AND subject_id='case_ibrahim_musa'`).get().count, 3);
+  db.close(); rmSync(dir, { recursive: true, force: true });
+});
+
+test("compliance-blocked case cannot progress through direct workflow calls", () => {
+  const { db, dir } = seededDb();
+  const admin = { authenticated: true, role: "platform_admin", organization_id: "org_platform", user: { id: "user_admin" } };
+  const result = transitionCase(db, admin, "CASE-DEMO-002", "ready_to_share");
+  assert.equal(result.error.code, "COMPLIANCE_BLOCKED");
+  assert.equal(result.error.details.blockers, "CONSENT_REQUIRED");
+  assert.equal(db.prepare(`SELECT current_stage FROM patient_case WHERE id='case_amina_okoro'`).get().current_stage, "compliance_blocked");
   db.close(); rmSync(dir, { recursive: true, force: true });
 });
 
@@ -151,8 +181,8 @@ test("journey orchestration updates the linked operational case", async () => {
   assert.equal(result.leadId, c.source_lead_id);
   assert.ok(result.steps.length >= 10);
   const updated = db.prepare(`SELECT * FROM patient_case WHERE id='case_ibrahim_musa'`).get();
-  assert.equal(updated.current_stage, "Journey orchestrated");
-  assert.match(updated.next_best_action, /orchestration steps/);
+  assert.equal(updated.current_stage, "shared_with_hospital");
+  assert.equal(updated.next_best_action, CASE_WORKFLOW.shared_with_hospital.nextAction);
   const audit = db.prepare(`SELECT * FROM audit_event WHERE action='journey_sync' AND subject_id='case_ibrahim_musa'`).get();
   assert.ok(audit);
   db.close(); rmSync(dir, { recursive: true, force: true });
