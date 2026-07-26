@@ -69,6 +69,37 @@ const cat = db.prepare(
 const COMMISSION = num("commission", 0.20);
 const AGENCY_CAC = num("agencycac", 1400);             // ASSUMED — coordinator time + media + sub-agent cut
 
+// ── THE TRAVEL BASKET — what the hospital package does NOT cover (stress-tested 2026-07-26) ──────────
+// Founder question: "do hospitals actually have travel costs built in?" Answer: NO. An Indian hospital's
+// international package covers the CLINICAL stay — surgeon/OT/ICU/ward/consumables/routine investigations —
+// and at bigger desks an airport pickup and the desk's own interpreter. It does NOT cover flights, visa
+// fees, out-of-hospital accommodation (the long post-op recovery), the attendant, food, local transport,
+// or post-discharge medicines. Two consequences this model now carries:
+//   1. The PATIENT's real budget is package + basket (~25-40% on top). A quote that hides the basket is
+//      the industry's bait pricing — our estimates must always show the ALL-IN number.
+//   2. OUR basket revenue is VENDOR-SIDE commission (standard travel-agency economics) — the patient pays
+//      market rate; the vendor pays us for the booking we bring. Never a patient surcharge.
+// One deeper honesty note: hospitals' international tariffs ALREADY embed agent commissions (part of why
+// intl tariffs sit above domestic ones). "The hospital pays us, not the patient" is true at the prevailing
+// tariff — and our below-incumbent fee is what lets a partner hospital quote LOWER all-in than via agents.
+// Every number below is ASSUMED until a vendor agreement or a hospital package sheet replaces it.
+const BASKET = [
+  { label: "Flights — patient + 1 attendant, return", cost: 1200, ours: 0,  src: "ASSUMED Africa/ME→BLR avg; airline affiliate margin ≈ 0 — flights are a service, not a revenue line" },
+  { label: "India e-medical visas ×2",                cost: 160,  ours: 25, src: "ASSUMED $80/head official fee; ours = documentation-service fee IF charged (else 0)" },
+  { label: "Stay — ~14 nights near hospital",         cost: 560,  ours: 56, src: "ASSUMED $40/night guest house; ours = 10% vendor commission (industry 10-15%)" },
+  { label: "Interpreter beyond the hospital desk",    cost: 150,  ours: 30, src: "ASSUMED — many desks staff Arabic/French free; ours = marketplace margin only when we supply" },
+  { label: "Food + local transport + misc",           cost: 450,  ours: 0,  src: "ASSUMED — patient-managed; we only advise" },
+];
+const basketCost = BASKET.reduce((s, b) => s + b.cost, 0);
+const basketOurs = BASKET.reduce((s, b) => s + b.ours, 0);
+
+// ── AGENT-CHANNEL CASE — the wedge's own economics ───────────────────────────────────────────────────
+// A case ingested from a travel agent's existing book skips the ENTIRE acquisition funnel (no media, no
+// landing page, no cold triage volume) — the agent already holds the patient relationship. In exchange the
+// agent takes a share of our facilitation fee. Serving cost = the post-acquisition stages only.
+const AGENT_REVSHARE = num("revshare", 0.40);          // ASSUMED — share of OUR fee paid to the sourcing agent
+const SERVE_COST = 4.20 + 0.60 + 2.10 + 40.00;         // triage-review + quote + booking + serving stages, per treated case
+
 // ── Walk the funnel ──────────────────────────────────────────────────────────────────────────────────
 // `mult` scales every conversion rate, to walk a pessimistic / base / optimistic band. The point of the
 // band is honesty: only the package price is a measured number here. Everything else is an assumption, and
@@ -110,16 +141,38 @@ console.log(`     What the hospital receives: treatment need confirmed, country 
 console.log(`     reports collected and structured into a reviewable case file, indicative price band`);
 console.log(`     already accepted, and ${Math.round((rows[5].n / handoff.n) * 100)}% of these go on to book.`);
 
-console.log(`\n  ECONOMICS PER TREATED PATIENT`);
-console.log(`     Commission (${Math.round(COMMISSION * 100)}% of ${$(cat.pkg)})   ${$(fee).padStart(10)}`);
-console.log(`     Our all-in cost                ${$(treated.per).padStart(10)}`);
-console.log(`     Contribution                   ${$(fee - treated.per).padStart(10)}   (${Math.round(((fee - treated.per) / fee) * 100)}% of the fee)`);
-console.log(`     A traditional agency, same fee ${$(fee - AGENCY_CAC).padStart(10)}   (${Math.round(((fee - AGENCY_CAC) / fee) * 100)}% — coordinator time scales with leads)`);
+// The patient's real budget — package plus everything the package does not cover. Printed FIRST because
+// it is the number the patient actually pays, and the one an honest estimate must lead with.
+console.log(`\n  THE ALL-IN PATIENT BUDGET (what the package quote hides)`);
+console.log(`     Hospital package (clinical)    ${$(cat.pkg).padStart(10)}   paid to the hospital directly`);
+for (const b of BASKET) console.log(`     ${b.label.padEnd(42)}${$(b.cost).padStart(6)}   patient-paid, market rate`);
+console.log(`     ${"ALL-IN".padEnd(42)}${$(cat.pkg + basketCost).padStart(6)}   (basket adds ${Math.round((basketCost / cat.pkg) * 100)}% on top of the package)`);
+
+console.log(`\n  ECONOMICS PER TREATED PATIENT — our own P&L`);
+console.log(`     Facilitation fee (${Math.round(COMMISSION * 100)}% of ${$(cat.pkg)}, hospital-paid)  ${$(fee).padStart(9)}`);
+console.log(`     Ancillary, vendor-side (stay/visa/interpreter)  ${$(basketOurs).padStart(9)}   ASSUMED — needs vendor agreements`);
+console.log(`     Our all-in cost (own-acquisition funnel)        ${$(-treated.per).padStart(9)}`);
+console.log(`     Contribution — OWN-ACQUISITION case             ${$(fee + basketOurs - treated.per).padStart(9)}   (${Math.round(((fee + basketOurs - treated.per) / (fee + basketOurs)) * 100)}% of revenue)`);
+console.log(`     A traditional agency, same fee                  ${$(fee - AGENCY_CAC).padStart(9)}   (coordinator time scales with leads)`);
+
+// The wedge case: agent-sourced. No acquisition spend at all — the agent brings the patient; we pay the
+// agent a fee share and run the coordination rails. This is why "agents as channel" closes the unit-economics
+// gap that paid acquisition opens: the funnel above is the EARNED path, this is the DAY-ONE path.
+const agentContribution = fee * (1 - AGENT_REVSHARE) + basketOurs - SERVE_COST;
+console.log(`\n     Contribution — AGENT-CHANNEL case (the wedge)   ${$(agentContribution).padStart(9)}`);
+console.log(`       = fee ${$(fee)} × ${Math.round((1 - AGENT_REVSHARE) * 100)}% (after ${Math.round(AGENT_REVSHARE * 100)}% agent share, ASSUMED) + ${$(basketOurs)} ancillary − ${$(SERVE_COST)} serving cost`);
+console.log(`       No media spend, no funnel drop-off — the agent already holds the patient relationship.`);
 
 console.log(`\n  ⚠ NEEDS A REAL NUMBER — ask Aster / Manipal / Fortis:`);
 console.log(`     • THEIR commission rate (anchored to a real 20-25% desk range, not guessed — still theirs to confirm, using ${Math.round(COMMISSION * 100)}%)`);
 console.log(`     • what share of their international inquiries convert          (using ${Math.round(STAGES[5].rate * 100)}% quote→book)`);
 console.log(`     • what an inquiry costs them through their current agent panel (using ${$(AGENCY_CAC)})`);
+console.log(`     • EXACTLY what their international package includes — airport pickup? interpreter? how many ward nights?`);
+console.log(`       (the travel basket above assumes NONE of it is covered beyond the clinical stay)`);
+console.log(`     • agent rev-share market rate for a sourced case               (using ${Math.round(AGENT_REVSHARE * 100)}% of our fee)`);
+console.log(`\n  ⚠ FX RISK ON THE #1 MARKET: Ethiopia's forex controls mean a patient needs National Bank approval`);
+console.log(`     to remit the package legally — incumbents route around it informally. A compliant forex path`);
+console.log(`     (medical-remittance documentation as part of our checklist) is both a hard requirement and a moat.`);
 // Where every number came from — printed every run, so nobody quotes this model without its foundations.
 console.log(`\n  PROVENANCE (channel: ${CHANNEL})`);
 for (const s of STAGES) console.log(`     ${s.key.padEnd(10)} ${s.src}`);

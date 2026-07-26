@@ -56,10 +56,13 @@ one city here, and the supply side of this business is won in person at their in
   → approval, 13 journey agents (visa, ticketing, stay, interpreter, billing, aftercare), and a patient/family
   concierge bot — all runnable in one command, no API keys, 15 automated tests passing.
 - 0 revenue, 0 real patients — the demo runs entirely on synthetic cases, and says so on every screen.
-- Warm introductions in progress to 3 Bangalore hospital groups (Aster, Manipal, Fortis Bannerghatta) via
-  `[FOUNDER FILL: the owning family / a former group legal head / our adviser's own desk — state precisely]`.
-- Advised by a veteran hospital international-patient-desk operator `[FOUNDER FILL: Sachin's title + consent
-  to name him]`, whose numbers (incumbent commissions, upfront-payment norms) anchor our pricing model.
+- Direct warm intros into 5 hospitals, most through personal ties (this is our unfair advantage — hospital
+  supply is the hard side of this market): **Manipal** (the group's former Lead Counsel is Ajeya's father),
+  **Fortis Bannerghatta** (our adviser Sachin is on the team, connects us inside), **KIMS E-City** (Hussain's
+  former company LiveAltlife is partnered and close to the COO), **Sparsh** (family connection to the owner +
+  doctors we know there), and **Prime Hospitals, Rajkot** (Hussain's brother-in-law is a 1/3 owner).
+- Advised by `[FOUNDER FILL: Sachin's full title + consent to name him]`, a veteran hospital
+  international-patient-desk operator whose numbers (incumbent commissions, upfront-payment norms) anchor our model.
 - Health-data-law register covering 22 source markets; we deliberately refuse 4 of them (UAE, Uzbekistan,
   Kazakhstan, Zambia) until we can meet their data-residency laws — the compliance gate is working code.
 
@@ -79,8 +82,11 @@ say it plainly with the date.
 ## Why did you pick this idea? Do you have domain expertise? How do you know people need this?
 
 - `[FOUNDER FILL — 1 sentence: the real moment this became your problem. Do not invent a dramatic origin.]`
-- Domain: `[FOUNDER FILL — each founder's relevant background in 1–2 sentences]`; plus a standing adviser who
-  ran an international patient desk inside `[VERIFY: Sachin's hospital + role]`.
+- Domain + access: Hussain built `[FOUNDER FILL: role]` at **LiveAltlife**, a healthcare company now partnered
+  with KIMS — that's how we know the hospital-desk workflow first-hand and have a direct line to a hospital COO.
+  Ajeya's father was **Lead Counsel of the Manipal Group**, so we understand exactly how hospitals' existing
+  facilitator agreements are written — and where the commercial friction we remove actually sits. Plus a
+  standing adviser who ran an international patient desk `[VERIFY: Sachin's hospital + role]`.
 - Demand facts we've verified so far: incumbent facilitation agents charge Indian hospitals **25–33% of the
   package** for cases coordinated over WhatsApp and spreadsheets; hospitals require **80–100% of the package
   upfront** before surgery; `[FOUNDER FILL: N hospital-desk and M agent interviews conducted — real numbers
