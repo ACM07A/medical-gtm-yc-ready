@@ -173,6 +173,8 @@ export function ensureOsSchema(db) {
       source_lead_id=(SELECT id FROM lead WHERE ref='case-amina-okoro' ORDER BY id LIMIT 1),
       synthetic_identifier='CASE-DEMO-002'
       WHERE id='case_amina_okoro' AND demo=1;
+    UPDATE patient_case SET assigned_coordinator='Maya Rao'
+      WHERE demo=1 AND assigned_coordinator LIKE 'Nadia%';
     UPDATE organization SET name='Demo Cardiac Centre A' WHERE id='org_hospital_apollo' AND demo=1;
     UPDATE organization SET name='Demo Cardiac Centre B' WHERE id='org_hospital_fortis' AND demo=1;
     UPDATE hospital_match SET
@@ -251,8 +253,8 @@ export function seedDemoOs(db) {
   const ibrahimLeadId = ensureLead("case-ibrahim-musa", "cardiac", 1);
   const aminaLeadId = ensureLead("case-amina-okoro", "oncology", 0);
   const cases = [
-    ["case_ibrahim_musa", ibrahimLeadId, "Ibrahim Musa", "CASE-DEMO-001", "Nigeria", "English", "Cardiac bypass evaluation", "cardiac", "Within 30 days", "USD 8,000-15,000", "Late August 2026", "captured", "shared_with_hospital", "org_agent_lagos", "org_hospital_apollo", "org_vendor_blr", "Nadia Care Coordinator", CASE_WORKFLOW.shared_with_hospital.nextAction, "Indicative pricing only; clinical suitability is hospital-owned.", ""],
-    ["case_amina_okoro", aminaLeadId, "Amina Okoro", "CASE-DEMO-002", "Nigeria", "English", "Oncology second opinion", "oncology", "Soon", "USD 12,000-25,000", "September 2026", "missing", "compliance_blocked", "org_agent_lagos", null, null, "Nadia Care Coordinator", CASE_WORKFLOW.compliance_blocked.nextAction, "No outbound message may be released. Missing consent blocks next action.", "CONSENT_REQUIRED"],
+    ["case_ibrahim_musa", ibrahimLeadId, "Ibrahim Musa", "CASE-DEMO-001", "Nigeria", "English", "Cardiac bypass evaluation", "cardiac", "Within 30 days", "USD 8,000-15,000", "Late August 2026", "captured", "shared_with_hospital", "org_agent_lagos", "org_hospital_apollo", "org_vendor_blr", "Maya Rao", CASE_WORKFLOW.shared_with_hospital.nextAction, "Indicative pricing only; clinical suitability is hospital-owned.", ""],
+    ["case_amina_okoro", aminaLeadId, "Amina Okoro", "CASE-DEMO-002", "Nigeria", "English", "Oncology second opinion", "oncology", "Soon", "USD 12,000-25,000", "September 2026", "missing", "compliance_blocked", "org_agent_lagos", null, null, "Maya Rao", CASE_WORKFLOW.compliance_blocked.nextAction, "No outbound message may be released. Missing consent blocks next action.", "CONSENT_REQUIRED"],
   ];
   for (const c of cases) put(db, `INSERT INTO patient_case
     (id,source_lead_id,synthetic_name,synthetic_identifier,source_market,preferred_language,treatment_request,treatment_category,urgency,budget_band,travel_window,consent_status,current_stage,source_agent_org_id,assigned_hospital_org_id,assigned_vendor_org_id,assigned_coordinator,next_best_action,warnings,blockers)

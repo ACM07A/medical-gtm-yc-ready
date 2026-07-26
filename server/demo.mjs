@@ -95,7 +95,7 @@ export function renderDemo(db, session) {
         <div class="status-row"><span class="status-icon">${icon("LockKeyhole",17)}</span><span><b>External actions</b><span class="label">Human approval and provider credentials required</span></span><span class="badge blocked">${esc(ready.external_actions)}</span></div>
       </div></div>
       <div class="panel"><h2>Human oversight</h2><div class="status-list">
-        <div class="status-row"><span class="status-icon">${icon("Users",17)}</span><span><b>Nadia, care coordinator</b><span class="label">Owns administrative next steps for the golden case</span></span><span class="badge ready">Assigned</span></div>
+        <div class="status-row"><span class="status-icon">${icon("Users",17)}</span><span><b>Maya Rao, care coordinator</b><span class="label">Owns administrative next steps for the golden case</span></span><span class="badge ready">Assigned</span></div>
         <div class="status-row"><span class="status-icon">${icon("CircleCheckBig",17)}</span><span><b>Approval controls</b><span class="label">${stats.approvals} recorded decisions; ${compliance} compliance refusal</span></span><a class="icon-btn" href="/studio" aria-label="Open approvals">${icon("ArrowRight",16)}</a></div>
       </div></div>
     </section>
