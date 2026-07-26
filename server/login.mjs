@@ -8,14 +8,15 @@ export function renderLogin() {
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Reviewer login | Canopus Care</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#f9faf9,#e3e7e4 70%);color:#111713;font:14px/1.5 Inter,"Segoe UI",Arial,sans-serif}
-.strip{padding:9px 18px;background:#10271d;color:#d9eee3;text-align:center;font-size:10px;font-weight:750;letter-spacing:.1em}
-main{min-height:calc(100vh - 34px);display:grid;place-items:center;padding:24px}.panel{width:min(440px,100%);background:#fff;border:1px solid rgba(17,23,19,.06);border-radius:20px;padding:36px;box-shadow:0 24px 70px rgba(30,43,35,.13)}
-.brand{font:750 28px/1.15 Inter,"Segoe UI",Arial,sans-serif;margin:0 0 7px}.brand span{color:#166a45}.mode{color:#166a45;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em}
-label{display:block;margin-top:18px;font-size:12px;font-weight:700}input{width:100%;margin-top:6px;padding:12px 13px;border:1px solid #dce1de;border-radius:10px;background:#fafbfa;font:inherit;outline:none}input:focus{border-color:#23865a;box-shadow:0 0 0 3px #e3f4eb}
-button{width:100%;margin-top:22px;padding:12px;border:0;border-radius:999px;background:#166a45;color:#fff;font:750 14px/1 inherit;cursor:pointer}button:hover{background:#0f5839}
-.meta,.error{font-size:12px}.meta{color:#747b76}.error{color:#b42318;min-height:20px;margin-top:12px}
-a{color:#166a45;font-weight:650}
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+*{box-sizing:border-box}body{margin:0;background:#F7F8FA;color:#111318;font:14px/1.55 "Inter","Manrope","SF Pro Display","Segoe UI",sans-serif}
+.strip{padding:9px 18px;background:#20242C;color:#F4F6FA;text-align:center;font-size:10px;font-weight:600;letter-spacing:.08em}
+main{min-height:calc(100vh - 34px);display:grid;place-items:center;padding:24px}.panel{width:min(440px,100%);background:#fff;border:1px solid #E6E9EF;border-radius:20px;padding:36px;box-shadow:0 12px 32px rgba(17,19,24,.10),0 2px 8px rgba(17,19,24,.05)}
+.brand{font:600 28px/1.15 "Inter","Segoe UI",sans-serif;margin:0 0 7px}.brand span{color:#2F6BFF}.mode{color:#1F56E5;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em}
+label{display:block;margin-top:18px;font-size:12px;font-weight:600}input{width:100%;margin-top:6px;padding:12px 13px;border:1px solid #E6E9EF;border-radius:12px;background:#fff;font:inherit;outline:none}input:focus{border-color:#2F6BFF;box-shadow:0 0 0 3px #DDE9FF}
+button{width:100%;margin-top:22px;padding:12px;border:0;border-radius:12px;background:#1F56E5;color:#fff;font:600 14px/1 inherit;cursor:pointer}button:hover{background:#1846BE}button:focus-visible{outline:3px solid #BCD2FF;outline-offset:2px}
+.meta,.error{font-size:12px}.meta{color:#6E7685}.error{color:#D84A4A;min-height:20px;margin-top:12px}
+a{color:#1F56E5;font-weight:600}
 </style></head><body>
 <div class="strip">DEMO ENVIRONMENT - SYNTHETIC DATA - EXTERNAL ACTIONS DISABLED</div>
 <main><section class="panel">

@@ -28,7 +28,9 @@ test("browser-rendered golden path pages include required demo surfaces", () => 
   assert.doesNotMatch(html, /&lt;span class=&quot;badge/);
   assert.match(html, /class="brand-lockup"/);
   assert.match(html, /class="nav-label">Cases<\/span>/);
-  assert.match(html, /--green:#166a45/);
-  assert.match(html, /grid-template-columns:210px minmax\(0,1fr\) 270px/);
+  assert.match(html, /--brand-500:#2F6BFF/);
+  assert.match(html, /font-family:"Inter","Manrope"/);
+  assert.match(html, /grid-template-rows:auto auto 1fr/);
+  assert.match(html, /class="compact-user"/);
   db.close(); rmSync(dir, { recursive: true, force: true });
 });

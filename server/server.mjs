@@ -172,7 +172,7 @@ const server = createServer(async (req, res) => {
       "x-frame-options": "DENY",
       "referrer-policy": "no-referrer",
       "permissions-policy": "camera=(), microphone=(), geolocation=()",
-      "content-security-policy": "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'",
+      "content-security-policy": "default-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'",
       "x-request-id": requestId,
       ...extraHeaders,
     });
