@@ -131,6 +131,78 @@ textarea,input,select{width:100%;border:1px solid var(--line-strong);border-radi
 @media(max-width:760px){
   html,body{background:var(--app)}.app-frame{width:100%;min-height:100vh;margin:0;border:0;display:block;padding-bottom:72px}.demo-strip{font-size:9px}.rail{position:fixed;left:0;right:0;bottom:0;z-index:30;min-height:0;height:68px;padding:8px 10px;display:block;border:0;border-top:1px solid var(--line)}.brand-mark,.rail-foot{display:none}.rail-nav{height:100%;flex-direction:row;justify-content:space-around;gap:2px}.rail-link{width:42px;height:42px}.rail-link:nth-child(n+7){display:none}.rail-link::after{display:none}.workspace{padding:12px 15px 36px}.topbar{height:46px;margin-bottom:12px}.wordmark{font-size:19px}.search{display:none}.context-rail{display:none}.head{display:block}.split{grid-template-columns:1fr}.metric-row{grid-template-columns:1fr 1fr}.field-grid{grid-template-columns:1fr 1fr}table{display:block;overflow-x:auto}h1{font-size:25px}.grid{grid-template-columns:1fr}}
 @media(max-width:440px){.field-grid,.case-facts{grid-template-columns:1fr}.metric-row{grid-template-columns:1fr 1fr}.top-tools .icon-btn:first-of-type{display:none}}
+
+/* Reviewer UI refresh: quiet healthcare operations dashboard inspired by the supplied references. */
+:root{
+  --canvas:#e8ebe9;--app:#f7f8f7;--rail:#f3f5f3;--surface:#ffffff;--surface-soft:#f5f7f5;
+  --ink:#111713;--muted:#747b76;--line:#e5e9e6;--line-strong:#d7ddd9;
+  --coral:#ef6a52;--coral-soft:#fff0ec;--violet:#2468e8;--violet-soft:#eaf1ff;
+  --lime:#dff2da;--lime-ink:#22613f;--mint:#e3f4eb;--mint-ink:#176844;
+  --yellow:#f4d36a;--blue:#4c86ee;--danger:#b73b35;--green:#166a45;--green-2:#23865a;
+  --shadow:0 22px 70px rgba(30,43,35,.12);
+}
+html{background:var(--canvas)}
+body{background:radial-gradient(circle at 50% -15%,#f7f8f7 0,#e8ebe9 52%,#dde1de 100%);font-family:Inter,"Segoe UI",Arial,sans-serif}
+.app-frame{width:min(1510px,calc(100% - 48px));min-height:calc(100vh - 48px);margin:24px auto;grid-template-columns:210px minmax(0,1fr) 270px;border:1px solid rgba(17,23,19,.06);border-radius:22px;box-shadow:var(--shadow)}
+.demo-strip{padding:8px 20px;background:#10271d;color:#d9eee3;font-size:10px;letter-spacing:.1em}
+.rail{padding:22px 15px 16px;align-items:stretch;background:var(--rail);min-height:calc(100vh - 88px)}
+.brand-lockup{height:46px;display:flex;align-items:center;gap:10px;margin:0 6px 26px;text-decoration:none;font-size:17px;font-weight:800}
+.brand-mark{width:36px;height:36px;margin:0;border:1px solid #c9ddd2;border-radius:50%;background:#fff;color:var(--green)}
+.brand-mark .icon{width:20px;height:20px;stroke-width:2.5}
+.brand-name{display:block}.brand-name b{color:var(--green)}
+.rail-nav{align-items:stretch;gap:4px}
+.rail-link,.rail-action{width:100%;height:42px;display:flex;justify-content:flex-start;gap:11px;padding:0 12px;border-radius:9px;color:#68706a;font-size:12px;font-weight:650}
+.rail-link .icon,.rail-action .icon{width:17px;height:17px;stroke-width:1.8}
+.nav-label{display:inline}
+.rail-link:hover,.rail-action:hover{background:#fff;color:var(--ink);border-color:var(--line)}
+.rail-link.active{background:#e2f0e8;color:var(--green);box-shadow:inset 3px 0 0 var(--green);border-color:transparent}
+.rail-link::after,.rail-action::after{display:none}
+.rail-foot{align-items:stretch;border-top:1px solid var(--line);padding-top:12px}
+.workspace{padding:20px 24px 52px;background:var(--app)}
+.topbar{height:48px;margin-bottom:22px}
+.wordmark{display:none}
+.top-tools{width:100%;justify-content:flex-end}
+.search{margin-right:auto;width:min(410px,45vw);height:40px;border:0;background:#fff;border-radius:12px;box-shadow:0 2px 10px rgba(30,43,35,.04)}
+.icon-btn{width:40px;height:40px;border:0;border-radius:50%;background:#fff;box-shadow:0 2px 10px rgba(30,43,35,.05)}
+.context-rail{padding:20px 14px;background:var(--rail)}
+.context-top{height:48px;margin-bottom:22px}
+.profile{border:0;border-radius:14px;padding:18px 12px;box-shadow:0 3px 14px rgba(30,43,35,.05)}
+.avatar{width:58px;height:58px;border:4px solid #fff;background:#dceee5;color:var(--green);font-family:inherit;font-size:18px;box-shadow:0 0 0 1px var(--line)}
+.profile h3{font-family:inherit;font-size:16px}.profile p{font-size:10px}
+.context-metrics{gap:7px;margin:9px 0}
+.mini-stat{border:0;border-radius:12px;padding:11px 4px;box-shadow:0 3px 14px rgba(30,43,35,.04)}
+.mini-stat .icon{color:var(--green)}.mini-stat:nth-child(2) .icon{color:var(--blue)}.mini-stat:nth-child(3) .icon{color:var(--coral)}
+.readiness{border:0;border-radius:14px;padding:15px;box-shadow:0 3px 14px rgba(30,43,35,.05)}
+.readiness h3{font-family:inherit;font-size:16px}
+.ring{width:116px;background:conic-gradient(var(--green-2) 0 68%,var(--blue) 68% 82%,var(--yellow) 82% 91%,var(--coral) 91%)}
+.ring-value b{font-family:inherit;font-size:25px}
+.head{align-items:center;margin-bottom:20px}.eyebrow{color:var(--green);letter-spacing:.08em}
+h1,h2,h3{font-family:Inter,"Segoe UI",Arial,sans-serif}
+h1{font-size:28px;font-weight:680;line-height:1.16}h2{font-size:16px;font-weight:700;margin:24px 0 11px}h3{font-size:13px}
+.lede{font-size:12px}
+.grid{gap:12px}.card,.panel{border:0;border-radius:12px;padding:15px;box-shadow:0 3px 15px rgba(30,43,35,.045)}
+.card-accent{background:linear-gradient(145deg,#e0f2e7,#f5fbf7);border:0}.card-accent.mint{background:linear-gradient(145deg,#e4f3eb,#f8fbf9)}.card-accent.coral{background:linear-gradient(145deg,#ffebe5,#fff8f6)}.card-accent.violet{background:linear-gradient(145deg,#e7efff,#f7f9ff)}
+.k{font-family:inherit;font-size:30px;font-weight:650}
+table{border:0;border-radius:12px;box-shadow:0 3px 15px rgba(30,43,35,.045)}
+th,td{padding:11px 12px;border-color:#edf0ee;font-size:11px}th{background:#f8f9f8;color:#737b75;font-size:9px}
+tbody tr:hover{background:#f5faf7}
+.badge{padding:4px 8px;font-size:8.5px;letter-spacing:.02em}
+.badge.completed,.badge.released,.badge.approved,.badge.ready,.badge.captured,.badge.verified-demo-docs,.badge.arrival-scheduled,.badge.shared-with-hospital,.badge.hospital-reviewing,.badge.response-received,.badge.option-accepted,.badge.travel-preparation,.badge.arrival-ready{background:#dff2e8;color:#176844}
+.badge.high{background:#e7efff;color:#245dc7}
+.split{gap:12px}.tabs{gap:6px;margin:13px 0 16px}.tab{border:0;border-radius:999px;padding:7px 11px;background:#edf0ee;color:#626a64;font-size:10px}.tab:first-child{background:var(--green);color:#fff}
+.callout{border:0;border-left:3px solid var(--green-2);background:#edf7f1;color:#24513b;border-radius:7px}
+.btn{min-height:38px;border-color:var(--line-strong);border-radius:999px;padding:8px 14px}.btn.primary{background:var(--green);border-color:var(--green)}.btn.primary:hover{background:#0f5839}.btn.dark{background:#18221d;border-color:#18221d}
+textarea,input,select{border-color:var(--line);border-radius:9px;background:#fbfcfb}
+.metric-row{gap:10px}.metric-tile{border:0;border-radius:12px;box-shadow:0 3px 15px rgba(30,43,35,.045)}.metric-tile:nth-child(1){background:linear-gradient(145deg,#176b46,#23865a);color:#fff}.metric-tile:nth-child(1) .label{color:#d9eee3}.metric-tile:nth-child(2){background:#fff}.metric-tile:nth-child(3){background:#edf3ff}.metric-tile:nth-child(4){background:#fff1ed}
+.network{gap:10px}.node{border:0;border-radius:10px;box-shadow:0 3px 12px rgba(30,43,35,.045)}.node.center{background:var(--green)}
+.case-fact{border-color:#edf0ee}.foot{border-color:var(--line)}
+@media(max-width:1240px){.app-frame{grid-template-columns:196px minmax(0,1fr)}.context-rail{display:none}}
+@media(max-width:820px){
+  html,body{background:var(--app)}.app-frame{width:100%;min-height:100vh;margin:0;border:0;border-radius:0;box-shadow:none;display:block;padding-bottom:72px}
+  .demo-strip{font-size:8px}.rail{position:fixed;left:0;right:0;bottom:0;z-index:30;height:68px;min-height:0;padding:8px 10px;display:block;border:0;border-top:1px solid var(--line)}
+  .brand-lockup,.rail-foot{display:none}.rail-nav{height:100%;flex-direction:row;justify-content:space-around;gap:2px}.rail-link{width:44px;height:44px;justify-content:center;padding:0}.rail-link:nth-child(n+7){display:none}.nav-label{display:none}
+  .workspace{padding:12px 14px 36px}.topbar{height:46px;margin-bottom:12px}.search{display:none}.context-rail{display:none}.head{display:block}.split{grid-template-columns:1fr}.metric-row{grid-template-columns:1fr 1fr}.field-grid{grid-template-columns:1fr 1fr}table{display:block;overflow-x:auto}h1{font-size:24px}.grid{grid-template-columns:1fr}
+}
 `;
 
 export function appShell(title, inner, options = {}) {
@@ -140,12 +212,12 @@ export function appShell(title, inner, options = {}) {
   const initials = userName.split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
   const metrics = options.metrics || { cases: 2, agents: 16, actions: 0 };
   const nav = NAV.map(([key, href, iconName, label]) =>
-    `<a class="rail-link${key === active ? " active" : ""}" href="${href}" aria-label="${label}" data-label="${label}">${icon(iconName, 19)}</a>`
+    `<a class="rail-link${key === active ? " active" : ""}" href="${href}" aria-label="${label}" data-label="${label}">${icon(iconName, 19)}<span class="nav-label">${label}</span></a>`
   ).join("");
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f8f9f3"><title>${esc(title)} | CanopusCare</title><style>${APP_CSS}</style></head><body>
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f7f8f7"><title>${esc(title)} | Canopus Care</title><style>${APP_CSS}</style></head><body>
   <div class="app-frame">
-    <div class="demo-strip">DEMO ENVIRONMENT · SYNTHETIC DATA · EXTERNAL ACTIONS DISABLED</div>
-    <aside class="rail"><a class="brand-mark" href="/demo" aria-label="CanopusCare home">${icon("Sparkles", 30)}</a><nav class="rail-nav">${nav}</nav><div class="rail-foot"><a class="rail-action" href="/integrations" aria-label="Settings" data-label="Settings">${icon("Settings",19)}</a><a class="rail-action" href="/docs/YC_REVIEWER_GUIDE.md" aria-label="Help" data-label="Help">${icon("CircleHelp",19)}</a></div></aside>
+    <div class="demo-strip">DEMO ENVIRONMENT &middot; SYNTHETIC DATA &middot; EXTERNAL ACTIONS DISABLED</div>
+    <aside class="rail"><a class="brand-lockup" href="/demo" aria-label="CanopusCare home"><span class="brand-mark">${icon("Sparkles", 30)}</span><span class="brand-name">Canopus<b>Care</b></span></a><nav class="rail-nav">${nav}</nav><div class="rail-foot"><a class="rail-action" href="/integrations" aria-label="Settings" data-label="Settings">${icon("Settings",19)}<span class="nav-label">Settings</span></a><a class="rail-action" href="/docs/YC_REVIEWER_GUIDE.md" aria-label="Help" data-label="Help">${icon("CircleHelp",19)}<span class="nav-label">Help & guide</span></a></div></aside>
     <section class="workspace">
       <header class="topbar"><div class="wordmark">Canopus<span>Care</span></div><div class="top-tools"><div class="search">${icon("Search",15)}<span>Search cases, vendors, tasks</span></div><button class="icon-btn" title="Notifications" aria-label="Notifications">${icon("Bell",17)}</button><a class="icon-btn" href="/integrations" title="Settings" aria-label="Settings">${icon("Settings",17)}</a></div></header>
       <main>${inner}</main>
