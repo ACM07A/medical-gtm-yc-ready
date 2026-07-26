@@ -19,9 +19,11 @@ import { renderStudio, studioQueue, studioApprove } from "./studio.mjs";
 import { renderSandbox, saveTemplate } from "./sandbox.mjs";
 import { renderDemo } from "./demo.mjs";
 import { appMode, authenticateDemoUser, ensureOsSchema, readinessReport, seedDemoOs } from "../data-core/os_core.mjs";
-import { clearSessionCookie, loginRateLimit, sessionCookie } from "./session.mjs";
+import { clearSessionCookie, loginRateLimit, sessionCookie, sessionMutationOriginAllowed } from "./session.mjs";
 import { requiresConsoleToken } from "./access.mjs";
 import { renderLogin } from "./login.mjs";
+import { errorPage } from "./canopus_ui.mjs";
+import { structuredLog } from "./logger.mjs";
 import {
   getSession, apiCases, apiCase, renderCases, renderCase, renderHospital, renderAgent,
   renderVendors, renderOsAgents, renderTasks, renderIntegrations, renderAudit, metrics,
@@ -190,6 +192,14 @@ const server = createServer(async (req, res) => {
     }
   }
   try {
+    if (!sessionMutationOriginAllowed(req)) {
+      structuredLog("csrf_rejected", { request_id: requestId, method: req.method, path: url.pathname }, "error");
+      return send(403, "application/json", JSON.stringify({
+        ok: false,
+        error: { code: "ORIGIN_REJECTED", message: "The request origin is not allowed.", details: {} },
+        request_id: requestId,
+      }));
+    }
     if (req.method === "GET" && url.pathname === "/app")
       return send(302, "text/plain; charset=utf-8", "Open dashboard", { location: "/demo" });
     const appCaseMatch = url.pathname.match(/^\/app\/cases\/([^/]+)$/);
@@ -639,8 +649,16 @@ ${rows.map(card).join("")}</main></body></html>`;
       return send(200, "text/html; charset=utf-8",
         docPage(`Outreach — ${row.partner}`, `DRAFT outreach · ${row.angle} angle · NOT sent (human-gated)`, mdToHtml(md)));
     }
-    return send(404, "text/html", "not found");
-  } catch (e) { send(500, "text/plain", String(e && e.stack || e)); }
+    if (url.pathname.startsWith("/api/"))
+      return send(404, "application/json", JSON.stringify({ ok: false, error: { code: "NOT_FOUND", message: "API route not found.", details: {} }, request_id: requestId }));
+    return send(404, "text/html; charset=utf-8", errorPage(404, "Page not found", "The requested demo page does not exist or has moved.", requestId));
+  } catch (e) {
+    structuredLog("route_error", { request_id: requestId, method: req.method, path: url.pathname, error: String(e?.message || e) }, "error");
+    if (url.pathname.startsWith("/api/"))
+      send(500, "application/json", JSON.stringify({ ok: false, error: { code: "INTERNAL_ERROR", message: "The request could not be completed.", details: {} }, request_id: requestId }));
+    else
+      send(500, "text/html; charset=utf-8", errorPage(500, "Something went wrong", "The demo is still available. Return to the dashboard and try again.", requestId));
+  }
   finally { db.close(); }
 });
-server.listen(PORT, () => console.log(`CanopusCare console  ->  http://localhost:${PORT}`));
+server.listen(PORT, () => structuredLog("server_started", { port: PORT, mode: appMode() }));

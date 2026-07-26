@@ -94,7 +94,7 @@ const invalidLogin = await fetch(base + "/api/auth/login", {
 console.log(`${invalidLogin.status === 401 ? "✓" : "✗"} POST /api/auth/login invalid credentials -> ${invalidLogin.status}`);
 if (invalidLogin.status !== 401) failed++;
 
-const logout = await fetch(base + "/api/auth/logout", { method: "POST", headers: { cookie } });
+const logout = await fetch(base + "/api/auth/logout", { method: "POST", headers: { cookie, origin: base } });
 const logoutOk = logout.status === 200 && /Max-Age=0/i.test(logout.headers.get("set-cookie") || "");
 console.log(`${logoutOk ? "✓" : "✗"} POST /api/auth/logout clears session -> ${logout.status}`);
 if (!logoutOk) failed++;
@@ -111,7 +111,7 @@ const adminLogin = await fetch(base + "/api/auth/login", {
 const adminCookie = adminLogin.headers.get("set-cookie")?.split(";")[0] || "";
 const blockedApproval = await fetch(base + "/api/approvals/approval_blocked_consent/approve", {
   method: "POST",
-  headers: { cookie: adminCookie },
+  headers: { cookie: adminCookie, origin: base },
 });
 const blockedBody = await blockedApproval.json();
 const complianceBlocked = blockedApproval.status === 403 && blockedBody.error?.code === "COMPLIANCE_BLOCKED";
@@ -120,7 +120,7 @@ if (!complianceBlocked) failed++;
 
 const approvedEstimate = await fetch(base + "/api/approvals/approval_estimate_release/approve", {
   method: "POST",
-  headers: { cookie: adminCookie },
+  headers: { cookie: adminCookie, origin: base },
 });
 const approvedBody = await approvedEstimate.json();
 const estimateApproved = approvedEstimate.status === 200 && approvedBody.approval?.status === "Approved";

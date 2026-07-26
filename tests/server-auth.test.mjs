@@ -63,7 +63,7 @@ test("public demo, signed hospital session and operator token enforce the route 
     assert.deepEqual(cases.cases.map((row) => row.id), ["case_ibrahim_musa"]);
     const firstTransition = await fetch(`${base}/api/cases/CASE-DEMO-001/transition`, {
       method: "POST",
-      headers: { cookie, "content-type": "application/json" },
+      headers: { cookie, origin: base, "content-type": "application/json" },
       body: JSON.stringify({ state: "hospital_reviewing" }),
     });
     assert.equal(firstTransition.status, 200);
@@ -79,11 +79,23 @@ test("public demo, signed hospital session and operator token enforce the route 
     const adminCookie = blockedLogin.headers.get("set-cookie")?.split(";")[0];
     const blockedTransition = await fetch(`${base}/api/cases/CASE-DEMO-002/transition`, {
       method: "POST",
-      headers: { cookie: adminCookie, "content-type": "application/json" },
+      headers: { cookie: adminCookie, origin: base, "content-type": "application/json" },
       body: JSON.stringify({ state: "ready_to_share" }),
     });
     assert.equal(blockedTransition.status, 403);
     assert.equal((await blockedTransition.json()).error.code, "COMPLIANCE_BLOCKED");
+
+    const forgedTransition = await fetch(`${base}/api/cases/CASE-DEMO-001/transition`, {
+      method: "POST",
+      headers: { cookie, origin: "https://attacker.example", "content-type": "application/json" },
+      body: JSON.stringify({ state: "response_received" }),
+    });
+    assert.equal(forgedTransition.status, 403);
+    assert.equal((await forgedTransition.json()).error.code, "ORIGIN_REJECTED");
+
+    const missingPage = await fetch(`${base}/does-not-exist`);
+    assert.equal(missingPage.status, 404);
+    assert.match(await missingPage.text(), /Page not found/);
 
     const basic = Buffer.from(`reviewer:${env.CONSOLE_TOKEN}`).toString("base64");
     assert.equal((await fetch(`${base}/console`, { headers: { authorization: `Basic ${basic}` } })).status, 200);

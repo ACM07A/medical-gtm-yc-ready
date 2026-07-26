@@ -52,6 +52,26 @@ export function sessionUserId(req) {
   return verifySessionToken(token)?.sub || null;
 }
 
+export function sessionMutationOriginAllowed(req) {
+  if (!sessionUserId(req)) return true;
+  const method = String(req.method || "GET").toUpperCase();
+  if (!["POST", "PUT", "PATCH", "DELETE"].includes(method)) return true;
+  const origin = String(req.headers.origin || "").replace(/\/$/, "");
+  if (!origin) return false;
+  const configured = [
+    process.env.APP_BASE_URL,
+    ...(process.env.ALLOWED_ORIGINS || "").split(","),
+  ].map((value) => String(value || "").trim().replace(/\/$/, "")).filter(Boolean);
+  if (process.env.APP_MODE !== "production") {
+    const host = String(req.headers.host || "");
+    if (host) {
+      configured.push(`http://${host}`);
+      configured.push(`https://${host}`);
+    }
+  }
+  return new Set(configured).has(origin);
+}
+
 export function sessionCookie(userId) {
   const secure = String(process.env.APP_BASE_URL || "").startsWith("https://");
   return [

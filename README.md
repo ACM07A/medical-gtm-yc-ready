@@ -12,6 +12,10 @@ decisions, and humans approve sensitive actions.
 [Product demo video: pending](./DEMO_SCRIPT.md) |
 [YC reviewer guide](./docs/YC_REVIEWER_GUIDE.md)
 
+[Founder deployment checklist](./docs/FOUNDER_DEPLOYMENT_CHECKLIST.md) |
+[Real, mocked and disabled](./docs/REAL_MOCKED_DISABLED.md) |
+[Security review](./docs/SECURITY_REVIEW.md)
+
 The repository name is a legacy identifier. The working product name is
 **Canopus Care**.
 

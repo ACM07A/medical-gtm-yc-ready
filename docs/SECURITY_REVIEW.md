@@ -10,6 +10,7 @@ Scope: public synthetic YC sandbox, not a production patient-data system.
 - Anonymous demo access is read-only.
 - Production ignores the `x-demo-user` test shortcut and rejects demo accounts.
 - Login rate limiting and generic authentication failures.
+- Same-origin enforcement for every session-cookie-authenticated mutation.
 - Operator/GTM routes remain behind `CONSOLE_TOKEN`.
 - Case transitions use an authoritative allow-list, transactions and audit events.
 - Missing consent blocks state progression in the backend.
@@ -20,7 +21,6 @@ Scope: public synthetic YC sandbox, not a production patient-data system.
 ## Remaining before production
 
 - Replace shared demo credentials with a production identity provider, MFA and invitation lifecycle.
-- Add CSRF tokens or strict same-origin enforcement for every cookie-authenticated mutation.
 - Move from in-memory login throttling to distributed rate limiting.
 - Implement encrypted object storage, malware scanning, MIME validation and upload quotas.
 - Perform external tenant-isolation testing and penetration testing.

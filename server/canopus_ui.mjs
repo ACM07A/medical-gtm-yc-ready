@@ -229,3 +229,10 @@ export function appShell(title, inner, options = {}) {
     </aside>
   </div></body></html>`;
 }
+
+export function errorPage(status, title, message, requestId = "") {
+  return appShell(title, `<div class="head"><div><div class="eyebrow">Error ${esc(status)}</div><h1>${esc(title)}</h1><p class="lede">${esc(message)}</p></div></div>
+    <section class="panel"><h2>What you can do</h2><p>Return to the reviewer dashboard or use the navigation to continue with the synthetic demo.</p>
+    <div class="actions"><a class="btn primary" href="/demo">Back to dashboard</a><a class="btn" href="/cases">Open cases</a></div>
+    ${requestId ? `<p class="label">Request ID: ${esc(requestId)}</p>` : ""}</section>`, { active: "" });
+}

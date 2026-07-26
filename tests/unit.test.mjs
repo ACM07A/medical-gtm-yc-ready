@@ -7,7 +7,7 @@ import { open } from "../data-core/db.mjs";
 import { DEMO_PASSWORD, authenticateDemoUser, ensureOsSchema, passwordHash, readinessReport, seedDemoOs } from "../data-core/os_core.mjs";
 import { apiCase, apiCases, getSession } from "../server/os_pages.mjs";
 import { requiresConsoleToken } from "../server/access.mjs";
-import { createSessionToken, sessionCookie, verifySessionToken } from "../server/session.mjs";
+import { createSessionToken, sessionCookie, sessionMutationOriginAllowed, verifySessionToken } from "../server/session.mjs";
 
 function seededDb() {
   const dir = mkdtempSync(join(tmpdir(), "medyatra-test-"));
@@ -64,6 +64,30 @@ test("session signatures reject tampering and expiration", () => {
   assert.equal(verifySessionToken(token, now + 9 * 60 * 60 * 1000), null);
   if (priorMode == null) delete process.env.APP_MODE; else process.env.APP_MODE = priorMode;
   if (priorSecret == null) delete process.env.SESSION_SECRET; else process.env.SESSION_SECRET = priorSecret;
+});
+
+test("session-cookie mutations require an allowed origin", () => {
+  const prior = {
+    APP_MODE: process.env.APP_MODE,
+    APP_BASE_URL: process.env.APP_BASE_URL,
+    ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS,
+    SESSION_SECRET: process.env.SESSION_SECRET,
+  };
+  Object.assign(process.env, {
+    APP_MODE: "production",
+    APP_BASE_URL: "https://demo.canopuscare.online",
+    ALLOWED_ORIGINS: "https://demo.canopuscare.online",
+    SESSION_SECRET: "test-session-secret-at-least-32-characters",
+  });
+  const cookie = sessionCookie("user_agent").split(";")[0];
+  const request = (origin) => ({ method: "POST", headers: { cookie, ...(origin ? { origin } : {}) } });
+  assert.equal(sessionMutationOriginAllowed(request("https://demo.canopuscare.online")), true);
+  assert.equal(sessionMutationOriginAllowed(request("https://attacker.example")), false);
+  assert.equal(sessionMutationOriginAllowed(request()), false);
+  assert.equal(sessionMutationOriginAllowed({ method: "GET", headers: { cookie } }), true);
+  for (const [key, value] of Object.entries(prior)) {
+    if (value == null) delete process.env[key]; else process.env[key] = value;
+  }
 });
 
 test("public OS and operator route posture is explicit", () => {
