@@ -78,7 +78,9 @@ export function renderDemo(db, session) {
       </div></div></div>
     </section>
 
-    <div class="panel"><div class="journey-track">
+    <div class="panel journey-panel">
+      <div class="section-head"><div><span class="eyebrow">Patient journey</span><h2>Case progress</h2></div><span class="badge info">4 of 7 stages</span></div>
+      <div class="journey-track" aria-label="Case progress">
       <div class="journey-step done"><span class="journey-dot">${icon("CircleCheckBig",15)}</span><span>Intake</span></div>
       <div class="journey-step done"><span class="journey-dot">${icon("CircleCheckBig",15)}</span><span>Records</span></div>
       <div class="journey-step done"><span class="journey-dot">${icon("CircleCheckBig",15)}</span><span>Matching</span></div>
