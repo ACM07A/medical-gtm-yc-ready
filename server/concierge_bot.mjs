@@ -23,7 +23,7 @@ const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").
 
 // ── Safety boundaries: checked BEFORE any intent, in this order. ─────────────────────────────────────────
 const EMERGENCY = /\b(chest pain|can'?t breathe|cannot breathe|unconscious|collapsed|bleeding heavily|severe pain|emergency|suicid)/i;
-const CLINICAL = /\b(diagnos|prescri|dosage|dose|medicin|medication advice|side effect|is it safe|should (he|she|i|we) take|symptom|treatment (option|advice|recommend)|cure|prognosis|survival)/i;
+const CLINICAL = /\b(diagnos|prescri|dosage|dose|medicin|medication advice|side effect|should (he|she|i|we) take|symptom|treatment (option|advice|recommend)|cure|prognosis|survival|complication|recover(y|ing| time)?|how risky|risk of|is (it|the surgery|this|the procedure|the operation|the treatment) safe|safe to (travel|fly|operate|proceed))/i;
 
 // ── Intents: first match wins. Each answers ONLY from the case record. ───────────────────────────────────
 const INTENTS = [
