@@ -116,7 +116,26 @@ ALLOWED_ORIGINS=https://demo.canopuscare.online
 3. Confirm install, lint, tests, seed, smoke and Docker build are green.
 4. Do not submit the YC URL while an unexplained check is failing.
 
-## 8. Record the product demo
+## 8. Confirm backup and restore evidence
+
+The service creates a retained local backup when an existing database starts.
+After the first successful deployment, open the Render shell and run:
+
+```bash
+npm run db:backup
+npm run db:restore-check
+```
+
+- [ ] The restore report says `"ok": true`.
+- [ ] `integrity` is `"ok"`.
+- [ ] Case, user and audit counts are non-zero.
+- [ ] Download or copy the restore report into the deployment evidence folder.
+
+These snapshots live on the same Render disk and protect against application
+mistakes, not account/region failure. Before real patient production, choose an
+encrypted off-host destination and approve backup retention, RPO and RTO.
+
+## 9. Record the product demo
 
 Use [PRODUCT_DEMO_SCRIPT.md](PRODUCT_DEMO_SCRIPT.md).
 
@@ -132,7 +151,7 @@ Use [PRODUCT_DEMO_SCRIPT.md](PRODUCT_DEMO_SCRIPT.md).
 The YC founder video is separate. Follow the current YC application instructions
 for its required format and length.
 
-## 9. Rehearse and reset
+## 10. Rehearse and reset
 
 1. Reset the demo using the authenticated admin reset control.
 2. Log out and open `/demo` in incognito.
@@ -146,7 +165,7 @@ for its required format and length.
 
 Target two to four minutes without developer assistance.
 
-## 10. YC submission package
+## 11. YC submission package
 
 - [ ] Public custom-domain URL
 - [ ] Reviewer credentials delivered privately
@@ -160,7 +179,7 @@ Suggested description:
 
 > Canopus Care coordinates international patient cases from intake through hospital response and travel preparation while clinicians retain all medical decisions.
 
-## 11. Before real patient data
+## 12. Before real patient data
 
 Do not convert the YC sandbox into production. A separate production launch
 requires a production identity provider with MFA, encrypted storage and KMS,

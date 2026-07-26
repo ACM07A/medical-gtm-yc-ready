@@ -38,6 +38,12 @@ if (needsInitialization) {
   }
 } else {
   console.log(`Existing database preserved at ${DB_PATH}`);
+  if (process.env.BACKUP_ON_START !== "0") {
+    execFileSync(process.execPath, ["--experimental-sqlite", "data-core/backup_os.mjs"], {
+      stdio: "inherit",
+      env: process.env,
+    });
+  }
 }
 
 if (mode === "production") {

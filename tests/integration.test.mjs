@@ -220,3 +220,27 @@ test("demo bootstrap seeds a missing database once and preserves later state", (
   assert.equal(db.prepare(`SELECT count(*) count FROM patient_case`).get().count, 2);
   db.close(); rmSync(dir, { recursive: true, force: true });
 });
+
+test("database backup can be integrity-checked from an isolated restore copy", () => {
+  const dir = mkdtempSync(join(tmpdir(), "canopus-restore-check-"));
+  const database = join(dir, "demo.db");
+  const backupDir = join(dir, "backups");
+  const env = {
+    ...process.env,
+    APP_MODE: "demo",
+    POST_LIVE: "0",
+    DATABASE_PATH: database,
+    BACKUP_DIR: backupDir,
+    BACKUP_KEEP: "3",
+    SEED_BROWSER: "0",
+    SEED_GENERATION: "0",
+  };
+  execFileSync(process.execPath, ["--experimental-sqlite", "data-core/demo_seed.mjs"], { cwd: ROOT, env });
+  const output = execFileSync(process.execPath, ["--experimental-sqlite", "data-core/verify_restore.mjs"], { cwd: ROOT, env, encoding: "utf8" });
+  const report = JSON.parse(output.slice(output.indexOf("{")));
+  assert.equal(report.ok, true);
+  assert.equal(report.integrity, "ok");
+  assert.equal(report.counts.cases, 2);
+  assert.ok(report.counts.audit_events >= 1);
+  rmSync(dir, { recursive: true, force: true });
+});
