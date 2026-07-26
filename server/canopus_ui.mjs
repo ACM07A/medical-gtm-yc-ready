@@ -25,6 +25,16 @@ const ICONS = {
   save: '<path d="M5 3h12l4 4v14H3V5a2 2 0 0 1 2-2zM7 3v6h9V3M7 21v-8h10v8"/>',
   rotate: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/>',
   sparkles: '<path d="m12 3-1.8 4.2L6 9l4.2 1.8L12 15l1.8-4.2L18 9l-4.2-1.8zM5 16l-1 2-2 1 2 1 1 2 1-2 2-1-2-1z"/>',
+  heartPulse: '<path d="M19 14c1.5-1.5 3-3.5 3-6a6 6 0 0 0-10-4.5A6 6 0 0 0 2 8c0 5 5 8.5 10 13 1.2-1.1 2.4-2.1 3.5-3"/><path d="M3 12h4l2-4 3 8 2-4h7"/>',
+  fileCheck: '<path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/><path d="m9 15 2 2 4-4"/>',
+  plane: '<path d="M22 2 9 15"/><path d="m22 2-8 20-4-8-8-4z"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  lock: '<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
+  activity: '<path d="M3 12h4l2-6 4 12 2-6h6"/>',
+  arrowRight: '<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>',
+  alert: '<path d="M12 3 2 21h20z"/><path d="M12 9v5M12 18h.01"/>',
+  wallet: '<path d="M4 6h15a2 2 0 0 1 2 2v10H4a2 2 0 0 1-2-2V6a3 3 0 0 1 3-3h12"/><path d="M16 12h5"/>',
+  checkCircle: '<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>',
 };
 const ICON_ALIAS = {
   House: "house", BriefcaseMedical: "briefcase", Building2: "building", Users: "users",
@@ -34,6 +44,9 @@ const ICON_ALIAS = {
   Bell: "bell", MapPin: "pin", Send: "send", Save: "save", RotateCcw: "rotate",
   Sparkles: "sparkles", CircleHelp: "circleHelp", MessageCircleQuestion: "circleHelp",
   KeyRound: "circleHelp",
+  HeartPulse: "heartPulse", FileCheck2: "fileCheck", Plane: "plane", Clock3: "clock",
+  LockKeyhole: "lock", Activity: "activity", ArrowRight: "arrowRight",
+  TriangleAlert: "alert", WalletCards: "wallet", CircleCheckBig: "checkCircle",
 };
 
 export function icon(name, size = 18, className = "") {
@@ -279,6 +292,18 @@ textarea:focus,input:focus,select:focus,.btn:focus-visible,.icon-btn:focus-visib
 }
 @media(max-width:480px){.field-grid,.case-facts{grid-template-columns:1fr}.metric-row{grid-template-columns:1fr}.top-tools .icon-btn:first-of-type{display:none}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+.hero-panel{position:relative;overflow:hidden;padding:24px;background:linear-gradient(135deg,#FFFFFF 20%,#F0F5FF 100%);border-color:var(--brand-200)}
+.hero-panel::after{content:"";position:absolute;right:-50px;bottom:-70px;width:190px;height:190px;border:34px solid rgba(47,107,255,.07);border-radius:50%;pointer-events:none}
+.hero-copy{position:relative;z-index:1;max-width:760px}.hero-copy h1{max-width:720px}
+.hero-actions{position:relative;z-index:1;margin-top:20px}
+.metric-tile{position:relative;min-height:118px}.metric-icon{width:34px;height:34px;display:grid;place-items:center;margin-bottom:16px;border-radius:10px;background:var(--brand-50);color:var(--brand-600)}.metric-tile:nth-child(1) .metric-icon{background:rgba(255,255,255,.16);color:#fff}.metric-tile:nth-child(3) .metric-icon{background:#fff}.metric-tile:nth-child(4) .metric-icon{background:#fff}
+.section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin:28px 0 12px}.section-head h2{margin:0}.section-head .label{max-width:520px;text-align:right}
+.case-summary{display:grid;grid-template-columns:72px minmax(0,1fr) auto;align-items:center;gap:16px}.case-symbol{width:72px;height:72px;display:grid;place-items:center;border-radius:18px;background:linear-gradient(135deg,var(--brand-500),var(--indigo-500));color:#fff}.case-symbol .icon{width:32px;height:32px}.case-summary h2{margin:0 0 5px}.case-meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.status-list{display:grid;gap:10px}.status-row{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line-200)}.status-row:last-child{border-bottom:0}.status-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:10px;background:var(--surface-100);color:var(--brand-600)}.status-row b{display:block;font-size:13px}.status-row .label{font-size:11px}
+.journey-track{display:grid;grid-template-columns:repeat(7,1fr);gap:0;padding:8px 0}.journey-step{position:relative;text-align:center;padding:0 6px}.journey-step::before{content:"";position:absolute;left:0;right:0;top:16px;height:2px;background:var(--line-200)}.journey-step:first-child::before{left:50%}.journey-step:last-child::before{right:50%}.journey-dot{position:relative;z-index:1;width:32px;height:32px;margin:0 auto 8px;display:grid;place-items:center;border-radius:50%;background:var(--surface-100);color:var(--ink-500);border:2px solid var(--surface-0)}.journey-step.done .journey-dot{background:var(--success-500);color:#fff}.journey-step.active .journey-dot{background:linear-gradient(135deg,var(--brand-500),var(--indigo-500));color:#fff;box-shadow:0 0 0 5px var(--brand-100)}.journey-step span{display:block;font-size:10px;color:var(--ink-500)}.journey-step.active span{color:var(--ink-950);font-weight:600}
+.surface-card{display:grid;grid-template-columns:42px minmax(0,1fr) 24px;gap:12px;align-items:start;min-height:126px}.surface-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:12px;background:var(--brand-50);color:var(--brand-600)}.surface-card.blocked-card .surface-icon{background:#FDECEC;color:var(--danger-500)}.surface-card.gate-card .surface-icon{background:#FFF4D7;color:#9A6812}.surface-card h3{margin:1px 0 5px}.surface-card .arrow{margin-top:10px;color:var(--ink-500)}
+.attention-panel{background:#20242C;color:#fff;border-color:#20242C}.attention-panel .label{color:#C7CDD8}.attention-panel .status-icon{background:rgba(255,255,255,.1);color:#fff}
+@media(max-width:820px){.case-summary{grid-template-columns:56px minmax(0,1fr)}.case-symbol{width:56px;height:56px}.case-summary>.btn{grid-column:1/-1}.journey-track{grid-template-columns:1fr;gap:8px}.journey-step{display:grid;grid-template-columns:36px 1fr;text-align:left;align-items:center}.journey-step::before{left:16px!important;right:auto!important;top:-10px;bottom:26px;width:2px;height:auto}.journey-step:first-child::before{top:16px}.journey-step:last-child::before{bottom:50%}.journey-dot{margin:0}.journey-step span{font-size:12px}}
 `;
 
 export function appShell(title, inner, options = {}) {
