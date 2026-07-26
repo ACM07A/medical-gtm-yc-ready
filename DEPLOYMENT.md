@@ -1,4 +1,7 @@
-# Deployment
+# Canopus Care Deployment
+
+No public deployment is claimed until the verification section passes against
+the deployed HTTPS URL.
 
 ## Local Docker
 
@@ -9,23 +12,79 @@ docker compose up --build
 
 Open `http://localhost:5173/demo`.
 
-## Render
+The container runs as a non-root user. On a missing `/app/data` database it
+performs the deterministic, browser-free demo seed once. On every later boot it
+preserves the existing database.
 
-Use `render.yaml`. The service defaults to `APP_MODE=demo`, `POST_LIVE=0`, a persistent disk mounted at `/var/data`, and `DATABASE_PATH=/var/data/medyatra.db`.
+## Render Blueprint
 
-Set:
+1. Sign in to Render and create a new Blueprint.
+2. Connect `hussainbombaywala/medical-tourism-gtm`.
+3. Select the branch approved for deployment.
+4. Allow Render to read `render.yaml`.
+5. Confirm the persistent disk is mounted at `/var/data`.
+6. Set `APP_BASE_URL` to the assigned HTTPS service URL.
+7. Set `ALLOWED_ORIGINS` to the same origin.
+8. Set a strong `DEMO_PASSWORD`; do not use the local default publicly.
+9. Keep `APP_MODE=demo`, `POST_LIVE=0`, and `AUTH_PROVIDER=demo`.
+10. Retain the generated `SESSION_SECRET`, `CONSOLE_TOKEN`, and
+    `ENCRYPTION_KEY` values in Render's secret store.
+11. Deploy and wait for `/api/readiness`.
 
-- `APP_BASE_URL`
-- `CONSOLE_TOKEN`
-- production-only secrets before changing `APP_MODE=production`
+The blueprint defaults `DATABASE_PATH` to
+`/var/data/canopus-care-demo.db`. A fresh disk is seeded once; a redeploy or
+container restart preserves it.
 
-## Generic Docker
+## Verification
+
+Replace `<render-url>` below:
 
 ```bash
-docker build -t canopuscare-demo .
-docker run -p 5173:5173 -e APP_MODE=demo -e POST_LIVE=0 -v canopuscare-runtime:/app/runtime canopuscare-demo
+curl -fsS <render-url>/api/health
+curl -fsS <render-url>/api/readiness
 ```
 
-Production must use HTTPS, a persistent database volume, strong console/auth credentials, managed secrets and real provider credentials before any outbound action is armed.
+Confirm:
 
-The Render blueprint is a demo deployment, not a production vendor configuration. Complete every gate in `docs/VENDOR_DEPLOYMENT_READINESS.md` before processing real vendor or patient data.
+- `service` is `canopus-care`.
+- readiness is not `BLOCKED`.
+- the database and patient-intake components are `READY`.
+- WhatsApp and external delivery are `MOCKED` or `DISABLED`.
+- `/demo`, `/cases`, `/vendors`, `/audit`, and `/readiness` open in incognito.
+- `/console` returns an authentication challenge without `CONSOLE_TOKEN`.
+- reviewer login sets a Secure, HttpOnly, SameSite=Lax cookie.
+- a hospital role sees only its assigned synthetic case.
+- a restart preserves a test audit/state record.
+- the consent-blocked case still refuses release.
+
+## Landing-Page Wiring
+
+In the separate landing-page deployment set:
+
+```text
+SANDBOX_URL=<render-url>
+SANDBOX_TOKEN=<CONSOLE_TOKEN>
+```
+
+Then verify `/api/markets`, `/api/vault`, `/api/economics`, and
+`/api/journey/run` through the landing-page proxy. Do not expose
+`CONSOLE_TOKEN` to browser JavaScript.
+
+## Custom Domain
+
+After the Render URL passes verification:
+
+1. Add `demo.canopuscare.com` in Render.
+2. Configure the DNS record Render provides.
+3. Wait for the managed TLS certificate.
+4. Change `APP_BASE_URL` and `ALLOWED_ORIGINS` to the branded HTTPS origin.
+5. Repeat the full incognito and cookie verification.
+
+Do not claim the branded domain exists until DNS and TLS are confirmed.
+
+## Production Warning
+
+This Blueprint is a synthetic public demo, not a real-patient production
+deployment. Keep `APP_MODE=demo`. Complete
+`docs/VENDOR_DEPLOYMENT_READINESS.md` and the legal, privacy, identity,
+storage, monitoring, backup, and security gates before any real pilot.

@@ -78,14 +78,14 @@ Before committing, ensure you receive:
 
 ## How the Process Really Works
 
-Navigating medical treatment abroad can seem complex, but with the right guidance, it becomes a structured process. MedYatra acts as a facilitator, helping you connect with accredited hospitals in India.
+Navigating medical treatment abroad can seem complex, but with the right guidance, it becomes a structured process. Canopus Care acts as a facilitator, helping you connect with accredited hospitals in India.
 
 1.  **Initial Contact and Report Submission:** You begin by sending your existing medical reports, diagnostic scans, and any relevant doctor's notes via WhatsApp. This allows us to understand your current health status and specific cardiac needs.
-2.  **Hospital Review and Opinion:** MedYatra forwards your reports to a selection of accredited, reputable hospitals in India. Their specialist cardiac teams review your case. This review results in a medical opinion, a proposed treatment plan, and an indicative cost estimate from each hospital. You will receive these options to consider.
+2.  **Hospital Review and Opinion:** Canopus Care forwards your reports to a selection of accredited, reputable hospitals in India. Their specialist cardiac teams review your case. This review results in a medical opinion, a proposed treatment plan, and an indicative cost estimate from each hospital. You will receive these options to consider.
 3.  **Hospital Invitation Letter:** Once you decide on a hospital and treatment plan, the chosen hospital will issue an official invitation letter. This letter confirms your planned medical treatment and is a crucial supporting document for your visa application.
-4.  **Your Travel and Visa Arrangements:** It is important to understand that MedYatra coordinates your medical information and secures the hospital invitation letter for you. You, the patient, are responsible for applying for your own e-Medical Visa through the official Indian government portal. You are also responsible for booking your own international flights to India and arranging your local accommodation (if needed, outside the hospital stay) and ground transportation.
+4.  **Your Travel and Visa Arrangements:** It is important to understand that Canopus Care coordinates your medical information and secures the hospital invitation letter for you. You, the patient, are responsible for applying for your own e-Medical Visa through the official Indian government portal. You are also responsible for booking your own international flights to India and arranging your local accommodation (if needed, outside the hospital stay) and ground transportation.
 5.  **Travel, Procedure, and Recovery:** Upon arrival in India, you will proceed to the hospital. You will undergo pre-operative assessments, have your procedure, and begin your recovery in the hospital. The length of stay in India post-procedure depends on the treatment; for angioplasty, you might be ready to travel home within 1-2 weeks, while for bypass surgery, it could be 3-4 weeks to allow for initial recovery and follow-up checks.
-6.  **Direct Payment to Hospital:** All payments for your medical treatment are made directly to the hospital in India. MedYatra does not handle any funds related to your medical care.
+6.  **Direct Payment to Hospital:** All payments for your medical treatment are made directly to the hospital in India. Canopus Care does not handle any funds related to your medical care.
 7.  **Tele-Follow-Up:** After you return to Kenya, the Indian hospital often offers tele-consultations for follow-up appointments. This allows you to discuss your recovery and any concerns with the surgical team remotely.
 
 ## Honest Answers to Your Real Worries
@@ -115,16 +115,16 @@ It is important to discuss potential risks and the hospital's protocols for mana
 English is widely spoken in India, especially within the medical community. Doctors, nurses, and administrative staff in accredited hospitals catering to international patients are proficient in English. You should not face significant communication difficulties regarding your medical care.
 
 **How Payment Works:**
-You will pay the hospital directly for your treatment. MedYatra
+You will pay the hospital directly for your treatment. Canopus Care
 
 ---
 
 ### About this page
 
-Written by MedYatra editorial. Last reviewed on 2026-07-21.
+Written by Canopus Care editorial. Last reviewed on 2026-07-21.
 
 **Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
 
 **What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
 
-**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.
+**What this page is not.** Canopus Care is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

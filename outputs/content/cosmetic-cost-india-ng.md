@@ -75,16 +75,16 @@ Before committing, request detailed documentation from the hospital:
 
 ## How Your Journey to India Works
 
-Your medical journey to India is a structured process designed to ensure you receive timely and appropriate care. MedYatra acts as a facilitator, coordinating your connection with accredited hospitals and assisting with necessary supporting documents. You, as the patient, are responsible for arranging your own travel and visa.
+Your medical journey to India is a structured process designed to ensure you receive timely and appropriate care. Canopus Care acts as a facilitator, coordinating your connection with accredited hospitals and assisting with necessary supporting documents. You, as the patient, are responsible for arranging your own travel and visa.
 
-1.  **Send Your Medical Reports:** The first step involves sending your current medical reports, diagnostic scans, and a brief medical history to MedYatra, typically via WhatsApp or email. This allows the medical teams in India to understand your condition.
-2.  **Hospital Review and Opinion:** MedYatra forwards your reports to multiple JCI or NABH accredited hospitals specialising in bariatric or cosmetic surgery. A panel of surgeons will review your case, provide a medical opinion on your suitability for the procedure, and offer an indicative cost estimate for the recommended treatment package. This assessment helps you compare options.
+1.  **Send Your Medical Reports:** The first step involves sending your current medical reports, diagnostic scans, and a brief medical history to Canopus Care, typically via WhatsApp or email. This allows the medical teams in India to understand your condition.
+2.  **Hospital Review and Opinion:** Canopus Care forwards your reports to multiple JCI or NABH accredited hospitals specialising in bariatric or cosmetic surgery. A panel of surgeons will review your case, provide a medical opinion on your suitability for the procedure, and offer an indicative cost estimate for the recommended treatment package. This assessment helps you compare options.
 3.  **Hospital Invitation Letter:** Once you select a hospital and treatment plan, the hospital will issue an official invitation letter. This letter confirms your medical appointment and is a crucial supporting document for your visa application.
 4.  **Visa and Travel Arrangements:** With the invitation letter, you will apply for an e-Medical Visa for India yourself. This process is typically done online through the Indian government's visa portal. Simultaneously, you will book your own international flights to India and arrange for your accommodation, either at a hotel or a guest house, for your pre-and post-hospital stay.
 5.  **Travel, Procedure, and Recovery:** You travel to India, attend your pre-operative consultations, undergo the procedure, and recover in the hospital. The length of hospital stay varies by procedure, but for bariatric surgery, it's usually 3-5 days. After discharge, you'll have some time for local follow-ups and further recovery before flying home.
 6.  **Tele-Follow-Up:** Many hospitals offer tele-consultation services, allowing you to have follow-up discussions with your surgeon after you return to Nigeria, ensuring continuity of care.
 
-It is important to remember that all prices provided are indicative pending a full medical assessment by the hospital, and MedYatra's role is to facilitate this coordination and provide supporting documents, not to provide the medical treatment itself or arrange your travel logistics.
+It is important to remember that all prices provided are indicative pending a full medical assessment by the hospital, and Canopus Care's role is to facilitate this coordination and provide supporting documents, not to provide the medical treatment itself or arrange your travel logistics.
 
 ## Addressing Your Concerns Honestly
 
@@ -118,7 +118,7 @@ English is widely spoken in medical settings across India, particularly in hospi
 
 ### How Payment Works
 
-You will pay the hospital directly for your medical treatment. MedYatra does not handle patient funds. The hospital will provide you with a detailed invoice, and payment is typically made upon arrival or shortly after admission, often via bank transfer or credit card. Confirm the accepted payment methods with the hospital beforehand.
+You will pay the hospital directly for your medical treatment. Canopus Care does not handle patient funds. The hospital will provide you with a detailed invoice, and payment is typically made upon arrival or shortly after admission, often via bank transfer or credit card. Confirm the accepted payment methods with the hospital beforehand.
 
 ### Length of Stay
 
@@ -132,10 +132,10 @@ If you have further questions, you can message us on WhatsApp.
 
 ### About this page
 
-Written by MedYatra editorial. Last reviewed on 2026-07-21.
+Written by Canopus Care editorial. Last reviewed on 2026-07-21.
 
 **Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
 
 **What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
 
-**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.
+**What this page is not.** Canopus Care is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

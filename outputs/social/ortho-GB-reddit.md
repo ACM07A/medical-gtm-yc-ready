@@ -11,8 +11,8 @@ In India, orthopedic surgeries at accredited hospitals generally range from $3,5
 
 Quality care is a priority for medical travelers. Many Indian hospitals hold international accreditations and are staffed by highly experienced orthopedic surgeons. However, it's crucial to do your own research, verify hospital credentials, and consult with your local doctor before making any decisions. 
 
-We can't guarantee specific medical outcomes, but navigating international healthcare can be complex. I work with MedYatra, a facilitator that helps UK patients connect with accredited Indian orthopedic facilities. 
+We can't guarantee specific medical outcomes, but navigating international healthcare can be complex. I work with Canopus Care, a facilitator that helps UK patients connect with accredited Indian orthopedic facilities.
 
 If you want to chat about logistics or have questions, feel free to reach out on WhatsApp: [link].
 
-MedYatra is a medical-travel facilitator, not a hospital; prices are indicative package ranges.
+Canopus Care is a medical-travel facilitator, not a hospital; prices are indicative package ranges.

@@ -66,13 +66,13 @@
 إن عملية الحصول على رعاية طبية في الهند من اليمن تتطلب بعض التنسيق، لكنها مصممة لتكون واضحة قدر الإمكان:
 
 1.  **إرسال التقارير الطبية:** الخطوة الأولى هي جمع جميع تقاريرك الطبية الحديثة، مثل تخطيط القلب، فحوصات الدم، تقارير القسطرة السابقة، وأي صور إشعاعية، وإرسالها إلينا عبر الواتساب.
-2.  **مراجعة المستشفى والتقدير:** تقوم MedYatra بتسهيل إرسال تقاريرك إلى مستشفيات هندية معتمدة ومتخصصة في رعاية القلب. سيقوم فريق طبي متخصص بمراجعة حالتك وتقديم رأي طبي بشأن العلاج المقترح، بالإضافة إلى عرض سعر تقديري للحزمة العلاجية.
+2.  **مراجعة المستشفى والتقدير:** تقوم Canopus Care بتسهيل إرسال تقاريرك إلى مستشفيات هندية معتمدة ومتخصصة في رعاية القلب. سيقوم فريق طبي متخصص بمراجعة حالتك وتقديم رأي طبي بشأن العلاج المقترح، بالإضافة إلى عرض سعر تقديري للحزمة العلاجية.
 3.  **خطاب الدعوة:** بعد موافقتك على خطة العلاج والتكلفة التقديرية، سيصدر المستشفى خطاب دعوة رسمي. هذا الخطاب هو وثيقة داعمة أساسية تحتاجها لطلب التأشيرة الطبية.
-4.  **طلب التأشيرة وحجز السفر:** **أنت مسؤول عن التقدم بطلب للحصول على التأشيرة الطبية الإلكترونية (e-Medical Visa) بنفسك، وعن حجز تذاكر الطيران والإقامة في الهند.** دور MedYatra هو تنسيق طلب المستشفى وتوفير الوثائق الداعمة، وليس ترتيب سفرك أو تأشيرتك.
+4.  **طلب التأشيرة وحجز السفر:** **أنت مسؤول عن التقدم بطلب للحصول على التأشيرة الطبية الإلكترونية (e-Medical Visa) بنفسك، وعن حجز تذاكر الطيران والإقامة في الهند.** دور Canopus Care هو تنسيق طلب المستشفى وتوفير الوثائق الداعمة، وليس ترتيب سفرك أو تأشيرتك.
 5.  **السفر والعلاج والتعافي:** بعد الحصول على التأشيرة وحجز السفر، تسافر إلى الهند. ستخضع للإجراء الطبي، ثم فترة تعافٍ في المستشفى.
 6.  **العودة والمتابعة:** بعد التعافي الكافي، تعود إلى اليمن. توفر بعض المستشفيات إمكانية المتابعة عن بُعد عبر الهاتف أو مكالمات الفيديو، لمناقشة تقدمك والإجابة على أي أسئلة لديك.
 
-تُعد MedYatra جهة تسهيلية، حيث نساعد في تنسيق طلباتك وتوفير الوثائق الداعمة من المستشفيات المعتمدة، لكن المريض هو من يتولى ترتيبات السفر والتأشيرة والإقامة.
+تُعد Canopus Care جهة تسهيلية، حيث نساعد في تنسيق طلباتك وتوفير الوثائق الداعمة من المستشفيات المعتمدة، لكن المريض هو من يتولى ترتيبات السفر والتأشيرة والإقامة.
 
 ## إجابات صادقة لمخاوف حقيقية
 
@@ -93,10 +93,10 @@
 
 ### About this page
 
-Written by MedYatra editorial. Last reviewed on 2026-07-21.
+Written by Canopus Care editorial. Last reviewed on 2026-07-21.
 
 **Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
 
 **What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
 
-**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.
+**What this page is not.** Canopus Care is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

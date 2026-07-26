@@ -1,4 +1,4 @@
-import { readinessReport } from "../data-core/os_core.mjs";
+import { DEMO_USERNAME, readinessReport } from "../data-core/os_core.mjs";
 import { appShell, icon } from "./canopus_ui.mjs";
 
 const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -26,20 +26,20 @@ export function demoStats(db) {
 
 const surfaces = [
   ["/agent", "Agent Portal", "Lead intake, API instructions, case status, commission forecast and malformed-row guardrails.", "core"],
-  ["/cases/case_ibrahim_musa", "Ibrahim Musa Case", "Synthetic Nigerian cardiac golden path with documents, matches, estimate, vendors and audit.", "core"],
+  ["/cases/CASE-DEMO-001", "Ibrahim Musa Case", "Synthetic Nigerian cardiac golden path with documents, matches, estimate, vendors and audit.", "core"],
   ["/hospital", "Hospital Command Centre", "Inbox, pipeline, SLA board, task board and synthetic revenue view.", "core"],
   ["/vendors", "Vendor Coordination", "Interpreter, transfer and accommodation mock quotes without real bookings.", "core"],
   ["/agents", "AI Agent Activity Centre", "Deterministic operational agents with evidence, cost, confidence and approval flags.", "core"],
   ["/studio", "Human Approval Studio", "Server-side compliance gates before publishing, outreach, messages or releases.", "gate"],
   ["/integrations", "Integration Readiness", "Mocked, disabled and configured adapter states with outbound arming status.", "gate"],
   ["/audit", "Audit Log", "Material actions and blocked compliance decisions.", "gate"],
-  ["/cases/case_amina_okoro", "Blocked Exception Case", "No-consent case visibly blocked before communication or routing.", "blocked"],
+  ["/cases/CASE-DEMO-002", "Blocked Exception Case", "No-consent case visibly blocked before communication or routing.", "blocked"],
   ["/console", "Legacy GTM Console", "Partner sourcing, content and distribution engine from the original prototype.", "legacy"],
   ["/sandbox", "WhatsApp Sandbox", "Legacy editable patient-journey simulator.", "legacy"],
   ["/benchmarks", "Benchmarks", "De-identified aggregate learning with k-anonymity suppression.", "legacy"],
 ];
 
-export function renderDemo(db) {
+export function renderDemo(db, session) {
   const s = demoStats(db);
   const ready = readinessReport(db);
   const golden = one(db, `SELECT * FROM patient_case WHERE id='case_ibrahim_musa'`) || {};
@@ -90,7 +90,7 @@ export function renderDemo(db) {
     <li>Agent imports the Lagos cardiac lead and consent is captured.</li>
     <li>Document Checklist Agent identifies missing reports; synthetic placeholders are attached.</li>
     <li>Hospital Matching Agent creates three operational matches without claiming clinical suitability.</li>
-    <li>Apollo marks the case eligible for a synthetic estimate; Fortis requests an additional investigation.</li>
+    <li>Demo Cardiac Centre A prepares a synthetic estimate; Demo Cardiac Centre B requests an additional investigation.</li>
     <li>Hospital admin approves estimate release; the agent sees an indicative comparison.</li>
     <li>Patient selects a hospital; invitation-letter, visa checklist, interpreter, transfer and accommodation requests are prepared.</li>
     <li>Mock vendors provide quotes; coordinator approves the package; arrival and follow-up tasks are scheduled.</li>
@@ -111,12 +111,10 @@ npm run dev
     </div>
     <div class="panel">
       <h2>Demo Credentials</h2>
-      <pre class="cmd">admin@canopuscare.demo / canopuscare-demo
-hospital@canopuscare.demo / canopuscare-demo
-agent@canopuscare.demo / canopuscare-demo
-vendor@canopuscare.demo / canopuscare-demo
-viewer@canopuscare.demo / canopuscare-demo</pre>
-      <div class="actions"><button class="btn primary" onclick="resetDemo()">${icon("RotateCcw", 14)} Reset OS Demo</button><a class="btn" href="/docs/YC_REVIEWER_GUIDE.md">${icon("BookOpenText", 14)} Reviewer guide</a></div>
+      <pre class="cmd">${esc(process.env.DEMO_USERNAME || DEMO_USERNAME)}
+Password configured by the deployment owner</pre>
+      <p class="label">Anonymous visitors stay read-only. Separate hospital, agent and vendor demo accounts provide server-scoped role views.</p>
+      <div class="actions"><a class="btn primary" href="/login">${icon("KeyRound", 14)} Reviewer login</a>${session?.authenticated && session.role === "platform_admin" ? `<button class="btn" onclick="resetDemo()">${icon("RotateCcw", 14)} Reset OS Demo</button>` : ""}<a class="btn" href="/docs/YC_REVIEWER_GUIDE.md">${icon("BookOpenText", 14)} Reviewer guide</a></div>
     </div>
   </section>
 
@@ -124,11 +122,11 @@ viewer@canopuscare.demo / canopuscare-demo</pre>
 <script>
 async function resetDemo(){
   if(!confirm("Reset the synthetic OS demo data?")) return;
-  const r = await fetch("/api/demo/reset", { method:"POST", headers:{"content-type":"application/json","x-demo-user":"admin@canopuscare.demo"}, body:"{}" });
+  const r = await fetch("/api/demo/reset", { method:"POST", headers:{"content-type":"application/json"}, body:"{}" });
   const j = await r.json();
   alert(j.ok ? "Demo reset complete" : (j.error && j.error.message) || j.error || "Reset blocked");
   if(j.ok) location.reload();
 }
 </script>
-`, { active: "demo", metrics: { cases: s.cases, agents: s.agents, actions: 0 } });
+`, { active: "demo", userName: session?.user?.name, userRole: session?.role?.replace(/_/g, " "), metrics: { cases: s.cases, agents: s.agents, actions: 0 } });
 }

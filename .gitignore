@@ -25,6 +25,7 @@ outputs/loop.log
 
 # Ephemeral comms drafts (regenerated every comms-run; can reflect lead context)
 outputs/comms/outbox/
+outputs/outbox/
 
 # Generated drafts that can contain DISCOVERED individual names/emails (privacy — keep local only)
 outputs/proposals/

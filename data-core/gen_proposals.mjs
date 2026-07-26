@@ -54,25 +54,25 @@ for (const p of partners) {
   const poc = O(`SELECT person_name, role, title_target FROM poc WHERE partner_id=? AND person_name IS NOT NULL AND person_name<>'' ORDER BY confidence DESC LIMIT 1`, p.id);
   const band = price.lo ? `${range(price.lo, price.hi)} (indicative package range, cited; not a quote)` : "indicative ranges (cited)";
 
-  const prompt = `Write a partnership proposal from MedYatra (a medical-value-travel FACILITATOR, not a hospital) to ${p.name}${poc ? `, attn: ${poc.person_name} (${clean(poc.role || poc.title_target || "International Patient Services")}, public business contact)` : " — International Patient Services / International Business"}.
+  const prompt = `Write a partnership proposal from Canopus Care (a medical-value-travel FACILITATOR, not a hospital) to ${p.name}${poc ? `, attn: ${poc.person_name} (${clean(poc.role || poc.title_target || "International Patient Services")}, public business contact)` : " — International Patient Services / International Business"}.
 Context (use, do not invent beyond this):
 - Their positioning: ${clean(p.fit_reason || "quality hospital")}
 - Focus specialty for this proposal: ${cat.name}. Primary source market: ${market.name} (and the wider region).
 - Indicative ${cat.name} pricing in India: ${band}.${comp && comp.low ? ` Market band across facilitators: ~${range(comp.low, comp.high)}.` : ""}
 - Angle: ${latent
-    ? `FOUNDING-PARTNER PILOT (do NOT claim existing demand volume — we are launching). Be honest: MedYatra is building its ${market.name} patient pipeline now; we're inviting them as a founding partner. The offer is ZERO-DOWNSIDE — no exclusivity, no upfront, they pay the facilitation fee ONLY on patients we actually deliver. Lead with ${cat.name} deliberately: it's a lower-consideration, price-led entry that builds trust and track record before higher-stakes specialties. We run the demand generation (Arabic+English content, WhatsApp) + credibility marketing that establishes their name abroad. Lean on their accreditation "${clean(p.accreditation)}" as the global-standard equalizer. Ask for a package sheet + a named coordinator, not a commitment.`
+    ? `FOUNDING-PARTNER PILOT (do NOT claim existing demand volume — we are launching). Be honest: Canopus Care is building its ${market.name} patient pipeline now; we're inviting them as a founding partner. The offer is ZERO-DOWNSIDE — no exclusivity, no upfront, they pay the facilitation fee ONLY on patients we actually deliver. Lead with ${cat.name} deliberately: it's a lower-consideration, price-led entry that builds trust and track record before higher-stakes specialties. We run the demand generation (Arabic+English content, WhatsApp) + credibility marketing that establishes their name abroad. Lean on their accreditation "${clean(p.accreditation)}" as the global-standard equalizer. Ask for a package sheet + a named coordinator, not a commitment.`
     : `SCALE play — established chain. Incremental, pre-qualified ${cat.name} patients from ${market.name}/region with low acquisition effort. Non-exclusive pilot; pay-per-delivered-patient. Do not overstate current volume.`}
 
 Structure the proposal with these sections:
 1. Introduction & who we are (facilitator, not a provider)
 2. Why patients from ${market.name} travel for ${cat.name} — the case (cost gap, quality). Do NOT claim a demand number you weren't given; if you reference volume, write "[VERIFY: cite a figure]".
-3. What MedYatra brings — be precise and modest: demand generation in the source market, pre-qualified patients who arrive with their documents in order, and coordination of the enquiry plus supporting documents (for example, helping the patient obtain your invitation letter). ${latent ? "Also credibility marketing that builds your name in that market. " : ""}Do NOT claim interpreters, flights, hotels or on-ground logistics as ours — if relevant, note they are arranged by the patient or a local partner.
+3. What Canopus Care brings — be precise and modest: demand generation in the source market, pre-qualified patients who arrive with their documents in order, and coordination of the enquiry plus supporting documents (for example, helping the patient obtain your invitation letter). ${latent ? "Also credibility marketing that builds your name in that market. " : ""}Do NOT claim interpreters, flights, hotels or on-ground logistics as ours — if relevant, note they are arranged by the patient or a local partner.
 4. Commercial model — facilitation fee starting at 20% (below the 25–33% incumbent agents typically charge), rising in three revenue tiers to a maximum of 25% — the low end of the incumbent range — only as we prove volume, so you never pay more than your cheapest current agent; pay ONLY on delivered patients, patient never double-charged, transparent. ${latent ? "NON-exclusive to start; note a path to preferred/exclusive terms in this market once the pilot proves volume." : "Non-exclusive."}
 5. Proposed pilot — a small, time-boxed founding-partner cohort with clear success metrics; zero upfront
 6. Compliance & trust — facilitator disclosure, accredited-partners-only, data protection (DPDP/GDPR), no clinical claims by us
 7. Next steps — ask for a package sheet + a named coordinator + a 30-minute intro call (not a commitment)
 
-Rules: NO invented prices/outcomes/volumes (reference the indicative range only, clearly labelled). No parenthetical internal notes. ~450–600 words. Professional sign-off from "MedYatra Partnerships".`;
+Rules: NO invented prices/outcomes/volumes (reference the indicative range only, clearly labelled). No parenthetical internal notes. ~450–600 words. Professional sign-off from "Canopus Care Partnerships".`;
 
   // STAGE GUARD: don't re-propose to an account already past the proposal stage or with a live outcome.
   if (!FORCE && (PAST.has(p.stage) || DONE_OUTCOME.has(p.outcome))) { console.log(`proposal → ${p.name} … skip (stage '${p.stage}'${p.outcome && p.outcome !== "none" ? ", outcome " + p.outcome : ""})`); continue; }
@@ -91,7 +91,7 @@ Rules: NO invented prices/outcomes/volumes (reference the indicative range only,
   const flagNote = (lint.vague.length || lint.filler.length)
     ? `<!-- QA: ${lint.vague.length} vague-claim(s) auto-tagged [VERIFY]${lint.filler.length ? ` · filler to cut: ${lint.filler.slice(0, 6).join(", ")}` : ""} -->\n` : "";
   const file = join("outputs", "proposals", `${p.id}-${cat.id}-${market.code.toLowerCase()}.md`);
-  const header = `<!-- PARTNERSHIP PROPOSAL · DRAFT (human review before send) · ${angle} angle · ${p.id} · model:${r.model} · ${new Date().toISOString().slice(0, 10)} -->\n${flagNote}\n# Partnership Proposal — ${p.name}\n_${cat.name} · ${market.name} · prepared by MedYatra Partnerships_\n\n`;
+  const header = `<!-- PARTNERSHIP PROPOSAL · DRAFT (human review before send) · ${angle} angle · ${p.id} · model:${r.model} · ${new Date().toISOString().slice(0, 10)} -->\n${flagNote}\n# Partnership Proposal — ${p.name}\n_${cat.name} · ${market.name} · prepared by Canopus Care Partnerships_\n\n`;
   writeFileSync(join(ROOT, file), header + lint.text.trim() + "\n");
   if (lint.vague.length || lint.filler.length) logRun(db, "QA", `Proposal lint · ${p.id}`, `${lint.vague.length} vague→[VERIFY], filler: ${lint.filler.slice(0, 5).join(", ") || "none"}`, null, "pending");
 

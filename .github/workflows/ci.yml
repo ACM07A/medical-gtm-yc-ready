@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [main, "codex/**"]
+    branches: [main, "codex/**", "agent/**"]
   pull_request:
     branches: [main]
 
@@ -19,8 +19,17 @@ jobs:
         run: npm ci
       - name: Lint
         run: npm run lint
-      - name: Unit and integration tests
-        run: npm run test
+      - name: Environment validation
+        run: npm run env:check
+        env:
+          APP_MODE: demo
+          POST_LIVE: "0"
+      - name: Unit tests
+        run: npm run test:unit
+      - name: Integration tests
+        run: npm run test:integration
+      - name: End-to-end rendered-page tests
+        run: npm run test:e2e
       - name: Demo database build
         run: npm run db:seed
         env:
@@ -33,3 +42,12 @@ jobs:
           ! grep -RInE "(sk-[A-Za-z0-9_-]{20,}|AIza[0-9A-Za-z_-]{20,}|ghp_[0-9A-Za-z_]{20,})" . --exclude-dir=.git --exclude-dir=node_modules
       - name: Docker build
         run: docker build -t canopuscare-demo .
+      - name: Upload failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: canopus-care-ci-failure-evidence
+          path: |
+            artifacts/*.png
+            outputs/screenshots/*.png
+          if-no-files-found: ignore

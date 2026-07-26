@@ -9,7 +9,7 @@ Primary golden path:
 - Budget: USD 8,000-15,000.
 - Source agent: Lagos Health Travel Partners.
 - Consent: captured.
-- Hospital: Apollo International Cardiac Centre.
+- Hospital: Demo Cardiac Centre A (fictional synthetic organization).
 - Vendors: interpreter, airport transfer, accommodation.
 
 Exception path:

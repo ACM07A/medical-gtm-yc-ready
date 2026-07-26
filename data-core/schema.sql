@@ -1,4 +1,4 @@
--- MedYatra data core — lean SQLite schema (source of truth for the agent fleet).
+-- Canopus Care data core — lean SQLite schema (source of truth for the agent fleet).
 -- Maps to /build-os/07_SYSTEM_DESIGN.md. Keep it simple; no ORM, no migrations tool yet.
 PRAGMA foreign_keys = ON;
 
@@ -108,7 +108,7 @@ CREATE TABLE IF NOT EXISTS doctor_affiliate (
 -- PAYER — a THIRD account type (type='payer'), the base of a channel deliberately parked for phase 2/3.
 -- An insurer / TPA / self-insured employer / government health office redirects a POPULATION at once, and
 -- the pitch is financial (lower claims cost for treatment they already fund), not a clinical-trust pitch to
--- one referring person. Precedent: Sachin Rai's Toyota example; already prototyped once as the MedYatra ×
+-- one referring person. Precedent: Sachin Rai's Toyota example; already prototyped once as the Canopus Care ×
 -- TruDoc partnership. Base only for now: table + fit rubric + a human-vouched capture path. No outreach
 -- generator, no console UI yet — see PARTNER_AGENT.md §12.
 CREATE TABLE IF NOT EXISTS payer (

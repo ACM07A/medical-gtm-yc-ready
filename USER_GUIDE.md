@@ -1,4 +1,4 @@
-# MedYatra — User Guide
+# Canopus Care — User Guide
 
 A practical, step-by-step guide to running and operating the engine. For the *why* behind it, see
 [`PROJECT_CONTEXT.md`](./PROJECT_CONTEXT.md); for the 2-minute pitch, see [`README.md`](./README.md).
@@ -93,7 +93,7 @@ A WhatsApp phone simulator for the entire sales journey. This is the surface you
 - **Edit a template:** click **edit** on any message (or a rail chip). Change the body, the `{{variables}}`, or the
   quick-reply buttons — the phone updates live. Click **Save draft**.
 - **The gate:** saving sets that template back to **Review** — it *cannot send* until a human re-approves in Studio.
-- **White-label:** the "Viewing as" dropdown swaps the brand (MedYatra ↔ a demo operator) so you can show an operator their own front.
+- **White-label:** the "Viewing as" dropdown swaps the brand (Canopus Care ↔ a demo operator) so you can show an operator their own front.
 - **Reset** clears the conversation; nothing is ever sent from here.
 
 ### `/` and the content library
@@ -234,5 +234,5 @@ itemised checklist is [`build-os/12_GO_LIVE.md`](./build-os/12_GO_LIVE.md). In s
 
 ---
 
-*MedYatra is a working first-draft engine and a demonstration of end-to-end agentic product engineering. Codename
-"MedYatra" ("medical journey") — rename freely.*
+*Canopus Care is a working first-draft engine and a demonstration of end-to-end agentic product engineering. Codename
+"Canopus Care" ("medical journey") — rename freely.*

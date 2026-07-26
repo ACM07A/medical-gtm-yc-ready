@@ -43,16 +43,16 @@ for (const t of TARGETS) {
     : `This is an ESTABLISHED, well-known chain. Lead with: we bring incremental, pre-qualified ${cat.name} patients from ${market.name}/Gulf (Arabic + English demand engine), reducing their acquisition effort; propose a non-exclusive pilot.`;
 
   const prompt = `Draft a first-touch partnership outreach email to ${p.name}${poc ? ` (attn: ${poc.person_name}, public business contact)` : " (International Patient Services desk)"}.
-We are MedYatra, a medical-value-travel facilitator (NOT a provider). Target: ${cat.name} patients from ${market.name} and the Gulf.
+We are Canopus Care, a medical-value-travel facilitator (NOT a provider). Target: ${cat.name} patients from ${market.name} and the Gulf.
 ${pitch}
-Include: who we are (facilitator), the specific value we bring, a transparent commercial note (facilitation fee from 20% — below the 25-33% incumbent agents charge — rising in revenue tiers to a 25% cap, so never more than their cheapest current agent, non-exclusive, patient never double-charged), and a soft ask for a 20-30 min intro call. You may reference their accreditation as "${clean(p.accreditation)}" only if natural; never include any parenthetical notes. Do NOT state any prices or outcomes. End with a professional sign-off from "MedYatra Partnerships".
+Include: who we are (facilitator), the specific value we bring, a transparent commercial note (facilitation fee from 20% — below the 25-33% incumbent agents charge — rising in revenue tiers to a 25% cap, so never more than their cheapest current agent, non-exclusive, patient never double-charged), and a soft ask for a 20-30 min intro call. You may reference their accreditation as "${clean(p.accreditation)}" only if natural; never include any parenthetical notes. Do NOT state any prices or outcomes. End with a professional sign-off from "Canopus Care Partnerships".
 First line must be: Subject: ...`;
 
   process.stdout.write(`GLM-5.2 outreach → ${p.name} (${angle}) … `);
   let md; try { md = await generate(prompt, { system: SYSTEM, maxTokens: 700, temperature: 0.5 }); }
   catch (e) { console.log("FAIL:", String(e.message || e).slice(0, 50)); logRun(db, "Partner Sourcing", `outreach ${t.id}`, `gen error: ${String(e.message || e).slice(0, 150)}`, null, "fail"); continue; }
 
-  const subject = (md.match(/Subject:\s*(.+)/i) || [, `${cat.name} partnership — MedYatra`])[1].trim();
+  const subject = (md.match(/Subject:\s*(.+)/i) || [, `${cat.name} partnership — Canopus Care`])[1].trim();
   const file = join("outputs", "outreach", `${t.id}-${t.cat}-${t.mk.toLowerCase()}.md`);
   const header = `<!-- Outreach DRAFT · GLM-5.2 · ${angle} angle · partner ${t.id} · NOT sent (human-gated /agent-os/13) · ${new Date().toISOString().slice(0,10)} -->\n\n`;
   writeFileSync(join(ROOT, file), header + md.trim() + "\n");

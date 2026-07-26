@@ -63,16 +63,16 @@ Selecting the right hospital when you are thousands of kilometres away requires 
 *   **Specific Experience and Success Rates:** Inquire about the hospital's and the surgeon's experience with your specific condition and procedure. For example, if you need a valve replacement, ask about their success rates for that particular surgery, not just general cardiac surgery. Hospitals should be able to provide data on outcomes for specific procedures.
 *   **Written Treatment Plan:** Before committing, ensure you receive a detailed written treatment plan. This document should outline the proposed procedure, the expected duration of hospital stay, any specific medications, and the anticipated recovery process. This transparency is vital for your planning and understanding.
 
-MedYatra works with JCI and NABH accredited hospitals in India, ensuring that the options presented to you meet these high standards.
+Canopus Care works with JCI and NABH accredited hospitals in India, ensuring that the options presented to you meet these high standards.
 
-## How MedYatra Coordinates Your Treatment Journey
+## How Canopus Care Coordinates Your Treatment Journey
 
-MedYatra acts as a facilitator, streamlining the connection between you and reputable cardiac hospitals in India. We handle the coordination and provide supporting documents, while you manage your own travel and visa arrangements. Here is how the process typically works:
+Canopus Care acts as a facilitator, streamlining the connection between you and reputable cardiac hospitals in India. We handle the coordination and provide supporting documents, while you manage your own travel and visa arrangements. Here is how the process typically works:
 
-1.  **Share Your Medical Reports:** You begin by sending your recent medical reports, diagnostic scans, and any relevant clinical notes via WhatsApp to MedYatra. This allows our team to understand your medical history and current condition.
+1.  **Share Your Medical Reports:** You begin by sending your recent medical reports, diagnostic scans, and any relevant clinical notes via WhatsApp to Canopus Care. This allows our team to understand your medical history and current condition.
 2.  **Hospital Review and Opinion:** We forward your reports to multiple accredited cardiac hospitals in India. Specialist doctors at these hospitals will review your case. Within a few days, you will receive medical opinions from these hospitals, often including an indicative treatment plan and the estimated package cost.
 3.  **Hospital Invitation Letter:** Once you decide on a hospital and a treatment plan, the chosen hospital will issue an official invitation letter. This letter is a crucial supporting document for your visa application.
-4.  **Your Visa and Travel Arrangements:** With the hospital invitation letter, you will then apply for your e-Medical Visa for India yourself. You are also responsible for booking your own international flights from Nigeria to India and arranging your accommodation for the duration of your stay. MedYatra does not handle patient funds; all payments for treatment are made directly to the hospital.
+4.  **Your Visa and Travel Arrangements:** With the hospital invitation letter, you will then apply for your e-Medical Visa for India yourself. You are also responsible for booking your own international flights from Nigeria to India and arranging your accommodation for the duration of your stay. Canopus Care does not handle patient funds; all payments for treatment are made directly to the hospital.
 5.  **Travel and Treatment:** You travel to India. Upon arrival, you will attend pre-operative consultations and tests at the hospital. The cardiac procedure will then be performed as planned.
 6.  **Recovery and Return Home:** After your surgery, you will recover in the hospital for the specified duration, followed by a period of recuperation outside the hospital, usually in nearby accommodation, before you are medically cleared to fly home to Nigeria.
 7.  **Tele-Follow-Up:** Many Indian hospitals offer tele-consultations for post-operative follow-up, allowing you to connect with your surgeon from home to discuss your recovery.
@@ -89,7 +89,7 @@ It is natural to have concerns when considering medical treatment in a foreign c
     Many Indian cardiac surgeons are highly trained, often with experience from Western institutions, and work with advanced medical technology.
 *   **Safety and What Happens if Something Goes Wrong?** As with any major surgery, cardiac procedures carry inherent risks. While Indian hospitals adhere to international safety protocols, complications can arise. In such cases, the hospital's medical team will manage the situation. However, it is important to understand that treating complications may involve additional medical expenses not covered by your initial package price. Choosing an accredited hospital with a strong track record is your best safeguard.
 *   **Language Barrier?** English is widely spoken by doctors, nurses, and hospital staff in major Indian hospitals. You will generally find it easy to communicate your needs and understand medical instructions. If needed, many hospitals can arrange interpreters for other languages.
-*   **How Payment Works:** You will pay the hospital directly for your treatment. MedYatra facilitates the connection and coordination but does not handle patient funds. Hospitals typically require a deposit before admission, with the remaining balance due before discharge.
+*   **How Payment Works:** You will pay the hospital directly for your treatment. Canopus Care facilitates the connection and coordination but does not handle patient funds. Hospitals typically require a deposit before admission, with the remaining balance due before discharge.
 *   **Length of Stay in India:** The total duration you need to stay in India varies by procedure. For an angioplasty, you might be in India for approximately 7-10 days (2-3 days in hospital, plus recovery outside). For valve replacement or CABG, expect to stay for 3-4 weeks (around 7-10 days in hospital, followed by 2-3 weeks of recovery in India before you are medically fit to fly). These are general estimates; your specific recovery timeline will be determined by your medical team.
 
 ## After Your Treatment: Recovery and Follow-up
@@ -102,10 +102,10 @@ If you have your medical reports ready, you can message us on WhatsApp to begin 
 
 ### About this page
 
-Written by MedYatra editorial. Last reviewed on 2026-07-21.
+Written by Canopus Care editorial. Last reviewed on 2026-07-21.
 
 **Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
 
 **What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
 
-**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.
+**What this page is not.** Canopus Care is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

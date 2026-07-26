@@ -69,12 +69,12 @@ Before committing, ensure you receive comprehensive documentation:
 
 ## How the Process Really Works
 
-The journey for bariatric surgery in India typically follows a structured path, with MedYatra acting as a facilitator to help coordinate your care.
+The journey for bariatric surgery in India typically follows a structured path, with Canopus Care acting as a facilitator to help coordinate your care.
 
 1.  **Initial Contact and Report Submission:** You begin by sending your relevant medical reports, scans, and any previous treatment history. This is often done conveniently via WhatsApp.
-2.  **Hospital Review and Opinion:** MedYatra forwards your medical information to an accredited bariatric hospital in India. Their specialist team will review your case, provide a medical opinion on your suitability for surgery, and offer an indicative cost estimate for the procedure. This assessment helps ensure the proposed treatment aligns with your needs.
+2.  **Hospital Review and Opinion:** Canopus Care forwards your medical information to an accredited bariatric hospital in India. Their specialist team will review your case, provide a medical opinion on your suitability for surgery, and offer an indicative cost estimate for the procedure. This assessment helps ensure the proposed treatment aligns with your needs.
 3.  **Invitation Letter:** Once you decide to proceed, the hospital will issue an official invitation letter. This document is crucial as it is a required supporting document for your visa application.
-4.  **Your Travel and Visa Arrangements:** It is your responsibility to apply for your **e-Medical Visa** directly with the Indian High Commission or relevant authorities. You will also book your own international flights to India and arrange your accommodation for any period before or after your hospital stay. MedYatra coordinates the hospital side of things and provides supporting documents, but does not handle your travel or visa applications directly.
+4.  **Your Travel and Visa Arrangements:** It is your responsibility to apply for your **e-Medical Visa** directly with the Indian High Commission or relevant authorities. You will also book your own international flights to India and arrange your accommodation for any period before or after your hospital stay. Canopus Care coordinates the hospital side of things and provides supporting documents, but does not handle your travel or visa applications directly.
 5.  **Travel, Procedure, and Recovery:** You travel to India. Upon arrival, you will have pre-operative consultations and tests at the hospital. The bariatric surgery will then be performed. You will recover in the hospital for the specified duration (typically 3-5 days for bariatric surgery) under medical supervision.
 6.  **Return Home and Follow-Up:** After discharge and once medically cleared for travel, you will fly back to the United Kingdom. The hospital will typically arrange for tele-follow-up consultations to monitor your initial recovery and progress.
 
@@ -96,7 +96,7 @@ Accredited hospitals (JCI, NABH) in India often use modern equipment, adhere to 
 
 All surgical procedures carry inherent risks, and bariatric surgery is no exception. Reputable hospitals in India maintain high safety standards to minimise these risks.
 *   **During your stay:** If a complication arises while you are still in India and under the care of the hospital, they are responsible for managing it. This might involve additional treatments, extended hospitalisation, or further interventions, which would incur additional costs not covered by the initial package.
-*   **After returning home:** It is crucial to understand that once you have returned to the United Kingdom, any complications that arise or require ongoing medical attention will need to be managed by your local healthcare providers. The costs and logistics for this will be your responsibility, and there is no automatic provision for follow-up care or complication management in the UK through the Indian hospital or MedYatra. This is a significant consideration in your decision-making.
+*   **After returning home:** It is crucial to understand that once you have returned to the United Kingdom, any complications that arise or require ongoing medical attention will need to be managed by your local healthcare providers. The costs and logistics for this will be your responsibility, and there is no automatic provision for follow-up care or complication management in the UK through the Indian hospital or Canopus Care. This is a significant consideration in your decision-making.
 
 ### Language Barrier
 
@@ -104,7 +104,7 @@ In major accredited hospitals across India, particularly those catering to inter
 
 ### How Payment Works
 
-You will pay the hospital directly for your bariatric surgery package. MedYatra does not handle any payment for the medical procedure itself. The indicative prices provided are subject to the hospital's final assessment of your medical reports.
+You will pay the hospital directly for your bariatric surgery package. Canopus Care does not handle any payment for the medical procedure itself. The indicative prices provided are subject to the hospital's final assessment of your medical reports.
 
 ### Length of Stay
 
@@ -116,10 +116,10 @@ If you have further questions or wish to explore your options, please message us
 
 ### About this page
 
-Written by MedYatra editorial. Last reviewed on 2026-07-21.
+Written by Canopus Care editorial. Last reviewed on 2026-07-21.
 
 **Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
 
 **What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
 
-**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.
+**What this page is not.** Canopus Care is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

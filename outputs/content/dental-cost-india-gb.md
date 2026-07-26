@@ -53,10 +53,10 @@ When you communicate with a hospital, it is prudent to ask for specific informat
 
 The process of arranging dental treatment abroad might seem complex, but it follows a clear sequence:
 
-1.  **Initial Contact and Report Sharing:** You begin by gathering your existing dental records, such as recent X-rays, OPGs (orthopantomograms), CT scans, and any relevant reports from your UK dentist. These can be shared with MedYatra, often via WhatsApp, for an initial assessment.
-2.  **Hospital Review and Indicative Quote:** MedYatra transmits your reports to accredited hospitals in India. A dental specialist at one of these hospitals will review your documents. Based on this review, they will provide an initial opinion on your suitability for treatment, propose a tentative treatment plan, and offer an indicative cost range. This is not a final quote, as a definitive plan requires an in-person consultation.
+1.  **Initial Contact and Report Sharing:** You begin by gathering your existing dental records, such as recent X-rays, OPGs (orthopantomograms), CT scans, and any relevant reports from your UK dentist. These can be shared with Canopus Care, often via WhatsApp, for an initial assessment.
+2.  **Hospital Review and Indicative Quote:** Canopus Care transmits your reports to accredited hospitals in India. A dental specialist at one of these hospitals will review your documents. Based on this review, they will provide an initial opinion on your suitability for treatment, propose a tentative treatment plan, and offer an indicative cost range. This is not a final quote, as a definitive plan requires an in-person consultation.
 3.  **Invitation Letter:** If you decide to proceed, the hospital will issue an official invitation letter. This letter is a crucial supporting document required for your visa application.
-4.  **Your Travel and Visa Arrangements:** **You are responsible for applying for your own e-Medical Visa** through the official Indian government portal. You will also need to **book your own international flights** from the UK to India and arrange your accommodation for the duration of your stay. MedYatra acts as a facilitator, coordinating your initial contact, helping transmit your medical reports to accredited hospitals, and assisting with the hospital invitation letter.
+4.  **Your Travel and Visa Arrangements:** **You are responsible for applying for your own e-Medical Visa** through the official Indian government portal. You will also need to **book your own international flights** from the UK to India and arrange your accommodation for the duration of your stay. Canopus Care acts as a facilitator, coordinating your initial contact, helping transmit your medical reports to accredited hospitals, and assisting with the hospital invitation letter.
 5.  **Travel, Procedure, and Recovery:** Upon arrival in India, you will have an in-person consultation with the dental specialist, where the final treatment plan and cost will be confirmed. You will then undergo the procedure and remain in India for the necessary recovery period before flying home.
 6.  **Tele-follow-up:** Many hospitals offer tele-consultations or digital follow-ups after you return home to monitor your progress and answer any questions.
 
@@ -85,10 +85,10 @@ If you wish to discuss your specific situation and explore options, you can mess
 
 ### About this page
 
-Written by MedYatra editorial. Last reviewed on 2026-07-21.
+Written by Canopus Care editorial. Last reviewed on 2026-07-21.
 
 **Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
 
 **What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
 
-**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.
+**What this page is not.** Canopus Care is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

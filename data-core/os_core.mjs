@@ -4,7 +4,8 @@ import { dirname, join } from "node:path";
 import { COMMISSION_TIERS, DB_PATH, commissionModel, logRun } from "./db.mjs";
 
 export const APP_MODES = new Set(["demo", "development", "production", "test"]);
-export const DEMO_PASSWORD = "canopuscare-demo";
+export const DEMO_PASSWORD = "canopus-demo";
+export const DEMO_USERNAME = "reviewer@canopuscare.com";
 
 export function appMode() {
   const mode = process.env.APP_MODE || "demo";
@@ -16,7 +17,8 @@ export function passwordHash(password, salt = "canopuscare-demo-salt") {
 }
 
 export function authenticateDemoUser(db, email, password) {
-  if (appMode() !== "demo" || password !== DEMO_PASSWORD) return null;
+  const configuredPassword = process.env.DEMO_PASSWORD || DEMO_PASSWORD;
+  if (appMode() !== "demo" || password !== configuredPassword) return null;
   return db.prepare(`SELECT * FROM app_user WHERE email=? AND active=1`).get(String(email || "")) || null;
 }
 
@@ -155,11 +157,11 @@ export function ensureOsSchema(db) {
       WHERE m.code='NG' AND NOT EXISTS (SELECT 1 FROM lead WHERE ref='case-amina-okoro');
     UPDATE patient_case SET
       source_lead_id=(SELECT id FROM lead WHERE ref='case-ibrahim-musa' ORDER BY id LIMIT 1),
-      synthetic_identifier='CNP-NG-CABG-001'
+      synthetic_identifier='CASE-DEMO-001'
       WHERE id='case_ibrahim_musa' AND demo=1;
     UPDATE patient_case SET
       source_lead_id=(SELECT id FROM lead WHERE ref='case-amina-okoro' ORDER BY id LIMIT 1),
-      synthetic_identifier='CNP-NG-ONC-002'
+      synthetic_identifier='CASE-DEMO-002'
       WHERE id='case_amina_okoro' AND demo=1;
     UPDATE organization SET name='Demo Cardiac Centre A' WHERE id='org_hospital_apollo' AND demo=1;
     UPDATE organization SET name='Demo Cardiac Centre B' WHERE id='org_hospital_fortis' AND demo=1;
@@ -218,9 +220,11 @@ export function seedDemoOs(db) {
     ["user_agent", "agent@canopuscare.demo", "Zainab Agent Admin", "agent_admin", "org_agent_lagos"],
     ["user_vendor", "vendor@canopuscare.demo", "Meera Vendor Operator", "vendor_operator", "org_vendor_blr"],
     ["user_viewer", "viewer@canopuscare.demo", "Read Only Reviewer", "read_only", "org_platform"],
+    ["user_reviewer", process.env.DEMO_USERNAME || DEMO_USERNAME, "YC Demo Reviewer", "read_only", "org_platform"],
   ];
+  const configuredPassword = process.env.DEMO_PASSWORD || DEMO_PASSWORD;
   for (const [id, email, name, role, org] of users) {
-    put(db, `INSERT INTO app_user (id,email,name,password_hash,demo_password_hint) VALUES (?,?,?,?,?)`, [id, email, name, passwordHash(DEMO_PASSWORD), "synthetic demo only"]);
+    put(db, `INSERT INTO app_user (id,email,name,password_hash,demo_password_hint) VALUES (?,?,?,?,?)`, [id, email, name, passwordHash(configuredPassword), "configured server-side; synthetic demo only"]);
     put(db, `INSERT INTO membership (user_id,organization_id,role) VALUES (?,?,?)`, [id, org, role]);
   }
 
@@ -237,15 +241,15 @@ export function seedDemoOs(db) {
   const ibrahimLeadId = ensureLead("case-ibrahim-musa", "cardiac", 1);
   const aminaLeadId = ensureLead("case-amina-okoro", "oncology", 0);
   const cases = [
-    ["case_ibrahim_musa", ibrahimLeadId, "Ibrahim Musa", "CNP-NG-CABG-001", "Nigeria", "English", "Cardiac bypass evaluation", "cardiac", "Within 30 days", "USD 8,000-15,000", "Late August 2026", "captured", "Arrival scheduled", "org_agent_lagos", "org_hospital_apollo", "org_vendor_blr", "Nadia Care Coordinator", "Confirm arrival pack and post-treatment follow-up task", "Indicative pricing only; clinical suitability is hospital-owned.", ""],
-    ["case_amina_okoro", aminaLeadId, "Amina Okoro", "CNP-NG-ONC-002", "Nigeria", "English", "Oncology second opinion", "oncology", "Soon", "USD 12,000-25,000", "September 2026", "missing", "Blocked - consent required", "org_agent_lagos", null, null, "Nadia Care Coordinator", "Capture explicit consent before communication or routing", "No outbound message may be released. Missing consent blocks next action.", "CONSENT_REQUIRED"],
+    ["case_ibrahim_musa", ibrahimLeadId, "Ibrahim Musa", "CASE-DEMO-001", "Nigeria", "English", "Cardiac bypass evaluation", "cardiac", "Within 30 days", "USD 8,000-15,000", "Late August 2026", "captured", "Arrival scheduled", "org_agent_lagos", "org_hospital_apollo", "org_vendor_blr", "Nadia Care Coordinator", "Confirm arrival pack and post-treatment follow-up task", "Indicative pricing only; clinical suitability is hospital-owned.", ""],
+    ["case_amina_okoro", aminaLeadId, "Amina Okoro", "CASE-DEMO-002", "Nigeria", "English", "Oncology second opinion", "oncology", "Soon", "USD 12,000-25,000", "September 2026", "missing", "Blocked - consent required", "org_agent_lagos", null, null, "Nadia Care Coordinator", "Capture explicit consent before communication or routing", "No outbound message may be released. Missing consent blocks next action.", "CONSENT_REQUIRED"],
   ];
   for (const c of cases) put(db, `INSERT INTO patient_case
     (id,source_lead_id,synthetic_name,synthetic_identifier,source_market,preferred_language,treatment_request,treatment_category,urgency,budget_band,travel_window,consent_status,current_stage,source_agent_org_id,assigned_hospital_org_id,assigned_vendor_org_id,assigned_coordinator,next_best_action,warnings,blockers)
     VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`, c);
 
   const docs = [
-    ["Passport copy","Accepted by hospital"],["Medical summary","Accepted by hospital"],["Laboratory reports","Accepted by hospital"],["Imaging reports","Needs review"],["Prior prescriptions","Uploaded"],["Referral note","Uploaded"],["Hospital request","Accepted by hospital"],["Invitation letter","Requested"],["Estimate","Uploaded"],["Discharge summary","Missing"],["Follow-up plan","Requested"],
+    ["Passport","Accepted by hospital"],["Medical summary","Accepted by hospital"],["Angiography report","Uploaded"],["Blood tests","Uploaded"],["Medication list","Accepted by hospital"],["Echocardiogram","Missing"],["Invitation letter","Requested"],["Estimate","Uploaded"],["Discharge summary","Missing"],["Follow-up plan","Requested"],
   ];
   for (const [type, status] of docs) put(db, `INSERT INTO case_document (id,case_id,doc_type,status,metadata) VALUES (?,?,?,?,?)`, [gid("doc"), "case_ibrahim_musa", type, status, JSON.stringify({ synthetic: true, warning: "placeholder only; do not upload real records in demo" })]);
   put(db, `INSERT INTO case_document (id,case_id,doc_type,status,metadata) VALUES (?,?,?,?,?)`, [gid("doc"), "case_amina_okoro", "Consent form", "Missing", JSON.stringify({ blocked: true })]);
@@ -344,12 +348,29 @@ export function readinessReport(db) {
   const mode = appMode();
   const missing = [];
   if (mode === "production") {
-    for (const k of ["SESSION_SECRET", "APP_BASE_URL", "CONSOLE_TOKEN", "ALLOWED_ORIGINS", "ENCRYPTION_KEY"]) if (!process.env[k]) missing.push(k);
+    for (const k of ["SESSION_SECRET", "APP_BASE_URL", "CONSOLE_TOKEN", "ALLOWED_ORIGINS", "ENCRYPTION_KEY", "AUTH_PROVIDER"]) if (!process.env[k]) missing.push(k);
+    if (!process.env.DATABASE_PATH && !process.env.DATABASE_URL) missing.push("DATABASE_PATH_OR_URL");
+    if (process.env.SESSION_SECRET && process.env.SESSION_SECRET.length < 32) missing.push("SESSION_SECRET_TOO_SHORT");
+    if (process.env.ENCRYPTION_KEY && process.env.ENCRYPTION_KEY.length < 32) missing.push("ENCRYPTION_KEY_TOO_SHORT");
+    if (process.env.APP_BASE_URL && !process.env.APP_BASE_URL.startsWith("https://")) missing.push("HTTPS_APP_BASE_URL_REQUIRED");
     if (process.env.POST_LIVE === "1" && !(process.env.RESEND_API_KEY || process.env.WHATSAPP_TOKEN)) missing.push("OUTBOUND_PROVIDER_CREDENTIALS");
+    const demoUsers = db.prepare(`SELECT count(*) count FROM app_user WHERE email LIKE '%@canopuscare.demo' OR id='user_reviewer'`).get().count;
+    if (demoUsers) missing.push("DEMO_USERS_PRESENT");
+    const demoClearances = db.prepare(`SELECT count(*) count FROM market WHERE regulatory_status='verified' AND regulatory_note LIKE 'DEMO%'`).get().count;
+    if (demoClearances) missing.push("DEMO_REGULATORY_CLEARANCES_PRESENT");
   }
   const integrations = db.prepare(`SELECT provider,status,required_variables,outbound_armed,human_approval_required,last_success,last_error FROM integration_connection ORDER BY provider`).all();
   const dbOk = db.prepare(`SELECT count(*) c FROM patient_case`).get().c >= 2;
+  if (mode === "production" && !dbOk) missing.push("DATABASE_NOT_READY");
   const status = missing.length ? "BLOCKED" : mode === "demo" ? "READY" : "DEGRADED";
+  const normalized = (value) => ({
+    configured: "READY",
+    ready: "READY",
+    mock: "MOCKED",
+    mocked: "MOCKED",
+    disabled: "DISABLED",
+    blocked: "BLOCKED",
+  })[String(value || "").toLowerCase()] || "DEGRADED";
   return {
     ok: !missing.length && dbOk,
     status,
@@ -358,7 +379,18 @@ export function readinessReport(db) {
     missing,
     external_actions: mode === "demo" ? "DISABLED" : (process.env.POST_LIVE === "1" ? "CONFIGURED" : "DISABLED"),
     integrations,
-    demo_credentials: mode === "demo" ? { password: DEMO_PASSWORD, users: ["admin@canopuscare.demo","hospital@canopuscare.demo","agent@canopuscare.demo","vendor@canopuscare.demo","viewer@canopuscare.demo"] } : undefined,
+    components: [
+      { name: "patient_intake", status: dbOk ? "READY" : "DEGRADED" },
+      { name: "database", status: dbOk ? "READY" : "DEGRADED" },
+      ...integrations.map((item) => ({ name: item.provider, status: normalized(item.status) })),
+      { name: "payments", status: "DISABLED" },
+      { name: "clinical_decisions", status: "DISABLED" },
+    ],
+    demo_credentials: mode === "demo" ? {
+      username: process.env.DEMO_USERNAME || DEMO_USERNAME,
+      password: "configured server-side",
+      role_accounts: ["admin@canopuscare.demo","hospital@canopuscare.demo","agent@canopuscare.demo","vendor@canopuscare.demo"],
+    } : undefined,
   };
 }
 

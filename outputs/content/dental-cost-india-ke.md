@@ -44,7 +44,7 @@ It is crucial to understand what these packages generally **do not include**:
 *   **Extended Stay Due to Complications:** While rare, if unforeseen complications require a longer stay or additional procedures, these extra costs are typically borne by the patient.
 *   **Follow-up Care After Returning Home:** Any dental check-ups or adjustments required once you are back in Kenya will be arranged locally and are not part of the India package.
 
-MedYatra acts as a facilitator, coordinating your initial contact with accredited hospitals and providing supporting documents. However, you, as the patient, are responsible for arranging your own travel and applying for your own visa.
+Canopus Care acts as a facilitator, coordinating your initial contact with accredited hospitals and providing supporting documents. However, you, as the patient, are responsible for arranging your own travel and applying for your own visa.
 
 ## How to Choose a Dental Hospital from Abroad
 
@@ -71,7 +71,7 @@ Selecting the right hospital and surgeon is perhaps the most important step in p
 Navigating medical treatment abroad involves several steps. Understanding this sequence can help you plan effectively.
 
 1.  **Initial Contact and Information Sharing:** You will typically start by sending your relevant medical reports, such as recent dental X-rays, OPGs (orthopantomograms), CT scans, and a brief history of your dental concerns, via WhatsApp. This allows the medical team to get a preliminary understanding of your case.
-2.  **Hospital Review and Indicative Quote:** MedYatra will share your reports with an accredited dental hospital in India. A specialist there will review your information and provide a preliminary medical opinion and an indicative quote for the proposed treatment. This initial assessment helps determine feasibility and estimated costs.
+2.  **Hospital Review and Indicative Quote:** Canopus Care will share your reports with an accredited dental hospital in India. A specialist there will review your information and provide a preliminary medical opinion and an indicative quote for the proposed treatment. This initial assessment helps determine feasibility and estimated costs.
 3.  **Invitation Letter:** Once you decide to proceed, the hospital will issue an invitation letter. This letter is a crucial supporting document required for your visa application.
 4.  **Visa and Travel Arrangements:** You are responsible for applying for your e-Medical Visa online through the official Indian government portal. You will also book your own international flights to and from India, and arrange your accommodation for the duration of your stay.
 5.  **Treatment and Recovery in India:** Upon arrival, you will have in-person consultations, further diagnostics if needed, and then undergo your dental procedure. The hospital will guide you through the recovery period, providing post-operative care and any necessary follow-up appointments before you are cleared to travel.
@@ -96,10 +96,10 @@ If a complication arises *during your stay* in India, the hospital where you are
 
 ### About this page
 
-Written by MedYatra editorial. Last reviewed on 2026-07-21.
+Written by Canopus Care editorial. Last reviewed on 2026-07-21.
 
 **Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
 
 **What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
 
-**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.
+**What this page is not.** Canopus Care is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

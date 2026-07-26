@@ -67,19 +67,19 @@ Selecting the right hospital for a complex procedure like a bone marrow transpla
     *   The estimated length of hospital stay and total stay in India.
     *   Information on the hospital's specific experience with your type of condition and transplant.
 
-## How the Process Works with MedYatra
+## How the Process Works with Canopus Care
 
-MedYatra acts as a facilitator, helping coordinate your journey to treatment in India. We streamline the initial steps, allowing you to focus on your health decisions.
+Canopus Care acts as a facilitator, helping coordinate your journey to treatment in India. We streamline the initial steps, allowing you to focus on your health decisions.
 
-1.  **Share Your Medical Reports:** You begin by sending your current medical reports, diagnostic scans, and any relevant history to MedYatra, typically via WhatsApp or email. This allows us to understand your condition.
+1.  **Share Your Medical Reports:** You begin by sending your current medical reports, diagnostic scans, and any relevant history to Canopus Care, typically via WhatsApp or email. This allows us to understand your condition.
 2.  **Hospital Review and Opinion:** We then share your reports with accredited hospitals in India that specialise in oncology and bone marrow transplants. A team of specialists at these hospitals will review your case and provide a medical opinion, a proposed treatment plan, and an indicative package quote. This usually takes between 3 to 7 working days.
 3.  **Invitation Letter:** Once you decide on a hospital and treatment plan, the hospital will issue an official invitation letter. This letter is a crucial supporting document for your visa application.
-4.  **Your Visa and Travel Arrangements:** You, or a family member, are responsible for applying for your e-Medical Visa to India. This is done directly through the Indian government's visa portal. You also book your own flights to India and arrange your accommodation for the period before and after your hospital stay. MedYatra can provide guidance on these steps.
+4.  **Your Visa and Travel Arrangements:** You, or a family member, are responsible for applying for your e-Medical Visa to India. This is done directly through the Indian government's visa portal. You also book your own flights to India and arrange your accommodation for the period before and after your hospital stay. Canopus Care can provide guidance on these steps.
 5.  **Travel and Treatment:** Upon arrival in India, you proceed to the hospital for pre-transplant evaluations, admission, the transplant procedure itself, and initial recovery.
 6.  **Recovery and Return Home:** After discharge from the hospital, you will typically need to remain in India for a period of outpatient follow-up to ensure stable recovery before you are cleared to fly home.
 7.  **Tele-Follow-up:** Many hospitals offer tele-consultations for follow-up appointments once you have returned to Kenya, allowing you to stay in touch with your treating doctors.
 
-It's important to reiterate that MedYatra coordinates demand and supporting documents, while you, the patient, are responsible for booking your own travel and applying for your own visa. The prices provided are indicative and pending a thorough assessment by the chosen hospital.
+It's important to reiterate that Canopus Care coordinates demand and supporting documents, while you, the patient, are responsible for booking your own travel and applying for your own visa. The prices provided are indicative and pending a thorough assessment by the chosen hospital.
 
 ## Addressing Common Concerns
 
@@ -108,7 +108,7 @@ English is widely spoken in major Indian hospitals, particularly by doctors, nur
 
 ### How Payment Works
 
-You will typically pay the hospital directly for your treatment. This usually involves an initial deposit or a percentage of the estimated cost upon admission, with the balance settled before discharge. Hospitals usually accept international bank transfers, credit cards, or cash. Ensure you receive clear invoices and receipts for all payments. MedYatra does not handle patient funds.
+You will typically pay the hospital directly for your treatment. This usually involves an initial deposit or a percentage of the estimated cost upon admission, with the balance settled before discharge. Hospitals usually accept international bank transfers, credit cards, or cash. Ensure you receive clear invoices and receipts for all payments. Canopus Care does not handle patient funds.
 
 ### Length of Stay
 
@@ -127,10 +127,10 @@ If you would like to discuss your specific situation and get an indicative opini
 
 ### About this page
 
-Written by MedYatra editorial. Last reviewed on 2026-07-21.
+Written by Canopus Care editorial. Last reviewed on 2026-07-21.
 
 **Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
 
 **What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
 
-**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.
+**What this page is not.** Canopus Care is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

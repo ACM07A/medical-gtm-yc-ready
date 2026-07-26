@@ -24,7 +24,7 @@ A persistent banner (see §3) makes the sandbox framing unmissable on every scre
 
 ## 1. Name, identity, one-liner
 
-- **Name:** **Canopus Care** (never "MedYatra" — that name is retired). Canopus is the guiding star ancient navigators steered by; the metaphor is *a fixed point to steer by through a frightening medical journey*. Use it lightly — no "AI"/"Rx" in the wordmark.
+- **Name:** **Canopus Care** (never "Canopus Care" — that name is retired). Canopus is the guiding star ancient navigators steered by; the metaphor is *a fixed point to steer by through a frightening medical journey*. Use it lightly — no "AI"/"Rx" in the wordmark.
 - **Tagline:** *"A guiding star for care across borders."*
 - **One-liner (investor):** *"An agentic, compliance-first engine that turns a frightened patient's first WhatsApp message into a treatment-ready case file an Indian hospital can act on — and coordinates the entire journey around it."*
 - **What we are:** India-inbound medical-travel facilitator. Patients in the Middle East, Africa, and Central Asia; treatment in India.

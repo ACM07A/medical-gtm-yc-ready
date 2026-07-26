@@ -56,9 +56,9 @@
     *   **معلومات عن الجراح:** السيرة الذاتية للجراح وبيانات اعتماده.
     *   **اعتمادات المستشفى:** وثائق تثبت اعتمادات JCI أو NABH.
 
-## خطوات تنظيم رحلتك العلاجية مع MedYatra
+## خطوات تنظيم رحلتك العلاجية مع Canopus Care
 
-نحن في MedYatra نسهّل عليك هذه العملية المعقدة، لكن من المهم أن تفهم أننا جهة تنسيق، ولسنا مقدمًا للخدمة الطبية أو وكيل سفر.
+نحن في Canopus Care نسهّل عليك هذه العملية المعقدة، لكن من المهم أن تفهم أننا جهة تنسيق، ولسنا مقدمًا للخدمة الطبية أو وكيل سفر.
 
 1.  **إرسال تقاريرك الطبية:** تبدأ العملية بإرسالك لتقاريرك الطبية الحالية، مثل تقارير الفحوصات، الأشعة، والتشخيصات، إلينا عبر تطبيق واتساب.
 
@@ -76,7 +76,7 @@
 
 8.  **المتابعة عن بُعد:** بعد عودتك، يمكن ترتيب متابعة طبية عن بُعد مع الأطباء في الهند لمناقشة تقدم حالتك والإجابة على استفساراتك.
 
-دور MedYatra هو تسهيل التواصل والتنسيق بينك وبين المستشفيات المعتمدة، وتوفير الوثائق الداعمة اللازمة، بينما تظل أنت المسؤول عن ترتيبات السفر والتأشيرة والدفع المباشر للمستشفى.
+دور Canopus Care هو تسهيل التواصل والتنسيق بينك وبين المستشفيات المعتمدة، وتوفير الوثائق الداعمة اللازمة، بينما تظل أنت المسؤول عن ترتيبات السفر والتأشيرة والدفع المباشر للمستشفى.
 
 ## إجابات صريحة على مخاوفك الشائعة
 
@@ -93,10 +93,10 @@
 
 ### About this page
 
-Written by MedYatra editorial. Last reviewed on 2026-07-21.
+Written by Canopus Care editorial. Last reviewed on 2026-07-21.
 
 **Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
 
 **What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
 
-**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.
+**What this page is not.** Canopus Care is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

@@ -55,7 +55,7 @@
 5.  **السفر والعلاج والتعافي:** تسافر إلى الهند في الموعد المحدد. تبدأ الاستشارات والفحوصات النهائية في المستشفى، ثم يتبعها إجراء الإخصاب خارج الجسم. ستحتاج إلى فترة للتعافي قبل أن تكون مستعدًا للعودة إلى بلدك.
 6.  **المتابعة عن بعد:** بعد عودتك إلى المنزل، غالبًا ما تتوفر خيارات للمتابعة عن بعد عبر مكالمات الفيديو مع الأطباء لمراقبة تقدم حالتك وتقديم أي نصائح ضرورية.
 
-دور MedYatra هو تسهيل هذه العملية وتنسيقها، وتقديم الوثائق الداعمة اللازمة. نحن لسنا مقدمي رعاية طبية مباشرة، بل جهة تسهيلية تساعدك على التواصل مع المستشفيات المعتمدة في الهند. الأسعار المذكورة هي تقديرية وتخضع لتقييم حالتك من قبل الأطباء.
+دور Canopus Care هو تسهيل هذه العملية وتنسيقها، وتقديم الوثائق الداعمة اللازمة. نحن لسنا مقدمي رعاية طبية مباشرة، بل جهة تسهيلية تساعدك على التواصل مع المستشفيات المعتمدة في الهند. الأسعار المذكورة هي تقديرية وتخضع لتقييم حالتك من قبل الأطباء.
 
 ## إجابات صريحة على مخاوفك الحقيقية
 
@@ -80,10 +80,10 @@
 
 ### About this page
 
-Written by MedYatra editorial. Last reviewed on 2026-07-21.
+Written by Canopus Care editorial. Last reviewed on 2026-07-21.
 
 **Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
 
 **What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
 
-**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.
+**What this page is not.** Canopus Care is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

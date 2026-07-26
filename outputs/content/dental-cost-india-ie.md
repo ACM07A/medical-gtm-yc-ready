@@ -63,7 +63,7 @@ Choosing a hospital when you are thousands of kilometres away requires careful c
 
 ## The Process: From Initial Inquiry to Home Recovery
 
-Navigating medical travel can seem complex, but the process is structured to guide you at each step. MedYatra acts as a facilitator, coordinating your initial contact and supporting documents with accredited hospitals.
+Navigating medical travel can seem complex, but the process is structured to guide you at each step. Canopus Care acts as a facilitator, coordinating your initial contact and supporting documents with accredited hospitals.
 
 1.  **Initial Inquiry and Report Submission:** You begin by sending your existing dental reports, X-rays, and any relevant medical history via WhatsApp. This allows the medical teams in India to understand your condition.
 2.  **Hospital Review and Indicative Quote:** An accredited dental hospital in India will review your submitted reports. A specialist dentist will then provide an initial medical opinion on your case and an indicative cost estimate for the proposed treatment. This is not a firm quote, as a definitive plan requires an in-person consultation.
@@ -94,11 +94,11 @@ No medical procedure is without risk, whether performed at home or abroad. Accre
 
 ### Language Barriers
 
-Most major hospitals catering to international patients have English-speaking staff, including dentists, nurses, and administrative personnel. Communication is generally not an issue in these settings. MedYatra can also help facilitate communication if required.
+Most major hospitals catering to international patients have English-speaking staff, including dentists, nurses, and administrative personnel. Communication is generally not an issue in these settings. Canopus Care can also help facilitate communication if required.
 
 ### How Payment Works
 
-You will pay the hospital directly for your treatment. MedYatra does not handle patient funds for medical procedures. Once you arrive at the hospital and finalise your treatment plan, the hospital's billing department will provide clear instructions for payment. Most hospitals accept international credit cards, bank transfers, or cash.
+You will pay the hospital directly for your treatment. Canopus Care does not handle patient funds for medical procedures. Once you arrive at the hospital and finalise your treatment plan, the hospital's billing department will provide clear instructions for payment. Most hospitals accept international credit cards, bank transfers, or cash.
 
 ### Length of Stay
 
@@ -109,7 +109,7 @@ The required length of stay depends entirely on the specific dental procedure.
 
 The hospital will provide an estimated duration for your stay based on your personalised treatment plan. It is important to factor in sufficient time for recovery before flying home.
 
-MedYatra acts as a facilitator, helping you connect with accredited hospitals and coordinating the necessary supporting documents for your medical journey. We do not provide medical care ourselves. The prices we share are indicative and subject to change based on your specific medical assessment by the hospital.
+Canopus Care acts as a facilitator, helping you connect with accredited hospitals and coordinating the necessary supporting documents for your medical journey. We do not provide medical care ourselves. The prices we share are indicative and subject to change based on your specific medical assessment by the hospital.
 
 If you are considering dental treatment in India and have further questions, you can message us on WhatsApp.
 
@@ -117,10 +117,10 @@ If you are considering dental treatment in India and have further questions, you
 
 ### About this page
 
-Written by MedYatra editorial. Last reviewed on 2026-07-21.
+Written by Canopus Care editorial. Last reviewed on 2026-07-21.
 
 **Where these prices come from.** Figures are indicative package ranges, according to Vaidam and MediGence published package pricing, cross-checked against accredited-hospital rate cards and our own partner quotes where available. They are not quotes — your own price depends on the hospital's assessment of your reports, and prices move, which is why the review date above matters.
 
 **What the price does not include.** A package price does not cover flights, your visa fee, an extended stay if recovery takes longer than planned, your attendant's costs, or the cost of managing a complication. Ask for these in writing before you travel.
 
-**What this page is not.** MedYatra is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.
+**What this page is not.** Canopus Care is a facilitator, not a healthcare provider. Nothing here is medical advice, a diagnosis, or a recommendation to have any particular treatment. Those decisions belong to you and to the treating hospital's clinical team.

@@ -1,13 +1,17 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { mkdtempSync, rmSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
+import { fileURLToPath } from "node:url";
 import { open } from "../data-core/db.mjs";
 import { ensureOsSchema, seedDemoOs } from "../data-core/os_core.mjs";
 import { ingestLeads, parseLeadCsv, previewLeadCsv } from "../data-core/ingest.mjs";
 import { apiAgentRuns, apiAudit, apiCase, apiCaseResource, apiServiceRequests, updateServiceRequest } from "../server/os_pages.mjs";
 import { runFullJourney } from "../server/orchestrate.mjs";
+
+const ROOT = fileURLToPath(new URL("..", import.meta.url));
 
 function seededDb() {
   const dir = mkdtempSync(join(tmpdir(), "medyatra-integration-"));
@@ -21,6 +25,7 @@ test("golden cardiac case contains matches, estimate, vendors, tasks and audit",
   const { db, dir } = seededDb();
   const c = apiCase(db, { role: "platform_admin", organization_id: "org_platform" }, "case_ibrahim_musa");
   assert.equal(c.synthetic_name, "Ibrahim Musa");
+  assert.equal(apiCase(db, { role: "platform_admin", organization_id: "org_platform" }, "CASE-DEMO-001").id, c.id);
   assert.ok(c.matches.length >= 3);
   assert.ok(c.estimates.length >= 1);
   assert.ok(c.services.length >= 3);
@@ -164,9 +169,24 @@ test("existing synthetic demo rows are hardened without resetting the database",
 
   const c = db.prepare(`SELECT * FROM patient_case WHERE id='case_ibrahim_musa'`).get();
   assert.ok(c.source_lead_id);
-  assert.equal(c.synthetic_identifier, "CNP-NG-CABG-001");
+  assert.equal(c.synthetic_identifier, "CASE-DEMO-001");
   assert.equal(db.prepare(`SELECT name FROM organization WHERE id='org_hospital_apollo'`).get().name, "Demo Cardiac Centre A");
   assert.equal(db.prepare(`SELECT rating FROM vendor WHERE id='vendor_interpreter'`).get().rating, null);
   assert.equal(db.prepare(`SELECT expected_amount FROM commission WHERE id='commission_ibrahim'`).get().expected_amount, 2170);
+  db.close(); rmSync(dir, { recursive: true, force: true });
+});
+
+test("demo bootstrap seeds a missing database once and preserves later state", () => {
+  const dir = mkdtempSync(join(tmpdir(), "canopus-seed-preserve-"));
+  const database = join(dir, "demo.db");
+  const env = { ...process.env, APP_MODE: "demo", POST_LIVE: "0", DATABASE_PATH: database, SEED_BROWSER: "0", SEED_GENERATION: "0" };
+  execFileSync(process.execPath, ["--experimental-sqlite", "data-core/demo_seed.mjs"], { cwd: ROOT, env });
+  let db = open(database);
+  db.prepare(`INSERT INTO system_state (k,v) VALUES ('restart-proof','preserved')`).run();
+  db.close();
+  execFileSync(process.execPath, ["--experimental-sqlite", "data-core/demo_seed.mjs"], { cwd: ROOT, env });
+  db = open(database);
+  assert.equal(db.prepare(`SELECT v FROM system_state WHERE k='restart-proof'`).get().v, "preserved");
+  assert.equal(db.prepare(`SELECT count(*) count FROM patient_case`).get().count, 2);
   db.close(); rmSync(dir, { recursive: true, force: true });
 });
