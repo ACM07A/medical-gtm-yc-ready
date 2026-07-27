@@ -121,6 +121,7 @@ Open these URLs in an incognito window and on a phone:
 |---|---|
 | `/` | Public Canopus Care landing page |
 | `/demo` | Read-only reviewer dashboard |
+| `/concierge` | Suhail patient/family concierge with safety boundaries |
 | `/cases/CASE-DEMO-001` | Synthetic golden case |
 | `/cases/CASE-DEMO-002` | Consent-blocked safety case |
 | `/login` | Role login panel |
