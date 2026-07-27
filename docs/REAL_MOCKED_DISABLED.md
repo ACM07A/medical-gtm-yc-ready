@@ -1,6 +1,6 @@
 # Real, Mocked and Disabled
 
-This classification applies to the YC sandbox on `agent/yc-demo-readiness`. All displayed patient, organization, document, quotation and workflow data is synthetic.
+This classification applies to the YC sandbox on `main`. All displayed patient, organization, document, quotation and workflow data is synthetic.
 
 | Subsystem | Demo classification | Production dependency |
 |---|---|---|

@@ -2,7 +2,7 @@
 
 Date: 2026-07-26
 
-Branch baseline: `agent/yc-demo-readiness` from `716d669`
+Release baseline: standalone repository branch `main`
 
 ## Scope
 

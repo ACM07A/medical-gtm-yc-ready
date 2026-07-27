@@ -18,10 +18,8 @@ In Hostinger hPanel:
 2. Choose **Deploy Web App**.
 3. Choose **Import Git Repository**.
 4. Connect the GitHub account that can access:
-   `hussainbombaywala/medical-tourism-gtm`.
-5. Select branch `agent/yc-demo-readiness`.
-6. After the final review, merge that branch to `main` and switch/recreate the
-   deployment from `main` for the stable public source.
+   `ACM07A/medical-gtm-yc-ready`.
+5. Select branch `main`.
 
 Hostinger currently supports Node.js web apps on Business and Cloud hosting
 plans. Use a plan that exposes **Deploy Web App**.

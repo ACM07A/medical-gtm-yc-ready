@@ -1,5 +1,5 @@
 {
-  "name": "medical-tourism-gtm",
+  "name": "medical-gtm-yc-ready",
   "version": "1.0.0",
   "description": "An agentic go-to-market engine for a medical-tourism facilitator launching in India, built on the Master Builder OS methodology (/agent-os + /build-os). Multi-model factory, zero-dependency SQLite data core, live operator console.",
   "type": "module",

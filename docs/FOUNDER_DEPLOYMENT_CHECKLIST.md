@@ -26,8 +26,8 @@ manager. Do not put them in GitHub, WhatsApp, screenshots or source files.
 
 1. Sign in to Render.
 2. Select **New +**, then **Blueprint**.
-3. Connect the GitHub account with access to `hussainbombaywala/medical-tourism-gtm`.
-4. Select that repository and branch `agent/yc-demo-readiness`.
+3. Connect the GitHub account with access to `ACM07A/medical-gtm-yc-ready`.
+4. Select that repository and branch `main`.
 5. Render should detect `render.yaml`.
 6. Name the service `canopuscare-demo`.
 7. Confirm the persistent disk is mounted at `/var/data`.
@@ -112,7 +112,7 @@ ALLOWED_ORIGINS=https://demo.canopuscare.online
 ## 7. Check GitHub Actions
 
 1. Open the repository on GitHub and select **Actions**.
-2. Open the latest run for `agent/yc-demo-readiness`.
+2. Open the latest run for `main`.
 3. Confirm install, lint, tests, seed, smoke and Docker build are green.
 4. Do not submit the YC URL while an unexplained check is failing.
 

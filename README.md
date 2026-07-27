@@ -1,6 +1,6 @@
 # Canopus Care
 
-[![CI](https://github.com/hussainbombaywala/medical-tourism-gtm/actions/workflows/ci.yml/badge.svg)](https://github.com/hussainbombaywala/medical-tourism-gtm/actions/workflows/ci.yml)
+[![CI](https://github.com/ACM07A/medical-gtm-yc-ready/actions/workflows/ci.yml/badge.svg)](https://github.com/ACM07A/medical-gtm-yc-ready/actions/workflows/ci.yml)
 
 Canopus Care automates the administrative work required to move an international
 patient case from a medical-travel agent to an Indian hospital.

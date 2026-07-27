@@ -19,8 +19,8 @@ preserves the existing database.
 ## Render Blueprint
 
 1. Sign in to Render and create a new Blueprint.
-2. Connect `hussainbombaywala/medical-tourism-gtm`.
-3. Select the branch approved for deployment.
+2. Connect `ACM07A/medical-gtm-yc-ready`.
+3. Select branch `main`.
 4. Allow Render to read `render.yaml`.
 5. Confirm the persistent disk is mounted at `/var/data`.
 6. Set `APP_BASE_URL` to the assigned HTTPS service URL.

@@ -6,8 +6,8 @@ Canopus Care prepares and coordinates the administrative work needed to move an
 international patient case from a medical-travel agent to an Indian hospital.
 Hospitals retain clinical decisions and humans approve sensitive actions.
 
-The repository name is a legacy identifier. The working product name is
-Canopus Care.
+The repository contains the complete Canopus Care landing page and product
+sandbox in one deployable application.
 
 ## Public Demo
 
@@ -30,8 +30,8 @@ Public role passwords are configured through `DEMO_HOSPITAL_PASSWORD`,
 ## One-Command Setup
 
 ```bash
-git clone https://github.com/hussainbombaywala/medical-tourism-gtm.git
-cd medical-tourism-gtm
+git clone https://github.com/ACM07A/medical-gtm-yc-ready.git
+cd medical-gtm-yc-ready
 cp .env.example .env
 docker compose up --build
 ```
