@@ -23,6 +23,7 @@ const checks = [
   ["GET", "/api/vault"],
   ["GET", "/api/economics"],
   ["GET", "/demo"],
+  ["GET", "/concierge"],
   ["GET", "/login"],
   ["GET", "/readiness"],
   ["GET", "/hospital"],
@@ -142,6 +143,37 @@ const csvPreviewBody = await csvPreview.json();
 const csvPreviewOk = csvPreview.status === 200 && csvPreviewBody.summary?.ready === 1;
 console.log(`${csvPreviewOk ? "✓" : "✗"} POST /api/lead/preview-csv -> ${csvPreview.status}`);
 if (!csvPreviewOk) failed++;
+
+async function askConcierge(caseId, text) {
+  const response = await fetch(base + "/api/concierge/ask", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ caseId, text }),
+  });
+  return { response, body: await response.json() };
+}
+
+const conciergeStatus = await askConcierge("case_ibrahim_musa", "What's the status?");
+const conciergeStatusOk = conciergeStatus.response.status === 200
+  && conciergeStatus.body.intent === "status"
+  && /Ibrahim/.test(conciergeStatus.body.reply || "");
+console.log(`${conciergeStatusOk ? "✓" : "✗"} POST /api/concierge/ask reads the golden case`);
+if (!conciergeStatusOk) failed++;
+
+const conciergeBlocked = await askConcierge("case_amina_okoro", "What is the treatment and budget?");
+const conciergeBlockedOk = conciergeBlocked.response.status === 200
+  && conciergeBlocked.body.intent === "blocked"
+  && conciergeBlocked.body.blocked === true
+  && !/oncolog|25,000/i.test(conciergeBlocked.body.reply || "");
+console.log(`${conciergeBlockedOk ? "✓" : "✗"} concierge preserves the consent refusal`);
+if (!conciergeBlockedOk) failed++;
+
+const conciergeClinical = await askConcierge("case_ibrahim_musa", "Is the surgery safe?");
+const conciergeClinicalOk = conciergeClinical.response.status === 200
+  && conciergeClinical.body.intent === "clinical_deflect"
+  && /doctor|clinical|hospital/i.test(conciergeClinical.body.reply || "");
+console.log(`${conciergeClinicalOk ? "✓" : "✗"} concierge defers clinical questions`);
+if (!conciergeClinicalOk) failed++;
 
 if (failed) {
   console.error(`Smoke failed: ${failed} check(s) failed`);

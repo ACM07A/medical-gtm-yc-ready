@@ -99,7 +99,7 @@ A working chat widget backed by Gemini (server-side). Use the system prompt in �
 Show the model honestly (this is a YC demo — the economics *are* the pitch):
 - **Incumbent agents charge hospitals 25–33%.** Canopus opens at **20%** (below their floor) and **steps up** across three tiers of cumulative annual routed revenue: **20% (₹0–20L) → 22.5% (₹20–50L) → 25% (₹50L+)** — never above the incumbent floor. Paid by the hospital, **never charged to the patient.**
 - The pitch line: *we open below every incumbent to win the pilot, and rise only to their cheapest rate as volume proves out — so the hospital never pays more than its current cheapest agent.*
-- Show the per-case value exchange (best-of-book rates, priority OT scheduling, a named coordinator, co-funded patient education) as *what we ask in return for the volume we bring*.
+- Show the per-case value exchange (the same inclusions the hospital gives its agents, a pre-travel senior-specialist video consult, priority OT scheduling, a named coordinator) as *what we ask in return for the volume we bring*. Note: we do NOT win the patient on a cheaper package (the hospital keeps our fee saving as margin) — we win on removing journey complexity + transparency.
 - Render a small funnel/unit-economics readout **labelled "indicative — only the package price is a measured number; every rate is an assumption pending a real cohort."**
 
 ### 4.6 Markets — the real footprint
@@ -242,7 +242,7 @@ If you show a savings figure, phrase it as *"often a large fraction of Western p
   {"tier":"₹50L+ routed","pct":"25%"}
  ],
  "paidBy":"the hospital, never the patient",
- "valueAsk":"best-of-book package rates, priority admission/OT scheduling, a named international coordinator, co-funded patient-education content",
+ "valueAsk":"the same package inclusions the hospital gives its agents, a pre-travel video consult with a senior specialist, priority admission/OT scheduling, a named international coordinator",
  "line":"We open below every incumbent to win the pilot, and rise only to their cheapest rate as volume proves out — so the hospital never pays more than its current cheapest agent."
 }
 ```

@@ -2,11 +2,15 @@
 
 [![CI](https://github.com/ACM07A/medical-gtm-yc-ready/actions/workflows/ci.yml/badge.svg)](https://github.com/ACM07A/medical-gtm-yc-ready/actions/workflows/ci.yml)
 
-Canopus Care automates the administrative work required to move an international
-patient case from a medical-travel agent to an Indian hospital.
+Canopus Care is an end-to-end medical-travel facilitator: it takes an international
+patient from first enquiry to treated-and-home, running the whole journey — case,
+hospital match, estimate, pre-travel video consult, visa, travel, stay, interpreter,
+and aftercare — through a fleet of AI agents, with one conversational point of contact
+(the concierge, *Suhail*) for the patient and their family. Hospitals pay per treated
+patient.
 
-AI prepares and coordinates administrative work. Hospitals retain clinical
-decisions, and humans approve sensitive actions.
+AI orchestrates the administrative and coordination work. Hospitals retain every
+clinical decision, and humans approve anything sensitive.
 
 [Hostinger deployment](./docs/HOSTINGER_DEPLOYMENT_CHECKLIST.md) |
 [Product demo video: pending](./DEMO_SCRIPT.md) |
@@ -69,7 +73,8 @@ The primary path starts at `/demo`:
 5. Review the human approval record.
 6. Inspect mock interpreter, transfer, and accommodation requests.
 7. Open `/agents` for deterministic agent activity.
-8. Open the consent-blocked case and verify the refusal.
+8. Open `/concierge` and ask Suhail about the case — status, documents, cost — then ask a clinical question and watch it defer to the doctors.
+9. Open the consent-blocked case and verify the refusal (in the OS and in the concierge).
 
 Use [DEMO_SCRIPT.md](./DEMO_SCRIPT.md) for the 75-second presentation.
 
@@ -86,6 +91,7 @@ Use [DEMO_SCRIPT.md](./DEMO_SCRIPT.md) for the 75-second presentation.
 | `/cases/case_ibrahim_musa` | Golden synthetic case | Public synthetic view |
 | `/vendors` | Mock non-clinical coordination | Public synthetic view |
 | `/agents` | Deterministic agent activity | Public synthetic view |
+| `/concierge` | Ask Suhail — one point of contact for patient & family | Public synthetic view |
 | `/readiness` | Real, mocked, and disabled components | Public |
 | `/audit` | Synthetic audit history | Public |
 | `/console` | Legacy GTM/contact pipeline | `CONSOLE_TOKEN` |

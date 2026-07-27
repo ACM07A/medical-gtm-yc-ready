@@ -42,8 +42,15 @@ test("public demo, signed hospital session and operator token enforce the route 
     }
     assert.equal(ready, true, output);
 
-    for (const path of ["/demo", "/cases", "/vendors", "/audit"])
+    for (const path of ["/demo", "/concierge", "/cases", "/vendors", "/audit"])
       assert.equal((await fetch(base + path)).status, 200, path);
+    const concierge = await fetch(`${base}/api/concierge/ask`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ caseId: "case_ibrahim_musa", text: "What's the status?" }),
+    });
+    assert.equal(concierge.status, 200);
+    assert.equal((await concierge.json()).intent, "status");
     const landing = await fetch(`${base}/`);
     assert.equal(landing.status, 200);
     const landingHtml = await landing.text();

@@ -1,21 +1,12 @@
 # REDDIT · Orthopedics × Kenya
-<!-- DRAFT — human review before posting. model:z-ai/glm-5.2 -->
+<!-- DRAFT — human review before posting. model:gemini:gemini-2.5-flash -->
 
-**Title:** Considering India for orthopedic surgery from Kenya? Here’s what I’ve learned about the costs.
+Subject: Thinking about Orthopedic Care in India from Kenya? Sharing some insights.
 
-**Body:**
+Facing orthopedic challenges can be incredibly stressful, and exploring options far from home, like India, adds another layer of complexity. Many from Kenya consider accredited Indian hospitals for orthopedic procedures, often seeking quality care at a different cost point.
 
-If you're exploring joint replacements or other orthopedic procedures, India is a common route for Kenyan patients due to proximity and accessible care. 
+From what we see, indicative package ranges for orthopedic treatments in India generally fall between $3,500–6,500 USD. This often presents a significant difference compared to Western reference prices, which can vary widely. Understanding what's involved and connecting with the right specialists in accredited facilities is key.
 
-When looking at numbers, orthopedic procedures at accredited Indian hospitals generally range from $3,500 to $6,500. Compare this to Western hospitals, where costs vary but are typically significantly higher. 
-
-A few grounded tips: 
-- Always verify the hospital's accreditations independently. 
-- Factor in travel and stay, not just the surgery bill. 
-- No facilitator or hospital can guarantee specific outcomes—focus on realistic recovery timelines. 
-
-I work with Canopus Care, helping Kenyan patients connect with accredited Indian orthopedic facilities, so feel free to reach out if you need help navigating your options or planning logistics.
-
-If you want to chat about the practical steps of traveling for surgery, message me on WhatsApp and we can talk through what to expect.
+If you're exploring these options and have questions about the process, what's typically included, or how to navigate the journey, we're here to offer support. Feel free to reach out on WhatsApp if you want to understand more.
 
 Canopus Care is a medical-travel facilitator, not a hospital; prices are indicative package ranges.

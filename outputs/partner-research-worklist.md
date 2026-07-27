@@ -93,6 +93,30 @@ _Quality brand (NABH) building MVT (Cardiac, Oncology, Orthopedics) — early en
 - **Inferred email** once you have the name: `first.last@sakraworldhospital.com` (label INFERRED; verify)
 - Capture → `node --experimental-sqlite data-core/capture_poc.mjs sakra-world "First Last" "Head – Intl Patient Services" "first.last@sakraworldhospital.com"`
 
+## SPARSH Hospital (Bengaluru)
+`id: sparsh` · fit **84** · emerging · Bengaluru · email domain `sparsh.com (verify domain)`
+_Quality brand (NABH) building MVT (Cardiac, Orthopedics) — early enough to win preferred-facilitator terms before the desk matures._
+
+**Searches** (open, read the LinkedIn result):
+- LinkedIn people: [SPARSH Hospital (Bengaluru) international patient](https://www.linkedin.com/search/results/people/?keywords=SPARSH%20Hospital%20(Bengaluru)%20international%20patient%20services) · [SPARSH Hospital (Bengaluru) medical value travel](https://www.linkedin.com/search/results/people/?keywords=SPARSH%20Hospital%20(Bengaluru)%20medical%20value%20travel)
+- Google: [site:linkedin.com "SPARSH Hospital (Bengaluru)" intl patient](https://www.google.com/search?q=site%3Alinkedin.com%2Fin%20%22SPARSH%20Hospital%20(Bengaluru)%22%20(international%20patient%20OR%20%22medical%20value%20travel%22%20OR%20international%20business))
+- Google: ["SPARSH Hospital (Bengaluru)" head international patient](https://www.google.com/search?q=%22SPARSH%20Hospital%20(Bengaluru)%22%20%22international%20patient%20services%22%20(head%20OR%20manager%20OR%20director))
+- Google: ["SPARSH Hospital (Bengaluru)" GM international business](https://www.google.com/search?q=%22SPARSH%20Hospital%20(Bengaluru)%22%20(GM%20OR%20%22general%20manager%22%20OR%20VP)%20international%20business%20hospital)
+- **Inferred email** once you have the name: `first.last@sparsh.com (verify domain)` (label INFERRED; verify)
+- Capture → `node --experimental-sqlite data-core/capture_poc.mjs sparsh "First Last" "Head – Intl Patient Services" "first.last@sparsh.com (verify domain)"`
+
+## KIMS Hospital (Bengaluru)
+`id: kims-bangalore` · fit **84** · emerging · Bengaluru · email domain `kims-bangalore.com (verify domain)`
+_Quality brand (NABH) building MVT (Cardiac, Oncology, Orthopedics) — early enough to win preferred-facilitator terms before the desk matures._
+
+**Searches** (open, read the LinkedIn result):
+- LinkedIn people: [KIMS Hospital (Bengaluru) international patient](https://www.linkedin.com/search/results/people/?keywords=KIMS%20Hospital%20(Bengaluru)%20international%20patient%20services) · [KIMS Hospital (Bengaluru) medical value travel](https://www.linkedin.com/search/results/people/?keywords=KIMS%20Hospital%20(Bengaluru)%20medical%20value%20travel)
+- Google: [site:linkedin.com "KIMS Hospital (Bengaluru)" intl patient](https://www.google.com/search?q=site%3Alinkedin.com%2Fin%20%22KIMS%20Hospital%20(Bengaluru)%22%20(international%20patient%20OR%20%22medical%20value%20travel%22%20OR%20international%20business))
+- Google: ["KIMS Hospital (Bengaluru)" head international patient](https://www.google.com/search?q=%22KIMS%20Hospital%20(Bengaluru)%22%20%22international%20patient%20services%22%20(head%20OR%20manager%20OR%20director))
+- Google: ["KIMS Hospital (Bengaluru)" GM international business](https://www.google.com/search?q=%22KIMS%20Hospital%20(Bengaluru)%22%20(GM%20OR%20%22general%20manager%22%20OR%20VP)%20international%20business%20hospital)
+- **Inferred email** once you have the name: `first.last@kims-bangalore.com (verify domain)` (label INFERRED; verify)
+- Capture → `node --experimental-sqlite data-core/capture_poc.mjs kims-bangalore "First Last" "Head – Intl Patient Services" "first.last@kims-bangalore.com (verify domain)"`
+
 ## Premium implant clinics (verify)  
 `id: premium-dental` · fit **75** · emerging · Metro · email domain `premium-dental.com (verify domain)`  
 _Quality brand (verify individually) building MVT (Dental) — early enough to win preferred-facilitator terms before the desk matures._
@@ -105,30 +129,6 @@ _Quality brand (verify individually) building MVT (Dental) — early enough to w
 - **Inferred email** once you have the name: `first.last@premium-dental.com (verify domain)` (label INFERRED; verify)
 - Capture → `node --experimental-sqlite data-core/capture_poc.mjs premium-dental "First Last" "Head – Intl Patient Services" "first.last@premium-dental.com (verify domain)"`
 
-## Aster DM Healthcare (India)  
-`id: aster-india` · fit **68** · established · Bengaluru / Kochi · email domain `aster-india.com (verify domain)`  
-_Established IPS desk (NABH (Aster CMI); JCI at selected units — VERIFY per unit) (Cardiac, Oncology, Orthopedics); compete on our source-market demand + service depth. Thinner margin — pursue for volume/brand, not terms._
-
-**Searches** (open, read the LinkedIn result):
-- LinkedIn people: [Aster DM Healthcare (India) international patient](https://www.linkedin.com/search/results/people/?keywords=Aster%20DM%20Healthcare%20(India)%20international%20patient%20services) · [Aster DM Healthcare (India) medical value travel](https://www.linkedin.com/search/results/people/?keywords=Aster%20DM%20Healthcare%20(India)%20medical%20value%20travel)
-- Google: [site:linkedin.com "Aster DM Healthcare (India)" intl patient](https://www.google.com/search?q=site%3Alinkedin.com%2Fin%20%22Aster%20DM%20Healthcare%20(India)%22%20(international%20patient%20OR%20%22medical%20value%20travel%22%20OR%20international%20business))
-- Google: ["Aster DM Healthcare (India)" head international patient](https://www.google.com/search?q=%22Aster%20DM%20Healthcare%20(India)%22%20%22international%20patient%20services%22%20(head%20OR%20manager%20OR%20director))
-- Google: ["Aster DM Healthcare (India)" GM international business](https://www.google.com/search?q=%22Aster%20DM%20Healthcare%20(India)%22%20(GM%20OR%20%22general%20manager%22%20OR%20VP)%20international%20business%20hospital)
-- **Inferred email** once you have the name: `first.last@aster-india.com (verify domain)` (label INFERRED; verify)
-- Capture → `node --experimental-sqlite data-core/capture_poc.mjs aster-india "First Last" "Head – Intl Patient Services" "first.last@aster-india.com (verify domain)"`
-
-## Aster DM Healthcare GCC (Medcare / Aster Clinics)  
-`id: aster-gcc` · fit **68** · established · Dubai / Abu Dhabi · email domain `aster-gcc.com (verify domain)`  
-_Established IPS desk (VERIFY — JCI/DoH per facility) (Cardiac, Oncology, Orthopedics); compete on our source-market demand + service depth. Thinner margin — pursue for volume/brand, not terms._
-
-**Searches** (open, read the LinkedIn result):
-- LinkedIn people: [Aster DM Healthcare GCC (Medcare / Aster Clinics) international patient](https://www.linkedin.com/search/results/people/?keywords=Aster%20DM%20Healthcare%20GCC%20(Medcare%20%2F%20Aster%20Clinics)%20international%20patient%20services) · [Aster DM Healthcare GCC (Medcare / Aster Clinics) medical value travel](https://www.linkedin.com/search/results/people/?keywords=Aster%20DM%20Healthcare%20GCC%20(Medcare%20%2F%20Aster%20Clinics)%20medical%20value%20travel)
-- Google: [site:linkedin.com "Aster DM Healthcare GCC (Medcare / Aster Clinics)" intl patient](https://www.google.com/search?q=site%3Alinkedin.com%2Fin%20%22Aster%20DM%20Healthcare%20GCC%20(Medcare%20%2F%20Aster%20Clinics)%22%20(international%20patient%20OR%20%22medical%20value%20travel%22%20OR%20international%20business))
-- Google: ["Aster DM Healthcare GCC (Medcare / Aster Clinics)" head international patient](https://www.google.com/search?q=%22Aster%20DM%20Healthcare%20GCC%20(Medcare%20%2F%20Aster%20Clinics)%22%20%22international%20patient%20services%22%20(head%20OR%20manager%20OR%20director))
-- Google: ["Aster DM Healthcare GCC (Medcare / Aster Clinics)" GM international business](https://www.google.com/search?q=%22Aster%20DM%20Healthcare%20GCC%20(Medcare%20%2F%20Aster%20Clinics)%22%20(GM%20OR%20%22general%20manager%22%20OR%20VP)%20international%20business%20hospital)
-- **Inferred email** once you have the name: `first.last@aster-gcc.com (verify domain)` (label INFERRED; verify)
-- Capture → `node --experimental-sqlite data-core/capture_poc.mjs aster-gcc "First Last" "Head – Intl Patient Services" "first.last@aster-gcc.com (verify domain)"`
-
 ## Cloudnine  
 `id: cloudnine` · fit **66** · emerging · Metro · email domain `cloudninecare.com`  
 _Quality brand (NABH) building MVT (Fertility / IVF) — early enough to win preferred-facilitator terms before the desk matures._
@@ -140,4 +140,3 @@ _Quality brand (NABH) building MVT (Fertility / IVF) — early enough to win pre
 - Google: ["Cloudnine" GM international business](https://www.google.com/search?q=%22Cloudnine%22%20(GM%20OR%20%22general%20manager%22%20OR%20VP)%20international%20business%20hospital)
 - **Inferred email** once you have the name: `first.last@cloudninecare.com` (label INFERRED; verify)
 - Capture → `node --experimental-sqlite data-core/capture_poc.mjs cloudnine "First Last" "Head – Intl Patient Services" "first.last@cloudninecare.com"`
-
