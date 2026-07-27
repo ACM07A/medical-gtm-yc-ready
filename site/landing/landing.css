@@ -148,7 +148,7 @@ svg {
 
 .desktop-nav a,
 .text-link {
-  transition: color .18s ease;
+  transition: color var(--cc-dur-fast) var(--cc-ease);
 }
 
 .desktop-nav a:hover,
@@ -170,44 +170,66 @@ svg {
 
 .button {
   display: inline-flex;
-  min-height: 47px;
+  min-height: 44px;
   align-items: center;
   justify-content: center;
-  gap: .55rem;
-  padding: .75rem 1.15rem;
+  gap: 8px;
+  padding: 0 20px;
   border: 1px solid transparent;
-  border-radius: 7px;
-  font-weight: 700;
-  transition: transform .18s ease, background .18s ease, border-color .18s ease;
+  border-radius: var(--cc-radius-md);
+  font-family: var(--cc-font-mono);
+  font-size: .8125rem;
+  font-weight: 500;
+  letter-spacing: .04em;
+  transition: transform var(--cc-dur-fast) var(--cc-ease), background var(--cc-dur-fast) var(--cc-ease), border-color var(--cc-dur-fast) var(--cc-ease), color var(--cc-dur-fast) var(--cc-ease);
 }
 
 .button:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .button-small {
-  min-height: 39px;
-  padding: .55rem .85rem;
-  font-size: .86rem;
+  min-height: 44px;
+  padding: 0 16px;
+  font-size: .75rem;
 }
 
 .button-dark {
-  color: #fff;
-  background: var(--ink);
+  color: var(--cc-paper-000);
+  background: var(--cc-teal-500);
 }
 
 .button-primary {
-  color: #fff;
-  background: var(--green);
+  color: var(--cc-paper-000);
+  background: var(--cc-teal-500);
 }
 
+.button-dark:hover,
 .button-primary:hover {
-  background: var(--green-dark);
+  background: var(--cc-teal-600);
 }
 
 .button-quiet {
-  border-color: rgba(25, 35, 30, .22);
-  background: rgba(255, 255, 255, .72);
+  border: var(--cc-border);
+  color: var(--cc-text-strong);
+  background: rgba(255, 255, 255, .84);
+}
+
+.button-quiet:hover {
+  background: var(--cc-paper-100);
+}
+
+.button:focus-visible,
+.desktop-nav a:focus-visible,
+.text-link:focus-visible,
+.inline-link:focus-visible,
+.founder-card a:focus-visible,
+footer a:focus-visible,
+.product-card:focus-visible,
+.menu-button:focus-visible,
+.mobile-nav a:focus-visible {
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(15, 169, 126, .32);
 }
 
 .menu-button,
@@ -254,14 +276,17 @@ svg {
   line-height: 1;
   letter-spacing: .14em;
   text-transform: uppercase;
+  width: max-content;
+  padding: 6px 10px;
+  border-radius: var(--cc-radius-full);
+  background: var(--cc-teal-050);
 }
 
 .live-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #2fb479;
-  box-shadow: 0 0 0 4px rgba(47, 180, 121, .14);
+  width: 4px;
+  height: 4px;
+  border-radius: var(--cc-radius-sm);
+  background: var(--cc-teal-500);
 }
 
 h1,
@@ -485,6 +510,10 @@ h1 {
   font-weight: 500;
   letter-spacing: .08em;
   text-transform: uppercase;
+  width: max-content;
+  padding: 7px 9px;
+  border-radius: var(--cc-radius-full);
+  background: var(--cc-teal-050);
 }
 
 .product-section {
@@ -729,9 +758,9 @@ h1 {
 .case-badge {
   margin-left: auto;
   padding: .4rem .65rem;
-  border-radius: 5px;
-  color: #405b87;
-  background: var(--blue);
+  border-radius: var(--cc-radius-full);
+  color: var(--cc-info-500);
+  background: var(--cc-info-050);
   font-family: var(--cc-font-mono);
   font-size: .625rem;
   font-weight: 500;
@@ -838,8 +867,12 @@ h1 {
   align-items: center;
   gap: .4rem;
   margin-top: 1.5rem;
-  color: var(--green);
-  font-weight: 800;
+  min-height: 44px;
+  color: var(--cc-teal-600);
+  font-family: var(--cc-font-mono);
+  font-size: .8125rem;
+  font-weight: 500;
+  letter-spacing: .04em;
 }
 
 .safety-list {
@@ -929,9 +962,12 @@ h1 {
   display: inline-flex;
   align-items: center;
   gap: .35rem;
-  color: var(--green);
-  font-size: .82rem;
-  font-weight: 800;
+  min-height: 44px;
+  color: var(--cc-info-500);
+  font-family: var(--cc-font-mono);
+  font-size: .75rem;
+  font-weight: 500;
+  letter-spacing: .04em;
 }
 
 .founder-card a svg {
@@ -963,13 +999,14 @@ h1 {
 }
 
 .button-light {
-  color: var(--green-dark);
-  background: white;
+  color: var(--cc-paper-000);
+  background: var(--cc-teal-500);
 }
 
 .button-outline-light {
-  border-color: rgba(255, 255, 255, .35);
-  color: white;
+  border-color: var(--cc-ink-600);
+  color: var(--cc-text-invert);
+  background: rgba(255, 255, 255, .06);
 }
 
 footer {
@@ -1038,7 +1075,10 @@ footer nav {
   }
 
   .mobile-nav a {
-    padding: .75rem 0;
+    display: flex;
+    min-height: 48px;
+    align-items: center;
+    padding: 0;
     border-bottom: 1px solid #eef1ed;
     font-weight: 700;
   }
@@ -1138,6 +1178,7 @@ footer nav {
 
   .hero-actions .button {
     width: 100%;
+    min-height: 48px;
   }
 
   .hero-proof {
