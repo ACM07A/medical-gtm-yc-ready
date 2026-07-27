@@ -206,10 +206,19 @@ test("existing synthetic demo rows are hardened without resetting the database",
   db.close(); rmSync(dir, { recursive: true, force: true });
 });
 
-test("demo bootstrap seeds a missing database once and preserves later state", () => {
+test("demo bootstrap uses the active Node runtime, seeds once and preserves later state", () => {
   const dir = mkdtempSync(join(tmpdir(), "canopus-seed-preserve-"));
   const database = join(dir, "demo.db");
-  const env = { ...process.env, APP_MODE: "demo", POST_LIVE: "0", DATABASE_PATH: database, SEED_BROWSER: "0", SEED_GENERATION: "0" };
+  const env = {
+    ...process.env,
+    PATH: "",
+    Path: "",
+    APP_MODE: "demo",
+    POST_LIVE: "0",
+    DATABASE_PATH: database,
+    SEED_BROWSER: "0",
+    SEED_GENERATION: "0",
+  };
   execFileSync(process.execPath, ["--experimental-sqlite", "data-core/demo_seed.mjs"], { cwd: ROOT, env });
   let db = open(database);
   db.prepare(`INSERT INTO system_state (k,v) VALUES ('restart-proof','preserved')`).run();

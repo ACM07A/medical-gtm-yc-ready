@@ -92,8 +92,8 @@ for (const step of steps) {
   const label = `${step.script}${step.args ? ` ${step.args.join(" ")}` : ""}`;
   process.stdout.write(`  - ${label.padEnd(46)} `);
   try {
-    execFileSync("node", ["--experimental-sqlite", join(HERE, step.script), ...(step.args || [])], {
-      stdio: ["ignore", "ignore", "ignore"],
+    execFileSync(process.execPath, ["--experimental-sqlite", join(HERE, step.script), ...(step.args || [])], {
+      stdio: step.fatal ? "inherit" : ["ignore", "ignore", "ignore"],
       env: { ...process.env, ...(step.env || {}) },
       timeout: 60_000,
     });
