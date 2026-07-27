@@ -35,15 +35,17 @@ answering the family** → the consent-blocked case refusing. `[FOUNDER FILL —
 
 ## What is your company going to make?
 
-> Canopus Care runs the whole journey for a patient travelling to India for treatment. A patient in Africa,
-> the Middle East, or Central Asia — or a travel agent holding their case — starts a case with us; software
-> structures it, finds what's missing, routes it to the right Indian hospital, and organizes the estimate and
-> a video consult with the treating surgeon. We then handle visa paperwork, flights, accommodation, an
-> interpreter, and aftercare follow-up, with one conversational point of contact the patient's family can ask
-> at any hour. Hospitals pay us per treated patient; clinicians keep every clinical decision, and anything
-> sensitive needs a human approval. Long-term, we want to be the operating layer that cross-border care runs on.
+> A patient travelling to India for treatment faces dozens of disconnected steps — medical reports, hospital
+> choice, estimates, visas, travel, accommodation, interpreters, aftercare. Canopus Care runs that whole
+> journey: a patient in Africa, the Middle East, or Central Asia — or a travel agent holding their case —
+> starts a case with us, and a team of AI agents structures it, finds what's missing, routes it to the right
+> Indian hospital, and organizes the estimate and a video consult with the treating surgeon. We then coordinate
+> the visa, flights, accommodation, interpreter, and aftercare — comparing and booking vendor quotes across each —
+> with one conversational point of contact the family can ask at any hour. Hospitals pay us per treated patient;
+> clinicians keep every clinical decision, and anything sensitive needs a human approval. Long-term, we want to
+> be the operating layer that cross-border care runs on.
 
-*(5 sentences — at the guide's limit. Dropbox-style: concrete, mechanism-first, vision in one line.)*
+*(5 sentences — at the guide's limit. Problem first, then the mechanism, vision in one line.)*
 
 ## Where do you live now, and where would the company be based after YC?
 
@@ -55,8 +57,8 @@ and open that corridor.
 ## How far along are you?
 
 - Working product, built in three weeks (started July 2; 83 commits): case workflow for agent → hospital →
-  estimate → approval, 13 journey agents (visa, ticketing, stay, interpreter, billing, aftercare), and a
-  patient/family concierge bot — all runnable in one command, no API keys, 15 automated tests passing.
+  estimate → approval, an AI orchestration engine of 13 journey agents (visa, ticketing, stay, interpreter, billing, aftercare), and a
+  patient/family concierge bot — all runnable in one command, no API keys, 33 automated tests passing.
 - 0 revenue, 0 real patients — the demo runs entirely on synthetic cases, and says so on every screen.
 - Direct warm intros into 5 hospitals, most through personal ties (this is our unfair advantage — hospital
   supply is the hard side of this market): **Manipal** (the group's former Lead Counsel is Ajeya's father),
@@ -65,8 +67,11 @@ and open that corridor.
   doctors we know there), and **Prime Hospitals, Rajkot** (Hussain's brother-in-law is a 1/3 owner).
 - Advised by an Assistant Manager on the Fortis Bannerghatta International Desk, whose numbers (incumbent
   commissions, upfront-payment norms, exactly what a package includes) anchor our model.
-- Three hospital conversations so far: our Fortis International Desk adviser, our Aster contact, and Hussain's
-  brother-in-law (co-owner, Prime Rajkot) — feedback plus open-ended discussion of actually partnering.
+- Three hospital conversations that changed our assumptions: hospitals already budget the 25–33% commission
+  into international cases, they value a treatment-ready patient over lead volume, they don't cover travel or
+  stay (so the patient's real cost runs ~40% above the package quote), and they treat compliance as a bigger
+  concern than software — learnings that shaped our pricing and roadmap. (Our Fortis International Desk adviser,
+  our Aster contact, and Hussain's brother-in-law, co-owner of Prime Rajkot.)
 - Health-data-law register covering 22 source markets; we deliberately refuse 4 of them (UAE, Uzbekistan,
   Kazakhstan, Zambia) until we can meet their data-residency laws — the compliance gate is working code.
 
@@ -96,7 +101,7 @@ exact split of Ajeya's time so this is precise, not rounded up]`.
   — he knows how to win hospital supply and build a demand funnel. **Ajeya** left FMCG in 2021 to build Ricotta
   Trivia to $800k ARR and has shipped AI products for 3+ years on exactly the agent infrastructure this is built
   on — he owns the tech. **Ajeya's father was Lead Counsel of the Manipal Group**, so we understand precisely
-  how hospitals' existing facilitator agreements are written and where the commercial friction sits.
+  how hospitals' existing facilitator agreements are written and where the sticking points are.
 - How we know people need it: India already treats ~**644,000 foreign patients a year on medical visas**
   (a ~**$7.7B** market growing ~18%/year), and **~24% of that flow is our corridor** — 16% West Asia, 8% Africa,
   with Ethiopia, Kenya, Tanzania, Oman and Iraq among the top source countries. Today that demand is served by
@@ -116,16 +121,20 @@ exact split of Ajeya's time so this is precise, not rounded up]`.
 > What we understand that they don't: this is not one market, it's two flows. Most patients today arrive
 > already captured by an agent or a referring doctor. But **10–20% arrive organically** — they research, shop
 > around, and choose for themselves — and that self-directed flow is underserved by everyone, because agents
-> compete on relationships and kickbacks, not on transparent discovery. **We win that direct demand first** by
+> compete on relationships and kickbacks, not on transparent discovery. (These are the two sides of our market: warm hospital access is the supply
+> side — the hard side to unlock, and our unfair advantage; this self-directed demand is how we reach patient
+> one and earn the full fee.) **We win that direct demand first** by
 > removing the complexity and ambiguity of the whole journey — reports, hospital quote, travel, accommodation,
 > local logistics — and by being transparent about the true all-in cost (agents quote a clean package price and
 > hide the ~44% travel basket; we don't). We do **not** compete on price — the same treatment costs the same
 > whether a patient comes via us, an agent, or alone — we compete on certainty, transparency and a supported
 > journey, plus a pre-travel video consult with a senior specialist that most patients can't get today.
-> Underneath, our advantage is structural: incumbents charge 25–33% because human coordinators scale linearly
-> with cases; our coordination is software, so we profitably open at 20% and give the hospital a treatment-ready
-> case file, not a lead. And we treat health-data law as a feature — the system legally refuses markets we can't
-> yet serve, which is exactly what a hospital's compliance team wants to see.
+> Underneath, our advantage is structural: an agent coordinates one patient by hand and can't scale past their
+> own bandwidth, which is why incumbents charge 25–33%; we orchestrate the whole supply chain — hospital, visa,
+> flights, stay, interpreter, aftercare, compliance — with AI agents, so we profitably open at 20% and hand the
+> hospital a patient ready to be treated, not a lead. We're not trying to be a better agent — we're building the
+> coordination layer agents and hospital desks are doing by hand. And we treat health-data law as a feature — the
+> system legally refuses markets we can't yet serve, which is exactly what a hospital's compliance team wants to see.
 
 ## How do or will you make money? How much could you make?
 
@@ -134,11 +143,17 @@ exact split of Ajeya's time so this is precise, not rounded up]`.
 > new cost to them: hospital international tariffs are *already* priced to fund agent payouts, so the commission
 > comes out of margin they've allocated to acquisition regardless — they simply care about the business coming
 > in, and we deliver it cheaper and treatment-ready. On a $5,000–9,000 cardiac package that is ~$1,000–1,800 per
-> patient (add modest vendor-side commission on the travel basket). Bottom-up: India treats ~644,000 foreign patients a year on medical visas; ~24% (~155,000)
+> patient. We earn on a second layer too: standard vendor-side commissions on the logistics we book —
+> accommodation (~10–15%, the OTA-standard rate), ground transfers, interpreter, and visa-documentation service
+> fees (flights carry near-zero commission — a service, not a revenue line) — moving to pre-negotiated bundles
+> for common corridors and a live AI quotation system beyond them. Getting the right quote across hospital and
+> every vendor — fast, at a good price and a good commission — is the core ops problem, and where our AI agents
+> compound. Bottom-up: India treats ~644,000 foreign patients a year on medical visas; ~24% (~155,000)
 > come from our Africa + Middle East corridor, so at an average ~$1,200 fee that corridor alone is a
 > **~$185M/year facilitation pool today, growing ~18%/year**. $100M ARR is ~83,000 treated patients — a low
-> double-digit share of India's inbound flow, reached by owning the self-directed organic segment first and
-> layering in agent and hospital-desk channels. We take no patient markup, so growing us costs the patient nothing.
+> double-digit share of India's inbound flow, reached by owning the organic and paid-acquired demand first — where we're the full facilitator and earn the
+> whole fee — then adding agent and hospital-desk channels as a lower-margin volume tier, including hospitals
+> introducing us to their own agents, whose fragmentation is the hospital's problem too. We take no patient markup, so growing us costs the patient nothing.
 
 ## Equity breakdown
 
@@ -166,7 +181,7 @@ exact split of Ajeya's time so this is precise, not rounded up]`.
 - **Who does what:** Ajeya owns AI/product/engineering (built Ricotta Trivia to $800k ARR; 3+ yrs shipping AI
   products on this same agent stack). Hussain owns GTM, hospital supply and the demand funnel (9 yrs 0-to-1
   sales/channel; built the LiveAltlife hospital-partnership engine). Clean, complementary — the tech builder and
-  the healthcare-GTM builder — which is the natural shape of an AI-native services company.
+  the healthcare-GTM builder.
 - **Who writes the code:** Ajeya-led, with a founder-directed agent stack — worth stating plainly, it's a
   strength: two founders shipped a tested, one-command product in three weeks.
 - **Why we'll still be doing this in 10 years:** the fundamentals only widen the gap we serve — India's (and

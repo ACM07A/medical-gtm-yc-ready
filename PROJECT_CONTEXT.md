@@ -9,23 +9,29 @@ it, and its honest limits. Written so you can understand — and speak to — ev
 
 ## 1. The one-paragraph version
 
-Canopus Care is an **agentic go-to-market (GTM) engine** for a medical-tourism *facilitator* — a business that
-connects international patients to accredited Indian hospitals and takes a facilitation fee — a volume ramp
-that steps up 20% → 22.5% → 25% (₹0–20L / 20–50L / 50L+ routed), opening below incumbent agents' 25–33% and
-rising only to their floor (it is
-**not** a hospital and provides no care). The engine is a fleet of AI agents that autonomously (1) decide
-which treatments to sell, (2) build the hospital-partner supply side down to the named decision-maker and a
-tailored proposal, (3) run a multilingual content/brand campaign and repurpose it into platform-ready social
-posts with real infographics and stock photos, and (4) do all of it in a market-parameterized way so the same
-system relaunches in any country — continuing on a schedule even when Claude is offline. Everything is visible
-on a live operator console, runs at near-zero marginal cost, and is built with an explicit no-fabrication /
+Canopus Care is an **end-to-end medical-travel facilitator** — it takes an international patient from first
+enquiry to treated-and-home, and hospitals pay it a facilitation fee (a volume ramp of 20% → 22.5% → 25% of the
+treatment package, ₹0–20L / 20–50L / 50L+ routed, opening below incumbent agents' 25–33%), **plus** vendor-side
+commissions on the logistics it books. It is **not** a hospital and provides no care. The product is a fleet of
+AI agents that **orchestrate the whole journey**: (1) acquire and qualify a patient, structure their case, and
+route it to the right Indian hospital; (2) organize the estimate and a pre-travel video consult with the treating
+surgeon; (3) coordinate the visa, flights, stay, interpreter and aftercare across every vendor; and (4) answer
+the patient and their family through **one conversational point of contact** — with a human approving anything
+sensitive and clinicians keeping every clinical decision. A parallel GTM engine builds the hospital-partner
+supply side down to the named decision-maker and runs a market-parameterized content campaign, so the same
+system relaunches in any country — continuing on a schedule even when Claude is offline. Everything is visible on
+a live operator console, runs at near-zero marginal cost, and is built with an explicit no-fabrication /
 human-gated compliance posture.
 
-**What it demonstrates (the portfolio point):** end-to-end AI product engineering — multi-agent
-orchestration, a cost-tiered multi-model factory with **cross-provider failover**, browser automation that
-beats what APIs are blocked from doing, a **pluggable integration layer** (image gen, social posting,
-enrichment — each an env-key away), a zero-dependency data core and real-time UI, and mature judgment about
-compliance, privacy, and honesty about limits.
+**Where the advantage is:** the moat is **orchestrating a fragmented, multi-party supply chain per patient** —
+hospital, visa, flights, stay, interpreter, aftercare, compliance — fast and correctly, which agents and hospital
+desks do by hand and cannot scale (most agents are tied to only one or two hospitals). Underneath sits a
+**compliance backbone** a Bangalore-hosted competitor cannot easily match (an encrypted medical-data vault,
+per-market data residency), and the proprietary **dataset running the concierge produces** (real negotiated
+prices, conversion by corridor, recovery timelines). All of it rests on mature AI product engineering —
+multi-agent orchestration, a cost-tiered multi-model factory with **cross-provider failover**, a **pluggable
+integration layer** (image gen, social posting, enrichment — each an env-key away), a zero-dependency data core
+and real-time UI, and calibrated honesty about limits.
 
 ---
 
@@ -39,15 +45,30 @@ SE Asia**. Central Asia (Uzbekistan + Kazakhstan core; Tajikistan/Kyrgyzstan/Tur
 2026-07-22 — a strong IVF/oncology/cardiac corridor, but Russian-speaking and **Telegram-first**, so it needs a
 Telegram channel the WhatsApp-only comms engine does not yet have (same caveat as Francophone Cameroon).
 
-**The facilitator model:** we are the trusted intermediary — we don't own hospitals, we route qualified
-patients to them and earn a facilitation fee. That single fact drives the whole compliance posture: no
-clinical claims, no invented prices, cited data only.
+**The facilitator model:** we are the trusted intermediary — we don't own hospitals; we acquire patients
+(organic/paid first, agents as a later channel), run the whole journey with AI agents, and earn **two ways**: a
+hospital success fee (20% → 25% of the package, below incumbents' 25–33%) and vendor-side commissions on the
+logistics we book. We do **not** win the patient on price — a hospital pockets our lower fee as margin, so the
+treatment costs the same via us, an agent, or alone; we win on **removing the journey's complexity** and on
+**transparency** (the true all-in, not a bait package price that hides the ~40% travel basket). That single fact
+drives the compliance posture: no clinical claims, no invented prices, cited data only.
 
 **The margin thesis (the strategic core):** competitors (Vaidam, MedTripz) crowd the same big hospital
 chains (Apollo, Fortis, Medanta) that already have international desks. The *margin* is in **high-quality
 brands that don't yet have a strong international-patient presence** — a Sir Ganga Ram or a Hinduja — where
 we can win preferred-facilitator terms because we bring the demand engine they aren't running. The engine
 operationalizes this as a **fit score** (see §5.2).
+
+**Market nuances to carry forward (founder, 2026-07-27):**
+- **Agents are captive to 1–2 hospitals** (only a handful of larger agents spread wider), so they can't offer
+  genuine cross-hospital comparison — that transparency/comparison edge is ours to take. Temper it, though:
+  international package **quotes mostly land in the same range**, and much of a patient's trust is
+  **surgeon-identity-driven**, not price — so we lead with the named surgeon and the de-risked journey, not
+  "we're cheaper" (which, to the patient, we are not).
+- **The "one case file recreated 4–5×"** across agent → hospital coordinator → visa desk → stay partner is a
+  real pain, but it is an **agent/broker problem statement, not a hospital- or patient-facing sell**. Park it
+  for the application — it becomes the pitch when we build the **agent-facilitation channel** (the later,
+  lower-margin tier), where removing that rework is the value we bring the agent.
 
 ---
 
@@ -191,7 +212,8 @@ real warm introductions changed who we approach first). `pursuit = 0.45·access 
 - **Speed** (`speedScore`) — time-to-market: Sachin's read is that partnering is *fast once the commission
   number is agreed*, so speed = commission status (`agreed`/`in_discussion`/`unknown`) + desk readiness. New
   partner fields carry the terms conversation: `commission_status`, `commission_target_pct`, and `value_ask` —
-  the extra we ask the hospital for in exchange for a *lower* fee (best-of-book rates, priority scheduling, a
+  the extra we ask the hospital for in exchange for a *lower* fee (the same package inclusions the hospital
+  already extends to its agents, a pre-travel video consult with a senior specialist, priority scheduling, a
   named coordinator), because we bring the volume that makes a thin fee worth it.
 
 The result on the real board: Fortis Bannerghatta (pursuit 82) › Aster India (75) › Manipal (74) top it via
@@ -336,6 +358,18 @@ feed, the pipeline, the margin-play candidates, and named contacts. The patient-
 ([`server/landing_home.mjs`](./server/landing_home.mjs)) is the Nuvica-inspired clinical-blue design. Every
 agent action writes a `run` row, so the console *is* the proof the engine is working.
 
+### 5.5b The role-scoped OS & reviewer deployment ([`server/os_pages.mjs`](./server/os_pages.mjs), [`server/login.mjs`](./server/login.mjs), `/demo`)
+
+On top of the GTM console sits a **role-scoped operator OS** — the surfaces an agent, hospital, vendor and
+platform operator each see, scoped in code (`scopedCaseWhere`) so a hospital reads only its own cases and a
+vendor only its own service requests. The reviewer entry point is **`/demo`**: a public, read-only control panel
+over a golden synthetic cardiac case (agent → hospital → estimate → human approval) and a consent-blocked case
+that refuses. Access is a **signed, expiring, HttpOnly session** ([`server/session.mjs`](./server/session.mjs));
+anonymous visitors get the `read_only` role, and the `x-demo-user` test shortcut is ignored outside
+`APP_MODE=demo`. It is **deployment-ready**: Dockerized, `render.yaml` with a persistent disk, first-boot-only
+deterministic seeding, `/api/readiness` health checks, and database backup + restore-verification
+(`npm run db:restore-check`). Passwords stay server-side; public deployments must override them.
+
 ### 5.6 Patient acquisition & the journey sandbox — *demand → booked patient*
 
 Once a lead exists, a **WhatsApp sales-comms state machine** ([`lib/comms_machine.mjs`](./lib/comms_machine.mjs))
@@ -347,10 +381,13 @@ a **diagnosis fork** (knows the procedure → product selection vs. has symptoms
 edge states (visa denied / not-fit-to-fly, reschedule, complication). 22 stages, one approval-ready template each
 ([`data-core/gen_comms.mjs`](./data-core/gen_comms.mjs), stored in `comms_template`).
 
-**Scope, deliberately narrow** (build-os/09): Canopus Care does *light* coordination — demand-gen, qualification,
-relaying reports to the hospital, and **supporting documents** (orchestrating the hospital invitation letter +
-a visa checklist, [`lib/visa.mjs`](./lib/visa.mjs)). The **patient applies for their own visa and books their
-own tickets**; near-hospital stay is partner-provided ([`lib/stay.mjs`](./lib/stay.mjs)). No heavy logistics.
+**Scope — end-to-end, with two deliberate boundaries** (build-os/09): Canopus Care now orchestrates the *whole*
+journey — demand-gen, qualification, relaying reports, the estimate and pre-travel video consult, and the full
+travel basket (visa documents, flights, stay, interpreter, airport logistics, aftercare) through the 13-agent
+engine (§5.9). Two boundaries remain by design: the **patient still applies for their own visa on the government
+portal** ([`lib/visa.mjs`](./lib/visa.mjs)) and **completes their own ticket purchase** — we search, recommend,
+prepare and coordinate everything up to those final government/payment actions; near-hospital stay is
+partner-provided ([`lib/stay.mjs`](./lib/stay.mjs)). Clinical decisions are always the hospital's.
 
 **Dual-mode intake:** leads enter from the engine's own acquisition *or* an external operator's lead DB plugged
 in via `POST /api/lead/ingest` ([`data-core/ingest.mjs`](./data-core/ingest.mjs) — per-tenant token, normalises
@@ -514,6 +551,20 @@ this standard:
   savings" — a crass frame over someone's illness, now rewritten to speak to the reader's real concern
   honestly) all compose from `withEmpathyContent()`. These take effect on the next content (re)generation.
 
+### 5.9d The concierge — one point of contact for patient & family ([`server/concierge_bot.mjs`](./server/concierge_bot.mjs), `/concierge`)
+
+The family shouldn't have to learn our pages — they should just ask. The concierge (working name **Suhail**, the
+Arabic name for the star Canopus) is the product face of the end-to-end thesis: one conversational surface where
+the patient and their family ask anything — *"where are we?"*, *"what's still missing?"*, *"what will it cost?"*,
+*"how does travel work?"* — and every answer comes from the **same live case record** the operator and hospital
+see (`os_pages.apiCase`), so it can never drift from the truth. It is **deliberately deterministic** —
+intent-matching over the case record, no LLM call, no key — because a demo answer about someone's father must be
+exactly right, never merely plausible. Its boundaries are the ones enforced everywhere else, shown from the
+family's side: an **emergency** message escalates to local care before anything else; a **clinical** question
+(*"what's the diagnosis"*, *"is the surgery safe"*) is deflected to the doctors, never answered; and a case
+**without consent on file** returns a refusal, not details. Read-only by construction — it carries no write pen.
+Verified adversarially by the concierge red-team suite (§5.10).
+
 ### 5.10 The safety gate ([`lib/safety.mjs`](./lib/safety.mjs))
 
 Canopus Care is a facilitator, not a provider — that's the legal basis for operating without a healthcare
@@ -542,6 +593,15 @@ every push and has already caught one real regression: the verdict reducer ranke
 while holding blocking findings — detection correct, enforcement silently dead. The same failure shape
 recurred once more this session in the E-E-A-T scorer (§5.7) before both were caught the same way: assert
 the *verdict*, not the presence of a check.
+
+**The concierge is red-teamed as an authorization property, not just a scope filter**
+([`tests/concierge-redteam.test.mjs`](./tests/concierge-redteam.test.mjs)). Because the concierge (§5.9d) is
+deterministic it can't fabricate a clinical or cost claim; the risks are leakage and breakdown, so the suite
+proves them shut: a consent-blocked case leaks no PHI through *any* phrasing (including adversarial and
+social-engineering probes), the underlying case reader rejects cross-tenant access, an emergency outranks the
+consent gate, the bot mutates no state under any prompt and answers deterministically, and clinical questions
+always deflect. It runs in CI alongside the safety eval — the trust-and-safety spine for the payer channel and
+for reviewers, and the reason we can say the patient-facing agent is safe *by construction*, not by monitoring.
 
 ### 5.11 The medical data vault — GDPR as the backbone ([`lib/vault.mjs`](./lib/vault.mjs), `/vault`)
 
@@ -716,5 +776,6 @@ re-enable GLM-5.2.
 
 ---
 
-*Working codename **Canopus Care** ("medical journey") — rename freely. This is a first-draft engine: a
-demonstration of building a real, autonomous, honest AI product end-to-end.*
+*Working codename **Canopus Care** ("medical journey"), not yet trademark-cleared. This document is the technical
+source of truth for the product — an end-to-end, AI-orchestrated, honest medical-travel facilitator. For the
+business view (market, model, traction, roadmap) see [`BUSINESS_STATUS.md`](./BUSINESS_STATUS.md).*
