@@ -23,9 +23,9 @@
   --cc-info-500: #3d74c4;
   --cc-info-050: #ecf2fb;
   --cc-yc-500: #f26522;
-  --cc-font-display: "Space Grotesk", "Fraunces", -apple-system, "Segoe UI", sans-serif;
-  --cc-font-body: "Inter", "DM Sans", -apple-system, "Segoe UI", Roboto, sans-serif;
-  --cc-font-mono: "JetBrains Mono", "DM Sans", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --cc-font-display: "Aptos Display", "Segoe UI Variable Display", -apple-system, "Segoe UI", sans-serif;
+  --cc-font-body: "Aptos", "Segoe UI Variable Text", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --cc-font-mono: ui-monospace, "Cascadia Mono", SFMono-Regular, Menlo, monospace;
   --cc-space: 4px;
   --cc-container: 1200px;
   --cc-gutter: 24px;
@@ -1397,6 +1397,15 @@ footer a:hover {
   *,
   *::before,
   *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
     transition-duration: .01ms !important;
+  }
+
+  .button:hover,
+  .product-card:hover,
+  .inline-link:hover svg {
+    transform: none;
   }
 }
