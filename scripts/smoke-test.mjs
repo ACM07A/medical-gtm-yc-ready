@@ -1,6 +1,9 @@
 const base = process.env.SMOKE_BASE_URL || process.env.APP_BASE_URL || "http://localhost:5173";
 
 const checks = [
+  ["GET", "/"],
+  ["GET", "/landing-assets/landing.css"],
+  ["GET", "/landing-assets/care-coordination-v2.jpg"],
   ["GET", "/api/health"],
   ["GET", "/api/readiness"],
   ["GET", "/api/session"],

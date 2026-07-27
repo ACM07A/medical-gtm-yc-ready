@@ -8,7 +8,7 @@ patient case from a medical-travel agent to an Indian hospital.
 AI prepares and coordinates administrative work. Hospitals retain clinical
 decisions, and humans approve sensitive actions.
 
-[Public demo: deployment pending](./DEPLOYMENT.md) |
+[Hostinger deployment](./docs/HOSTINGER_DEPLOYMENT_CHECKLIST.md) |
 [Product demo video: pending](./DEMO_SCRIPT.md) |
 [YC reviewer guide](./docs/YC_REVIEWER_GUIDE.md)
 
@@ -28,7 +28,8 @@ cp .env.example .env
 docker compose up --build
 ```
 
-Open [http://localhost:5173/demo](http://localhost:5173/demo).
+Open [http://localhost:5173](http://localhost:5173) for the public landing page
+and [http://localhost:5173/demo](http://localhost:5173/demo) for the product.
 
 The equivalent Node path is:
 
@@ -76,6 +77,7 @@ Use [DEMO_SCRIPT.md](./DEMO_SCRIPT.md) for the 75-second presentation.
 
 | Route | Purpose | Access |
 |---|---|---|
+| `/` | Public Canopus Care landing page | Public |
 | `/demo` | Reviewer control panel | Public, read-only by default |
 | `/login` | Signed reviewer session | Public |
 | `/agent` | Source-agent case view | Public synthetic view; role-scoped after login |

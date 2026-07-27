@@ -7,6 +7,7 @@
     "node": ">=22.5.0"
   },
   "scripts": {
+    "build": "npm run lint",
     "seed": "node --experimental-sqlite data-core/seed.mjs && node --experimental-sqlite data-core/seed_runs.mjs",
     "demo": "node --experimental-sqlite data-core/demo_seed.mjs",
     "dev": "node --experimental-sqlite server/server.mjs",

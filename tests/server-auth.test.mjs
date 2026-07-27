@@ -44,9 +44,14 @@ test("public demo, signed hospital session and operator token enforce the route 
 
     for (const path of ["/demo", "/cases", "/vendors", "/audit"])
       assert.equal((await fetch(base + path)).status, 200, path);
-    const root = await fetch(`${base}/`, { redirect: "manual" });
-    assert.equal(root.status, 302);
-    assert.equal(root.headers.get("location"), "/demo");
+    const landing = await fetch(`${base}/`);
+    assert.equal(landing.status, 200);
+    const landingHtml = await landing.text();
+    assert.match(landingHtml, /<h1 id="hero-title">Canopus Care<\/h1>/);
+    assert.match(landingHtml, /href="\/demo"/);
+    assert.doesNotMatch(landingHtml, /Apollo|Fortis|signed partner/i);
+    assert.equal((await fetch(`${base}/landing-assets/landing.css`)).status, 200);
+    assert.equal((await fetch(`${base}/landing-assets/care-coordination-v2.jpg`)).status, 200);
     assert.equal((await fetch(`${base}/console`)).status, 401);
     assert.equal((await fetch(`${base}/site/index.html`)).status, 401);
     assert.equal((await fetch(`${base}/api/studio/approve`, { method: "POST" })).status, 401);

@@ -11,7 +11,6 @@ loadEnv();   // so /plugins reflects configured keys
 import { open, getState, readiness, marketCleared, logRun,
   COMMISSION_TIERS, INCUMBENT_COMMISSION, USD_INR, commissionModel } from "../data-core/db.mjs";
 import { mdToHtml } from "./md.mjs";
-import { renderHome } from "./landing_home.mjs";
 import { plugins as pluginList } from "../lib/plugins.mjs";
 import { nextAction } from "../lib/comms_machine.mjs";
 import { vaultBackend, openVault, accessLog } from "../lib/vault.mjs";
@@ -46,6 +45,7 @@ import { range } from "../lib/money.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..");
+const LANDING = join(ROOT, "site", "landing");
 const PORT = Number(process.env.PORT) || 5173;
 
 function buildState(db) {
@@ -426,15 +426,25 @@ const server = createServer(async (req, res) => {
       return send(result.ok ? 200 : /token/.test(result.error || "") ? 401 : 400, "application/json", JSON.stringify({ ...result, mapping: parsed.mapping }));
     }
     if (url.pathname === "/") {
-      if (appMode() === "demo")
-        return send(302, "text/plain; charset=utf-8", "Canopus Care demo", { location: "/demo" });
-      const cats = db.prepare(`SELECT c.*, (SELECT min(india_low) FROM category_price p WHERE p.category_id=c.id) lo,
-        (SELECT max(india_high) FROM category_price p WHERE p.category_id=c.id) hi
-        FROM category c WHERE c.status='launch' ORDER BY c.rank`).all();
-      const guides = db.prepare(`SELECT ca.*, c.name cat, mk.name mname FROM content_asset ca
-        JOIN category c ON c.id=ca.category_id JOIN market mk ON mk.code=ca.market_code
-        WHERE ca.status='published' AND ca.language='en' ORDER BY c.rank, mk.name`).all();
-      return send(200, "text/html; charset=utf-8", renderHome({ cats, guides }));
+      return send(200, "text/html; charset=utf-8", readFileSync(join(LANDING, "index.html")));
+    }
+    if (/^\/landing-assets\/[A-Za-z0-9._-]+$/.test(url.pathname)) {
+      const file = url.pathname.slice("/landing-assets/".length);
+      const fp = join(LANDING, file === "landing.css" || file === "landing.js" ? file : join("assets", file));
+      try {
+        const ext = file.split(".").pop().toLowerCase();
+        const ct = {
+          css: "text/css; charset=utf-8",
+          js: "text/javascript; charset=utf-8",
+          jpg: "image/jpeg",
+          jpeg: "image/jpeg",
+          png: "image/png",
+          webp: "image/webp",
+        }[ext] || "application/octet-stream";
+        return send(200, ct, readFileSync(fp), { "cache-control": "public, max-age=3600" });
+      } catch {
+        return send(404, "text/plain; charset=utf-8", "asset not found");
+      }
     }
     if (url.pathname === "/console")
       return send(200, "text/html; charset=utf-8", readFileSync(join(HERE, "console.html")));
