@@ -1,4 +1,4 @@
-const port = process.env.PORT || "5173";
+const port = process.env.PORT || (process.env.NODE_ENV === "production" ? "3000" : "5173");
 try {
   const response = await fetch(`http://127.0.0.1:${port}/api/health`);
   process.exit(response.ok ? 0 : 1);

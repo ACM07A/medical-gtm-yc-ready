@@ -47,7 +47,8 @@ import { range } from "../lib/money.mjs";
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..");
 const LANDING = join(ROOT, "site", "landing");
-const PORT = Number(process.env.PORT) || 5173;
+const PORT = Number(process.env.PORT) || (process.env.NODE_ENV === "production" ? 3000 : 5173);
+const HOST = process.env.HOST || "0.0.0.0";
 
 function buildState(db) {
   const A = (s, ...p) => db.prepare(s).all(...p);
@@ -680,4 +681,4 @@ ${rows.map(card).join("")}</main></body></html>`;
   }
   finally { db.close(); }
 });
-server.listen(PORT, () => structuredLog("server_started", { port: PORT, mode: appMode() }));
+server.listen(PORT, HOST, () => structuredLog("server_started", { host: HOST, port: PORT, mode: appMode() }));

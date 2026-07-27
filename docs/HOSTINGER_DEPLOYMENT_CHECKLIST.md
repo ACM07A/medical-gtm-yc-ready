@@ -42,6 +42,9 @@ Use these values:
 This is a server-side Node application. Do not configure it as a static Vite,
 React, or Next.js export.
 
+The server binds to `0.0.0.0` and defaults to Hostinger's expected port `3000`
+when `NODE_ENV=production`. Do not add a custom `PORT` environment variable.
+
 The startup script creates the SQLite directory and seeds a missing demo
 database exactly once. It preserves an existing database on normal restarts.
 
