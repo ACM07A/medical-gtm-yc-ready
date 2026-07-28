@@ -5,7 +5,7 @@ import { loadEnv } from "../lib/env.mjs";
 
 loadEnv();
 
-const { APP_MODES, appMode, ensureOsSchema, readinessReport } = await import("../data-core/os_core.mjs");
+const { APP_MODES, appMode, ensureOsSchema, readinessReport, syncDemoCredentials } = await import("../data-core/os_core.mjs");
 const { DB_PATH, open } = await import("../data-core/db.mjs");
 const mode = appMode();
 
@@ -44,6 +44,14 @@ if (needsInitialization) {
       env: process.env,
     });
   }
+}
+
+if (mode === "demo") {
+  const db = open();
+  ensureOsSchema(db);
+  const synced = syncDemoCredentials(db);
+  db.close();
+  console.log(`Demo credentials synchronized from the current environment (${synced} accounts).`);
 }
 
 if (mode === "production") {

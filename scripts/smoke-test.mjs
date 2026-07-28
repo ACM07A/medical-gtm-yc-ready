@@ -2,7 +2,6 @@ const base = process.env.SMOKE_BASE_URL || process.env.APP_BASE_URL || "http://l
 
 const checks = [
   ["GET", "/"],
-  ["GET", "/landing-assets/landing.css"],
   ["GET", "/landing-assets/care-coordination-v2.jpg"],
   ["GET", "/api/health"],
   ["GET", "/api/readiness"],
@@ -54,6 +53,18 @@ for (const [method, path] of checks) {
     console.log(`✗ ${method} ${path} -> ${e.message}`);
     failed++;
   }
+}
+
+const landingHtml = await (await fetch(base + "/")).text();
+const landingAssets = [
+  landingHtml.match(/href="(\/landing-assets\/landing-[^"]+\.css)"/)?.[1],
+  landingHtml.match(/src="(\/landing-assets\/landing-[^"]+\.js)"/)?.[1],
+];
+for (const path of landingAssets) {
+  const res = path ? await fetch(base + path) : null;
+  const ok = Boolean(path && res?.status === 200);
+  console.log(`${ok ? "✓" : "✗"} GET ${path || "hashed landing asset missing"} -> ${res?.status || "n/a"}`);
+  if (!ok) failed++;
 }
 
 const healthBody = await (await fetch(base + "/api/health")).json();

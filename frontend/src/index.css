@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+html,
+body,
+#root {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* MedYatra / Canopus Care Previous Teal Theme Palette */
+  --color-brand-teal: #0FB8A6;
+  --color-brand-teal-dark: #0A8C7E;
+  --color-brand-mint: #D6F4EF;
+  --color-brand-mint-light: #E6F8F5;
+  --color-brand-slate: #1E3A44;
+  --color-brand-slate-light: #4A5A57;
+  --color-brand-bg: #F7FAF9;
+  --color-brand-border: #E6ECEA;
+  --color-brand-yc: #FF6600;
+
+  --color-pass-green: #10B981;
+  --color-review-amber: #F59E0B;
+  --color-refused-red: #EF4444;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #F7FAF9;
+  color: #1E3A44;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+html.dark body, body.dark-theme {
+  background-color: #070F1E;
+  color: #F1F5F9;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.03);
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(15, 184, 166, 0.25);
+  border-radius: 3px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 184, 166, 0.4);
+}

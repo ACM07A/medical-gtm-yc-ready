@@ -69,7 +69,7 @@ const NAV = [
 ];
 
 export const APP_CSS = `
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
 :root{
   --canvas:#c9cbc3;--app:#f8f9f3;--rail:#e9eae2;--surface:#fff;--surface-soft:#f2f3ec;
   --ink:#171a17;--muted:#6e736d;--line:#e0e2da;--line-strong:#cdd0c6;
@@ -307,6 +307,44 @@ textarea:focus,input:focus,select:focus,.btn:focus-visible,.icon-btn:focus-visib
 .attention-panel{background:#28322D;color:#fff;border-color:#28322D}.attention-panel .label{color:#D4DBD6}.attention-panel .status-icon{background:rgba(255,255,255,.1);color:#fff}
 @media(max-width:1040px){.hero-panel{grid-template-columns:1fr minmax(300px,.72fr)}.grid>.surface-card:first-child,.grid>.surface-card:nth-child(2){grid-column:span 1}}
 @media(max-width:820px){.hero-panel{display:block;min-height:0}.hero-copy{padding:26px 22px}.hero-media{min-height:230px}.hero-media::after{background:linear-gradient(180deg,#F8F4EE 0,transparent 30%)}.case-summary{grid-template-columns:56px minmax(0,1fr)}.case-symbol{width:56px;height:56px}.case-summary>.btn{grid-column:1/-1}.journey-panel{padding:18px}.journey-track{width:100%;grid-template-columns:1fr;gap:0;padding:2px 0}.journey-step{display:grid;grid-template-columns:44px minmax(0,1fr);min-height:48px;padding:0;text-align:left;align-items:start}.journey-step::before{left:17px!important;right:auto!important;top:0;bottom:0;width:2px;height:auto}.journey-step:first-child::before{top:18px}.journey-step:last-child::before{bottom:30px}.journey-step.done+.journey-step.active::before{background:linear-gradient(180deg,var(--success-500) 0 50%,var(--line-200) 50%)}.journey-dot{width:36px;height:36px;margin:0}.journey-step>span:last-child{min-height:0;padding:9px 0 12px;font-size:12px}}
+
+/* Shared Canopus Care visual system: matches the AI Studio landing without changing portal behavior. */
+:root{
+  --brand-50:#E6F8F5;--brand-100:#D6F4EF;--brand-200:#9FE2D7;--brand-500:#0FB8A6;
+  --brand-600:#0D9488;--brand-700:#0A8C7E;--indigo-500:#3B82F6;
+  --ink-950:#0A1626;--ink-700:#334155;--ink-500:#64748B;--line-200:#E6ECEA;
+  --surface-0:#FFFFFF;--surface-50:#F7FAF9;--surface-100:#EEF5F3;
+  --success-500:#10B981;--warning-500:#F59E0B;--danger-500:#EF4444;
+  --info-500:#3B82F6;--teal-500:#0FB8A6;
+  --canvas:var(--surface-50);--app:var(--surface-50);--rail:var(--surface-0);--surface:var(--surface-0);
+  --surface-soft:var(--surface-100);--ink:var(--ink-950);--muted:var(--ink-500);
+  --line:var(--line-200);--line-strong:#D5E1DE;--green:var(--brand-600);--green-2:var(--brand-500);
+  --mint:var(--brand-50);--mint-ink:var(--brand-700);--coral:var(--danger-500);--coral-soft:#FEF2F2;
+  --violet:var(--info-500);--violet-soft:#EFF6FF;--yellow:#FFFBEB;--danger:var(--danger-500);
+}
+body{background:var(--surface-50);color:var(--ink-950);font-family:"Plus Jakarta Sans","Segoe UI",sans-serif}
+.app-frame{border-color:var(--line-200);background:var(--surface-50);box-shadow:0 18px 50px rgba(10,22,38,.08)}
+.demo-strip{background:#070F1A;color:#CBD5E1;font-family:"JetBrains Mono",monospace}
+.rail{background:#FFFFFF;border-color:var(--line-200)}
+.brand-mark{background:var(--brand-600);color:#fff}.brand-name b{color:var(--brand-600)}
+.rail-nav{background:#EEF5F3}.rail-link{color:#64748B}.rail-link:hover{background:#E6F8F5;color:var(--brand-700)}
+.rail-link.active{background:#fff;color:var(--brand-700);box-shadow:0 1px 5px rgba(10,22,38,.10)}
+.workspace{background:var(--surface-50)}
+.eyebrow,.mode{color:var(--brand-700);font-family:"JetBrains Mono",monospace}
+h1,h2,h3,.k{font-family:"Plus Jakarta Sans","Segoe UI",sans-serif}
+h1{font-weight:800}h2,h3{font-weight:700}
+.card,.panel,table{border-color:var(--line-200);box-shadow:0 1px 2px rgba(10,22,38,.03)}
+.card-accent{background:var(--brand-50);border-color:var(--brand-200)}
+.tab:first-child,.btn.primary,.metric-tile:nth-child(1),.node.center,.case-symbol{background:var(--brand-600);border-color:var(--brand-600)}
+.btn.primary:hover{background:var(--brand-700)}
+.btn,.tab,textarea,input,select{border-radius:8px}
+.badge.completed,.badge.released,.badge.approved,.badge.ready,.badge.captured,.badge.verified-demo-docs,.badge.arrival-scheduled,.badge.shared-with-hospital,.badge.hospital-reviewing,.badge.response-received,.badge.option-accepted,.badge.travel-preparation,.badge.arrival-ready{background:#DDF7EE;color:#087A5F}
+.callout{border-left-color:var(--brand-500);background:var(--brand-50);color:var(--ink-700)}
+.hero-panel{background:#F7FAF9;border-color:var(--line-200)}.hero-media::after{background:linear-gradient(90deg,#F7FAF9 0,rgba(247,250,249,.08) 28%,transparent 55%)}
+.attention-panel{background:#0A1626;border-color:#0A1626}
+.surface-icon,.status-icon,.metric-icon{background:var(--brand-50);color:var(--brand-700)}
+textarea:focus,input:focus,select:focus,.btn:focus-visible,.icon-btn:focus-visible,.rail-link:focus-visible{border-color:var(--brand-500);box-shadow:0 0 0 3px rgba(15,184,166,.2)}
+@media(max-width:820px){.hero-media::after{background:linear-gradient(180deg,#F7FAF9 0,transparent 30%)}}
 `;
 
 export function appShell(title, inner, options = {}) {

@@ -7,7 +7,8 @@
     "node": ">=22.5.0"
   },
   "scripts": {
-    "build": "npm run lint",
+    "build": "npm run build:frontend && npm run lint",
+    "build:frontend": "vite build --config frontend/vite.config.ts",
     "seed": "node --experimental-sqlite data-core/seed.mjs && node --experimental-sqlite data-core/seed_runs.mjs",
     "demo": "node --experimental-sqlite data-core/demo_seed.mjs",
     "dev": "node --experimental-sqlite server/server.mjs",
@@ -31,7 +32,7 @@
     "test:integration": "node --test tests/integration.test.mjs tests/server-auth.test.mjs",
     "test:e2e": "node --test tests/e2e.test.mjs",
     "lint": "node --check server/server.mjs && node --check server/demo.mjs && node --check server/os_pages.mjs && node --check server/canopus_ui.mjs && node --check server/concierge_bot.mjs && node --check server/session.mjs && node --check server/access.mjs && node --check server/logger.mjs && node --check data-core/os_core.mjs && node --check data-core/case_workflow.mjs && node --check data-core/verify_restore.mjs && node --check scripts/start-app.mjs && node --check scripts/validate-env.mjs",
-    "typecheck": "npm run lint",
+    "typecheck": "tsc --project frontend/tsconfig.json --noEmit && npm run lint",
     "verify": "npm run env:check && npm run lint && npm run test && npm run smoke:hermetic",
     "check": "npm run lint && npm run test",
     "docker:build": "docker build -t canopuscare-demo .",
@@ -86,6 +87,18 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "puppeteer-core": "^25.3.0"
+    "lucide-react": "^0.546.0",
+    "puppeteer-core": "^25.3.0",
+    "react": "^19.0.1",
+    "react-dom": "^19.0.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.14",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^5.0.4",
+    "tailwindcss": "^4.1.14",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.3"
   }
 }

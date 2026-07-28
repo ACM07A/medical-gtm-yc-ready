@@ -440,7 +440,7 @@ const server = createServer(async (req, res) => {
     }
     if (/^\/landing-assets\/[A-Za-z0-9._-]+$/.test(url.pathname)) {
       const file = url.pathname.slice("/landing-assets/".length);
-      const fp = join(LANDING, file === "landing.css" || file === "landing.js" ? file : join("assets", file));
+      const fp = join(LANDING, file);
       try {
         const ext = file.split(".").pop().toLowerCase();
         const ct = {

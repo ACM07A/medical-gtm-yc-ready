@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { open } from "../data-core/db.mjs";
-import { DEMO_PASSWORD, authenticateDemoUser, ensureOsSchema, passwordHash, readinessReport, seedDemoOs } from "../data-core/os_core.mjs";
+import { DEMO_PASSWORD, authenticateDemoUser, ensureOsSchema, passwordHash, readinessReport, seedDemoOs, syncDemoCredentials } from "../data-core/os_core.mjs";
 import { apiCase, apiCases, getSession } from "../server/os_pages.mjs";
 import { requiresConsoleToken } from "../server/access.mjs";
 import { createSessionToken, sessionCookie, sessionMutationOriginAllowed, verifySessionToken } from "../server/session.mjs";
@@ -21,6 +21,25 @@ test("demo users use deterministic non-production password hash", () => {
   const { db, dir } = seededDb();
   const user = db.prepare(`SELECT * FROM app_user WHERE email='reviewer@canopuscare.com'`).get();
   assert.equal(user.password_hash, passwordHash(DEMO_PASSWORD));
+  db.close(); rmSync(dir, { recursive: true, force: true });
+});
+
+test("demo reviewer credentials follow environment changes without reseeding", () => {
+  const { db, dir } = seededDb();
+  const prior = {
+    mode: process.env.APP_MODE,
+    email: process.env.DEMO_USERNAME,
+    password: process.env.DEMO_REVIEWER_PASSWORD,
+  };
+  process.env.APP_MODE = "demo";
+  process.env.DEMO_USERNAME = "reviewer-updated@canopuscare.com";
+  process.env.DEMO_REVIEWER_PASSWORD = "updated-reviewer-password";
+  syncDemoCredentials(db);
+  assert.equal(authenticateDemoUser(db, "REVIEWER-UPDATED@CANOPUSCARE.COM", "updated-reviewer-password")?.id, "user_reviewer");
+  assert.equal(db.prepare(`SELECT count(*) count FROM patient_case`).get().count, 2);
+  if (prior.mode == null) delete process.env.APP_MODE; else process.env.APP_MODE = prior.mode;
+  if (prior.email == null) delete process.env.DEMO_USERNAME; else process.env.DEMO_USERNAME = prior.email;
+  if (prior.password == null) delete process.env.DEMO_REVIEWER_PASSWORD; else process.env.DEMO_REVIEWER_PASSWORD = prior.password;
   db.close(); rmSync(dir, { recursive: true, force: true });
 });
 

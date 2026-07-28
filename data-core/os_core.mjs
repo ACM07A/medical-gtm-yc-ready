@@ -19,11 +19,37 @@ export function passwordHash(password, salt = "canopuscare-demo-salt") {
 
 export function authenticateDemoUser(db, email, password) {
   if (appMode() !== "demo" || !password) return null;
-  const user = db.prepare(`SELECT * FROM app_user WHERE email=? AND active=1`).get(String(email || ""));
+  const user = db.prepare(`SELECT * FROM app_user WHERE lower(email)=lower(?) AND active=1`).get(String(email || "").trim());
   if (!user) return null;
   const supplied = Buffer.from(passwordHash(String(password)));
   const stored = Buffer.from(String(user.password_hash || ""));
   return supplied.length === stored.length && timingSafeEqual(supplied, stored) ? user : null;
+}
+
+export function syncDemoCredentials(db) {
+  if (appMode() !== "demo") return 0;
+  const fallbackPassword = process.env.DEMO_PASSWORD || DEMO_PASSWORD;
+  const credentials = [
+    ["user_admin", process.env.DEMO_ADMIN_EMAIL || "admin@canopuscare.demo", process.env.DEMO_ADMIN_PASSWORD || fallbackPassword],
+    ["user_hospital", process.env.DEMO_HOSPITAL_EMAIL || "hospital@canopuscare.demo", process.env.DEMO_HOSPITAL_PASSWORD || fallbackPassword],
+    ["user_agent", process.env.DEMO_AGENT_EMAIL || "agent@canopuscare.demo", process.env.DEMO_AGENT_PASSWORD || fallbackPassword],
+    ["user_vendor", process.env.DEMO_VENDOR_EMAIL || "vendor@canopuscare.demo", process.env.DEMO_VENDOR_PASSWORD || fallbackPassword],
+    ["user_reviewer", process.env.DEMO_USERNAME || DEMO_USERNAME, process.env.DEMO_REVIEWER_PASSWORD || fallbackPassword],
+  ];
+  const update = db.prepare(`UPDATE app_user SET email=?,password_hash=?,active=1 WHERE id=?`);
+  let changed = 0;
+  db.exec("BEGIN");
+  try {
+    for (const [id, email, password] of credentials) {
+      const result = update.run(String(email).trim().toLowerCase(), passwordHash(password), id);
+      changed += Number(result.changes || 0);
+    }
+    db.exec("COMMIT");
+  } catch (error) {
+    db.exec("ROLLBACK");
+    throw error;
+  }
+  return changed;
 }
 
 export function ensureOsSchema(db) {
