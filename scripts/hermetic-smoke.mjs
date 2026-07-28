@@ -3,6 +3,12 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { loadEnv } from "../lib/env.mjs";
+
+// Load the same .env the spawned server will load, so CONSOLE_TOKEN (and any other
+// gate) is visible to this process too -- otherwise the smoke-test child below can't
+// authenticate against operator routes the server just started gating.
+loadEnv();
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const dir = mkdtempSync(join(tmpdir(), "canopuscare-smoke-"));
