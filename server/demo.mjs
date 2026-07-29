@@ -24,13 +24,9 @@ const surfaces = [
   ["/hospital", "Hospital command centre", "Assigned-case inbox, response workflow, SLA and task board.", "core", "Building2"],
   ["/vendors", "Travel coordination", "Interpreter, transfer and accommodation requests without real bookings.", "core", "Plane"],
   ["/agents", "AI-assisted activity", "Deterministic operational outputs with evidence and approval state.", "core", "Activity"],
-  ["/studio", "Human approval studio", "Compliance gates before releases, messages or external actions.", "gate", "CircleCheckBig"],
   ["/integrations", "Integration readiness", "Operational, simulated and disabled adapter states.", "gate", "Plug"],
   ["/audit", "Audit history", "Material actions, actors, timestamps and blocked decisions.", "gate", "ScrollText"],
   ["/cases/CASE-DEMO-002", "Consent-blocked case", "Progression is refused until consent and records are complete.", "blocked", "TriangleAlert"],
-  ["/console", "GTM operator console", "Gated partner, content and distribution operations.", "legacy", "BriefcaseMedical"],
-  ["/sandbox", "Journey sandbox", "Gated communications and journey simulation.", "legacy", "MessageCircleQuestion"],
-  ["/benchmarks", "Aggregate benchmarks", "De-identified learning with k-anonymity suppression.", "legacy", "Activity"],
 ];
 
 export function renderDemo(db, session) {
@@ -99,7 +95,7 @@ export function renderDemo(db, session) {
       </div></div>
       <div class="panel"><h2>Human oversight</h2><div class="status-list">
         <div class="status-row"><span class="status-icon">${icon("Users",17)}</span><span><b>Maya Rao, care coordinator</b><span class="label">Owns administrative next steps for the golden case</span></span><span class="badge ready">Assigned</span></div>
-        <div class="status-row"><span class="status-icon">${icon("CircleCheckBig",17)}</span><span><b>Approval controls</b><span class="label">${stats.approvals} recorded decisions; ${compliance} compliance refusal</span></span><a class="icon-btn" href="/studio" aria-label="Open approvals">${icon("ArrowRight",16)}</a></div>
+        <div class="status-row"><span class="status-icon">${icon("CircleCheckBig",17)}</span><span><b>Approval controls</b><span class="label">${stats.approvals} recorded decisions; ${compliance} compliance refusal</span></span><a class="icon-btn" href="/cases/CASE-DEMO-001" aria-label="Review case approvals">${icon("ArrowRight",16)}</a></div>
       </div></div>
     </section>
 
@@ -111,7 +107,7 @@ export function renderDemo(db, session) {
 npm ci
 npm run yc-demo</pre><p class="label">Docker alternative: <code>docker compose up --build</code>.</p></div>
       <div class="panel"><h2>Reviewer access</h2><pre class="cmd">${esc(process.env.DEMO_USERNAME || DEMO_USERNAME)}
-Password configured by the deployment owner</pre><p class="label">Anonymous visitors remain read-only. Hospital, agent and vendor accounts receive server-scoped views.</p>
+Password configured by the deployment owner</pre><p class="label">Sign-in is required. Reviewer access is read-only; hospital, agent and vendor accounts receive server-scoped views.</p>
         <div class="actions"><a class="btn primary" href="/login">${icon("KeyRound",14)} Reviewer login</a>${session?.authenticated && session.role === "platform_admin" ? `<button class="btn" onclick="resetDemo()">${icon("RotateCcw",14)} Reset demo</button>` : ""}<a class="btn" href="/docs/YC_REVIEWER_GUIDE.md">${icon("BookOpenText",14)} Reviewer guide</a></div>
       </div>
     </section>

@@ -8,9 +8,10 @@ import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 
-test("public demo, signed hospital session and operator token enforce the route matrix", async () => {
+test("public landing, signed app session and operator token enforce the route matrix", async () => {
   const dir = mkdtempSync(join(tmpdir(), "canopus-auth-server-"));
   const port = String(5600 + Math.floor(Math.random() * 200));
+  const reviewerPassword = "test-reviewer-password-not-for-production";
   const env = {
     ...process.env,
     APP_MODE: "demo",
@@ -21,6 +22,7 @@ test("public demo, signed hospital session and operator token enforce the route 
     SESSION_SECRET: "test-session-secret-at-least-32-characters",
     CONSOLE_TOKEN: "operator-test-token",
     DEMO_PASSWORD: "canopus-demo",
+    DEMO_REVIEWER_PASSWORD: reviewerPassword,
   };
   const child = spawn(process.execPath, ["--experimental-sqlite", "scripts/start-app.mjs"], {
     cwd: root,
@@ -42,15 +44,18 @@ test("public demo, signed hospital session and operator token enforce the route 
     }
     assert.equal(ready, true, output);
 
-    for (const path of ["/demo", "/concierge", "/cases", "/vendors", "/audit"])
-      assert.equal((await fetch(base + path)).status, 200, path);
-    const concierge = await fetch(`${base}/api/concierge/ask`, {
+    for (const path of ["/demo", "/concierge", "/cases", "/vendors", "/audit"]) {
+      const response = await fetch(base + path, { redirect: "manual" });
+      assert.equal(response.status, 302, path);
+      assert.match(response.headers.get("location") || "", /^\/login\?next=/, path);
+    }
+    assert.equal((await fetch(`${base}/api/cases`)).status, 401);
+    const anonymousConcierge = await fetch(`${base}/api/concierge/ask`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ caseId: "case_ibrahim_musa", text: "What's the status?" }),
     });
-    assert.equal(concierge.status, 200);
-    assert.equal((await concierge.json()).intent, "status");
+    assert.equal(anonymousConcierge.status, 401);
     const landing = await fetch(`${base}/`);
     assert.equal(landing.status, 200);
     const landingHtml = await landing.text();
@@ -79,6 +84,31 @@ test("public demo, signed hospital session and operator token enforce the route 
     assert.match(cookie, /^canopus_session=/);
     const cases = await (await fetch(`${base}/api/cases`, { headers: { cookie } })).json();
     assert.deepEqual(cases.cases.map((row) => row.id), ["case_ibrahim_musa"]);
+    for (const path of ["/demo", "/concierge", "/cases", "/hospital", "/vendors", "/audit"])
+      assert.equal((await fetch(base + path, { headers: { cookie } })).status, 200, path);
+    const concierge = await fetch(`${base}/api/concierge/ask`, {
+      method: "POST",
+      headers: { cookie, origin: base, "content-type": "application/json" },
+      body: JSON.stringify({ caseId: "case_ibrahim_musa", text: "What's the status?" }),
+    });
+    assert.equal(concierge.status, 200);
+    assert.equal((await concierge.json()).intent, "status");
+
+    const reviewerLogin = await fetch(`${base}/api/auth/login`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: "reviewer@canopuscare.com", password: reviewerPassword }),
+    });
+    assert.equal(reviewerLogin.status, 200);
+    const reviewerCookie = reviewerLogin.headers.get("set-cookie")?.split(";")[0];
+    const reviewerPages = ["/demo", "/cases/CASE-DEMO-001", "/concierge", "/hospital", "/agent", "/vendors", "/agents", "/integrations", "/audit"];
+    for (const path of reviewerPages) {
+      const response = await fetch(base + path, { headers: { cookie: reviewerCookie } });
+      assert.equal(response.status, 200, path);
+      const html = await response.text();
+      assert.doesNotMatch(html, /href="\/(studio|console|sandbox|journey|benchmarks)/, path);
+      if (path === "/demo") assert.match(html, /Sign-in is required\. Reviewer access is read-only/);
+    }
     const firstTransition = await fetch(`${base}/api/cases/CASE-DEMO-001/transition`, {
       method: "POST",
       headers: { cookie, origin: base, "content-type": "application/json" },

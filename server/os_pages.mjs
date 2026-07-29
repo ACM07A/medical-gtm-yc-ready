@@ -32,8 +32,6 @@ export function getSession(db, req) {
     : null;
   if (!user && headerEmail)
     user = db.prepare(`SELECT * FROM app_user WHERE email=? AND active=1`).get(headerEmail);
-  if (!user && appMode() === "demo")
-    user = db.prepare(`SELECT * FROM app_user WHERE id='user_viewer' AND active=1`).get();
   if (!user)
     return { user: null, memberships: [], role: "unauthenticated", organization_id: null, authenticated: false };
   const memberships = user ? db.prepare(`SELECT m.role,o.* FROM membership m JOIN organization o ON o.id=m.organization_id WHERE m.user_id=?`).all(user.id) : [];
@@ -174,7 +172,7 @@ export function renderCase(db, session, id) {
       `<button class="btn primary" data-case-transition="${esc(state)}">${esc(CASE_WORKFLOW[state].label)}</button>`).join("")}<p id="transition-result" class="label" aria-live="polite"></p></div>`
     : `<div class="panel"><h2>Next workflow action</h2><p>${esc(c.next_best_action)}</p><p class="label">${session.authenticated ? "This action belongs to another demo role, or the case is blocked." : "Log in as the assigned demo role to perform workflow actions."}</p></div>`;
   return shell(c.synthetic_name, `<div class="head"><div><div class="eyebrow">${esc(c.synthetic_identifier)}</div><h1>${esc(c.synthetic_name)}</h1><p class="lede">${esc(c.treatment_request)}. ${esc(c.warnings)}</p></div><div>${badge(caseStateLabel(c.current_stage))} ${badge(c.consent_status)}</div></div>
-  <div class="callout">Illustrative synthetic organizations and rates only. No affiliation, accreditation or partnership is implied.${c.source_lead ? ` Linked GTM lead #${esc(c.source_lead.id)} (${esc(c.source_lead.journey_stage || "intake")}). <a href="/journey">Open journey orchestrator</a>.` : ""}</div>
+  <div class="callout">Illustrative synthetic organizations and rates only. No affiliation, accreditation or partnership is implied.${c.source_lead ? ` Linked GTM lead #${esc(c.source_lead.id)} (${esc(c.source_lead.journey_stage || "intake")}).` : ""}</div>
   <div class="tabs">${["Overview","Documents","Hospital Matches","Estimates","Messages","Tasks","Travel Support","Vendors","Timeline","Compliance","Audit Log"].map((t)=>`<span class="tab">${t}</span>`).join("")}</div>
   <section class="split"><div class="panel"><h2>Overview</h2><div class="case-facts">${[
     ["Source market", c.source_market], ["Language", c.preferred_language], ["Urgency", c.urgency],

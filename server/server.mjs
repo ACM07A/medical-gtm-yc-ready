@@ -19,7 +19,7 @@ import { renderSandbox, saveTemplate } from "./sandbox.mjs";
 import { renderDemo } from "./demo.mjs";
 import { appMode, authenticateDemoUser, ensureOsSchema, readinessReport, seedDemoOs } from "../data-core/os_core.mjs";
 import { clearSessionCookie, loginRateLimit, sessionCookie, sessionMutationOriginAllowed } from "./session.mjs";
-import { requiresConsoleToken } from "./access.mjs";
+import { requiresAppSession, requiresConsoleToken } from "./access.mjs";
 import { renderLogin } from "./login.mjs";
 import { errorPage } from "./canopus_ui.mjs";
 import { structuredLog } from "./logger.mjs";
@@ -180,9 +180,8 @@ const server = createServer(async (req, res) => {
     });
     res.end(body);
   };
-  // Public sandbox: synthetic OS pages and read APIs stay browseable as a read-only reviewer.
-  // Operator/GTM surfaces expose contact research, content queues, or powerful actions and remain
-  // behind CONSOLE_TOKEN. OS mutations are separately role-checked by the signed demo session.
+  // The marketing page, health/readiness and login remain public. Product workspaces require a
+  // signed app session; operator/GTM surfaces remain separately fenced by CONSOLE_TOKEN.
   const OPERATOR_PROTECTED = requiresConsoleToken(url.pathname);
   if (process.env.CONSOLE_TOKEN && OPERATOR_PROTECTED) {
     const auth = req.headers.authorization || "";
@@ -192,6 +191,19 @@ const server = createServer(async (req, res) => {
       res.writeHead(401, { "WWW-Authenticate": 'Basic realm="CanopusCare console"', "content-type": "text/plain" });
       return res.end("authentication required");
     }
+  }
+  if (requiresAppSession(url.pathname) && !session.authenticated) {
+    db.close();
+    if (req.method === "GET" && !url.pathname.startsWith("/api/")) {
+      const next = encodeURIComponent(url.pathname + url.search);
+      res.writeHead(302, { location: `/login?next=${next}`, "cache-control": "no-store" });
+      return res.end("sign in required");
+    }
+    return send(401, "application/json", JSON.stringify({
+      ok: false,
+      error: { code: "AUTH_REQUIRED", message: "Sign in is required to access the demo workspace.", details: {} },
+      request_id: requestId,
+    }));
   }
   try {
     if (!sessionMutationOriginAllowed(req)) {
@@ -208,7 +220,7 @@ const server = createServer(async (req, res) => {
     if (req.method === "GET" && appCaseMatch)
       return send(302, "text/plain; charset=utf-8", "Open case", { location: `/cases/${encodeURIComponent(appCaseMatch[1])}` });
     if (req.method === "GET" && url.pathname === "/login")
-      return send(200, "text/html; charset=utf-8", renderLogin());
+      return send(200, "text/html; charset=utf-8", renderLogin(url.searchParams.get("next")));
     if (req.method === "POST" && url.pathname === "/api/auth/login") {
       const rateKey = req.socket.remoteAddress || "unknown";
       const limit = loginRateLimit(rateKey);
@@ -348,7 +360,7 @@ const server = createServer(async (req, res) => {
     // CONCIERGE AGENTS — post-booking journey, live and clickable (server/agents.mjs). Real model calls
     // through the same failover chain and safety gate as everything else; deterministic fallback if no key.
     if (url.pathname === "/agents")
-      return send(200, "text/html; charset=utf-8", url.searchParams.get("legacy") === "1" ? renderAgentsDemo() : renderOsAgents(db, session));
+      return send(200, "text/html; charset=utf-8", url.searchParams.get("legacy") === "1" && session.role === "platform_admin" ? renderAgentsDemo() : renderOsAgents(db, session));
     if (req.method === "POST" && url.pathname.startsWith("/api/agents/")) {
       const body = await readBody(req);
       const kind = url.pathname.slice("/api/agents/".length);

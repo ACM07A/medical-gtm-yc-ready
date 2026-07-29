@@ -62,7 +62,6 @@ const NAV = [
   ["agent", "/agent", "Users", "Agents"],
   ["vendors", "/vendors", "Handshake", "Vendors"],
   ["tasks", "/tasks", "ListTodo", "Tasks"],
-  ["approvals", "/studio", "ShieldCheck", "Approvals"],
   ["ai", "/agents", "Bot", "AI activity"],
   ["integrations", "/integrations", "Plug", "Integrations"],
   ["audit", "/audit", "ScrollText", "Audit"],

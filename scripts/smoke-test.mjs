@@ -115,8 +115,8 @@ console.log(`${logoutOk ? "✓" : "✗"} POST /api/auth/logout clears session ->
 if (!logoutOk) failed++;
 
 const anonymousMutation = await fetch(base + "/api/approvals/approval_estimate_release/approve", { method: "POST" });
-console.log(`${anonymousMutation.status === 403 ? "✓" : "✗"} POST approval as anonymous read-only -> ${anonymousMutation.status}`);
-if (anonymousMutation.status !== 403) failed++;
+console.log(`${anonymousMutation.status === 401 ? "✓" : "✗"} POST approval without a signed session -> ${anonymousMutation.status}`);
+if (anonymousMutation.status !== 401) failed++;
 
 const adminLogin = await fetch(base + "/api/auth/login", {
   method: "POST",
@@ -158,7 +158,7 @@ if (!csvPreviewOk) failed++;
 async function askConcierge(caseId, text) {
   const response = await fetch(base + "/api/concierge/ask", {
     method: "POST",
-    headers: { "content-type": "application/json" },
+    headers: { cookie: adminCookie, origin: base, "content-type": "application/json" },
     body: JSON.stringify({ caseId, text }),
   });
   return { response, body: await response.json() };

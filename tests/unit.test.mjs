@@ -6,7 +6,7 @@ import { tmpdir } from "node:os";
 import { open } from "../data-core/db.mjs";
 import { DEMO_PASSWORD, authenticateDemoUser, ensureOsSchema, passwordHash, readinessReport, seedDemoOs, syncDemoCredentials } from "../data-core/os_core.mjs";
 import { apiCase, apiCases, getSession } from "../server/os_pages.mjs";
-import { requiresConsoleToken } from "../server/access.mjs";
+import { requiresAppSession, requiresConsoleToken } from "../server/access.mjs";
 import { createSessionToken, sessionCookie, sessionMutationOriginAllowed, verifySessionToken } from "../server/session.mjs";
 
 function seededDb() {
@@ -43,14 +43,14 @@ test("demo reviewer credentials follow environment changes without reseeding", (
   db.close(); rmSync(dir, { recursive: true, force: true });
 });
 
-test("anonymous demo visitors receive read-only scope", () => {
+test("anonymous demo visitors have no app scope", () => {
   const { db, dir } = seededDb();
   const prior = process.env.APP_MODE;
   process.env.APP_MODE = "demo";
   const session = getSession(db, { headers: {} });
-  assert.equal(session.role, "read_only");
+  assert.equal(session.role, "unauthenticated");
   assert.equal(session.authenticated, false);
-  assert.equal(apiCases(db, session).length, 2);
+  assert.equal(apiCases(db, session).length, 0);
   if (prior == null) delete process.env.APP_MODE; else process.env.APP_MODE = prior;
   db.close(); rmSync(dir, { recursive: true, force: true });
 });
@@ -109,10 +109,12 @@ test("session-cookie mutations require an allowed origin", () => {
   }
 });
 
-test("public OS and operator route posture is explicit", () => {
-  for (const path of ["/demo", "/cases", "/cases/case_ibrahim_musa", "/vendors", "/audit", "/api/readiness", "/api/cases", "/login"])
-    assert.equal(requiresConsoleToken(path), false, path);
-  for (const path of ["/console", "/studio", "/sandbox", "/site/index.html", "/outputs/screenshots/landing-home.png", "/api/studio/approve", "/api/agents/triage", "/api/journey/run", "/api/economics"])
+test("public, signed-app and operator route posture is explicit", () => {
+  for (const path of ["/demo", "/cases", "/cases/case_ibrahim_musa", "/vendors", "/audit", "/api/cases", "/api/concierge/ask"])
+    assert.equal(requiresAppSession(path), true, path);
+  for (const path of ["/", "/login", "/api/health", "/api/readiness", "/api/session", "/landing-assets/landing.css"])
+    assert.equal(requiresAppSession(path), false, path);
+  for (const path of ["/console", "/studio", "/sandbox", "/journey", "/site/index.html", "/outputs/screenshots/landing-home.png", "/api/studio/approve", "/api/agents/triage", "/api/journey/run", "/api/economics"])
     assert.equal(requiresConsoleToken(path), true, path);
 });
 

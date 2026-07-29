@@ -2,8 +2,10 @@ import { appMode, DEMO_USERNAME } from "../data-core/os_core.mjs";
 
 const esc = (value) => String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
 
-export function renderLogin() {
+export function renderLogin(requestedNext = "/demo") {
   const username = process.env.DEMO_USERNAME || DEMO_USERNAME;
+  const next = String(requestedNext || "/demo");
+  const destination = next.startsWith("/") && !next.startsWith("//") ? next : "/demo";
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Reviewer login | Canopus Care</title>
@@ -26,13 +28,13 @@ a{color:#0A8C7E;font-weight:700}
 <form id="login"><label>Email<input name="email" type="email" autocomplete="username" value="${esc(username)}" required></label>
 <label>Password<input name="password" type="password" autocomplete="current-password" required></label>
 <button type="submit">Sign in</button><p class="error" id="error" role="alert"></p></form>
-<p class="meta"><a href="/demo">Continue in read-only mode</a></p>
+<p class="meta"><a href="/">Return to Canopus Care</a></p>
 </section></main>
 <script>
 document.getElementById("login").addEventListener("submit",async(event)=>{
   event.preventDefault();const form=new FormData(event.currentTarget);const error=document.getElementById("error");error.textContent="";
   const response=await fetch("/api/auth/login",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify(Object.fromEntries(form))});
-  if(response.ok){location.href="/demo";return}const body=await response.json().catch(()=>({}));error.textContent=body.error?.message||"Sign-in failed";
+  if(response.ok){location.href=${JSON.stringify(destination)};return}const body=await response.json().catch(()=>({}));error.textContent=body.error?.message||"Sign-in failed";
 });
 </script></body></html>`;
 }
