@@ -19,7 +19,18 @@ export function passwordHash(password, salt = "canopuscare-demo-salt") {
 
 export function authenticateDemoUser(db, email, password) {
   if (appMode() !== "demo" || !password) return null;
-  const user = db.prepare(`SELECT * FROM app_user WHERE lower(email)=lower(?) AND active=1`).get(String(email || "").trim());
+  const normalizedEmail = String(email || "").trim().toLowerCase();
+  const configuredReviewerEmail = String(process.env.DEMO_USERNAME || DEMO_USERNAME).trim().toLowerCase();
+  const configuredReviewerPassword = process.env.DEMO_REVIEWER_PASSWORD;
+  if (configuredReviewerPassword && normalizedEmail === configuredReviewerEmail) {
+    const supplied = Buffer.from(passwordHash(String(password)));
+    const configured = Buffer.from(passwordHash(configuredReviewerPassword));
+    if (supplied.length !== configured.length || !timingSafeEqual(supplied, configured)) return null;
+    return db.prepare(`SELECT * FROM app_user WHERE id='user_reviewer' AND active=1`).get()
+      || db.prepare(`SELECT * FROM app_user WHERE lower(email)=lower(?) AND active=1`).get(normalizedEmail)
+      || null;
+  }
+  const user = db.prepare(`SELECT * FROM app_user WHERE lower(email)=lower(?) AND active=1`).get(normalizedEmail);
   if (!user) return null;
   const supplied = Buffer.from(passwordHash(String(password)));
   const stored = Buffer.from(String(user.password_hash || ""));

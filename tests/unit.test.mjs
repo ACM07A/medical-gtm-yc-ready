@@ -43,6 +43,25 @@ test("demo reviewer credentials follow environment changes without reseeding", (
   db.close(); rmSync(dir, { recursive: true, force: true });
 });
 
+test("configured reviewer password overrides a stale persistent hash", () => {
+  const { db, dir } = seededDb();
+  const prior = {
+    mode: process.env.APP_MODE,
+    email: process.env.DEMO_USERNAME,
+    password: process.env.DEMO_REVIEWER_PASSWORD,
+  };
+  process.env.APP_MODE = "demo";
+  process.env.DEMO_USERNAME = "reviewer@canopuscare.com";
+  process.env.DEMO_REVIEWER_PASSWORD = "current-host-password";
+  db.prepare(`UPDATE app_user SET password_hash=? WHERE id='user_reviewer'`).run(passwordHash("stale-database-password"));
+  assert.equal(authenticateDemoUser(db, "reviewer@canopuscare.com", "current-host-password")?.id, "user_reviewer");
+  assert.equal(authenticateDemoUser(db, "reviewer@canopuscare.com", "stale-database-password"), null);
+  if (prior.mode == null) delete process.env.APP_MODE; else process.env.APP_MODE = prior.mode;
+  if (prior.email == null) delete process.env.DEMO_USERNAME; else process.env.DEMO_USERNAME = prior.email;
+  if (prior.password == null) delete process.env.DEMO_REVIEWER_PASSWORD; else process.env.DEMO_REVIEWER_PASSWORD = prior.password;
+  db.close(); rmSync(dir, { recursive: true, force: true });
+});
+
 test("anonymous demo visitors have no app scope", () => {
   const { db, dir } = seededDb();
   const prior = process.env.APP_MODE;
