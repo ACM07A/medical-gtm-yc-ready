@@ -121,7 +121,7 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
                   className="w-full sm:w-auto px-7 py-3.5 rounded-xl bg-[#0D9488] hover:bg-[#0F766E] text-white font-mono text-sm font-bold flex items-center justify-center gap-2 shadow-xl shadow-teal-700/15 hover:scale-[1.02] active:scale-[0.98] transition-all"
                 >
                   <Laptop className="w-4 h-4" />
-                  <span>Open Interactive Demo</span>
+                  <span>Open Gated Reviewer Demo</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
 
@@ -970,13 +970,13 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-slate-800 pb-8">
             <div className="space-y-3">
               <span className="text-xs font-mono font-bold text-[#0FB8A6] uppercase tracking-wider bg-teal-500/10 px-3 py-1 rounded-full border border-teal-500/20">
-                Reviewer Guided Tour
+                Reviewer Path Preview
               </span>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-['Plus_Jakarta_Sans']">
-                2-Minute Reviewer Demo Walkthrough
+                2-Minute Product Walkthrough
               </h2>
               <p className="text-slate-400 text-sm max-w-xl">
-                Test the complete case cycle directly in our interactive sandbox without registration.
+                Preview the case cycle below, then sign in to enter the interactive reviewer demo.
               </p>
             </div>
 
@@ -985,7 +985,7 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
               className="px-6 py-3.5 rounded-xl bg-[#0FB8A6] hover:bg-[#0A8C7E] text-white font-mono text-xs font-bold flex items-center gap-2 shadow-xl shrink-0 self-start md:self-auto"
             >
               <Laptop className="w-4 h-4" />
-              <span>Launch Interactive Sandbox</span>
+              <span>Sign in to Interactive Demo</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -1728,7 +1728,7 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
             <div className="text-slate-200 font-bold uppercase text-[10px] tracking-wider">Reviewer Links</div>
             <ul className="space-y-1.5 text-slate-400">
               <li><a href="#yc-application" className="hover:text-[#FF6600]">YC Application</a></li>
-              <li><button onClick={onOpenInteractiveDemo} className="hover:text-[#0FB8A6] text-left">Interactive Sandbox</button></li>
+              <li><button onClick={onOpenInteractiveDemo} className="hover:text-[#0FB8A6] text-left">Reviewer Login</button></li>
               <li><a href="https://www.linkedin.com/in/hussain-bombaywala/" target="_blank" rel="noopener noreferrer" className="hover:text-[#0FB8A6]">Hussain (LinkedIn)</a></li>
               <li><a href="https://www.linkedin.com/in/ajeyasriganesh" target="_blank" rel="noopener noreferrer" className="hover:text-[#0FB8A6]">Ajeya (LinkedIn)</a></li>
             </ul>
@@ -1791,7 +1791,7 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
                 }}
                 className="shrink-0 px-5 py-2.5 rounded-xl bg-[#0FB8A6] hover:bg-[#0A8C7E] text-white text-xs font-mono font-bold"
               >
-                Launch Live Interactive Sandbox
+                Sign in to Live Demo
               </button>
             </div>
           </div>

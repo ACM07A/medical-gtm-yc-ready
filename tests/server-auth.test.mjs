@@ -44,7 +44,7 @@ test("public landing, signed app session and operator token enforce the route ma
     }
     assert.equal(ready, true, output);
 
-    for (const path of ["/demo", "/concierge", "/cases", "/cases/CASE-DEMO-002", "/vendors", "/audit", "/workflows"]) {
+    for (const path of ["/demo", "/concierge", "/cases", "/cases/CASE-DEMO-002", "/vendors", "/audit", "/workflows", "/docs/YC_REVIEWER_GUIDE.md"]) {
       const response = await fetch(base + path, { redirect: "manual" });
       assert.equal(response.status, 302, path);
       assert.match(response.headers.get("location") || "", /^\/login\?next=/, path);
@@ -55,6 +55,7 @@ test("public landing, signed app session and operator token enforce the route ma
     });
     assert.equal(forgedDemoHeader.status, 302);
     assert.equal((await fetch(`${base}/api/cases`)).status, 401);
+    assert.equal((await fetch(`${base}/api/metrics`)).status, 401);
     const anonymousConcierge = await fetch(`${base}/api/concierge/ask`, {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -73,7 +74,10 @@ test("public landing, signed app session and operator token enforce the route ma
     assert.equal((await fetch(base + stylePath)).status, 200);
     const landingBundle = await fetch(base + scriptPath);
     assert.equal(landingBundle.status, 200);
-    assert.doesNotMatch(await landingBundle.text(), /Apollo|Fortis|Mazumdar Shaw|signed partner/i);
+    const landingBundleText = await landingBundle.text();
+    assert.doesNotMatch(landingBundleText, /Apollo|Fortis|Mazumdar Shaw|signed partner/i);
+    assert.doesNotMatch(landingBundleText, /without registration/i);
+    assert.match(landingBundleText, /Reviewer Login|Sign in to Interactive Demo/);
     assert.equal((await fetch(`${base}/landing-assets/care-coordination-v2.jpg`)).status, 200);
     assert.equal((await fetch(`${base}/console`)).status, 401);
     assert.equal((await fetch(`${base}/site/index.html`)).status, 401);
@@ -126,6 +130,8 @@ test("public landing, signed app session and operator token enforce the route ma
         assert.match(html, /Run deterministic preview/);
       }
     }
+    assert.equal((await fetch(`${base}/docs/YC_REVIEWER_GUIDE.md`, { headers: { cookie: reviewerCookie } })).status, 200);
+    assert.equal((await fetch(`${base}/api/metrics`, { headers: { cookie: reviewerCookie } })).status, 200);
     const previewPage = await fetch(`${base}/agents?preview=1`, { headers: { cookie: reviewerCookie } });
     assert.equal(previewPage.status, 200);
     const previewHtml = await previewPage.text();

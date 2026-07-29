@@ -115,7 +115,7 @@ export function Navbar({ theme, onToggleTheme, isInteractiveSandboxMode, onToggl
             ) : (
               <>
                 <Building2 className="w-3.5 h-3.5" />
-                <span>Open Interactive Sandbox</span>
+                <span>Reviewer Login</span>
               </>
             )}
           </button>
@@ -166,7 +166,7 @@ export function Navbar({ theme, onToggleTheme, isInteractiveSandboxMode, onToggl
               }}
               className="text-[#0FB8A6] font-bold underline"
             >
-              {isInteractiveSandboxMode ? 'View Landing Page' : 'Open Interactive Sandbox'}
+              {isInteractiveSandboxMode ? 'View Landing Page' : 'Reviewer Login'}
             </button>
           </div>
         </div>

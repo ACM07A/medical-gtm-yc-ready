@@ -148,7 +148,7 @@ test("session-cookie mutations require an allowed origin", () => {
 });
 
 test("public, signed-app and operator route posture is explicit", () => {
-  for (const path of ["/demo", "/cases", "/cases/case_ibrahim_musa", "/vendors", "/audit", "/workflows", "/api/cases", "/api/concierge/ask"])
+  for (const path of ["/demo", "/cases", "/cases/case_ibrahim_musa", "/vendors", "/audit", "/workflows", "/docs/YC_REVIEWER_GUIDE.md", "/api/cases", "/api/concierge/ask", "/api/metrics"])
     assert.equal(requiresAppSession(path), true, path);
   for (const path of ["/", "/login", "/api/health", "/api/readiness", "/api/session", "/landing-assets/landing.css"])
     assert.equal(requiresAppSession(path), false, path);
