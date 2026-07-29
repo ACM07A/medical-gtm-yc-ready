@@ -130,7 +130,7 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
                   className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-mono text-sm font-bold flex items-center justify-center gap-2 transition-all shadow-md"
                 >
                   <Play className="w-4 h-4 fill-current text-[#FF6600]" />
-                  <span>Watch 90-second walkthrough</span>
+                  <span>Watch product walkthrough</span>
                 </button>
               </div>
 
@@ -1194,7 +1194,7 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
                 <span className="text-[10px] font-mono px-2.5 py-1 bg-[#FF6600]/10 text-[#FF6600] rounded-md font-bold border border-[#FF6600]/20">
                   VIDEO DEMO
                 </span>
-                <h3 className="text-xl font-bold text-white">90-Second Walkthrough</h3>
+                <h3 className="text-xl font-bold text-white">Product Walkthrough</h3>
                 <p className="text-xs text-slate-300 leading-relaxed">
                   Concise walkthrough demonstrating patient intake, automated translation, hospital desk responses, and human-gated approval.
                 </p>
@@ -1745,33 +1745,42 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
           ========================================================================= */}
       {activeVideoModal && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full p-6 text-white space-y-4 relative shadow-2xl">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-4xl w-full p-6 text-white space-y-4 relative shadow-2xl">
             <button
               onClick={() => setActiveVideoModal(false)}
+              aria-label="Close video"
               className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-lg bg-slate-800"
             >
               <X className="w-5 h-5" />
             </button>
 
             <div className="space-y-1">
-              <span className="text-[10px] font-mono text-[#FF6600] font-bold uppercase tracking-wider">90-SECOND PRODUCT WALKTHROUGH</span>
+              <span className="text-[10px] font-mono text-[#FF6600] font-bold uppercase tracking-wider">PRODUCT WALKTHROUGH · 2:42</span>
               <h3 className="text-xl font-bold font-['Plus_Jakarta_Sans']">Canopus Care Engine Demo</h3>
             </div>
 
-            <div className="aspect-video bg-slate-950 rounded-xl border border-slate-800 flex flex-col items-center justify-center p-6 text-center space-y-4">
-              <Play className="w-12 h-12 text-[#FF6600] animate-pulse" />
-              <div className="space-y-1">
-                <div className="text-sm font-bold text-white">Interactive Sandbox Engine Ready</div>
-                <div className="text-xs text-slate-400 max-w-md">
-                  Experience live execution, stakeholder perspective switching, and state transitions directly in the browser sandbox.
-                </div>
-              </div>
+            <video
+              className="w-full aspect-video bg-slate-950 rounded-xl border border-slate-800"
+              controls
+              autoPlay
+              playsInline
+              preload="metadata"
+              aria-label="Canopus Care product walkthrough"
+            >
+              <source src="/landing-assets/canopus-care-walkthrough.mp4" type="video/mp4" />
+              Your browser does not support embedded video playback.
+            </video>
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <p className="text-xs text-slate-400">
+                Continue into the live reviewer sandbox after the walkthrough.
+              </p>
               <button
                 onClick={() => {
                   setActiveVideoModal(false);
                   onOpenInteractiveDemo();
                 }}
-                className="px-5 py-2.5 rounded-xl bg-[#0FB8A6] hover:bg-[#0A8C7E] text-white text-xs font-mono font-bold"
+                className="shrink-0 px-5 py-2.5 rounded-xl bg-[#0FB8A6] hover:bg-[#0A8C7E] text-white text-xs font-mono font-bold"
               >
                 Launch Live Interactive Sandbox
               </button>

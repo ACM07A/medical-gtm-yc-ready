@@ -74,6 +74,14 @@ for (const path of landingAssets) {
   if (!ok) failed++;
 }
 
+const walkthrough = await fetch(base + "/landing-assets/canopus-care-walkthrough.mp4");
+const walkthroughBytes = (await walkthrough.arrayBuffer()).byteLength;
+const walkthroughOk = walkthrough.status === 200
+  && walkthrough.headers.get("content-type") === "video/mp4"
+  && walkthroughBytes > 1_000_000;
+console.log(`${walkthroughOk ? "✓" : "✗"} GET /landing-assets/canopus-care-walkthrough.mp4 -> ${walkthrough.status} ${walkthrough.headers.get("content-type")}`);
+if (!walkthroughOk) failed++;
+
 const healthBody = await (await fetch(base + "/api/health")).json();
 const readinessBody = await (await fetch(base + "/api/readiness")).json();
 const statusShapeOk = healthBody.service === "canopus-care"

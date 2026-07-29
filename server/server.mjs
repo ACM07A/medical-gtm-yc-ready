@@ -464,6 +464,7 @@ const server = createServer(async (req, res) => {
           jpeg: "image/jpeg",
           png: "image/png",
           webp: "image/webp",
+          mp4: "video/mp4",
         }[ext] || "application/octet-stream";
         return send(200, ct, readFileSync(fp), { "cache-control": "public, max-age=3600" });
       } catch {
