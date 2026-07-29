@@ -123,10 +123,10 @@ Open these URLs in an incognito window and on a phone:
 | URL | Expected result |
 |---|---|
 | `/` | Public Canopus Care landing page |
-| `/demo` | Read-only reviewer dashboard |
-| `/concierge` | Suhail patient/family concierge with safety boundaries |
-| `/cases/CASE-DEMO-001` | Synthetic golden case |
-| `/cases/CASE-DEMO-002` | Consent-blocked safety case |
+| `/demo` | Redirects to `/login`; after reviewer login, opens the read-only dashboard |
+| `/concierge` | Redirects to `/login`; after reviewer login, opens Suhail with safety boundaries |
+| `/cases/CASE-DEMO-001` | Redirects to `/login`; after reviewer login, opens the synthetic golden case |
+| `/cases/CASE-DEMO-002` | Redirects to `/login`; after reviewer login, opens the consent-blocked safety case |
 | `/login` | Role login panel |
 | `/api/health` | JSON with `"ok": true` |
 | `/api/readiness` | JSON readiness report |
@@ -135,6 +135,8 @@ Open these URLs in an incognito window and on a phone:
 Also verify:
 
 - Landing buttons open routes on the same domain.
+- A clean incognito session cannot open `/demo`, `/concierge`, or a case without signing in.
+- Signing out invalidates the reviewer session and returns the browser to `/login`.
 - Images and CSS load with no mixed-content warning.
 - The mobile navigation opens and closes.
 - The synthetic-data banner remains visible throughout the OS.
