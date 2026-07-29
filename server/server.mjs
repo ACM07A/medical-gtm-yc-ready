@@ -182,7 +182,10 @@ const server = createServer(async (req, res) => {
   };
   // The marketing page, health/readiness and login remain public. Product workspaces require a
   // signed app session; operator/GTM surfaces remain separately fenced by CONSOLE_TOKEN.
-  const OPERATOR_PROTECTED = requiresConsoleToken(url.pathname);
+  const REVIEWER_AGENT_PREVIEW = req.method === "POST"
+    && url.pathname.startsWith("/api/agents/")
+    && url.searchParams.get("preview") === "1";
+  const OPERATOR_PROTECTED = requiresConsoleToken(url.pathname) && !REVIEWER_AGENT_PREVIEW;
   if (process.env.CONSOLE_TOKEN && OPERATOR_PROTECTED) {
     const auth = req.headers.authorization || "";
     const pass = auth.startsWith("Basic ") ? Buffer.from(auth.slice(6), "base64").toString().split(":").slice(1).join(":") : "";
@@ -192,7 +195,7 @@ const server = createServer(async (req, res) => {
       return res.end("authentication required");
     }
   }
-  if (requiresAppSession(url.pathname) && !session.authenticated) {
+  if ((requiresAppSession(url.pathname) || REVIEWER_AGENT_PREVIEW) && !session.authenticated) {
     db.close();
     if (req.method === "GET" && !url.pathname.startsWith("/api/")) {
       const next = encodeURIComponent(url.pathname + url.search);
@@ -359,13 +362,20 @@ const server = createServer(async (req, res) => {
       return send(200, "text/html; charset=utf-8", renderDemo(db, session));
     // CONCIERGE AGENTS — post-booking journey, live and clickable (server/agents.mjs). Real model calls
     // through the same failover chain and safety gate as everything else; deterministic fallback if no key.
-    if (url.pathname === "/agents")
-      return send(200, "text/html; charset=utf-8", url.searchParams.get("legacy") === "1" && session.role === "platform_admin" ? renderAgentsDemo() : renderOsAgents(db, session));
+    if (url.pathname === "/agents") {
+      const preview = url.searchParams.get("preview") === "1";
+      const legacy = url.searchParams.get("legacy") === "1" && session.role === "platform_admin";
+      const previewLeadId = db.prepare(`SELECT source_lead_id FROM patient_case WHERE source_lead_id IS NOT NULL ORDER BY id LIMIT 1`).get()?.source_lead_id;
+      return send(200, "text/html; charset=utf-8", preview || legacy ? renderAgentsDemo({ preview, leadId: previewLeadId }) : renderOsAgents(db, session));
+    }
     if (url.pathname === "/workflows")
       return send(200, "text/html; charset=utf-8", renderWorkflows(db, session));
     if (req.method === "POST" && url.pathname.startsWith("/api/agents/")) {
       const body = await readBody(req);
       const kind = url.pathname.slice("/api/agents/".length);
+      const preview = url.searchParams.get("preview") === "1";
+      if (session.role === "read_only" && !preview)
+        return send(403, "application/json", JSON.stringify({ error: { code: "READ_ONLY_SESSION", message: "Reviewer sessions may run rollback-only previews." } }));
       // Handlers that need the live DB connection are wrapped inline; pure/generation-only ones pass straight
       // through. Same functions a CLI script or comms_run.mjs would call — no separate "web" code path.
       const handler = {
@@ -394,7 +404,18 @@ const server = createServer(async (req, res) => {
       }[kind];
       if (!handler) return send(404, "application/json", JSON.stringify({ error: "unknown agent action: " + kind }));
       try {
-        const result = await handler();
+        let result;
+        if (preview) {
+          db.exec("SAVEPOINT reviewer_agent_preview");
+          try {
+            result = await handler();
+          } finally {
+            db.exec("ROLLBACK TO reviewer_agent_preview");
+            db.exec("RELEASE reviewer_agent_preview");
+          }
+          return send(200, "application/json", JSON.stringify({ ...result, preview: true, persisted: false }));
+        }
+        result = await handler();
         logRun(db, "Agents", `${kind} run`, JSON.stringify(result).slice(0, 140), "/agents", result?.safety?.verdict === "block" ? "fail" : "ok");
         return send(200, "application/json", JSON.stringify(result));
       } catch (e) { return send(500, "application/json", JSON.stringify({ error: String(e.message || e) })); }

@@ -389,7 +389,7 @@ export function renderWorkflows(db, session) {
     <div class="eyebrow">Workflow ${String(index + 1).padStart(2, "0")} &middot; ${esc(agent.grp)}</div>
     <h3>${esc(agent.title)}</h3>
     <p class="label">${esc(agent.desc)}</p>
-    <span class="badge ready">Deterministic preview ready</span>
+    <a class="badge ready" href="/agents?preview=1#workflow-${esc(agent.id)}">Run deterministic preview ${icon("ArrowUpRight", 12)}</a>
   </article>`).join("");
   const whatsappStages = Object.entries(STAGES)
     .filter(([, stage]) => stage.template)

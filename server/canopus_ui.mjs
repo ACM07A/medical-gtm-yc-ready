@@ -357,6 +357,9 @@ textarea:focus,input:focus,select:focus,.btn:focus-visible,.icon-btn:focus-visib
 .journey-step{color:inherit;text-decoration:none;border-radius:8px}
 .journey-step:hover .journey-dot{box-shadow:0 0 0 5px var(--brand-100)}
 .journey-step:focus-visible{outline:3px solid var(--brand-200);outline-offset:4px}
+.badge[href]{text-decoration:none;gap:5px;cursor:pointer}
+.badge[href]:hover{filter:brightness(.96)}
+.badge[href]:focus-visible{outline:3px solid var(--brand-200);outline-offset:3px}
 @keyframes case-target{from{background:var(--brand-50)}to{background:transparent}}
 @media(max-width:820px){.hero-media::after{background:linear-gradient(180deg,#F7FAF9 0,transparent 30%)}}
 @media(max-width:820px){.tabs .tab{min-height:44px}.case-section{scroll-margin-top:12px}}

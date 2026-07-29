@@ -120,8 +120,34 @@ test("public landing, signed app session and operator token enforce the route ma
       if (path === "/workflows") {
         assert.match(html, /13 operational agents and the WhatsApp journey/);
         assert.match(html, /Outbound disabled/);
+        assert.match(html, /href="\/agents\?preview=1#workflow-triage"/);
+        assert.match(html, /Run deterministic preview/);
       }
     }
+    const previewPage = await fetch(`${base}/agents?preview=1`, { headers: { cookie: reviewerCookie } });
+    assert.equal(previewPage.status, 200);
+    const previewHtml = await previewPage.text();
+    assert.match(previewHtml, /id="workflow-triage"/);
+    assert.match(previewHtml, /database changes rolled back/);
+    assert.match(previewHtml, /\/api\/agents\/.*\?preview=1/);
+    const previewLeadId = Number(previewHtml.match(/data-f="leadId" value="(\d+)"/)?.[1]);
+    assert.ok(previewLeadId > 0);
+
+    const previewRun = await fetch(`${base}/api/agents/family-update-add?preview=1`, {
+      method: "POST",
+      headers: { cookie: reviewerCookie, origin: base, "content-type": "application/json" },
+      body: JSON.stringify({ leadId: previewLeadId, name: "Preview Contact", phone: "+96800000000", relationship: "spouse" }),
+    });
+    const previewRunBody = await previewRun.text();
+    assert.equal(previewRun.status, 200, previewRunBody);
+    const previewResult = JSON.parse(previewRunBody);
+    assert.equal(previewResult.preview, true);
+    assert.equal(previewResult.persisted, false);
+    assert.equal((await fetch(`${base}/api/agents/family-update-add`, {
+      method: "POST",
+      headers: { cookie: reviewerCookie, origin: base, "content-type": "application/json" },
+      body: JSON.stringify({ leadId: previewLeadId, name: "Blocked Contact", phone: "+96800000001", relationship: "spouse" }),
+    })).status, 401);
     const firstTransition = await fetch(`${base}/api/cases/CASE-DEMO-001/transition`, {
       method: "POST",
       headers: { cookie, origin: base, "content-type": "application/json" },
@@ -161,7 +187,12 @@ test("public landing, signed app session and operator token enforce the route ma
     const basic = Buffer.from(`reviewer:${env.CONSOLE_TOKEN}`).toString("base64");
     assert.equal((await fetch(`${base}/console`, { headers: { authorization: `Basic ${basic}` } })).status, 200);
   } finally {
-    child.kill();
+    await new Promise((resolve) => {
+      if (child.exitCode != null) return resolve();
+      child.once("exit", resolve);
+      child.kill();
+      setTimeout(resolve, 1500);
+    });
     rmSync(dir, { recursive: true, force: true });
   }
 });

@@ -1569,10 +1569,10 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
                       <CheckCircle2 className="w-8 h-8" />
                     </div>
                     <h3 className={`text-2xl font-bold font-['Plus_Jakarta_Sans'] ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                      Message Sent to Founders!
+                      Email draft opened
                     </h3>
                     <p className={`text-sm max-w-md mx-auto ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>
-                      Thank you for reaching out. Hussain or Ajeya will get back to you directly at <strong className="text-[#0D9488]">{contactForm.email || 'your email'}</strong>.
+                      Complete and send the draft in your email app. Canopus Care does not claim that a message was delivered until you send it.
                     </p>
                     <button
                       onClick={() => {
@@ -1581,23 +1581,32 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
                       }}
                       className="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-mono text-xs font-bold"
                     >
-                      Send Another Message
+                      Prepare another email
                     </button>
                   </div>
                 ) : (
                   <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      setContactSubmitted(true);
-                    }}
+                     onSubmit={(e) => {
+                       e.preventDefault();
+                       const subject = `Canopus Care inquiry from ${contactForm.name}`;
+                       const body = [
+                         `Name: ${contactForm.name}`,
+                         `Email: ${contactForm.email}`,
+                         `Role: ${contactForm.role}`,
+                         '',
+                         contactForm.message,
+                       ].join('\n');
+                       window.location.href = `mailto:info@canopuscare.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                       setContactSubmitted(true);
+                     }}
                     className="space-y-5"
                   >
                     <div className="space-y-1">
                       <h3 className={`text-xl font-bold font-['Plus_Jakarta_Sans'] ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                        Send Us a Direct Message
+                        Prepare a direct email
                       </h3>
                       <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                        Fill in your details below and our founders will follow up promptly.
+                        Submitting opens your email app with a draft addressed to info@canopuscare.com.
                       </p>
                     </div>
 
@@ -1667,7 +1676,7 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
                       className="w-full py-3 px-6 rounded-xl bg-[#0D9488] hover:bg-[#0A7C72] text-white font-mono text-sm font-bold flex items-center justify-center gap-2 shadow-lg transition-all"
                     >
                       <Send className="w-4 h-4" />
-                      <span>Send Message to Hussain & Ajeya</span>
+                      <span>Open email draft to founders</span>
                     </button>
                   </form>
                 )}

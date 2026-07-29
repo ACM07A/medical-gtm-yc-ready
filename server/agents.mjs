@@ -33,7 +33,8 @@ export const CSS = `
 h1{font-size:28px;margin:6px 0 8px;letter-spacing:-.02em}
 .lede{font-size:15px;color:var(--muted);max-width:680px}
 .section-h{margin:30px 0 4px;font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800;border-top:1px solid var(--line);padding-top:22px}
-.agent{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-top:14px;box-shadow:var(--shadow)}
+.agent{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-top:14px;box-shadow:var(--shadow);scroll-margin-top:48px}
+.agent:target{border-color:var(--accent);box-shadow:0 0 0 3px rgba(16,185,129,.14)}
 .agent h2{margin:0 0 4px;font-size:17px}
 .agent .desc{font-size:13px;color:var(--muted);margin-bottom:14px}
 .row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
@@ -79,12 +80,12 @@ export const AGENT_META = [
   { id: "ticketing", title: "Ticketing — flexible-date flight search", grp: "Before travel", desc: "Arrival has a real constraint (the pre-op buffer before admission, reused from the accommodation agent's own stayPlan() so the two never disagree); departure doesn't. Sweeps a window around the patient's preferred date and ranks it cheapest-first. Curated fare estimate until a real provider (Amadeus/Duffel/Kiwi) is keyed; requesting a date is a human-gated dry-run, same posture as accommodation." },
 ];
 
-function cardBody(id) {
+function cardBody(id, leadId) {
   return ({
     triage: `<div class="row"><label style="flex:2">Patient message (their own words)
         <textarea data-f="text">I need a knee replacement, I'm 58, from Oman, no reports yet, my local doctor said it's not urgent</textarea></label></div>`,
     "family-update": `<div class="row">
-        <label>Lead ID<input data-f="leadId" value="41"></label>
+        <label>Lead ID<input data-f="leadId" value="${leadId}"></label>
         <label>Contact name<input data-f="name" value="Amina"></label>
         <label>Phone<input data-f="phone" value="+968XXXXXXXX"></label>
         <label>Relationship<input data-f="relationship" value="spouse"></label>
@@ -102,7 +103,7 @@ function cardBody(id) {
         <button class="run" onclick="runAgent('family-update-send', this, 'family-update')">3. Queue today's update</button>
       </div>`,
     "document-kyc": `<div class="row">
-        <label>Lead ID<input data-f="leadId" value="40"></label>
+        <label>Lead ID<input data-f="leadId" value="${leadId}"></label>
         <label>Country<select data-f="countryCode"><option value="OM" selected>Oman</option><option value="KE">Kenya</option><option value="NG">Nigeria</option></select></label>
         <label>Attendants<input data-f="attendants" type="number" value="1"></label>
       </div>
@@ -115,7 +116,7 @@ function cardBody(id) {
         <label style="flex:2">Value (a date, for the passport item)<input data-f="value" value="2028-01-01"></label>
       </div>
       <button class="run" onclick="runAgent('kyc-submit', this, 'document-kyc')">2. Submit that document</button>`,
-    "billing-reconciliation": `<div class="row"><label>Lead ID (pre-seeded with a real quote + actual)<input data-f="leadId" value="42"></label></div>
+    "billing-reconciliation": `<div class="row"><label>Lead ID (linked to the golden synthetic case)<input data-f="leadId" value="${leadId}"></label></div>
       <button class="run" onclick="runAgent('billing-lead', this, 'billing-reconciliation')">Reconcile from the real ledger</button>
       <details><summary>Or type ad-hoc lines (standalone demo mode, no DB)</summary>
         <div class="row" style="margin-top:8px">
@@ -147,7 +148,7 @@ function cardBody(id) {
         <label>Insurer<input data-f="insurer" value="Jubilee"></label>
       </div>`,
     "video-consult": `<div class="row">
-        <label>Lead ID (needs a finalized quote on file — a lead without one shows the gate)<input data-f="leadId" value="42"></label>
+        <label>Lead ID (needs a finalized quote on file — a lead without one shows the gate)<input data-f="leadId" value="${leadId}"></label>
         <label>Preferred slot (IST)<input data-f="preferredDateTimeIST" value="2026-08-10T11:00"></label>
         <label>Language<select data-f="language"><option value="en" selected>English</option><option value="ar">Arabic</option><option value="sw">Swahili</option><option value="am">Amharic</option><option value="ru">Russian</option></select></label>
       </div>
@@ -160,13 +161,13 @@ function cardBody(id) {
       </div>
       <button class="run" onclick="runAgent('video-consult-outcome', this, 'video-consult')">2. Record the outcome</button>`,
     "visa-documents": `<div class="row">
-        <label>Lead ID<input data-f="leadId" value="40"></label>
+        <label>Lead ID<input data-f="leadId" value="${leadId}"></label>
         <label>Country<select data-f="countryCode"><option value="OM" selected>Oman</option><option value="KE">Kenya</option><option value="PK">Pakistan (1 attendant only)</option><option value="BD">Bangladesh</option><option value="NG">Nigeria</option></select></label>
         <label>Attendants<input data-f="attendants" type="number" value="1"></label>
       </div>
       <button class="run" onclick="runAgent('visa-start', this, 'visa-documents')">Start / view visa workflow</button>`,
     "accommodation": `<div class="row">
-        <label>Lead ID<input data-f="leadId" value="42"></label>
+        <label>Lead ID<input data-f="leadId" value="${leadId}"></label>
         <label>Category<select data-f="categoryId"><option value="cardiac" selected>cardiac</option><option value="ortho">ortho</option><option value="oncology">oncology</option><option value="fertility">fertility</option><option value="dental">dental</option></select></label>
         <label>Admission date<input data-f="admissionDate" value="2026-08-15"></label>
         <label>Attendants<input data-f="attendants" type="number" value="1"></label>
@@ -185,7 +186,7 @@ function cardBody(id) {
       </div>
       <button class="run" onclick="runAgent('stay-request', this, 'accommodation')">3. Request this stay (dry-run)</button>`,
     "ticketing": `<div class="row">
-        <label>Lead ID<input data-f="leadId" value="42"></label>
+        <label>Lead ID<input data-f="leadId" value="${leadId}"></label>
         <label>Category<select data-f="categoryId"><option value="cardiac" selected>cardiac</option><option value="ortho">ortho</option><option value="oncology">oncology</option><option value="fertility">fertility</option><option value="dental">dental</option></select></label>
         <label>Admission date<input data-f="admissionDate" value="2026-08-15"></label>
       </div>
@@ -204,29 +205,33 @@ function cardBody(id) {
   })[id] || "";
 }
 
-function agentCard(a) {
+function agentCard(a, leadId) {
   const runButton = ["family-update", "document-kyc", "billing-reconciliation", "visa-documents", "accommodation", "ticketing", "video-consult"].includes(a.id) ? "" :
     `<button class="run" onclick="runAgent('${a.id}', this)">Run — real output, not a transcript</button>`;
-  return `<div class="agent" data-agent="${a.id}">
+  return `<div class="agent" id="workflow-${a.id}" data-agent="${a.id}">
     <h2>${a.title}</h2><div class="desc">${a.desc}</div>
-    ${cardBody(a.id)}
+    ${cardBody(a.id, leadId)}
     ${runButton}
     <div class="out"></div>
   </div>`;
 }
 
-export function renderAgentsDemo() {
+export function renderAgentsDemo({ preview = false, leadId = 1 } = {}) {
   const groups = [...new Set(AGENT_META.map((a) => a.grp))];
+  const previewSuffix = preview ? "?preview=1" : "";
+  const modeNotice = preview
+    ? "REVIEWER PREVIEW · real handlers · database changes rolled back · outbound disabled"
+    : "every run below is LIVE (real model call or its safety-checked deterministic fallback)";
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>CanopusCare — Concierge Agents</title><style>${CSS}</style></head><body>
-<div class="ribbon">CANOPUSCARE · concierge agents — every run below is LIVE (real model call or its safety-checked deterministic fallback) — <a href="/demo">back to demo hub</a></div>
+<div class="ribbon">CANOPUSCARE · concierge agents — ${modeNotice} — <a href="/workflows">back to workflow library</a></div>
 <div class="wrap">
   <div class="eyebrow">Post-booking journey · build-os/09</div>
   <h1>The agents that get a booked patient actually treated</h1>
   <p class="lede">Thirteen agents covering intake through aftercare, wired to the real failover chain and the real
   safety gate (<code>lib/safety.mjs</code>). Several are deliberately deterministic — never LLM-generated — because
   a wrong answer there (a visa document rule, a medication dose, a sum of money) is worse than no answer.</p>
-  ${groups.map((g) => `<div class="section-h">${g}</div>${AGENT_META.filter((a) => a.grp === g).map(agentCard).join("")}`).join("")}
+  ${groups.map((g) => `<div class="section-h">${g}</div>${AGENT_META.filter((a) => a.grp === g).map((agent) => agentCard(agent, leadId)).join("")}`).join("")}
 </div>
 <script>
 async function runAgent(action, btn, cardId) {
@@ -238,7 +243,7 @@ async function runAgent(action, btn, cardId) {
   btn.disabled = true; btn.textContent = 'Running…';
   out.className = 'out show'; out.innerHTML = '<span style="color:var(--muted)">calling the agent…</span>';
   try {
-    const r = await fetch('/api/agents/' + action, { method: 'POST', headers: {'content-type':'application/json'}, body: JSON.stringify(fields) });
+    const r = await fetch('/api/agents/' + action + '${previewSuffix}', { method: 'POST', headers: {'content-type':'application/json'}, body: JSON.stringify(fields) });
     const data = await r.json();
     out.innerHTML = renderResult(action, data);
   } catch (e) { out.innerHTML = '<span style="color:var(--red)">Request failed: ' + String(e) + '</span>'; }
