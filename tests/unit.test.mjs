@@ -55,6 +55,22 @@ test("anonymous demo visitors have no app scope", () => {
   db.close(); rmSync(dir, { recursive: true, force: true });
 });
 
+test("demo header authentication is disabled unless explicitly enabled", () => {
+  const { db, dir } = seededDb();
+  const priorMode = process.env.APP_MODE;
+  const priorHeader = process.env.ALLOW_DEMO_HEADER_AUTH;
+  process.env.APP_MODE = "demo";
+  delete process.env.ALLOW_DEMO_HEADER_AUTH;
+  const blocked = getSession(db, { headers: { "x-demo-user": "admin@canopuscare.demo" } });
+  assert.equal(blocked.authenticated, false);
+  process.env.ALLOW_DEMO_HEADER_AUTH = "1";
+  const allowed = getSession(db, { headers: { "x-demo-user": "admin@canopuscare.demo" } });
+  assert.equal(allowed.role, "platform_admin");
+  if (priorMode == null) delete process.env.APP_MODE; else process.env.APP_MODE = priorMode;
+  if (priorHeader == null) delete process.env.ALLOW_DEMO_HEADER_AUTH; else process.env.ALLOW_DEMO_HEADER_AUTH = priorHeader;
+  db.close(); rmSync(dir, { recursive: true, force: true });
+});
+
 test("signed cookie alone applies hospital case scope", () => {
   const { db, dir } = seededDb();
   const priorMode = process.env.APP_MODE;
@@ -110,7 +126,7 @@ test("session-cookie mutations require an allowed origin", () => {
 });
 
 test("public, signed-app and operator route posture is explicit", () => {
-  for (const path of ["/demo", "/cases", "/cases/case_ibrahim_musa", "/vendors", "/audit", "/api/cases", "/api/concierge/ask"])
+  for (const path of ["/demo", "/cases", "/cases/case_ibrahim_musa", "/vendors", "/audit", "/workflows", "/api/cases", "/api/concierge/ask"])
     assert.equal(requiresAppSession(path), true, path);
   for (const path of ["/", "/login", "/api/health", "/api/readiness", "/api/session", "/landing-assets/landing.css"])
     assert.equal(requiresAppSession(path), false, path);

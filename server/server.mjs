@@ -25,7 +25,7 @@ import { errorPage } from "./canopus_ui.mjs";
 import { structuredLog } from "./logger.mjs";
 import {
   getSession, apiCases, apiCase, renderCases, renderCase, renderHospital, renderAgent,
-  renderVendors, renderOsAgents, renderTasks, renderIntegrations, renderAudit, metrics,
+  renderVendors, renderOsAgents, renderWorkflows, renderTasks, renderIntegrations, renderAudit, metrics,
   apiApprovals, decideApproval, apiTasks, updateTask, apiVendors, createServiceRequest,
   apiCaseResource, apiAgentRuns, apiAudit, apiIntegrations, apiServiceRequests, updateServiceRequest,
 } from "./os_pages.mjs";
@@ -361,6 +361,8 @@ const server = createServer(async (req, res) => {
     // through the same failover chain and safety gate as everything else; deterministic fallback if no key.
     if (url.pathname === "/agents")
       return send(200, "text/html; charset=utf-8", url.searchParams.get("legacy") === "1" && session.role === "platform_admin" ? renderAgentsDemo() : renderOsAgents(db, session));
+    if (url.pathname === "/workflows")
+      return send(200, "text/html; charset=utf-8", renderWorkflows(db, session));
     if (req.method === "POST" && url.pathname.startsWith("/api/agents/")) {
       const body = await readBody(req);
       const kind = url.pathname.slice("/api/agents/".length);

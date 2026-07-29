@@ -24,6 +24,7 @@ const surfaces = [
   ["/hospital", "Hospital command centre", "Assigned-case inbox, response workflow, SLA and task board.", "core", "Building2"],
   ["/vendors", "Travel coordination", "Interpreter, transfer and accommodation requests without real bookings.", "core", "Plane"],
   ["/agents", "AI-assisted activity", "Deterministic operational outputs with evidence and approval state.", "core", "Activity"],
+  ["/workflows", "13 agent and WhatsApp workflows", "Reviewer-safe concierge agents and the human-gated communications lifecycle.", "core", "Bot"],
   ["/integrations", "Integration readiness", "Operational, simulated and disabled adapter states.", "gate", "Plug"],
   ["/audit", "Audit history", "Material actions, actors, timestamps and blocked decisions.", "gate", "ScrollText"],
   ["/cases/CASE-DEMO-002", "Consent-blocked case", "Progression is refused until consent and records are complete.", "blocked", "TriangleAlert"],

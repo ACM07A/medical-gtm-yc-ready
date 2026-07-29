@@ -31,6 +31,7 @@ const ICONS = {
   clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
   lock: '<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
   activity: '<path d="M3 12h4l2-6 4 12 2-6h6"/>',
+  logout: '<path d="M10 17l5-5-5-5"/><path d="M15 12H3"/><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>',
   arrowRight: '<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>',
   alert: '<path d="M12 3 2 21h20z"/><path d="M12 9v5M12 18h.01"/>',
   wallet: '<path d="M4 6h15a2 2 0 0 1 2 2v10H4a2 2 0 0 1-2-2V6a3 3 0 0 1 3-3h12"/><path d="M16 12h5"/>',
@@ -46,6 +47,7 @@ const ICON_ALIAS = {
   KeyRound: "circleHelp",
   HeartPulse: "heartPulse", FileCheck2: "fileCheck", Plane: "plane", Clock3: "clock",
   LockKeyhole: "lock", Activity: "activity", ArrowRight: "arrowRight",
+  LogOut: "logout",
   TriangleAlert: "alert", WalletCards: "wallet", CircleCheckBig: "checkCircle",
 };
 
@@ -57,6 +59,7 @@ export function icon(name, size = 18, className = "") {
 const NAV = [
   ["demo", "/demo", "House", "Overview"],
   ["concierge", "/concierge", "MessageCircleQuestion", "Concierge"],
+  ["workflows", "/workflows", "Activity", "Workflows"],
   ["cases", "/cases", "BriefcaseMedical", "Cases"],
   ["hospital", "/hospital", "Building2", "Hospitals"],
   ["agent", "/agent", "Users", "Agents"],
@@ -360,7 +363,7 @@ export function appShell(title, inner, options = {}) {
     <div class="demo-strip">DEMO ENVIRONMENT &middot; SYNTHETIC DATA &middot; EXTERNAL ACTIONS DISABLED</div>
     <aside class="rail"><a class="brand-lockup" href="/demo" aria-label="Canopus Care home"><span class="brand-mark">${icon("Sparkles", 30)}</span><span class="brand-name">Canopus <b>Care</b></span></a><nav class="rail-nav">${nav}</nav><div class="rail-foot"><a class="rail-action" href="/integrations" aria-label="Settings" data-label="Settings">${icon("Settings",19)}<span class="nav-label">Settings</span></a><a class="rail-action" href="/docs/YC_REVIEWER_GUIDE.md" aria-label="Help" data-label="Help">${icon("CircleHelp",19)}<span class="nav-label">Help & guide</span></a></div></aside>
     <section class="workspace">
-      <header class="topbar"><div class="wordmark">Canopus<span>Care</span></div><div class="top-tools"><div class="search">${icon("Search",15)}<span>Search cases, hospitals, records</span></div><button class="icon-btn" title="Notifications" aria-label="Notifications">${icon("Bell",17)}</button><a class="icon-btn" href="/docs/YC_REVIEWER_GUIDE.md" title="Help" aria-label="Help">${icon("CircleHelp",17)}</a><a class="compact-user" href="/login" aria-label="Account"><span class="compact-avatar">${esc(initials)}</span><span class="compact-user-text"><b>${esc(userName)}</b><span>${esc(userRole)}</span></span></a></div></header>
+      <header class="topbar"><div class="wordmark">Canopus<span>Care</span></div><div class="top-tools"><div class="search">${icon("Search",15)}<span>Search cases, hospitals, records</span></div><button class="icon-btn" title="Notifications" aria-label="Notifications">${icon("Bell",17)}</button><a class="icon-btn" href="/docs/YC_REVIEWER_GUIDE.md" title="Help" aria-label="Help">${icon("CircleHelp",17)}</a><button class="icon-btn" type="button" onclick="logoutDemo()" title="Sign out" aria-label="Sign out">${icon("LogOut",17)}</button><span class="compact-user" aria-label="Signed-in account"><span class="compact-avatar">${esc(initials)}</span><span class="compact-user-text"><b>${esc(userName)}</b><span>${esc(userRole)}</span></span></span></div></header>
       <main>${inner}</main>
     </section>
     <aside class="context-rail"><div class="context-top"><button class="icon-btn" title="Support" aria-label="Support">${icon("MessageCircleQuestion",17)}</button></div>
@@ -368,7 +371,7 @@ export function appShell(title, inner, options = {}) {
       <div class="context-metrics"><div class="mini-stat">${icon("MapPin",15)}<b>${esc(metrics.cases)}</b><span>Cases</span></div><div class="mini-stat">${icon("Bot",15)}<b>${esc(metrics.agents)}</b><span>Agents</span></div><div class="mini-stat">${icon("Send",15)}<b>${esc(metrics.actions)}</b><span>Live actions</span></div></div>
       <section class="readiness"><div class="readiness-head"><span>Platform readiness</span><span>Demo</span></div><h3>Controlled operations</h3><div class="ring"><div class="ring-value">Checks<b>12</b></div></div><div class="mode-row"><span><i class="mode-dot"></i>Database ready</span><b>100%</b></div></section>
     </aside>
-  </div></body></html>`;
+  </div><script>async function logoutDemo(){const response=await fetch("/api/auth/logout",{method:"POST"});if(response.ok)location.href="/login";}</script></body></html>`;
 }
 
 export function errorPage(status, title, message, requestId = "") {

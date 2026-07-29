@@ -2,6 +2,8 @@ import { appMode, readinessReport } from "../data-core/os_core.mjs";
 import { allowedCaseTransitions, CASE_WORKFLOW, caseStateLabel } from "../data-core/case_workflow.mjs";
 import { appShell, icon } from "./canopus_ui.mjs";
 import { sessionUserId } from "./session.mjs";
+import { AGENT_META } from "./agents.mjs";
+import { STAGES } from "../lib/comms_machine.mjs";
 
 const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 class SafeHtml extends String {}
@@ -26,7 +28,9 @@ function viewOptions(active, session, metrics) {
 
 export function getSession(db, req) {
   const cookieUserId = sessionUserId(req);
-  const headerEmail = appMode() === "demo" ? req.headers["x-demo-user"] : null;
+  const headerEmail = appMode() === "demo" && process.env.ALLOW_DEMO_HEADER_AUTH === "1"
+    ? req.headers["x-demo-user"]
+    : null;
   let user = cookieUserId
     ? db.prepare(`SELECT * FROM app_user WHERE id=? AND active=1`).get(cookieUserId)
     : null;
@@ -335,6 +339,40 @@ export function renderOsAgents(db, session) {
   const runs = db.prepare(`SELECT ar.*, ad.name agent_name, o.name org_name FROM agent_run ar JOIN agent_definition ad ON ad.id=ar.agent_id LEFT JOIN organization o ON o.id=ar.organization_id ORDER BY ar.created DESC`).all();
   return shell("AI Agent Activity Centre", `<div class="head"><div><div class="eyebrow">AI Agent Activity Centre</div><h1>Operational software workers</h1><p class="lede">Deterministic demo agents require no LLM key. Human approval is required for consequential actions.</p></div></div>
   <table><thead><tr><th>Agent</th><th>Organization</th><th>Trigger</th><th>Output</th><th>Provider</th><th>Cost</th><th>Confidence</th><th>Status</th><th>Correlation</th></tr></thead><tbody>${rows(runs,[["agent_name"],["org_name"],["trigger"],["output_summary"],["provider"],["estimated_cost"],["confidence"],["status",(r)=>badge(r.status)],["correlation_id"]])}</tbody></table>`, viewOptions("ai", session, { cases: 2, agents: runs.length, actions: 0 }));
+}
+
+export function renderWorkflows(db, session) {
+  const completedRuns = Number(db.prepare(`SELECT count(*) c FROM agent_run WHERE status='Completed'`).get().c || 0);
+  const agentCards = AGENT_META.map((agent, index) => `<article class="card">
+    <span class="surface-icon">${icon(index === 1 ? "Send" : "Bot", 19)}</span>
+    <div class="eyebrow">Workflow ${String(index + 1).padStart(2, "0")} &middot; ${esc(agent.grp)}</div>
+    <h3>${esc(agent.title)}</h3>
+    <p class="label">${esc(agent.desc)}</p>
+    <span class="badge ready">Deterministic preview ready</span>
+  </article>`).join("");
+  const whatsappStages = Object.entries(STAGES)
+    .filter(([, stage]) => stage.template)
+    .map(([name, stage], index) => `<div class="status-row">
+      <span class="status-icon">${icon(stage.handoff === "hospital" ? "Building2" : stage.clinical ? "ShieldCheck" : "Send", 17)}</span>
+      <span><b>${String(index + 1).padStart(2, "0")} &middot; ${esc(name.replace(/_/g, " "))}</b><span class="label">${esc(stage.desc)}</span></span>
+      <span class="badge ${stage.clinical ? "waiting-for-input" : "ready"}">${stage.handoff === "hospital" ? "Hospital handoff" : stage.msgType === "template" ? "Template" : "Session / template"}</span>
+    </div>`).join("");
+  return shell("Agent and WhatsApp workflows", `<div class="head"><div><div class="eyebrow">Reviewer-safe workflow library</div>
+    <h1>13 operational agents and the WhatsApp journey</h1>
+    <p class="lede">These are the real deterministic workflow definitions used by the engine. This reviewer view does not mutate case state or send messages.</p></div><div><span class="badge blocked">Outbound disabled</span></div></div>
+    <div class="metric-row">
+      <div class="metric-tile"><div class="k">${AGENT_META.length}</div><div class="label">Concierge workflows</div></div>
+      <div class="metric-tile"><div class="k">${completedRuns}</div><div class="label">Completed seeded runs</div></div>
+      <div class="metric-tile"><div class="k">${Object.keys(STAGES).length}</div><div class="label">WhatsApp states</div></div>
+      <div class="metric-tile"><div class="k">0</div><div class="label">Live sends</div></div>
+    </div>
+    <div class="callout">WhatsApp remains simulated. Every outbound item requires consent, an approved template or open session, provider credentials, <code>POST_LIVE=1</code>, and a per-item human approval.</div>
+    <div class="section-head"><div><div class="eyebrow">Concierge automation</div><h2>13 executable workflow definitions</h2></div><span class="label">Live engine logic; read-only presentation.</span></div>
+    <div class="grid">${agentCards}</div>
+    <div class="section-head"><div><div class="eyebrow">Communications state machine</div><h2>WhatsApp lifecycle</h2></div><span class="label">24-hour session rule, consent and clinical handoffs remain enforced.</span></div>
+    <section class="panel"><div class="status-list">${whatsappStages}</div></section>
+    <div class="foot"><b>Safety boundary:</b> Canopus Care coordinates administration only. Hospital teams own diagnosis, treatment, discharge instructions and fitness-to-travel decisions.</div>`,
+  viewOptions("workflows", session, { cases: 2, agents: AGENT_META.length, actions: 0 }));
 }
 
 export function renderTasks(db, session) {

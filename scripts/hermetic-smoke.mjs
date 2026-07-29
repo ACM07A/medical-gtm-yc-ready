@@ -14,7 +14,14 @@ const root = fileURLToPath(new URL("..", import.meta.url));
 const dir = mkdtempSync(join(tmpdir(), "canopuscare-smoke-"));
 const database = join(dir, "smoke.db");
 const port = String(5200 + Math.floor(Math.random() * 400));
-const env = { ...process.env, APP_MODE: "demo", POST_LIVE: "0", PORT: port, DATABASE_PATH: database };
+const env = {
+  ...process.env,
+  APP_MODE: "demo",
+  POST_LIVE: "0",
+  ALLOW_DEMO_HEADER_AUTH: "1",
+  PORT: port,
+  DATABASE_PATH: database,
+};
 const server = spawn(process.execPath, ["--experimental-sqlite", "scripts/start-app.mjs"], {
   cwd: root,
   env,

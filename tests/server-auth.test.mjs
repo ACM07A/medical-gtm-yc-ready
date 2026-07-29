@@ -44,11 +44,16 @@ test("public landing, signed app session and operator token enforce the route ma
     }
     assert.equal(ready, true, output);
 
-    for (const path of ["/demo", "/concierge", "/cases", "/vendors", "/audit"]) {
+    for (const path of ["/demo", "/concierge", "/cases", "/vendors", "/audit", "/workflows"]) {
       const response = await fetch(base + path, { redirect: "manual" });
       assert.equal(response.status, 302, path);
       assert.match(response.headers.get("location") || "", /^\/login\?next=/, path);
     }
+    const forgedDemoHeader = await fetch(`${base}/workflows`, {
+      redirect: "manual",
+      headers: { "x-demo-user": "admin@canopuscare.demo" },
+    });
+    assert.equal(forgedDemoHeader.status, 302);
     assert.equal((await fetch(`${base}/api/cases`)).status, 401);
     const anonymousConcierge = await fetch(`${base}/api/concierge/ask`, {
       method: "POST",
@@ -101,13 +106,18 @@ test("public landing, signed app session and operator token enforce the route ma
     });
     assert.equal(reviewerLogin.status, 200);
     const reviewerCookie = reviewerLogin.headers.get("set-cookie")?.split(";")[0];
-    const reviewerPages = ["/demo", "/cases/CASE-DEMO-001", "/concierge", "/hospital", "/agent", "/vendors", "/agents", "/integrations", "/audit"];
+    const reviewerPages = ["/demo", "/cases/CASE-DEMO-001", "/concierge", "/hospital", "/agent", "/vendors", "/agents", "/workflows", "/integrations", "/audit"];
     for (const path of reviewerPages) {
       const response = await fetch(base + path, { headers: { cookie: reviewerCookie } });
       assert.equal(response.status, 200, path);
       const html = await response.text();
       assert.doesNotMatch(html, /href="\/(studio|console|sandbox|journey|benchmarks)/, path);
+      assert.match(html, /aria-label="Sign out"/);
       if (path === "/demo") assert.match(html, /Sign-in is required\. Reviewer access is read-only/);
+      if (path === "/workflows") {
+        assert.match(html, /13 operational agents and the WhatsApp journey/);
+        assert.match(html, /Outbound disabled/);
+      }
     }
     const firstTransition = await fetch(`${base}/api/cases/CASE-DEMO-001/transition`, {
       method: "POST",
