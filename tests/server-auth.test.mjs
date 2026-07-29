@@ -116,6 +116,8 @@ test("public landing, signed app session and operator token enforce the route ma
       if (path === "/demo") {
         assert.match(html, /Current reviewer session/);
         assert.doesNotMatch(html, /Local setup|docker compose up --build/);
+        assert.doesNotMatch(html, /(?:src|href)="\/(?:site|console|studio|sandbox|journey|outputs)(?:\/|")/);
+        assert.match(html, /src="\/landing-assets\/care-coordination-v2\.jpg"/);
       }
       if (path === "/workflows") {
         assert.match(html, /13 operational agents and the WhatsApp journey/);

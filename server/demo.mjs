@@ -51,7 +51,7 @@ export function renderDemo(db, session) {
       <p class="lede">Canopus Care helps care coordinators and hospital teams organize records, approvals, quotations and next steps. Clinicians retain every medical decision.</p>
       <div class="actions hero-actions"><a class="btn primary" href="/cases/CASE-DEMO-001">${icon("HeartPulse",16)} Open golden case</a><button class="btn" type="button" onclick="logoutDemo()">${icon("LogOut",16)} Sign out</button></div>
       <div class="trust-row"><span>${icon("LockKeyhole",14)} Synthetic data</span><span>${icon("CircleCheckBig",14)} Human approved</span><span>${icon("Building2",14)} Hospital-led care</span></div>
-    </div><figure class="hero-media"><img src="/site/assets/care-coordination.png" alt="A patient and care coordinator reviewing a travel care plan"></figure></section>
+    </div><figure class="hero-media"><img src="/landing-assets/care-coordination-v2.jpg" alt="A patient and care coordinator reviewing a travel care plan"></figure></section>
 
     <div class="metric-row">
       <div class="metric-tile"><span class="metric-icon">${icon("BriefcaseMedical",18)}</span><div class="k">${stats.cases}</div><div class="label">Synthetic cases</div></div>
