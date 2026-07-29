@@ -87,15 +87,15 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@tailwindcss/vite": "^4.1.14",
-    "@vitejs/plugin-react": "^5.0.4",
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-react": "^6.0.4",
     "lucide-react": "^0.546.0",
     "puppeteer-core": "^25.3.0",
     "react": "^19.0.1",
     "react-dom": "^19.0.1",
-    "tailwindcss": "^4.1.14",
+    "tailwindcss": "^4.3.3",
     "typescript": "^5.8.2",
-    "vite": "^6.4.3"
+    "vite": "^8.1.5"
   },
   "devDependencies": {
     "@types/react": "^19.0.10",
