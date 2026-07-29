@@ -137,7 +137,7 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
             </div>
 
             {/* Right Column: Doctor-Patient Image with Floating Infographic Markers in Corners */}
-            <div className="lg:col-span-5 relative flex items-center justify-center p-2 sm:p-4">
+            <div className="lg:col-span-5 relative flex flex-col items-stretch justify-center gap-2 p-0 sm:block sm:p-4">
 
               {/* Main Image Container */}
               <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-slate-100 bg-white group w-full">
@@ -153,11 +153,11 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
               </div>
 
               {/* Floating Infographic Marker 1: Corridor (Top-Left Corner) */}
-              <div className="absolute -top-4 -left-2 sm:-left-6 bg-white/95 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl shadow-xl border border-slate-200/90 flex items-center gap-2.5 z-20 transition-all hover:scale-105">
+              <div className="relative sm:absolute sm:-top-4 sm:-left-6 w-full sm:w-auto min-w-0 bg-white/95 backdrop-blur-md p-2.5 sm:p-3 rounded-xl sm:rounded-2xl shadow-md sm:shadow-xl border border-slate-200/90 flex items-center gap-2.5 z-20 transition-all sm:hover:scale-105">
                 <div className="p-2 rounded-xl bg-teal-50 text-[#0D9488]">
                   <Globe2 className="w-4 h-4" />
                 </div>
-                <div className="text-left font-sans">
+                <div className="min-w-0 text-left font-sans">
                   <div className="text-[11px] font-extrabold text-slate-900 leading-tight">
                     Ethiopia → India Corridor
                   </div>
@@ -169,11 +169,11 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
               </div>
 
               {/* Floating Infographic Marker 2: Medical Visa & Quotes (Top-Right Corner) */}
-              <div className="absolute -top-4 -right-2 sm:-right-6 bg-white/95 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl shadow-xl border border-slate-200/90 flex items-center gap-2.5 z-20 transition-all hover:scale-105">
+              <div className="relative sm:absolute sm:-top-4 sm:-right-6 w-full sm:w-auto min-w-0 bg-white/95 backdrop-blur-md p-2.5 sm:p-3 rounded-xl sm:rounded-2xl shadow-md sm:shadow-xl border border-slate-200/90 flex items-center gap-2.5 z-20 transition-all sm:hover:scale-105">
                 <div className="p-2 rounded-xl bg-amber-50 text-amber-700">
                   <Building2 className="w-4 h-4" />
                 </div>
-                <div className="text-left font-sans">
+                <div className="min-w-0 text-left font-sans">
                   <div className="text-[11px] font-extrabold text-slate-900 leading-tight">
                     Illustrative estimate set
                   </div>
@@ -184,11 +184,11 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
               </div>
 
               {/* Floating Infographic Marker 3: Structured Records (Bottom-Left Corner) */}
-              <div className="absolute -bottom-4 -left-2 sm:-left-6 bg-white/95 backdrop-blur-md p-2.5 sm:p-3 rounded-2xl shadow-xl border border-slate-200/90 flex items-center gap-2.5 z-20 transition-all hover:scale-105">
+              <div className="relative sm:absolute sm:-bottom-4 sm:-left-6 w-full sm:w-auto min-w-0 bg-white/95 backdrop-blur-md p-2.5 sm:p-3 rounded-xl sm:rounded-2xl shadow-md sm:shadow-xl border border-slate-200/90 flex items-center gap-2.5 z-20 transition-all sm:hover:scale-105">
                 <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
                   <FileText className="w-4 h-4" />
                 </div>
-                <div className="text-left font-sans">
+                <div className="min-w-0 text-left font-sans">
                   <div className="text-[11px] font-extrabold text-slate-900 leading-tight">
                     Structured Records
                   </div>
@@ -199,11 +199,11 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
               </div>
 
               {/* Floating Infographic Marker 4: Human Approval Gate (Bottom-Right Corner) */}
-              <div className="absolute -bottom-4 -right-2 sm:-right-6 bg-slate-900 text-white p-2.5 sm:p-3 rounded-2xl shadow-2xl border border-slate-800 flex items-center gap-2.5 z-20 transition-all hover:scale-105">
+              <div className="relative sm:absolute sm:-bottom-4 sm:-right-6 w-full sm:w-auto min-w-0 bg-slate-900 text-white p-2.5 sm:p-3 rounded-xl sm:rounded-2xl shadow-md sm:shadow-2xl border border-slate-800 flex items-center gap-2.5 z-20 transition-all sm:hover:scale-105">
                 <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400">
                   <ShieldCheck className="w-4 h-4" />
                 </div>
-                <div className="text-left font-sans">
+                <div className="min-w-0 text-left font-sans">
                   <div className="text-[11px] font-extrabold text-amber-400 leading-tight">
                     Human Approval Gate
                   </div>
@@ -218,27 +218,27 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
           </div>
 
           {/* Above The Fold: 4 KPI Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 text-left">
-            <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-1">
-              <div className="text-2xl font-black font-mono text-[#0D9488]">Reusable</div>
+          <div className="grid grid-cols-1 min-[480px]:grid-cols-2 md:grid-cols-4 gap-4 pt-4 text-left">
+            <div className="min-w-0 p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-1">
+              <div className="text-xl sm:text-2xl leading-tight break-words font-black font-mono text-[#0D9488]">Reusable</div>
               <div className="text-xs font-bold text-slate-900">Workflow Blueprints</div>
               <div className="text-[11px] text-slate-500 line-clamp-1">Stage & task state trees</div>
             </div>
 
-            <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-1">
-              <div className="text-2xl font-black font-mono text-[#0D9488]">Deterministic</div>
+            <div className="min-w-0 p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-1">
+              <div className="text-xl sm:text-2xl leading-tight break-words font-black font-mono text-[#0D9488]">Deterministic</div>
               <div className="text-xs font-bold text-slate-900">AI Execution Agents</div>
               <div className="text-[11px] text-slate-500 line-clamp-1">Human-gated extraction</div>
             </div>
 
-            <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-1">
-              <div className="text-2xl font-black font-mono text-[#0D9488]">2</div>
+            <div className="min-w-0 p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-1">
+              <div className="text-xl sm:text-2xl leading-tight break-words font-black font-mono text-[#0D9488]">2</div>
               <div className="text-xs font-bold text-slate-900">Primary User Roles</div>
               <div className="text-[11px] text-slate-500 line-clamp-1">Coordinators & Hospital Desk</div>
             </div>
 
-            <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-1">
-              <div className="text-2xl font-black font-mono text-[#0D9488]">End-to-End</div>
+            <div className="min-w-0 p-4 rounded-xl bg-white border border-slate-200 shadow-xs space-y-1">
+              <div className="text-xl sm:text-2xl leading-tight break-words font-black font-mono text-[#0D9488]">End-to-End</div>
               <div className="text-xs font-bold text-slate-900">Patient Timeline</div>
               <div className="text-[11px] text-slate-500 line-clamp-1">Audit log intake to post-op</div>
             </div>
@@ -534,9 +534,9 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
           <div className="grid md:grid-cols-2 gap-8 items-stretch">
 
             {/* Box A: Today's Fragmented Reality */}
-            <div className="p-6 rounded-2xl bg-white border border-rose-200 shadow-xs space-y-6 flex flex-col justify-between">
+            <div className="min-w-0 p-4 sm:p-6 rounded-2xl bg-white border border-rose-200 shadow-xs space-y-6 flex flex-col justify-between">
               <div>
-                <div className="flex items-center justify-between border-b border-rose-100 pb-3 mb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-rose-100 pb-3 mb-4">
                   <span className="text-xs font-mono font-bold text-rose-700 uppercase tracking-wider flex items-center gap-1.5">
                     <AlertCircle className="w-4 h-4 text-rose-600" />
                     Today's Fragmented Workflow
@@ -545,7 +545,7 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
                 </div>
 
                 <div className="space-y-3">
-                  <div className="flex items-center gap-2 p-2.5 rounded-lg bg-rose-50/50 text-xs font-mono text-rose-900 border border-rose-100 overflow-x-auto">
+                  <div className="flex flex-wrap items-center gap-2 p-2.5 rounded-lg bg-rose-50/50 text-[11px] sm:text-xs font-mono text-rose-900 border border-rose-100">
                     <span className="font-bold">Patient Inquiry</span>
                     <ArrowRight className="w-3.5 h-3.5 text-rose-400 shrink-0" />
                     <MessageSquare className="w-3.5 h-3.5 text-rose-500 shrink-0" />
@@ -558,7 +558,7 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
                     <span>PDF Scans</span>
                   </div>
 
-                  <div className="flex items-center gap-2 p-2.5 rounded-lg bg-rose-50/50 text-xs font-mono text-rose-900 border border-rose-100 overflow-x-auto">
+                  <div className="flex flex-wrap items-center gap-2 p-2.5 rounded-lg bg-rose-50/50 text-[11px] sm:text-xs font-mono text-rose-900 border border-rose-100">
                     <FileSpreadsheet className="w-3.5 h-3.5 text-rose-500 shrink-0" />
                     <span>Excel Sheets</span>
                     <ArrowRight className="w-3.5 h-3.5 text-rose-400 shrink-0" />
@@ -586,9 +586,9 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
             </div>
 
             {/* Box B: Canopus Care Single Workflow */}
-            <div className="p-6 rounded-2xl bg-[#0A1626] text-white border border-teal-500/30 shadow-md space-y-6 flex flex-col justify-between">
+            <div className="min-w-0 p-4 sm:p-6 rounded-2xl bg-[#0A1626] text-white border border-teal-500/30 shadow-md space-y-6 flex flex-col justify-between">
               <div>
-                <div className="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3 mb-4">
                   <span className="text-xs font-mono font-bold text-[#0FB8A6] uppercase tracking-wider flex items-center gap-1.5">
                     <Sparkles className="w-4 h-4 text-[#0FB8A6]" />
                     Canopus Care Workflow
@@ -597,31 +597,31 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
                 </div>
 
                 <div className="space-y-3">
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono text-slate-200">
-                    <span className="flex items-center gap-2">
+                  <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1.2fr)] items-center gap-2 p-3 rounded-xl bg-slate-900 border border-slate-800 text-[11px] sm:text-xs font-mono text-slate-200">
+                    <span className="min-w-0 flex items-center gap-2">
                       <Users className="w-4 h-4 text-[#0FB8A6]" />
                       Patient Upload
                     </span>
                     <ArrowRight className="w-3.5 h-3.5 text-teal-500" />
-                    <span className="text-[#0FB8A6] font-bold">Structured Record Engine</span>
+                    <span className="min-w-0 break-words text-[#0FB8A6] font-bold">Structured Record Engine</span>
                   </div>
 
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono text-slate-200">
-                    <span className="flex items-center gap-2">
+                  <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1.2fr)] items-center gap-2 p-3 rounded-xl bg-slate-900 border border-slate-800 text-[11px] sm:text-xs font-mono text-slate-200">
+                    <span className="min-w-0 flex items-center gap-2">
                       <Bot className="w-4 h-4 text-[#0FB8A6]" />
                       AI Extraction
                     </span>
                     <ArrowRight className="w-3.5 h-3.5 text-teal-500" />
-                    <span className="text-white font-bold">Coordinator Human Gating</span>
+                    <span className="min-w-0 break-words text-white font-bold">Coordinator Human Gating</span>
                   </div>
 
-                  <div className="flex items-center justify-between p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs font-mono text-slate-200">
-                    <span className="flex items-center gap-2">
+                  <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1.2fr)] items-center gap-2 p-3 rounded-xl bg-slate-900 border border-slate-800 text-[11px] sm:text-xs font-mono text-slate-200">
+                    <span className="min-w-0 flex items-center gap-2">
                       <Building2 className="w-4 h-4 text-[#0FB8A6]" />
                       Hospital Desk
                     </span>
                     <ArrowRight className="w-3.5 h-3.5 text-teal-500" />
-                    <span className="text-emerald-400 font-bold">Hospital Estimate & Visa Support</span>
+                    <span className="min-w-0 break-words text-emerald-400 font-bold">Hospital Estimate & Visa Support</span>
                   </div>
                 </div>
 
@@ -918,8 +918,8 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
             </h2>
           </div>
 
-          <div className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
-            <table className="w-full text-left text-xs sm:text-sm">
+          <div className="bg-white rounded-2xl border border-slate-200 overflow-x-auto shadow-xs">
+            <table className="w-full min-w-[640px] sm:min-w-0 text-left text-xs sm:text-sm">
               <thead>
                 <tr className="bg-slate-900 text-white font-mono text-xs border-b border-slate-800">
                   <th className="p-4 sm:p-5 font-bold">Workflow Capability</th>
@@ -1275,22 +1275,22 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
           </div>
 
           {/* Founders Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
 
             {/* Founder 1: Hussain Bombaywala */}
             <div className={`p-6 sm:p-8 rounded-3xl border shadow-xl flex flex-col justify-between transition-all hover:border-[#0FB8A6]/50 ${isDark ? 'bg-slate-900/90 border-slate-800' : 'bg-white border-slate-200'}`}>
               <div className="space-y-6">
 
                 {/* Header with Photo & LinkedIn */}
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-center gap-4">
+                <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+                  <div className="min-w-0 flex items-center gap-4">
                     <img
                       src={founderHussainImg}
                       alt="Hussain Bombaywala"
                       className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-2 border-[#0D9488] shadow-md"
                     />
-                    <div>
-                      <h3 className={`text-xl sm:text-2xl font-bold font-['Plus_Jakarta_Sans'] ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                    <div className="min-w-0">
+                      <h3 className={`text-lg sm:text-2xl break-words font-bold font-['Plus_Jakarta_Sans'] ${isDark ? 'text-white' : 'text-slate-900'}`}>
                         Hussain Bombaywala
                       </h3>
                       <div className="text-sm font-semibold text-[#0D9488]">Co-Founder & CEO / Growth Lead</div>
@@ -1305,7 +1305,7 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
                     href="https://www.linkedin.com/in/hussain-bombaywala/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2.5 rounded-xl bg-[#0A66C2]/10 hover:bg-[#0A66C2] text-[#0A66C2] hover:text-white border border-[#0A66C2]/30 transition-all flex items-center gap-1.5 text-xs font-bold shrink-0"
+                    className="self-start p-2.5 rounded-xl bg-[#0A66C2]/10 hover:bg-[#0A66C2] text-[#0A66C2] hover:text-white border border-[#0A66C2]/30 transition-all flex items-center gap-1.5 text-xs font-bold shrink-0"
                     title="Connect on LinkedIn"
                   >
                     <Linkedin className="w-4 h-4" />
@@ -1335,7 +1335,7 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
               </div>
 
               {/* Direct Action */}
-              <div className="pt-6 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs font-mono mt-6">
+              <div className="pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col lg:flex-row lg:items-center justify-between gap-2 text-xs font-mono mt-6">
                 <span className="text-slate-400">Hospital Partnerships & Growth</span>
                 <a
                   href="https://www.linkedin.com/in/hussain-bombaywala/"
@@ -1353,15 +1353,15 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
               <div className="space-y-6">
 
                 {/* Header with Photo & LinkedIn */}
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-center gap-4">
+                <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
+                  <div className="min-w-0 flex items-center gap-4">
                     <img
                       src={founderAjeyaImg}
                       alt="Ajeya Sriganesh"
                       className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-2 border-[#0D9488] shadow-md"
                     />
-                    <div>
-                      <h3 className={`text-xl sm:text-2xl font-bold font-['Plus_Jakarta_Sans'] ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                    <div className="min-w-0">
+                      <h3 className={`text-lg sm:text-2xl break-words font-bold font-['Plus_Jakarta_Sans'] ${isDark ? 'text-white' : 'text-slate-900'}`}>
                         Ajeya Sriganesh
                       </h3>
                       <div className="text-sm font-semibold text-[#0D9488]">Co-Founder & CTO / Product Lead</div>
@@ -1376,7 +1376,7 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
                     href="https://www.linkedin.com/in/ajeyasriganesh"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2.5 rounded-xl bg-[#0A66C2]/10 hover:bg-[#0A66C2] text-[#0A66C2] hover:text-white border border-[#0A66C2]/30 transition-all flex items-center gap-1.5 text-xs font-bold shrink-0"
+                    className="self-start p-2.5 rounded-xl bg-[#0A66C2]/10 hover:bg-[#0A66C2] text-[#0A66C2] hover:text-white border border-[#0A66C2]/30 transition-all flex items-center gap-1.5 text-xs font-bold shrink-0"
                     title="Connect on LinkedIn"
                   >
                     <Linkedin className="w-4 h-4" />
@@ -1406,7 +1406,7 @@ export function YCLandingPage({ onOpenInteractiveDemo, theme = 'light' }: YCLand
               </div>
 
               {/* Direct Action */}
-              <div className="pt-6 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs font-mono mt-6">
+              <div className="pt-6 border-t border-slate-200 dark:border-slate-800 flex flex-col lg:flex-row lg:items-center justify-between gap-2 text-xs font-mono mt-6">
                 <span className="text-slate-400">Engineering & Product Lead</span>
                 <a
                   href="https://www.linkedin.com/in/ajeyasriganesh"
