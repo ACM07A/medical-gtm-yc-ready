@@ -65,8 +65,9 @@ export function Navbar({ theme, onToggleTheme, isInteractiveSandboxMode, onToggl
 
         {/* Left: Brand Identity */}
         <div className="flex items-center gap-3 shrink-0">
-          <button
-            onClick={() => onToggleSandboxMode?.()}
+          <a
+            href="/"
+            aria-label="Canopus Care home"
             className="flex items-center gap-3 group text-left"
           >
             <div className="w-10 h-10 rounded-2xl bg-[#0A1A2E] border border-teal-500/30 flex items-center justify-center p-1.5 shadow-sm group-hover:border-teal-400 group-hover:scale-105 transition-all">
@@ -82,7 +83,7 @@ export function Navbar({ theme, onToggleTheme, isInteractiveSandboxMode, onToggl
                 Coordinate. Care. Connect.
               </span>
             </div>
-          </button>
+          </a>
         </div>
 
         {/* Center: Navigation Links */}
