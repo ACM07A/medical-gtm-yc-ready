@@ -49,7 +49,7 @@ export function renderDemo(db, session) {
       <div class="eyebrow">International patient coordination</div>
       <h1>One clear workflow from patient intake to hospital response and travel readiness.</h1>
       <p class="lede">Canopus Care helps care coordinators and hospital teams organize records, approvals, quotations and next steps. Clinicians retain every medical decision.</p>
-      <div class="actions hero-actions"><a class="btn primary" href="/cases/CASE-DEMO-001">${icon("HeartPulse",16)} Open golden case</a><a class="btn" href="/login">${icon("KeyRound",16)} Sign in by role</a></div>
+      <div class="actions hero-actions"><a class="btn primary" href="/cases/CASE-DEMO-001">${icon("HeartPulse",16)} Open golden case</a><button class="btn" type="button" onclick="logoutDemo()">${icon("LogOut",16)} Sign out</button></div>
       <div class="trust-row"><span>${icon("LockKeyhole",14)} Synthetic data</span><span>${icon("CircleCheckBig",14)} Human approved</span><span>${icon("Building2",14)} Hospital-led care</span></div>
     </div><figure class="hero-media"><img src="/site/assets/care-coordination.png" alt="A patient and care coordinator reviewing a travel care plan"></figure></section>
 
@@ -79,13 +79,13 @@ export function renderDemo(db, session) {
     <div class="panel journey-panel">
       <div class="section-head"><div><span class="eyebrow">Patient journey</span><h2>Case progress</h2></div><span class="badge info">4 of 7 stages</span></div>
       <div class="journey-track" aria-label="Case progress">
-      <div class="journey-step done"><span class="journey-dot">${icon("CircleCheckBig",15)}</span><span>Intake</span></div>
-      <div class="journey-step done"><span class="journey-dot">${icon("CircleCheckBig",15)}</span><span>Records</span></div>
-      <div class="journey-step done"><span class="journey-dot">${icon("CircleCheckBig",15)}</span><span>Matching</span></div>
-      <div class="journey-step active"><span class="journey-dot">${icon("Building2",15)}</span><span>Hospital review</span></div>
-      <div class="journey-step"><span class="journey-dot">${icon("WalletCards",15)}</span><span>Estimate</span></div>
-      <div class="journey-step"><span class="journey-dot">${icon("Plane",15)}</span><span>Travel</span></div>
-      <div class="journey-step"><span class="journey-dot">${icon("HeartPulse",15)}</span><span>Follow-up</span></div>
+      <a class="journey-step done" href="/cases/CASE-DEMO-001#overview"><span class="journey-dot">${icon("CircleCheckBig",15)}</span><span>Intake</span></a>
+      <a class="journey-step done" href="/cases/CASE-DEMO-001#documents"><span class="journey-dot">${icon("CircleCheckBig",15)}</span><span>Records</span></a>
+      <a class="journey-step done" href="/cases/CASE-DEMO-001#hospital-matches"><span class="journey-dot">${icon("CircleCheckBig",15)}</span><span>Matching</span></a>
+      <a class="journey-step active" href="/cases/CASE-DEMO-001#hospital-matches"><span class="journey-dot">${icon("Building2",15)}</span><span>Hospital review</span></a>
+      <a class="journey-step" href="/cases/CASE-DEMO-001#estimates"><span class="journey-dot">${icon("WalletCards",15)}</span><span>Estimate</span></a>
+      <a class="journey-step" href="/cases/CASE-DEMO-001#travel-support"><span class="journey-dot">${icon("Plane",15)}</span><span>Travel</span></a>
+      <a class="journey-step" href="/cases/CASE-DEMO-001#tasks"><span class="journey-dot">${icon("HeartPulse",15)}</span><span>Follow-up</span></a>
     </div></div>
 
     <section class="split">
@@ -103,14 +103,9 @@ export function renderDemo(db, session) {
     <div class="section-head"><div><div class="eyebrow">Explore</div><h2>Product workspaces</h2></div><span class="label">Core workflow first; gated and legacy operator surfaces are labelled.</span></div>
     <div class="grid">${cards}</div>
 
-    <section class="split">
-      <div class="panel"><h2>Local setup</h2><pre class="cmd">cp .env.example .env
-npm ci
-npm run yc-demo</pre><p class="label">Docker alternative: <code>docker compose up --build</code>.</p></div>
-      <div class="panel"><h2>Reviewer access</h2><pre class="cmd">${esc(process.env.DEMO_USERNAME || DEMO_USERNAME)}
-Password configured by the deployment owner</pre><p class="label">Sign-in is required. Reviewer access is read-only; hospital, agent and vendor accounts receive server-scoped views.</p>
-        <div class="actions"><a class="btn primary" href="/login">${icon("KeyRound",14)} Reviewer login</a>${session?.authenticated && session.role === "platform_admin" ? `<button class="btn" onclick="resetDemo()">${icon("RotateCcw",14)} Reset demo</button>` : ""}<a class="btn" href="/docs/YC_REVIEWER_GUIDE.md">${icon("BookOpenText",14)} Reviewer guide</a></div>
-      </div>
+    <section class="panel"><h2>Current reviewer session</h2><pre class="cmd">${esc(session?.user?.email || process.env.DEMO_USERNAME || DEMO_USERNAME)}
+Role: ${esc(session?.role?.replace(/_/g, " ") || "read only")}</pre><p class="label">This authenticated session is server-scoped. Sign out before testing anonymous access or switching to a hospital, agent or vendor role.</p>
+      <div class="actions"><button class="btn primary" type="button" onclick="logoutDemo()">${icon("LogOut",14)} Sign out</button>${session?.authenticated && session.role === "platform_admin" ? `<button class="btn" onclick="resetDemo()">${icon("RotateCcw",14)} Reset demo</button>` : ""}<a class="btn" href="/docs/YC_REVIEWER_GUIDE.md">${icon("BookOpenText",14)} Reviewer guide</a></div>
     </section>
 
     <div class="foot"><b>Safety posture:</b> synthetic data only. AI does not diagnose, interpret scans, choose treatment, promise outcomes, declare fitness to fly, send messages, post publicly or book vendors.</div>

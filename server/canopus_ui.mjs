@@ -346,7 +346,20 @@ h1{font-weight:800}h2,h3{font-weight:700}
 .attention-panel{background:#0A1626;border-color:#0A1626}
 .surface-icon,.status-icon,.metric-icon{background:var(--brand-50);color:var(--brand-700)}
 textarea:focus,input:focus,select:focus,.btn:focus-visible,.icon-btn:focus-visible,.rail-link:focus-visible{border-color:var(--brand-500);box-shadow:0 0 0 3px rgba(15,184,166,.2)}
+.tabs .tab{min-height:40px;display:inline-flex;align-items:center;text-decoration:none;cursor:pointer}
+.tabs .tab:first-child{background:var(--surface-0);border-color:var(--line-200);color:var(--ink-500)}
+.tabs .tab.active{background:var(--brand-600);border-color:var(--brand-600);color:#fff}
+.tabs .tab:hover{border-color:var(--brand-200);color:var(--brand-700)}
+.tabs .tab.active:hover{color:#fff}
+.case-section{scroll-margin-top:20px}
+.case-section:target{animation:case-target 900ms ease-out}
+.case-section>h3{margin-top:20px}
+.journey-step{color:inherit;text-decoration:none;border-radius:8px}
+.journey-step:hover .journey-dot{box-shadow:0 0 0 5px var(--brand-100)}
+.journey-step:focus-visible{outline:3px solid var(--brand-200);outline-offset:4px}
+@keyframes case-target{from{background:var(--brand-50)}to{background:transparent}}
 @media(max-width:820px){.hero-media::after{background:linear-gradient(180deg,#F7FAF9 0,transparent 30%)}}
+@media(max-width:820px){.tabs .tab{min-height:44px}.case-section{scroll-margin-top:12px}}
 `;
 
 export function appShell(title, inner, options = {}) {

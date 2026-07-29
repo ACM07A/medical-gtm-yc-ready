@@ -44,7 +44,7 @@ test("public landing, signed app session and operator token enforce the route ma
     }
     assert.equal(ready, true, output);
 
-    for (const path of ["/demo", "/concierge", "/cases", "/vendors", "/audit", "/workflows"]) {
+    for (const path of ["/demo", "/concierge", "/cases", "/cases/CASE-DEMO-002", "/vendors", "/audit", "/workflows"]) {
       const response = await fetch(base + path, { redirect: "manual" });
       assert.equal(response.status, 302, path);
       assert.match(response.headers.get("location") || "", /^\/login\?next=/, path);
@@ -113,7 +113,10 @@ test("public landing, signed app session and operator token enforce the route ma
       const html = await response.text();
       assert.doesNotMatch(html, /href="\/(studio|console|sandbox|journey|benchmarks)/, path);
       assert.match(html, /aria-label="Sign out"/);
-      if (path === "/demo") assert.match(html, /Sign-in is required\. Reviewer access is read-only/);
+      if (path === "/demo") {
+        assert.match(html, /Current reviewer session/);
+        assert.doesNotMatch(html, /Local setup|docker compose up --build/);
+      }
       if (path === "/workflows") {
         assert.match(html, /13 operational agents and the WhatsApp journey/);
         assert.match(html, /Outbound disabled/);

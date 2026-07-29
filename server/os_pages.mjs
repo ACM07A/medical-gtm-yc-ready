@@ -78,6 +78,7 @@ export function apiCase(db, session, id) {
     services: db.prepare(`SELECT sr.*,v.service_categories,v.indicative_price FROM service_request sr LEFT JOIN vendor v ON v.id=sr.vendor_id WHERE sr.case_id=?`).all(caseId),
     tasks: db.prepare(`SELECT * FROM ops_task WHERE case_id=?`).all(caseId),
     approvals: db.prepare(`SELECT * FROM approval WHERE subject_ref=? OR subject_ref IN (SELECT id FROM estimate WHERE case_id=?)`).all(caseId, caseId),
+    messages: db.prepare(`SELECT * FROM message WHERE case_id=? ORDER BY created DESC`).all(caseId),
     audit: db.prepare(`SELECT * FROM audit_event WHERE subject_id=? ORDER BY created DESC`).all(caseId),
   };
 }
@@ -170,33 +171,73 @@ export function renderCases(db, session) {
 export function renderCase(db, session, id) {
   const c = apiCase(db, session, id);
   if (!c) return shell("Not found", `<h1>Case not found</h1><p class="lede">This role cannot access that case.</p>`, viewOptions("cases", session));
+  const caseRef = c.synthetic_identifier || c.id;
   const allowedTransitions = allowedCaseTransitions(c.current_stage, session.role);
+  const emptyRows = (count, message) => `<tr><td colspan="${count}"><span class="label">${esc(message)}</span></td></tr>`;
+  const caseTabs = [
+    ["Overview", "overview"],
+    ["Documents", "documents"],
+    ["Hospital Matches", "hospital-matches"],
+    ["Estimates", "estimates"],
+    ["Messages", "messages"],
+    ["Tasks", "tasks"],
+    ["Travel Support", "travel-support"],
+    ["Vendors", "vendors"],
+    ["Timeline", "timeline"],
+    ["Compliance", "compliance"],
+    ["Audit Log", "audit-log"],
+  ];
+  const workflowEntries = c.current_stage === "compliance_blocked"
+    ? [["compliance_blocked", CASE_WORKFLOW.compliance_blocked]]
+    : Object.entries(CASE_WORKFLOW).filter(([state]) => state !== "compliance_blocked");
+  const currentWorkflowIndex = workflowEntries.findIndex(([state]) => state === c.current_stage);
+  const timelineRows = workflowEntries.map(([state, definition], index) => {
+    const status = index < currentWorkflowIndex ? "Completed" : index === currentWorkflowIndex ? "Current" : "Upcoming";
+    return `<tr><td>${esc(definition.label)}</td><td>${badge(status)}</td><td>${esc(definition.nextAction)}</td></tr>`;
+  }).join("");
   const workflowAction = allowedTransitions.length
     ? `<div class="panel"><h2>Next workflow action</h2><p>${esc(c.next_best_action)}</p>${allowedTransitions.map((state) =>
       `<button class="btn primary" data-case-transition="${esc(state)}">${esc(CASE_WORKFLOW[state].label)}</button>`).join("")}<p id="transition-result" class="label" aria-live="polite"></p></div>`
     : `<div class="panel"><h2>Next workflow action</h2><p>${esc(c.next_best_action)}</p><p class="label">${session.authenticated ? "This action belongs to another demo role, or the case is blocked." : "Log in as the assigned demo role to perform workflow actions."}</p></div>`;
   return shell(c.synthetic_name, `<div class="head"><div><div class="eyebrow">${esc(c.synthetic_identifier)}</div><h1>${esc(c.synthetic_name)}</h1><p class="lede">${esc(c.treatment_request)}. ${esc(c.warnings)}</p></div><div>${badge(caseStateLabel(c.current_stage))} ${badge(c.consent_status)}</div></div>
   <div class="callout">Illustrative synthetic organizations and rates only. No affiliation, accreditation or partnership is implied.${c.source_lead ? ` Linked GTM lead #${esc(c.source_lead.id)} (${esc(c.source_lead.journey_stage || "intake")}).` : ""}</div>
-  <div class="tabs">${["Overview","Documents","Hospital Matches","Estimates","Messages","Tasks","Travel Support","Vendors","Timeline","Compliance","Audit Log"].map((t)=>`<span class="tab">${t}</span>`).join("")}</div>
-  <section class="split"><div class="panel"><h2>Overview</h2><div class="case-facts">${[
+  <nav class="tabs" aria-label="Case file sections">${caseTabs.map(([label, anchor], index) => `<a class="tab${index === 0 ? " active" : ""}" data-case-tab href="#${anchor}">${label}</a>`).join("")}</nav>
+  <section class="split case-section" id="overview"><div class="panel"><h2>Overview</h2><div class="case-facts">${[
     ["Source market", c.source_market], ["Language", c.preferred_language], ["Urgency", c.urgency],
     ["Budget", c.budget_band], ["Travel window", c.travel_window], ["Coordinator", c.assigned_coordinator],
     ["Next operational action", c.next_best_action], ["Blockers", c.blockers || "none"],
   ].map(([label, value]) => `<div class="case-fact"><b>${esc(label)}</b><span>${esc(value)}</span></div>`).join("")}</div></div>
   ${workflowAction}</section>
-  <div class="panel"><h2>Compliance</h2><div class="callout">${esc(c.blockers || "No blocking compliance issue on this synthetic path.")}</div><p class="label">AI may classify documents and prepare operational checklists. It must not diagnose, interpret scans, choose treatment, promise outcomes, or declare fitness to fly.</p></div>
-  <h2>Documents</h2><table><thead><tr><th>Type</th><th>Status</th><th>Watermark</th></tr></thead><tbody>${rows(c.documents,[["doc_type"],["status",(r)=>badge(r.status)],["demo_watermark"]])}</tbody></table>
-  <h2>Hospital Matches</h2><table><thead><tr><th>Hospital</th><th>Operational Fit</th><th>Clinical Acceptance</th><th>Commercial Disclosure</th><th>Confidence</th></tr></thead><tbody>${rows(c.matches,[["hospital_name"],["operational_fit"],["clinical_acceptance"],["commercial_disclosure"],["confidence",(r)=>badge(r.confidence)]])}</tbody></table>
-  <h2>Estimates</h2><table><thead><tr><th>Procedure</th><th>Status</th><th>Total</th><th>Caveats</th></tr></thead><tbody>${rows(c.estimates,[["procedure"],["status",(r)=>badge(r.status)],["indicative_total",(r)=>`${r.currency} ${r.indicative_total}`],["caveats"]])}</tbody></table>
-  <h2>Vendors & Travel Support</h2><table><thead><tr><th>Category</th><th>Status</th><th>Mock quote</th><th>Owner</th></tr></thead><tbody>${rows(c.services,[["category"],["status",(r)=>badge(r.status)],["mock_quote"],["owner"]])}</tbody></table>
-  <h2>Audit Log</h2><table><thead><tr><th>When</th><th>Action</th><th>Outcome</th><th>Detail</th></tr></thead><tbody>${rows(c.audit,[["created"],["action"],["outcome",(r)=>badge(r.outcome)],["detail"]])}</tbody></table>
+  <section class="case-section" id="documents"><h2>Documents</h2><table><thead><tr><th>Type</th><th>Status</th><th>Watermark</th></tr></thead><tbody>${c.documents.length ? rows(c.documents,[["doc_type"],["status",(r)=>badge(r.status)],["demo_watermark"]]) : emptyRows(3, "No case documents recorded.")}</tbody></table></section>
+  <section class="case-section" id="hospital-matches"><h2>Hospital Matches</h2><table><thead><tr><th>Hospital</th><th>Operational Fit</th><th>Clinical Acceptance</th><th>Commercial Disclosure</th><th>Confidence</th></tr></thead><tbody>${c.matches.length ? rows(c.matches,[["hospital_name"],["operational_fit"],["clinical_acceptance"],["commercial_disclosure"],["confidence",(r)=>badge(r.confidence)]]) : emptyRows(5, "No hospital matches recorded.")}</tbody></table>
+    <h3>Hospital review status</h3><table><thead><tr><th>Reviewer</th><th>Status</th><th>Note</th><th>Clinical decision owner</th></tr></thead><tbody>${c.reviews.length ? rows(c.reviews,[["reviewer_role"],["status",(r)=>badge(r.status)],["note"],["clinical_decision_owner"]]) : emptyRows(4, "No hospital review has been recorded.")}</tbody></table></section>
+  <section class="case-section" id="estimates"><h2>Estimates</h2><table><thead><tr><th>Procedure</th><th>Status</th><th>Total</th><th>Validity</th><th>Caveats</th></tr></thead><tbody>${c.estimates.length ? rows(c.estimates,[["procedure"],["status",(r)=>badge(r.status)],["indicative_total",(r)=>`${r.currency} ${r.indicative_total}`],["validity"],["caveats"]]) : emptyRows(5, "No estimate has been recorded.")}</tbody></table></section>
+  <section class="case-section" id="messages"><h2>Messages</h2><table><thead><tr><th>When</th><th>Direction</th><th>Channel</th><th>Status</th><th>Message</th><th>Safety</th></tr></thead><tbody>${c.messages.length ? rows(c.messages,[["created"],["direction"],["channel"],["status",(r)=>badge(r.status)],["body"],["safety_verdict"]]) : emptyRows(6, "No messages have been recorded for this case.")}</tbody></table></section>
+  <section class="case-section" id="tasks"><h2>Tasks</h2><table><thead><tr><th>Task</th><th>Owner</th><th>Priority</th><th>Due</th><th>Status</th><th>Next action</th></tr></thead><tbody>${c.tasks.length ? rows(c.tasks,[["title"],["owner"],["priority",(r)=>badge(r.priority)],["due_date"],["status",(r)=>badge(r.status)],["next_action"]]) : emptyRows(6, "No tasks have been recorded for this case.")}</tbody></table></section>
+  <section class="case-section" id="travel-support"><h2>Travel Support</h2><table><thead><tr><th>Request</th><th>Status</th><th>Service date</th><th>Location</th><th>Capacity</th><th>Cancellation policy</th></tr></thead><tbody>${c.services.length ? rows(c.services,[["category"],["status",(r)=>badge(r.status)],["service_date"],["service_location"],["capacity_note"],["cancellation_policy"]]) : emptyRows(6, "No travel support requests have been recorded.")}</tbody></table></section>
+  <section class="case-section" id="vendors"><h2>Vendors</h2><table><thead><tr><th>Category</th><th>Service</th><th>Status</th><th>Indicative price</th><th>Structured quote</th><th>Owner</th></tr></thead><tbody>${c.services.length ? rows(c.services,[["category"],["service_categories"],["status",(r)=>badge(r.status)],["indicative_price"],["quote_amount",(r)=>r.quote_amount ? `${r.quote_currency} ${r.quote_amount}` : r.mock_quote],["owner"]]) : emptyRows(6, "No vendor assignments have been recorded.")}</tbody></table></section>
+  <section class="case-section" id="timeline"><h2>Timeline</h2><table><thead><tr><th>Stage</th><th>Status</th><th>Operational action</th></tr></thead><tbody>${timelineRows}</tbody></table></section>
+  <section class="case-section panel" id="compliance"><h2>Compliance</h2><div class="callout">${esc(c.blockers || "No blocking compliance issue on this synthetic path.")}</div><p class="label">AI may classify documents and prepare operational checklists. It must not diagnose, interpret scans, choose treatment, promise outcomes, or declare fitness to fly.</p>
+    <table><thead><tr><th>Control</th><th>Status</th><th>Action</th><th>Reviewer</th><th>Blocking reason</th></tr></thead><tbody>${c.approvals.length ? rows(c.approvals,[["type"],["status",(r)=>badge(r.status)],["what_will_happen"],["reviewer"],["blocking_reasons"]]) : emptyRows(5, "No approval controls have been recorded.")}</tbody></table></section>
+  <section class="case-section" id="audit-log"><h2>Audit Log</h2><table><thead><tr><th>When</th><th>Action</th><th>Outcome</th><th>Detail</th></tr></thead><tbody>${c.audit.length ? rows(c.audit,[["created"],["action"],["outcome",(r)=>badge(r.outcome)],["detail"]]) : emptyRows(4, "No audit events have been recorded.")}</tbody></table></section>
   <script>
+  const caseTabs = [...document.querySelectorAll("[data-case-tab]")];
+  const syncCaseTab = () => {
+    const target = location.hash || "#overview";
+    for (const tab of caseTabs) {
+      const active = tab.getAttribute("href") === target;
+      tab.classList.toggle("active", active);
+      if (active) tab.setAttribute("aria-current", "location"); else tab.removeAttribute("aria-current");
+    }
+  };
+  window.addEventListener("hashchange", syncCaseTab);
+  syncCaseTab();
   document.querySelectorAll("[data-case-transition]").forEach((button) => button.addEventListener("click", async () => {
     const result = document.querySelector("#transition-result");
     button.disabled = true;
     result.textContent = "Saving...";
     try {
-      const response = await fetch("/api/cases/${encodeURIComponent(c.synthetic_identifier || c.id)}/transition", {
+      const response = await fetch("/api/cases/${encodeURIComponent(caseRef)}/transition", {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ state: button.dataset.caseTransition })
