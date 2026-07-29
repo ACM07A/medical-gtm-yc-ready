@@ -44,6 +44,8 @@ import { ingestLeads, parseLeadCsv, previewLeadCsv } from "../data-core/ingest.m
 import { benchmarks } from "../data-core/benchmarks.mjs";
 import { range } from "../lib/money.mjs";
 
+const RELEASE_ID = "hostinger-auth-b64-v1";
+
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(HERE, "..");
 const LANDING = join(ROOT, "site", "landing");
@@ -620,6 +622,7 @@ ${rows.map(card).join("")}</main></body></html>`;
       return send(200, "application/json", JSON.stringify({
         ok: os.ok && (appMode() === "demo" || loopHealthy),
         service: "canopus-care",
+        release: RELEASE_ID,
         mode: appMode(),
         database: os.database === "READY" ? "ok" : "degraded",
         seed: db.prepare(`SELECT count(*) count FROM seed_version`).get().count ? "loaded" : "missing",

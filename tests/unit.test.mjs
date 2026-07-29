@@ -49,16 +49,19 @@ test("configured reviewer password overrides a stale persistent hash", () => {
     mode: process.env.APP_MODE,
     email: process.env.DEMO_USERNAME,
     password: process.env.DEMO_REVIEWER_PASSWORD,
+    passwordB64: process.env.DEMO_REVIEWER_PASSWORD_B64,
   };
   process.env.APP_MODE = "demo";
   process.env.DEMO_USERNAME = "reviewer@canopuscare.com";
-  process.env.DEMO_REVIEWER_PASSWORD = "current-host-password";
+  process.env.DEMO_REVIEWER_PASSWORD = "wrong-interpolated-password";
+  process.env.DEMO_REVIEWER_PASSWORD_B64 = Buffer.from("current-host-password").toString("base64");
   db.prepare(`UPDATE app_user SET password_hash=? WHERE id='user_reviewer'`).run(passwordHash("stale-database-password"));
   assert.equal(authenticateDemoUser(db, "reviewer@canopuscare.com", "current-host-password")?.id, "user_reviewer");
   assert.equal(authenticateDemoUser(db, "reviewer@canopuscare.com", "stale-database-password"), null);
   if (prior.mode == null) delete process.env.APP_MODE; else process.env.APP_MODE = prior.mode;
   if (prior.email == null) delete process.env.DEMO_USERNAME; else process.env.DEMO_USERNAME = prior.email;
   if (prior.password == null) delete process.env.DEMO_REVIEWER_PASSWORD; else process.env.DEMO_REVIEWER_PASSWORD = prior.password;
+  if (prior.passwordB64 == null) delete process.env.DEMO_REVIEWER_PASSWORD_B64; else process.env.DEMO_REVIEWER_PASSWORD_B64 = prior.passwordB64;
   db.close(); rmSync(dir, { recursive: true, force: true });
 });
 

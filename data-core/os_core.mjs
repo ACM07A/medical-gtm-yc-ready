@@ -17,14 +17,25 @@ export function passwordHash(password, salt = "canopuscare-demo-salt") {
   return `sha256:${salt}:${createHash("sha256").update(`${salt}:${password}`).digest("hex")}`;
 }
 
+export function configuredReviewerPassword() {
+  const encoded = String(process.env.DEMO_REVIEWER_PASSWORD_B64 || "").trim();
+  if (encoded) {
+    try {
+      const decoded = Buffer.from(encoded, "base64").toString("utf8");
+      if (decoded && Buffer.from(decoded, "utf8").toString("base64") === encoded) return decoded;
+    } catch {}
+  }
+  return process.env.DEMO_REVIEWER_PASSWORD || null;
+}
+
 export function authenticateDemoUser(db, email, password) {
   if (appMode() !== "demo" || !password) return null;
   const normalizedEmail = String(email || "").trim().toLowerCase();
   const configuredReviewerEmail = String(process.env.DEMO_USERNAME || DEMO_USERNAME).trim().toLowerCase();
-  const configuredReviewerPassword = process.env.DEMO_REVIEWER_PASSWORD;
-  if (configuredReviewerPassword && normalizedEmail === configuredReviewerEmail) {
+  const reviewerPassword = configuredReviewerPassword();
+  if (reviewerPassword && normalizedEmail === configuredReviewerEmail) {
     const supplied = Buffer.from(passwordHash(String(password)));
-    const configured = Buffer.from(passwordHash(configuredReviewerPassword));
+    const configured = Buffer.from(passwordHash(reviewerPassword));
     if (supplied.length !== configured.length || !timingSafeEqual(supplied, configured)) return null;
     return db.prepare(`SELECT * FROM app_user WHERE id='user_reviewer' AND active=1`).get()
       || db.prepare(`SELECT * FROM app_user WHERE lower(email)=lower(?) AND active=1`).get(normalizedEmail)
@@ -45,7 +56,7 @@ export function syncDemoCredentials(db) {
     ["user_hospital", process.env.DEMO_HOSPITAL_EMAIL || "hospital@canopuscare.demo", process.env.DEMO_HOSPITAL_PASSWORD || fallbackPassword],
     ["user_agent", process.env.DEMO_AGENT_EMAIL || "agent@canopuscare.demo", process.env.DEMO_AGENT_PASSWORD || fallbackPassword],
     ["user_vendor", process.env.DEMO_VENDOR_EMAIL || "vendor@canopuscare.demo", process.env.DEMO_VENDOR_PASSWORD || fallbackPassword],
-    ["user_reviewer", process.env.DEMO_USERNAME || DEMO_USERNAME, process.env.DEMO_REVIEWER_PASSWORD || fallbackPassword],
+    ["user_reviewer", process.env.DEMO_USERNAME || DEMO_USERNAME, configuredReviewerPassword() || fallbackPassword],
   ];
   const update = db.prepare(`UPDATE app_user SET email=?,password_hash=?,active=1 WHERE id=?`);
   let changed = 0;
@@ -270,7 +281,7 @@ export function seedDemoOs(db) {
     ["user_agent", process.env.DEMO_AGENT_EMAIL || "agent@canopuscare.demo", "Zainab Agent Admin", "agent_admin", "org_agent_lagos", process.env.DEMO_AGENT_PASSWORD || fallbackPassword],
     ["user_vendor", process.env.DEMO_VENDOR_EMAIL || "vendor@canopuscare.demo", "Meera Vendor Operator", "vendor_operator", "org_vendor_blr", process.env.DEMO_VENDOR_PASSWORD || fallbackPassword],
     ["user_viewer", "viewer@canopuscare.demo", "Read Only Reviewer", "read_only", "org_platform", fallbackPassword],
-    ["user_reviewer", process.env.DEMO_USERNAME || DEMO_USERNAME, "YC Demo Reviewer", "read_only", "org_platform", process.env.DEMO_REVIEWER_PASSWORD || fallbackPassword],
+    ["user_reviewer", process.env.DEMO_USERNAME || DEMO_USERNAME, "YC Demo Reviewer", "read_only", "org_platform", configuredReviewerPassword() || fallbackPassword],
   ];
   for (const [id, email, name, role, org, password] of users) {
     put(db, `INSERT INTO app_user (id,email,name,password_hash,demo_password_hint) VALUES (?,?,?,?,?)`, [id, email, name, passwordHash(password), "configured server-side; synthetic demo only"]);
