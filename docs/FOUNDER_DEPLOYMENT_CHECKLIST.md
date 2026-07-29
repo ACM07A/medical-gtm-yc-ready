@@ -2,11 +2,19 @@
 
 Use this in order. The public service must remain a **synthetic sandbox**. Do not upload real patient records.
 
+**Hosting note:** this checklist used to describe a Render deployment to `demo.canopuscare.online`. That is
+superseded — the public sandbox is **canopuscare.com on Hostinger**, and is live as of this update. For every
+step that touches hosting mechanics (connecting the repo, build/start commands, environment variables,
+domain/SSL, rollback), follow **[HOSTINGER_DEPLOYMENT_CHECKLIST.md](HOSTINGER_DEPLOYMENT_CHECKLIST.md)** — that
+is now the single source of truth for hosting setup, so it isn't duplicated (and doesn't drift) here. This
+document covers the founder-facing process around that deployment: ownership, secrets, verification, rehearsal,
+and the YC submission package.
+
 ## 1. Decide the public-demo setup
 
-- [ ] Approve a paid Render web service and persistent disk.
-- [ ] Use `demo.canopuscare.online` as the public sandbox domain.
-- [ ] Keep the production/root domain separate from this synthetic demo.
+- [x] Public sandbox domain: **canopuscare.com**, on Hostinger (see the Hostinger checklist linked above).
+- [ ] Keep the production/root domain separate from this synthetic demo, if/when a real-patient production
+      environment is stood up later.
 - [ ] Choose one founder as deployment owner and one as backup.
 - [ ] Deliver reviewer passwords privately, not on a public page.
 
@@ -22,60 +30,27 @@ Generate different values for `SESSION_SECRET`, `CONSOLE_TOKEN`,
 `ENCRYPTION_KEY`, and every `DEMO_*_PASSWORD`. Store them in a team password
 manager. Do not put them in GitHub, WhatsApp, screenshots or source files.
 
-## 3. Create the Render service
+## 3. Create and configure the hosting service
 
-1. Sign in to Render.
-2. Select **New +**, then **Blueprint**.
-3. Connect the GitHub account with access to `ACM07A/medical-gtm-yc-ready`.
-4. Select that repository and branch `main`.
-5. Render should detect `render.yaml`.
-6. Name the service `canopuscare-demo`.
-7. Confirm the persistent disk is mounted at `/var/data`.
-8. Create/apply the Blueprint.
+Follow [HOSTINGER_DEPLOYMENT_CHECKLIST.md](HOSTINGER_DEPLOYMENT_CHECKLIST.md) sections 1–4 (connect the GitHub
+source, set build configuration, add environment variables). Use the secrets generated in step 2 above.
 
-Do not create a second service if the Blueprint already created one.
+## 4. Deploy
 
-## 4. Configure Render
+Follow [HOSTINGER_DEPLOYMENT_CHECKLIST.md](HOSTINGER_DEPLOYMENT_CHECKLIST.md) section 4 to deploy and confirm
+the deployment log.
 
-Open the service, select **Environment**, and set:
-
-```env
-APP_MODE=demo
-POST_LIVE=0
-ALLOW_REAL_PATIENT_DATA=0
-ALLOW_REAL_UPLOADS=0
-AUTH_PROVIDER=demo
-DATABASE_PATH=/var/data/canopus-care-demo.db
-UPLOAD_DIR=/var/data/uploads
-BACKUP_DIR=/var/data/backups
-
-DEMO_AGENT_EMAIL=agent@canopuscare.demo
-DEMO_HOSPITAL_EMAIL=hospital@canopuscare.demo
-DEMO_USERNAME=reviewer@canopuscare.com
-DEMO_ADMIN_EMAIL=admin@canopuscare.demo
-DEMO_VENDOR_EMAIL=vendor@canopuscare.demo
-```
-
-Add all generated secret values separately. Until the custom domain is connected:
-
-```env
-APP_BASE_URL=https://<render-service-name>.onrender.com
-ALLOWED_ORIGINS=https://<render-service-name>.onrender.com
-```
-
-Select **Manual Deploy > Deploy latest commit**.
-
-## 5. Verify the Render URL
+## 5. Verify the live URL
 
 Open these from an incognito desktop window:
 
 ```text
-https://<render-url>/api/health
-https://<render-url>/api/readiness
-https://<render-url>/demo
-https://<render-url>/login
-https://<render-url>/cases/CASE-DEMO-001
-https://<render-url>/cases/CASE-DEMO-002
+https://canopuscare.com/api/health
+https://canopuscare.com/api/readiness
+https://canopuscare.com/demo
+https://canopuscare.com/login
+https://canopuscare.com/cases/CASE-DEMO-001
+https://canopuscare.com/cases/CASE-DEMO-002
 ```
 
 - [ ] Health returns HTTP 200.
@@ -90,36 +65,23 @@ https://<render-url>/cases/CASE-DEMO-002
 
 Repeat `/demo` and `/login` on a phone using mobile data.
 
-## 6. Connect `demo.canopuscare.online`
+## 6. Domain and SSL
 
-1. In Render, open **Settings > Custom Domains**.
-2. Add `demo.canopuscare.online`.
-3. Copy the exact DNS target shown by Render.
-4. In the `canopuscare.online` DNS manager, add a CNAME:
-   - Name/host: `demo`
-   - Target/value: the Render target
-   - TTL: automatic or 300 seconds
-5. Wait for Render to verify the domain and issue TLS.
-6. Change the Render variables:
-
-```env
-APP_BASE_URL=https://demo.canopuscare.online
-ALLOWED_ORIGINS=https://demo.canopuscare.online
-```
-
-7. Redeploy and repeat the complete verification checklist.
+The custom domain and SSL are already connected (canopuscare.com). If the deployment topology changes, follow
+[HOSTINGER_DEPLOYMENT_CHECKLIST.md](HOSTINGER_DEPLOYMENT_CHECKLIST.md) section 6 and repeat the verification
+checklist above.
 
 ## 7. Check GitHub Actions
 
 1. Open the repository on GitHub and select **Actions**.
-2. Open the latest run for `main`.
+2. Open the latest run for the branch being deployed.
 3. Confirm install, lint, tests, seed, smoke and Docker build are green.
 4. Do not submit the YC URL while an unexplained check is failing.
 
 ## 8. Confirm backup and restore evidence
 
 The service creates a retained local backup when an existing database starts.
-After the first successful deployment, open the Render shell and run:
+After the first successful deployment, open the Hostinger shell (or SSH, if available for the plan) and run:
 
 ```bash
 npm run db:backup
@@ -131,7 +93,7 @@ npm run db:restore-check
 - [ ] Case, user and audit counts are non-zero.
 - [ ] Download or copy the restore report into the deployment evidence folder.
 
-These snapshots live on the same Render disk and protect against application
+These snapshots live on the same host's disk and protect against application
 mistakes, not account/region failure. Before real patient production, choose an
 encrypted off-host destination and approve backup retention, RPO and RTO.
 
@@ -167,12 +129,11 @@ Target two to four minutes without developer assistance.
 
 ## 11. YC submission package
 
-- [ ] Public custom-domain URL
+- [x] Public custom-domain URL: **canopuscare.com**
 - [ ] Reviewer credentials delivered privately
 - [ ] 60-90 second product-demo video
 - [ ] Separate founder video
 - [ ] Dashboard, golden-case and compliance-block screenshots
-- [ ] Backup Render URL
 - [ ] Founder monitoring the demo during review
 
 Suggested description:

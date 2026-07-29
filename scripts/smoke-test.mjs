@@ -1,4 +1,9 @@
+import { requiresConsoleToken } from "../server/access.mjs";
+
 const base = process.env.SMOKE_BASE_URL || process.env.APP_BASE_URL || "http://localhost:5173";
+const consoleAuthHeader = process.env.CONSOLE_TOKEN
+  ? { authorization: `Basic ${Buffer.from(`smoke:${process.env.CONSOLE_TOKEN}`).toString("base64")}` }
+  : {};
 
 const checks = [
   ["GET", "/"],
@@ -45,7 +50,9 @@ const checks = [
 let failed = 0;
 for (const [method, path] of checks) {
   try {
-    const res = await fetch(base + path, { method, headers: { "x-demo-user": "admin@canopuscare.demo" } });
+    const headers = { "x-demo-user": "admin@canopuscare.demo" };
+    if (requiresConsoleToken(path)) Object.assign(headers, consoleAuthHeader);
+    const res = await fetch(base + path, { method, headers });
     const ok = res.status >= 200 && res.status < 400;
     console.log(`${ok ? "✓" : "✗"} ${method} ${path} -> ${res.status}`);
     if (!ok) failed++;
